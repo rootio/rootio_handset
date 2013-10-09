@@ -9,9 +9,9 @@
     tools:context=".LauncherActivity" >
 
     <TextView
-        android:id="@+id/textView1"
+        android:id="@+id/status_tv"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="@string/hello_world" />
+        android:textSize="@dimen/Smaller" />
 
 </LinearLayout>
