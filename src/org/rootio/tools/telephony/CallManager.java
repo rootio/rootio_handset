@@ -2,8 +2,6 @@ package org.rootio.tools.telephony;
 
 import java.lang.reflect.Method;
 
-import org.rootio.tools.persistence.CallStatus;
-import org.rootio.tools.persistence.CallType;
 import org.rootio.tools.persistence.DBAgent;
 
 import android.app.Activity;

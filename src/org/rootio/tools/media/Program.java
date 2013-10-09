@@ -1,5 +1,6 @@
 package org.rootio.tools.media;
 
+
 import org.rootio.tools.persistence.DBAgent;
 import org.rootio.tools.radio.TimeSpan;
 import org.rootio.tools.utils.Utils;
@@ -73,6 +74,15 @@ public class Program implements Runnable {
 			playList.load();
 			playList.play();
 		}
+	}
+	
+	/**
+	 * Gets the timespan associated with this show
+	 * @return The TimeSpan object associated with this show.
+	 */
+	public TimeSpan getTimeSpan()
+	{
+		return this.timeSpan;
 	}
 	
 	/**

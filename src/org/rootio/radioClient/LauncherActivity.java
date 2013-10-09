@@ -34,7 +34,7 @@ public class LauncherActivity extends Activity {
     	Utils.setContext(this.getBaseContext());
     	Utils.setHandler(this.handler);
     	Utils.setActivity(this);
-    	RadioRunner radioRunner = new RadioRunner();
+    	RadioRunner radioRunner = new RadioRunner(this);
     	Thread runnerThread = new Thread(radioRunner);
     	runnerThread.start();
     }

@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import android.media.MediaPlayer;
-import android.media.MediaPlayer.OnPreparedListener;
+
 
 /**
  * Class for the definition of Playlists
