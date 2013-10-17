@@ -6,8 +6,9 @@ import android.content.ContentValues;
 
 /**
  * Describes genre associated with Media
+ * 
  * @author UTL051109
- *
+ * 
  */
 public class Genre {
 	private String name;
@@ -15,7 +16,9 @@ public class Genre {
 
 	/**
 	 * Constructor for the genre class
-	 * @param name The name of the genre
+	 * 
+	 * @param name
+	 *            The name of the genre
 	 */
 	public Genre(String name) {
 		this.name = name;
@@ -28,6 +31,7 @@ public class Genre {
 
 	/**
 	 * Returns the name of the Genre
+	 * 
 	 * @return String representation of the name of the Genre
 	 */
 	public String getName() {
@@ -36,6 +40,7 @@ public class Genre {
 
 	/**
 	 * Returns the Id of this genre as stored in the Rootio Database
+	 * 
 	 * @return Long Id of this genre
 	 */
 	public long getId() {
@@ -44,7 +49,8 @@ public class Genre {
 
 	/**
 	 * Stores the genre in the database in case it is not yet stored
-	 * @return Long rowid of the row stored in the Rootio database 
+	 * 
+	 * @return Long rowid of the row stored in the Rootio database
 	 */
 	private Long persist() {
 		String tableName = "artist";

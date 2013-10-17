@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">RootIO</string>
+    <string name="app_name">Rootio</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
+    <string name="StationDetailsItem">Station Details</string>
+    <string name="CloudDetailsItem">Cloud Details</string>
+    <string name="TelephonyDetailsItem">Telephony Details</string>
 
 </resources>

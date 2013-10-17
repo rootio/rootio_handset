@@ -1,8 +1,8 @@
 package org.rootio.tools.media;
 
-
 import org.rootio.tools.persistence.DBAgent;
 import org.rootio.tools.radio.TimeSpan;
+import org.rootio.tools.utils.LogType;
 import org.rootio.tools.utils.Utils;
 
 import android.content.ContentValues;
@@ -20,8 +20,7 @@ public class Program implements Runnable {
 		this.title = title;
 		this.timeSpan = timeSpan;
 		this.id = Utils.getProgramId(title, this.programType.ordinal());
-		if(this.id == null)
-		{
+		if (this.id == null) {
 			this.id = this.persist();
 		}
 	}
@@ -32,14 +31,14 @@ public class Program implements Runnable {
 		this.playList = new PlayList(tag);
 		this.timeSpan = timeSpan;
 		this.id = Utils.getProgramId(title, this.programType.ordinal());
-		if(this.id == null)
-		{
+		if (this.id == null) {
 			this.id = this.persist();
 		}
 	}
 
 	/**
 	 * Get the playlist associated with this Program
+	 * 
 	 * @return PlayList object of this program's playlist
 	 */
 	public PlayList getPlayList() {
@@ -48,18 +47,19 @@ public class Program implements Runnable {
 
 	/**
 	 * Get the program type of this program
+	 * 
 	 * @return ProgramType object of this program's type
 	 */
 	public ProgramType getProgramType() {
 		return this.programType;
 	}
-	
+
 	/**
 	 * Returns the title of this program
+	 * 
 	 * @return String representation of the title of this program
 	 */
-	public String getTitle()
-	{
+	public String getTitle() {
 		return this.title;
 	}
 
@@ -68,29 +68,34 @@ public class Program implements Runnable {
 	 */
 	public void run() {
 		if (this.programType == ProgramType.Call) {
-			Utils.logOnScreen("Waiting for call in...");
+			Utils.logOnScreen("Waiting for call in...", LogType.Radio);
 		} else {
-			Utils.logOnScreen("Preparing playlist for the show "+this.title);
+			Utils.logOnScreen("Preparing playlist for the show " + this.title,
+					LogType.Radio);
 			playList.load();
 			playList.play();
 		}
 	}
-	
+
+	public void stop() {
+		playList.stop();
+	}
+
 	/**
 	 * Gets the timespan associated with this show
+	 * 
 	 * @return The TimeSpan object associated with this show.
 	 */
-	public TimeSpan getTimeSpan()
-	{
+	public TimeSpan getTimeSpan() {
 		return this.timeSpan;
 	}
-	
+
 	/**
 	 * Save this Program to the Rootio Database in case it is not yet persisted
+	 * 
 	 * @return Long id of the row stored in the Rootio database
 	 */
-	private Long persist()
-	{
+	private Long persist() {
 		String tableName = "program";
 		ContentValues data = new ContentValues();
 		data.put("title", this.title);

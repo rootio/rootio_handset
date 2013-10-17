@@ -1,13 +1,13 @@
 package org.rootio.tools.media;
 
 import org.rootio.tools.persistence.DBAgent;
+import org.rootio.tools.utils.LogType;
 import org.rootio.tools.utils.Utils;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import android.media.MediaPlayer;
-
 
 /**
  * Class for the definition of Playlists
@@ -28,7 +28,7 @@ public class PlayList {
 	 */
 	public PlayList(String tag) {
 		this.tag = tag;
-
+		
 	}
 
 	/**
@@ -44,19 +44,18 @@ public class PlayList {
 	 */
 	public void play() {
 		try {
-			mediaPlayer = new MediaPlayer();
+
 			boolean isPrepared = false;
 			for (Media media : mediaList) {
-				Utils.logOnScreen("Playing Media " + media.getFileLocation());
-				
+				Utils.logOnScreen("Playing Media " + media.getFileLocation(), LogType.Call);
+				mediaPlayer = new MediaPlayer();
 				if (!isPrepared) {
+					
 					mediaPlayer.setDataSource(media.getFileLocation());
 					mediaPlayer.prepare();
-					
+
 					isPrepared = true;
-				}
-				else
-				{
+				} else {
 					mediaPlayer.reset();
 					mediaPlayer.setDataSource(media.getFileLocation());
 					mediaPlayer.prepare();
@@ -71,11 +70,11 @@ public class PlayList {
 			}
 		} catch (IllegalStateException e) {
 			// TODO Auto-generated catch block
-			Utils.logOnScreen("Illegal state");
+			Utils.logOnScreen("Illegal state", LogType.Radio);
 			e.printStackTrace();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			Utils.logOnScreen("IOException");
+			Utils.logOnScreen("IOException", LogType.Radio);
 			e.printStackTrace();
 		}
 	}
@@ -132,7 +131,7 @@ public class PlayList {
 						.toArray(new Genre[genres.size()]), tags
 						.toArray(new String[tags.size()]), artists
 						.toArray(new Artist[artists.size()])));
-				Utils.logOnScreen("added media " + data[i][0]);
+				Utils.logOnScreen("added media " + data[i][0], LogType.Radio);
 			}
 		}
 

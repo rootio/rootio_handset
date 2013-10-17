@@ -71,10 +71,12 @@ public class CallManager implements Runnable {
 	public void handleCall(String incomingNumber) {
 		if (isWhiteListed(incomingNumber)) {
 			pickCall();
-			this.logCall(incomingNumber, CallType.Incoming.ordinal(), CallStatus.Picked.ordinal());
+			this.logCall(incomingNumber, CallType.Incoming.ordinal(),
+					CallStatus.Picked.ordinal());
 		} else {
 			declineCall();
-			this.logCall(incomingNumber, CallType.Incoming.ordinal(), CallStatus.Declined.ordinal());
+			this.logCall(incomingNumber, CallType.Incoming.ordinal(),
+					CallStatus.Declined.ordinal());
 		}
 	}
 
@@ -90,15 +92,16 @@ public class CallManager implements Runnable {
 	private boolean isWhiteListed(String phoneNumber) {
 		boolean distinct = true;
 		String tableName = "whitelist";
-		String[] columns = new String[]{"msisdn"};
+		String[] columns = new String[] { "msisdn" };
 		String filter = "where msisdn = ?";
-		String[] selectionArgs = new String[]{phoneNumber};
+		String[] selectionArgs = new String[] { phoneNumber };
 		String having = null;
 		String orderBy = null;
 		String limit = null;
 		String groupBy = null;
 		DBAgent agent = new DBAgent();
-		String[][] result = agent.getData(distinct, tableName, columns, filter, selectionArgs, groupBy, having, orderBy, limit);
+		String[][] result = agent.getData(distinct, tableName, columns, filter,
+				selectionArgs, groupBy, having, orderBy, limit);
 		return result.length > 0;
 	}
 
@@ -114,25 +117,31 @@ public class CallManager implements Runnable {
 	private boolean isBlackListed(String phoneNumber) {
 		boolean distinct = true;
 		String tableName = "blacklist";
-		String[] columns = new String[]{"msisdn"};
+		String[] columns = new String[] { "msisdn" };
 		String filter = "where msisdn = ?";
-		String[] selectionArgs = new String[]{phoneNumber};
+		String[] selectionArgs = new String[] { phoneNumber };
 		String having = null;
 		String orderBy = null;
 		String limit = null;
 		String groupBy = null;
 		DBAgent agent = new DBAgent();
-		String[][] result = agent.getData(distinct, tableName, columns, filter, selectionArgs, groupBy, having, orderBy, limit);
+		String[][] result = agent.getData(distinct, tableName, columns, filter,
+				selectionArgs, groupBy, having, orderBy, limit);
 		return result.length > 0;
 	}
 
 	/**
 	 * Log the call event
-	 * @param telephoneNumber The telephone number that made or received the call
-	 * @param calltypeid The type of call (incoming or outgoing)
-	 * @param callstatusid The status of the call whether picked or declined.
+	 * 
+	 * @param telephoneNumber
+	 *            The telephone number that made or received the call
+	 * @param calltypeid
+	 *            The type of call (incoming or outgoing)
+	 * @param callstatusid
+	 *            The status of the call whether picked or declined.
 	 */
-	private void logCall(String telephoneNumber, int calltypeid, int callstatusid) {
+	private void logCall(String telephoneNumber, int calltypeid,
+			int callstatusid) {
 		String tableName = "calllog";
 		ContentValues data = new ContentValues();
 		data.put("telephonenumber", telephoneNumber);
@@ -145,6 +154,7 @@ public class CallManager implements Runnable {
 
 	/**
 	 * Class to handle telephony events received by the phone
+	 * 
 	 * @author UTL051109
 	 */
 	class PhoneCallListener extends PhoneStateListener {

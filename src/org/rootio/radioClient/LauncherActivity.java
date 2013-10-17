@@ -1,42 +1,109 @@
 package org.rootio.radioClient;
 
+import org.rootio.tools.diagnostics.DiagnosticsRunner;
 import org.rootio.tools.radio.RadioRunner;
 import org.rootio.tools.utils.Utils;
-
 import android.os.Bundle;
 import android.os.Handler;
-import android.app.Activity;
+import android.app.TabActivity;
+import android.content.Intent;
+import android.content.res.Resources;
 import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.TabHost;
+import android.widget.TabHost.TabSpec;
 
-public class LauncherActivity extends Activity {
+@SuppressWarnings("deprecation")
+public class LauncherActivity extends TabActivity {
 
-	Handler handler;
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_launcher);
-        handler = new Handler();
-    }
+	private Handler handler;
+	private Thread radioThread;
+	private Thread diagnosticThread;
+	private boolean isRunning;
 
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_main);
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.launcher, menu);
-        return true;
-    }
-    
-    @Override 
-    public void onStart()
-    {
-    	super.onStart();
-    	handler = new Handler();
-    	Utils.setContext(this.getBaseContext());
-    	Utils.setHandler(this.handler);
-    	Utils.setActivity(this);
-    	RadioRunner radioRunner = new RadioRunner(this);
-    	Thread runnerThread = new Thread(radioRunner);
-    	runnerThread.start();
-    }
-    
+		Resources ressources = getResources();
+		TabHost tabHost = getTabHost();
+
+		// Radio tab
+		Intent intentRadio = new Intent().setClass(this, RadioActivity.class);
+		TabSpec tabSpecRadio = tabHost.newTabSpec("Radio")
+				.setIndicator("", ressources.getDrawable(R.drawable.radio))
+				.setContent(intentRadio);
+
+		// Phone tab
+		Intent intentPhone = new Intent().setClass(this, PhoneActivity.class);
+		TabSpec tabSpecCalls = tabHost.newTabSpec("Calls")
+				.setIndicator("", ressources.getDrawable(R.drawable.phone))
+				.setContent(intentPhone);
+
+		// Diagnostics tab
+		Intent intentDiagnostics = new Intent().setClass(this,
+				DiagnosticActivity.class);
+		TabSpec tabSpecDiagnostics = tabHost
+				.newTabSpec("Diagnostics")
+				.setIndicator("", ressources.getDrawable(R.drawable.diagnostic))
+				.setContent(intentDiagnostics);
+
+		tabHost.addTab(tabSpecRadio);
+		tabHost.addTab(tabSpecCalls);
+		tabHost.addTab(tabSpecDiagnostics);
+
+		// set Radio tab as default (zero based)
+		tabHost.setCurrentTab(0);
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		super.onCreateOptionsMenu(menu);
+		getMenuInflater().inflate(R.menu.activity_main, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+		Intent intent = new Intent(this, StationActivity.class);
+		startActivity(intent);
+		return true;
+	}
+
+	@Override
+	public void onStart() {
+		super.onStart();
+		if (!isRunning) {
+			isRunning = true;
+			handler = new Handler();
+			Utils.setContext(this.getBaseContext());
+			Utils.setHandler(this.handler);
+
+			RadioRunner radioRunner = new RadioRunner(this);
+			radioThread = new Thread(radioRunner);
+			radioThread.start();
+
+			DiagnosticsRunner diagnosticsRunner = new DiagnosticsRunner(this);
+			diagnosticThread = new Thread(diagnosticsRunner);
+			diagnosticThread.start();
+		}
+
+	}
+
+	@Override
+	public void onStop() {
+		try {
+			radioThread.stop();
+		} catch (Exception ex) {
+
+		}
+		try {
+			diagnosticThread.stop();
+		} catch (Exception ex) {
+
+		}
+		super.onStop();
+	}
+
 }

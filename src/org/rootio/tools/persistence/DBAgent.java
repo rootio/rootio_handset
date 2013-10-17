@@ -35,10 +35,11 @@ public class DBAgent {
 				selectionArgs, groupBy, having, orderBy, limit);
 		String[][] data = new String[cursor.getCount()][cursor.getColumnCount()];
 		for (int i = 0; i < cursor.getCount(); i++) {
+			cursor.moveToNext();
 			for (int j = 0; j < cursor.getColumnCount(); j++) {
 				data[i][j] = cursor.getString(j);
 			}
-			cursor.moveToNext();
+			
 		}
 		return data;
 	}

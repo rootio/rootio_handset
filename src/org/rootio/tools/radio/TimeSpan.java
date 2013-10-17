@@ -31,6 +31,7 @@ public class TimeSpan {
 
 	/**
 	 * Get the start date of this Timespan object
+	 * 
 	 * @return Date representation of the start date
 	 */
 	public Date getStartDate() {
@@ -39,6 +40,7 @@ public class TimeSpan {
 
 	/**
 	 * Get the end date of this Timespan object of this Timespan object
+	 * 
 	 * @return Date representation of the end date of this Timespan object
 	 */
 	public Date getEndDate() {
@@ -47,14 +49,17 @@ public class TimeSpan {
 
 	/**
 	 * Return the EventTime objects associated with this Timespan
-	 * @return Array of EventTime objects 
+	 * 
+	 * @return Array of EventTime objects
 	 */
 	public EventTime[] getEventTimes() {
 		return this.eventTimes;
 	}
 
 	/**
-	 * Save this TimeSpan object to the Rootio Database in case it is not yet saved
+	 * Save this TimeSpan object to the Rootio Database in case it is not yet
+	 * saved
+	 * 
 	 * @return Long id of the row stored in the Rootio Database
 	 */
 	private Long persist() {
@@ -70,7 +75,8 @@ public class TimeSpan {
 	}
 
 	/**
-	 * Save the relationship between the Timespan and its constituent EventTime objects
+	 * Save the relationship between the Timespan and its constituent EventTime
+	 * objects
 	 */
 	private void persistTimeSpanEventTimes() {
 		String tableName = "timespaneventtimes";
