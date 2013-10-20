@@ -2,6 +2,7 @@ package org.rootio.radioClient;
 
 import org.rootio.tools.diagnostics.DiagnosticsRunner;
 import org.rootio.tools.radio.RadioRunner;
+import org.rootio.tools.telephony.CallRunner;
 import org.rootio.tools.utils.Utils;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,6 +20,7 @@ public class LauncherActivity extends TabActivity {
 	private Handler handler;
 	private Thread radioThread;
 	private Thread diagnosticThread;
+	private Thread callThread;
 	private boolean isRunning;
 
 	@Override
@@ -87,23 +89,12 @@ public class LauncherActivity extends TabActivity {
 			DiagnosticsRunner diagnosticsRunner = new DiagnosticsRunner(this);
 			diagnosticThread = new Thread(diagnosticsRunner);
 			diagnosticThread.start();
+			
+			CallRunner callRunner = new CallRunner(this);
+			callThread = new Thread(callRunner);
+			callThread.start();
 		}
 
-	}
-
-	@Override
-	public void onStop() {
-		try {
-			radioThread.stop();
-		} catch (Exception ex) {
-
-		}
-		try {
-			diagnosticThread.stop();
-		} catch (Exception ex) {
-
-		}
-		super.onStop();
 	}
 
 }

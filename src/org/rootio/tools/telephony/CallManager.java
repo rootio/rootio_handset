@@ -3,20 +3,34 @@ package org.rootio.tools.telephony;
 import java.lang.reflect.Method;
 
 import org.rootio.tools.persistence.DBAgent;
+import org.rootio.tools.utils.LogType;
+import org.rootio.tools.utils.Utils;
 
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
+import android.os.Looper;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
+import android.view.KeyEvent;
+
 import com.android.internal.telephony.ITelephony;
 
 public class CallManager implements Runnable {
 	private Activity parentActivity;
 	private TelephonyManager telephonyManager;
 
+	public CallManager(Activity parentActivity)
+	{
+		this.parentActivity = parentActivity;
+		this.telephonyManager = (TelephonyManager) this.parentActivity
+				.getSystemService(Context.TELEPHONY_SERVICE);
+	}
+	
 	@Override
 	public void run() {
+		Looper.prepare();
 		waitForCalls();
 	}
 
@@ -29,19 +43,28 @@ public class CallManager implements Runnable {
 	 * Answers an incoming call
 	 */
 	private void pickCall() {
-		ITelephony telephonyService;
-		TelephonyManager telephony = (TelephonyManager) parentActivity
-				.getSystemService(Context.TELEPHONY_SERVICE);
-		try {
-			Class c = Class.forName(telephony.getClass().getName());
-			Method m = c.getDeclaredMethod("getITelephony");
-			m.setAccessible(true);
-			telephonyService = (ITelephony) m.invoke(telephony);
-			telephonyService.answerRingingCall();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		 Intent buttonUp = new Intent(Intent.ACTION_MEDIA_BUTTON);             
+         buttonUp.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_HEADSETHOOK));
+         try {
+             this.parentActivity.sendOrderedBroadcast(buttonUp, "android.permission.CALL_PRIVILEGED");
+         }
+         catch (Exception e) {
+             Utils.logOnScreen("Error sending broadcast", LogType.Call);
+         }
+
+         Intent headSetUnPluggedintent = new Intent(Intent.ACTION_HEADSET_PLUG);
+         headSetUnPluggedintent.addFlags(Intent.FLAG_RECEIVER_REGISTERED_ONLY);
+         headSetUnPluggedintent.putExtra("state", 1); // 0 = unplugged  1 = Headset with microphone 2 = Headset without microphone
+         headSetUnPluggedintent.putExtra("name", "Headset");
+         // TODO: Should we require a permission?
+         try {
+        	 this.parentActivity.sendOrderedBroadcast(headSetUnPluggedintent, null);
+             Utils.logOnScreen("Sent broadcast for headset hook", LogType.Call);
+         }
+         catch (Exception e) {
+              //
+         }
+         Utils.logOnScreen("call answered", LogType.Call);  
 	}
 
 	/**
@@ -69,14 +92,21 @@ public class CallManager implements Runnable {
 	 * incomingNumber
 	 */
 	public void handleCall(String incomingNumber) {
+		try
+		{
 		if (isWhiteListed(incomingNumber)) {
-			pickCall();
-			this.logCall(incomingNumber, CallType.Incoming.ordinal(),
-					CallStatus.Picked.ordinal());
+			Utils.logOnScreen("Picking phone call from "+incomingNumber, LogType.Call);
+			//pickCall();
+			//this.logCall(incomingNumber, CallType.Incoming.ordinal(), CallStatus.Picked.ordinal());
 		} else {
-			declineCall();
-			this.logCall(incomingNumber, CallType.Incoming.ordinal(),
-					CallStatus.Declined.ordinal());
+			Utils.logOnScreen("Declining phone call from "+incomingNumber, LogType.Call);
+			//declineCall();
+			//this.logCall(incomingNumber, CallType.Incoming.ordinal(),	CallStatus.Declined.ordinal());
+		}
+		}
+		catch(Exception ex)
+		{
+			Utils.toastOnScreen(ex.getMessage());
 		}
 	}
 
@@ -90,10 +120,10 @@ public class CallManager implements Runnable {
 	 *         is not in station white list
 	 */
 	private boolean isWhiteListed(String phoneNumber) {
-		boolean distinct = true;
+		/*boolean distinct = true;
 		String tableName = "whitelist";
-		String[] columns = new String[] { "msisdn" };
-		String filter = "where msisdn = ?";
+		String[] columns = new String[] { "telephonenumber" };
+		String filter = "where telephonenumber = ?";
 		String[] selectionArgs = new String[] { phoneNumber };
 		String having = null;
 		String orderBy = null;
@@ -103,6 +133,8 @@ public class CallManager implements Runnable {
 		String[][] result = agent.getData(distinct, tableName, columns, filter,
 				selectionArgs, groupBy, having, orderBy, limit);
 		return result.length > 0;
+		*/
+		return true;
 	}
 
 	/**
@@ -117,8 +149,8 @@ public class CallManager implements Runnable {
 	private boolean isBlackListed(String phoneNumber) {
 		boolean distinct = true;
 		String tableName = "blacklist";
-		String[] columns = new String[] { "msisdn" };
-		String filter = "where msisdn = ?";
+		String[] columns = new String[] { "telephonenumber" };
+		String filter = "where telephonenumber = ?";
 		String[] selectionArgs = new String[] { phoneNumber };
 		String having = null;
 		String orderBy = null;
