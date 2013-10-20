@@ -96,12 +96,12 @@ public class CallManager implements Runnable {
 		{
 		if (isWhiteListed(incomingNumber)) {
 			Utils.logOnScreen("Picking phone call from "+incomingNumber, LogType.Call);
-			//pickCall();
-			//this.logCall(incomingNumber, CallType.Incoming.ordinal(), CallStatus.Picked.ordinal());
+			pickCall();
+			this.logCall(incomingNumber, CallType.Incoming.ordinal(), CallStatus.Picked.ordinal());
 		} else {
 			Utils.logOnScreen("Declining phone call from "+incomingNumber, LogType.Call);
-			//declineCall();
-			//this.logCall(incomingNumber, CallType.Incoming.ordinal(),	CallStatus.Declined.ordinal());
+			declineCall();
+			this.logCall(incomingNumber, CallType.Incoming.ordinal(),	CallStatus.Declined.ordinal());
 		}
 		}
 		catch(Exception ex)

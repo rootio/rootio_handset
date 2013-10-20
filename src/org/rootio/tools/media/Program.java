@@ -5,6 +5,7 @@ import org.rootio.tools.radio.TimeSpan;
 import org.rootio.tools.utils.LogType;
 import org.rootio.tools.utils.Utils;
 
+import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 
 public class Program implements Runnable {
@@ -14,6 +15,7 @@ public class Program implements Runnable {
 	private TimeSpan timeSpan;
 	private ProgramType programType;
 	private Long id;
+	BroadcastReceiver broadcastReceiver;
 
 	public Program(String title, TimeSpan timeSpan) {
 		this.programType = ProgramType.Call;
@@ -75,6 +77,16 @@ public class Program implements Runnable {
 			playList.load();
 			playList.play();
 		}
+	}
+	
+	public void pause()
+	{
+		playList.pause();
+	}
+	
+	public void resume()
+	{
+		playList.resume();
 	}
 
 	public void stop() {
