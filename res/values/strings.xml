@@ -16,5 +16,15 @@
     <string name="OkButtonText">Ok</string>
     <string name="CancelButtonText">Cancel</string>
     <string name="AddToWhiteListLabel">Number:</string>
+    <string name="ButtonPanelBGColor">#ffD8D8D8</string>
+    <string name="BatteryConfigurationLabel">Battery Level</string>
+    <string name="GSMSignalLabel">GSM Signal</string>
+    <string name="WirelessSignal">Wireless Signal</string>
+    <string name="StorageLevelLabel">Storage</string>
+    <string name="MemoryUtilizationLabel">Memory Usage</string>
+    <string name="GPSLocationLabel">GPS Location</string>
+    <string name="DiagnosticsMenuItem">Diagnostics</string>
+    <string name="ProcessorConfigurationLabel">CPU Usage</string>
+    <string name="SaveButtonText">Save</string>
 
 </resources>

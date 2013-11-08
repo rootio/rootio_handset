@@ -126,5 +126,21 @@ public class DBAgent {
 		}
 	}
 	
+	public int updateRecords(String tableName, ContentValues data, String whereClause, String[] whereArgs)
+	{
+		SQLiteDatabase database = this.getDBConnection(this.databaseName, null,	SQLiteDatabase.OPEN_READWRITE);
+		try
+		{
+			return database.update(tableName, data, whereClause, whereArgs);
+		}
+		catch(Exception ex)
+		{
+			return 0;
+		}
+		finally
+		{
+			database.close();
+		}
+	}
 
 }
