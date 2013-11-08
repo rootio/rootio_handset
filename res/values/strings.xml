@@ -7,5 +7,14 @@
     <string name="StationDetailsItem">Station Details</string>
     <string name="CloudDetailsItem">Cloud Details</string>
     <string name="TelephonyDetailsItem">Telephony Details</string>
+    <string name="QuitItem">Quit</string>
+    <string name="BlackListMenuItem">Blacklist</string>
+    <string name="WhiteListMenuItem">Whitelist</string>
+    <string name="RemoveNumberFromList">Remove</string>
+    <string name="UncheckAll">Uncheck all</string>
+    <string name="AddToBlackListLabel">"Number: "</string>
+    <string name="OkButtonText">Ok</string>
+    <string name="CancelButtonText">Cancel</string>
+    <string name="AddToWhiteListLabel">Number:</string>
 
 </resources>

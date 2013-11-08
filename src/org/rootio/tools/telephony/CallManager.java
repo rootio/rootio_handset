@@ -120,7 +120,7 @@ public class CallManager implements Runnable {
 	 *         is not in station white list
 	 */
 	private boolean isWhiteListed(String phoneNumber) {
-		/*boolean distinct = true;
+		boolean distinct = true;
 		String tableName = "whitelist";
 		String[] columns = new String[] { "telephonenumber" };
 		String filter = "where telephonenumber = ?";
@@ -130,11 +130,8 @@ public class CallManager implements Runnable {
 		String limit = null;
 		String groupBy = null;
 		DBAgent agent = new DBAgent();
-		String[][] result = agent.getData(distinct, tableName, columns, filter,
-				selectionArgs, groupBy, having, orderBy, limit);
+		String[][] result = agent.getData(distinct, tableName, columns, filter,selectionArgs, groupBy, having, orderBy, limit);
 		return result.length > 0;
-		*/
-		return true;
 	}
 
 	/**

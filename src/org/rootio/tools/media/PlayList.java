@@ -17,7 +17,7 @@ import android.media.MediaPlayer;
  */
 public class PlayList {
 	private String tag;
-	private Media[] mediaList;
+	private HashSet<Media> mediaList;
 	private MediaPlayer mediaPlayer;
 
 	/**
@@ -47,7 +47,9 @@ public class PlayList {
 
 			boolean isPrepared = false;
 			for (Media media : mediaList) {
-				Utils.logOnScreen("Playing Media " + media.getFileLocation(), LogType.Call);
+				try
+				{
+				Utils.logOnScreen("Playing Media " + media.getFileLocation(), LogType.Radio);
 				mediaPlayer = new MediaPlayer();
 				if (!isPrepared) {
 					
@@ -61,20 +63,26 @@ public class PlayList {
 					mediaPlayer.prepare();
 				}
 				mediaPlayer.start();
+				
 				try {
 					Thread.sleep(mediaPlayer.getDuration());
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				}
+				catch(Exception ex)
+				{
+					
+				}
 			}
 		} catch (IllegalStateException e) {
 			// TODO Auto-generated catch block
 			Utils.logOnScreen("Illegal state", LogType.Radio);
 			e.printStackTrace();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			Utils.logOnScreen("IOException", LogType.Radio);
+			Utils.logOnScreen("Exception Occured", LogType.Radio);
 			e.printStackTrace();
 		}
 	}
@@ -112,7 +120,7 @@ public class PlayList {
 	 *            The tag to be matched for media to be loaded into the playlist
 	 * @return Array of Media objects matching specified tag
 	 */
-	private Media[] loadMedia(String tag) {
+	private HashSet<Media> loadMedia(String tag) {
 		HashSet<Genre> genres = new HashSet<Genre>();
 		;
 		HashSet<Artist> artists = new HashSet<Artist>();
@@ -121,12 +129,12 @@ public class PlayList {
 		String[] args = new String[] { tag };
 		DBAgent dbagent = new DBAgent();
 		String[][] data = dbagent.getData(query, args);
-		ArrayList<Media> media = new ArrayList<Media>();
+		HashSet<Media> media = new HashSet<Media>();
 		for (int i = 0; i < data.length; i++) {
 			genres.add(new Genre(data[i][3]));
 			artists.add(new Artist(data[i][5], data[i][7], data[i][8]));
 			tags.add(data[i][8]);
-			if (i == 0 || data[i][0] != data[i - 1][0]) {
+			if (i == 0 || !data[i][0].equals(data[i - 1][0])) {
 				media.add(new Media(data[i][1], data[i][0], genres
 						.toArray(new Genre[genres.size()]), tags
 						.toArray(new String[tags.size()]), artists
@@ -135,7 +143,7 @@ public class PlayList {
 			}
 		}
 
-		return media.toArray(new Media[media.size()]);
+		return media;
 	}
 
 	/**
@@ -143,7 +151,7 @@ public class PlayList {
 	 * 
 	 * @return Array of Media objects loaded in this playlist
 	 */
-	public Media[] getMedia() {
+	public HashSet<Media> getMedia() {
 		return this.mediaList;
 	}
 

@@ -31,7 +31,9 @@ public class DBAgent {
 			String groupBy, String having, String orderBy, String limit) {
 		SQLiteDatabase database = this.getDBConnection(this.databaseName, null,
 				SQLiteDatabase.OPEN_READONLY);
-		Cursor cursor = database.query(distinct, tableName, columns, filter,
+		try
+		{
+			Cursor cursor = database.query(distinct, tableName, columns, filter,
 				selectionArgs, groupBy, having, orderBy, limit);
 		String[][] data = new String[cursor.getCount()][cursor.getColumnCount()];
 		for (int i = 0; i < cursor.getCount(); i++) {
@@ -42,12 +44,23 @@ public class DBAgent {
 			
 		}
 		return data;
+		}
+		catch(Exception ex)
+		{
+		 return null;
+		}
+		finally
+		{
+			database.close();
+		}
 	}
 
 	public String[][] getData(String rawQuery, String[] args) {
 		SQLiteDatabase database = this.getDBConnection(this.databaseName, null,
 				SQLiteDatabase.OPEN_READONLY);
-		Cursor cursor = database.rawQuery(rawQuery, args);
+		
+		try
+		{Cursor cursor = database.rawQuery(rawQuery, args);
 		String[][] data = new String[cursor.getCount()][cursor.getColumnCount()];
 		for (int i = 0; i < cursor.getCount(); i++) {
 			cursor.moveToNext();
@@ -56,6 +69,15 @@ public class DBAgent {
 			}
 		}
 		return data;
+		}
+		catch(Exception ex)
+		{
+			return null;
+		}
+		finally
+		{
+			database.close();
+		}
 	}
 
 	/**
@@ -70,11 +92,39 @@ public class DBAgent {
 	 *            specified table
 	 * @return The row id of the inserted row
 	 */
-	public long saveData(String tableName, String nullColumnHack,
-			ContentValues data) {
-		SQLiteDatabase database = this.getDBConnection(this.databaseName, null,
-				SQLiteDatabase.OPEN_READWRITE);
+	public long saveData(String tableName, String nullColumnHack,ContentValues data) {
+		SQLiteDatabase database = this.getDBConnection(this.databaseName, null,	SQLiteDatabase.OPEN_READWRITE);
+		try
+		{
+		 
 		return database.insert(tableName, nullColumnHack, data);
+		}
+		catch(Exception ex)
+		{
+			return 0;
+		}
+		finally
+		{
+			database.close();
+		}
 	}
+	
+	public int deleteRecords(String tableName, String whereClause, String[] args)
+	{
+		SQLiteDatabase database = this.getDBConnection(this.databaseName, null,	SQLiteDatabase.OPEN_READWRITE);
+		try
+		{
+			return database.delete(tableName, whereClause, args);
+		}
+		catch(Exception ex)
+		{
+			return 0;
+		}
+		finally
+		{
+			database.close();
+		}
+	}
+	
 
 }
