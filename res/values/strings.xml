@@ -26,5 +26,17 @@
     <string name="DiagnosticsMenuItem">Diagnostics</string>
     <string name="ProcessorConfigurationLabel">CPU Usage</string>
     <string name="SaveButtonText">Save</string>
+    <string name="DiagnosticsFrequencyLabel">Frequency:</string>
+    <string name="DiagnosticsConfigureFrequencyItem">Configure Frequency</string>
+    <string name="DiagnosticsConfigurationFrequencyUnit">Unit</string>
+    <string name="SynchronizationLogHttpLabel">HTTP:</string>
+    <string name="SynchronizationLogChangesLabel">Changes:</string>
+    <string name="SynchronizationMenuItem">Synchronization</string>
+    <string name="SynchronizationLogDownloadChangeDate">Change date:</string>
+    <string name="SynchronizationLogDownloadStatusLabel">Status:</string>
+    <string name="SynchronizationTimespanLabel">Sync during particular hours</string>
+    <string name="SynchronizationConfigureFrequencyStartTimeLabel">Start Time:</string>
+    <string name="SynchronizationConfigureFrequencyEndTimeLabel">End Time:</string>
+    <string name="SynchronizationConfigureFrequencyItem">Configure Frequency</string>
 
 </resources>

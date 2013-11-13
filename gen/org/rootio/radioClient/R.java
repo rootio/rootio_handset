@@ -8,108 +8,133 @@
 package org.rootio.radioClient;
 
 public final class R {
+    public static final class array {
+        public static final int DiagnosticsConfigurationUnits=0x7f040000;
+        public static final int DiagnosticsConfigurationUnitsValues=0x7f040001;
+    }
     public static final class attr {
     }
     public static final class dimen {
-        public static final int ButtonPanelPadding=0x7f040003;
-        public static final int LabelTextSize=0x7f040004;
-        public static final int Smaller=0x7f040002;
+        public static final int ButtonPanelPadding=0x7f050003;
+        public static final int LabelTextSize=0x7f050004;
+        public static final int ListingText=0x7f050005;
+        public static final int Smaller=0x7f050002;
+        public static final int SmallerContentText=0x7f050006;
         /**  Default screen margins, per the Android Design guidelines. 
 
          Customize dimensions originally defined in res/values/dimens.xml (such as
          screen margins) for sw720dp devices (e.g. 10" tablets) in landscape here.
     
          */
-        public static final int activity_horizontal_margin=0x7f040000;
-        public static final int activity_vertical_margin=0x7f040001;
+        public static final int activity_horizontal_margin=0x7f050000;
+        public static final int activity_vertical_margin=0x7f050001;
     }
     public static final class drawable {
         public static final int attention=0x7f020000;
         public static final int battery=0x7f020001;
-        public static final int connection=0x7f020002;
-        public static final int diagnostic=0x7f020003;
-        public static final int divider=0x7f020004;
-        public static final int green_phone=0x7f020005;
-        public static final int gsm=0x7f020006;
-        public static final int ic_launcher=0x7f020007;
-        public static final int icon_diagnostic_config=0x7f020008;
-        public static final int icon_phone=0x7f020009;
-        public static final int icon_phone_config=0x7f02000a;
-        public static final int icon_radio_config=0x7f02000b;
-        public static final int information=0x7f02000c;
-        public static final int location=0x7f02000d;
-        public static final int memory=0x7f02000e;
-        public static final int phone=0x7f02000f;
-        public static final int processor=0x7f020010;
-        public static final int questionmark=0x7f020011;
-        public static final int radio=0x7f020012;
-        public static final int storage=0x7f020013;
-        public static final int wireless=0x7f020014;
+        public static final int calendar=0x7f020002;
+        public static final int connection=0x7f020003;
+        public static final int diagnostic=0x7f020004;
+        public static final int divider=0x7f020005;
+        public static final int green_phone=0x7f020006;
+        public static final int gsm=0x7f020007;
+        public static final int ic_launcher=0x7f020008;
+        public static final int icon_diagnostic_config=0x7f020009;
+        public static final int icon_phone=0x7f02000a;
+        public static final int icon_phone_config=0x7f02000b;
+        public static final int icon_radio_config=0x7f02000c;
+        public static final int information=0x7f02000d;
+        public static final int location=0x7f02000e;
+        public static final int memory=0x7f02000f;
+        public static final int music=0x7f020010;
+        public static final int phone=0x7f020011;
+        public static final int processor=0x7f020012;
+        public static final int questionmark=0x7f020013;
+        public static final int radio=0x7f020014;
+        public static final int storage=0x7f020015;
+        public static final int synchronize=0x7f020016;
+        public static final int wireless=0x7f020017;
     }
     public static final class id {
-        public static final int action_settings=0x7f08003d;
-        public static final int addBlacklistNumberEt=0x7f080001;
-        public static final int addWhitelistNumberEt=0x7f080002;
-        public static final int battery_level_ctv=0x7f08001b;
-        public static final int black_list_menu_item=0x7f08003a;
-        public static final int blacklist_lv=0x7f080003;
-        public static final int blacklisted_number_ctv=0x7f080004;
-        public static final int blacklistmenu_add_number_item=0x7f08003c;
-        public static final int call_log_lv=0x7f08002e;
-        public static final int call_log_tv=0x7f080005;
-        public static final int call_status_tv=0x7f080032;
-        public static final int call_time_tv=0x7f080030;
-        public static final int call_type_tv=0x7f080031;
-        public static final int cloud_details_ok_btn=0x7f080019;
-        public static final int cloud_ftpport=0x7f08000e;
-        public static final int cloud_ftpport_lb=0x7f08000d;
-        public static final int cloud_httpport=0x7f08000b;
-        public static final int cloud_httpport_lb=0x7f08000a;
-        public static final int cloud_ip=0x7f080008;
-        public static final int cloud_ip_lb=0x7f080007;
-        public static final int cloud_menu_item=0x7f080036;
-        public static final int cloud_password=0x7f080017;
-        public static final int cloud_password_lb=0x7f080016;
-        public static final int cloud_rawtcpport=0x7f080011;
-        public static final int cloud_rawtcpport_lb=0x7f080010;
-        public static final int cloud_username=0x7f080014;
-        public static final int cloud_username_lb=0x7f080013;
-        public static final int cpu_usage_ctv=0x7f080021;
-        public static final int diagnostics_menu_item=0x7f080038;
-        public static final int diagnostics_tv=0x7f08001a;
-        public static final int gps_location_ctv=0x7f080020;
-        public static final int gsm_signal_ctv=0x7f08001c;
-        public static final int memory_usage_ctv=0x7f08001f;
-        public static final int pager=0x7f080022;
-        public static final int phone_number_tv=0x7f08002f;
-        public static final int quity_menu_item=0x7f080039;
-        public static final int station_details_ok_btn=0x7f08002d;
-        public static final int station_frequency=0x7f080028;
-        public static final int station_frequency_lb=0x7f080027;
-        public static final int station_location=0x7f08002a;
-        public static final int station_location_lb=0x7f080029;
-        public static final int station_menu_item=0x7f080035;
-        public static final int station_name=0x7f080024;
-        public static final int station_name_lb=0x7f080023;
-        public static final int station_owner=0x7f080026;
-        public static final int station_owner_lb=0x7f080025;
-        public static final int station_telephone=0x7f08002c;
-        public static final int station_telephone_lb=0x7f08002b;
-        public static final int status_tv=0x7f080000;
-        public static final int storage_ctv=0x7f08001e;
-        public static final int tableRow1=0x7f080006;
-        public static final int tableRow2=0x7f080009;
-        public static final int tableRow3=0x7f08000c;
-        public static final int tableRow4=0x7f08000f;
-        public static final int tableRow5=0x7f080012;
-        public static final int tableRow6=0x7f080015;
-        public static final int tableRow7=0x7f080018;
-        public static final int telephony_menu_item=0x7f080037;
-        public static final int white_list_menu_item=0x7f08003b;
-        public static final int whitelist_lv=0x7f080033;
-        public static final int whitelisted_number_ctv=0x7f080034;
-        public static final int whitelistmenu_add_number_item=0x7f08003e;
-        public static final int wireless_signal_ctv=0x7f08001d;
+        public static final int action_settings=0x7f09004c;
+        public static final int addBlacklistNumberEt=0x7f090001;
+        public static final int addWhitelistNumberEt=0x7f090002;
+        public static final int battery_level_ctv=0x7f09001b;
+        public static final int black_list_menu_item=0x7f090048;
+        public static final int blacklist_lv=0x7f090003;
+        public static final int blacklisted_number_ctv=0x7f090004;
+        public static final int blacklistmenu_add_number_item=0x7f09004a;
+        public static final int call_log_lv=0x7f09003b;
+        public static final int call_log_tv=0x7f090005;
+        public static final int call_status_tv=0x7f09003f;
+        public static final int call_time_tv=0x7f09003d;
+        public static final int call_type_tv=0x7f09003e;
+        public static final int cloud_details_ok_btn=0x7f090019;
+        public static final int cloud_ftpport=0x7f09000e;
+        public static final int cloud_ftpport_lb=0x7f09000d;
+        public static final int cloud_httpport=0x7f09000b;
+        public static final int cloud_httpport_lb=0x7f09000a;
+        public static final int cloud_ip=0x7f090008;
+        public static final int cloud_ip_lb=0x7f090007;
+        public static final int cloud_menu_item=0x7f090043;
+        public static final int cloud_password=0x7f090017;
+        public static final int cloud_password_lb=0x7f090016;
+        public static final int cloud_rawtcpport=0x7f090011;
+        public static final int cloud_rawtcpport_lb=0x7f090010;
+        public static final int cloud_username=0x7f090014;
+        public static final int cloud_username_lb=0x7f090013;
+        public static final int cpu_usage_ctv=0x7f090021;
+        public static final int diagnostic_frequency_configuration_etv=0x7f090022;
+        public static final int diagnostic_frequency_configuration_spn=0x7f090023;
+        public static final int diagnostics_configuration_frequency_menu_item=0x7f09004b;
+        public static final int diagnostics_menu_item=0x7f090045;
+        public static final int diagnostics_tv=0x7f09001a;
+        public static final int gps_location_ctv=0x7f090020;
+        public static final int gsm_signal_ctv=0x7f09001c;
+        public static final int memory_usage_ctv=0x7f09001f;
+        public static final int pager=0x7f090024;
+        public static final int phone_number_tv=0x7f09003c;
+        public static final int quity_menu_item=0x7f090047;
+        public static final int station_details_ok_btn=0x7f09002f;
+        public static final int station_frequency=0x7f09002a;
+        public static final int station_frequency_lb=0x7f090029;
+        public static final int station_location=0x7f09002c;
+        public static final int station_location_lb=0x7f09002b;
+        public static final int station_menu_item=0x7f090042;
+        public static final int station_name=0x7f090026;
+        public static final int station_name_lb=0x7f090025;
+        public static final int station_owner=0x7f090028;
+        public static final int station_owner_lb=0x7f090027;
+        public static final int station_telephone=0x7f09002e;
+        public static final int station_telephone_lb=0x7f09002d;
+        public static final int status_tv=0x7f090000;
+        public static final int storage_ctv=0x7f09001e;
+        public static final int synchronization_configuration_frequency_menu_item=0x7f09004d;
+        public static final int synchronization_configure_frequency_endtime_tv=0x7f090031;
+        public static final int synchronization_configure_frequency_starttime_tv=0x7f090030;
+        public static final int synchronization_log_changes_tv=0x7f09003a;
+        public static final int synchronization_log_date_tv=0x7f090038;
+        public static final int synchronization_log_download_changedate_tv=0x7f090037;
+        public static final int synchronization_log_download_changeid_tv=0x7f090036;
+        public static final int synchronization_log_download_icon_imv=0x7f090035;
+        public static final int synchronization_log_download_lv=0x7f090033;
+        public static final int synchronization_log_http_tv=0x7f090039;
+        public static final int synchronization_log_llt=0x7f090034;
+        public static final int synchronization_log_lv=0x7f090032;
+        public static final int synchronization_menu_item=0x7f090046;
+        public static final int tableRow1=0x7f090006;
+        public static final int tableRow2=0x7f090009;
+        public static final int tableRow3=0x7f09000c;
+        public static final int tableRow4=0x7f09000f;
+        public static final int tableRow5=0x7f090012;
+        public static final int tableRow6=0x7f090015;
+        public static final int tableRow7=0x7f090018;
+        public static final int telephony_menu_item=0x7f090044;
+        public static final int white_list_menu_item=0x7f090049;
+        public static final int whitelist_lv=0x7f090040;
+        public static final int whitelisted_number_ctv=0x7f090041;
+        public static final int whitelistmenu_add_number_item=0x7f09004e;
+        public static final int wireless_signal_ctv=0x7f09001d;
     }
     public static final class layout {
         public static final int activity_launcher=0x7f030000;
@@ -122,48 +147,68 @@ public final class R {
         public static final int cloud_details=0x7f030007;
         public static final int diagnostics=0x7f030008;
         public static final int diagnostics_configuration=0x7f030009;
-        public static final int pager=0x7f03000a;
-        public static final int program_details=0x7f03000b;
-        public static final int sample=0x7f03000c;
-        public static final int station_details=0x7f03000d;
-        public static final int telephone_log=0x7f03000e;
-        public static final int telephone_log_row=0x7f03000f;
-        public static final int whitelist=0x7f030010;
-        public static final int whitelist_row=0x7f030011;
+        public static final int diagnostics_configuration_frequency=0x7f03000a;
+        public static final int pager=0x7f03000b;
+        public static final int program_details=0x7f03000c;
+        public static final int sample=0x7f03000d;
+        public static final int station_details=0x7f03000e;
+        public static final int synchronization_configuration_frequency=0x7f03000f;
+        public static final int synchronization_log=0x7f030010;
+        public static final int synchronization_log_download=0x7f030011;
+        public static final int synchronization_log_download_row=0x7f030012;
+        public static final int synchronization_log_row=0x7f030013;
+        public static final int telephone_log=0x7f030014;
+        public static final int telephone_log_row=0x7f030015;
+        public static final int whitelist=0x7f030016;
+        public static final int whitelist_row=0x7f030017;
     }
     public static final class menu {
-        public static final int activity_main=0x7f070000;
-        public static final int activity_telephony=0x7f070001;
-        public static final int blacklist_menu=0x7f070002;
-        public static final int launcher=0x7f070003;
-        public static final int whitelist_menu=0x7f070004;
+        public static final int activity_main=0x7f080000;
+        public static final int activity_telephony=0x7f080001;
+        public static final int blacklist_menu=0x7f080002;
+        public static final int diagnostics_configuration_frequency=0x7f080003;
+        public static final int launcher=0x7f080004;
+        public static final int synchronization_configuration_frequency=0x7f080005;
+        public static final int whitelist_menu=0x7f080006;
     }
     public static final class string {
-        public static final int AddToBlackListLabel=0x7f05000b;
-        public static final int AddToWhiteListLabel=0x7f05000e;
-        public static final int BatteryConfigurationLabel=0x7f050010;
-        public static final int BlackListMenuItem=0x7f050007;
-        public static final int ButtonPanelBGColor=0x7f05000f;
-        public static final int CancelButtonText=0x7f05000d;
-        public static final int CloudDetailsItem=0x7f050004;
-        public static final int DiagnosticsMenuItem=0x7f050016;
-        public static final int GPSLocationLabel=0x7f050015;
-        public static final int GSMSignalLabel=0x7f050011;
-        public static final int MemoryUtilizationLabel=0x7f050014;
-        public static final int OkButtonText=0x7f05000c;
-        public static final int ProcessorConfigurationLabel=0x7f050017;
-        public static final int QuitItem=0x7f050006;
-        public static final int RemoveNumberFromList=0x7f050009;
-        public static final int SaveButtonText=0x7f050018;
-        public static final int StationDetailsItem=0x7f050003;
-        public static final int StorageLevelLabel=0x7f050013;
-        public static final int TelephonyDetailsItem=0x7f050005;
-        public static final int UncheckAll=0x7f05000a;
-        public static final int WhiteListMenuItem=0x7f050008;
-        public static final int WirelessSignal=0x7f050012;
-        public static final int action_settings=0x7f050001;
-        public static final int app_name=0x7f050000;
-        public static final int hello_world=0x7f050002;
+        public static final int AddToBlackListLabel=0x7f06000b;
+        public static final int AddToWhiteListLabel=0x7f06000e;
+        public static final int BatteryConfigurationLabel=0x7f060010;
+        public static final int BlackListMenuItem=0x7f060007;
+        public static final int ButtonPanelBGColor=0x7f06000f;
+        public static final int CancelButtonText=0x7f06000d;
+        public static final int CloudDetailsItem=0x7f060004;
+        public static final int DiagnosticsConfigurationFrequencyUnit=0x7f06001b;
+        public static final int DiagnosticsConfigureFrequencyItem=0x7f06001a;
+        public static final int DiagnosticsFrequencyLabel=0x7f060019;
+        public static final int DiagnosticsMenuItem=0x7f060016;
+        public static final int GPSLocationLabel=0x7f060015;
+        public static final int GSMSignalLabel=0x7f060011;
+        public static final int MemoryUtilizationLabel=0x7f060014;
+        public static final int OkButtonText=0x7f06000c;
+        public static final int ProcessorConfigurationLabel=0x7f060017;
+        public static final int QuitItem=0x7f060006;
+        public static final int RemoveNumberFromList=0x7f060009;
+        public static final int SaveButtonText=0x7f060018;
+        public static final int StationDetailsItem=0x7f060003;
+        public static final int StorageLevelLabel=0x7f060013;
+        public static final int SynchronizationConfigureFrequencyEndTimeLabel=0x7f060023;
+        public static final int SynchronizationConfigureFrequencyItem=0x7f060024;
+        public static final int SynchronizationConfigureFrequencyStartTimeLabel=0x7f060022;
+        public static final int SynchronizationLogChangesLabel=0x7f06001d;
+        public static final int SynchronizationLogDownloadChangeDate=0x7f06001f;
+        public static final int SynchronizationLogDownloadStatusLabel=0x7f060020;
+        public static final int SynchronizationLogHttpLabel=0x7f06001c;
+        public static final int SynchronizationMenuItem=0x7f06001e;
+        public static final int SynchronizationTimespanLabel=0x7f060021;
+        public static final int TelephonyDetailsItem=0x7f060005;
+        public static final int UncheckAll=0x7f06000a;
+        public static final int WhiteListMenuItem=0x7f060008;
+        public static final int WirelessSignal=0x7f060012;
+        public static final int action_settings=0x7f060001;
+        public static final int app_name=0x7f060000;
+        public static final int hello_world=0x7f060002;
     }
     public static final class style {
         /** 
@@ -187,10 +232,10 @@ public final class R {
     
  API 14 theme customizations can go here. 
          */
-        public static final int AppBaseTheme=0x7f060000;
+        public static final int AppBaseTheme=0x7f070000;
         /**  Application theme. 
  All customizations that are NOT specific to a particular API-level can go here. 
          */
-        public static final int AppTheme=0x7f060001;
+        public static final int AppTheme=0x7f070001;
     }
 }
