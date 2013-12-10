@@ -38,5 +38,13 @@
     <string name="SynchronizationConfigureFrequencyStartTimeLabel">Start Time:</string>
     <string name="SynchronizationConfigureFrequencyEndTimeLabel">End Time:</string>
     <string name="SynchronizationConfigureFrequencyItem">Configure Frequency</string>
+    <string name="TelephonyServiceTitle">Telephony Service</string>
+    <string name="SMSServiceTitle">SMS Service</string>
+    <string name="DiagnosticsServiceTitle">Diagnostic Service</string>
+    <string name="ProgramServiceTitle">Program Service</string>
+    <string name="SynchronizationServiceTitle">Sync Service</string>
+    <string name="StartServiceLabel">Start Service</string>
+    <string name="StopServiceLabel">Stop Service</string>
+    <string name="RestartServiceLabel">Restart Service</string>
 
 </resources>

@@ -2,13 +2,16 @@ package org.rootio.tools.telephony;
 
 import java.lang.reflect.Method;
 
+import org.rootio.radioClient.R;
 import org.rootio.tools.persistence.DBAgent;
 import org.rootio.tools.utils.LogType;
 import org.rootio.tools.utils.Utils;
 
 import android.app.Activity;
+import android.app.Service;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.os.Looper;
 import android.telephony.PhoneStateListener;
@@ -18,13 +21,14 @@ import android.view.KeyEvent;
 import com.android.internal.telephony.ITelephony;
 
 public class CallManager implements Runnable {
-	private Activity parentActivity;
+	private Service parentService;
+	private boolean isListening = true;
 	private TelephonyManager telephonyManager;
 
-	public CallManager(Activity parentActivity)
+	public CallManager(Service parentService)
 	{
-		this.parentActivity = parentActivity;
-		this.telephonyManager = (TelephonyManager) this.parentActivity
+		this.parentService = parentService;
+		this.telephonyManager = (TelephonyManager) this.parentService
 				.getSystemService(Context.TELEPHONY_SERVICE);
 	}
 	
@@ -32,11 +36,23 @@ public class CallManager implements Runnable {
 	public void run() {
 		Looper.prepare();
 		waitForCalls();
+		
+	}
+	
+	public void stop()
+	{
+		this.isListening = false;
 	}
 
 	private void waitForCalls() {
 		PhoneCallListener listener = new PhoneCallListener();
 		telephonyManager.listen(listener, PhoneStateListener.LISTEN_CALL_STATE);
+		while(!Thread.interrupted())
+		{
+			//really just wait for an interrupt
+		}
+		telephonyManager = null;
+		return;
 	}
 
 	/**
@@ -46,7 +62,7 @@ public class CallManager implements Runnable {
 		 Intent buttonUp = new Intent(Intent.ACTION_MEDIA_BUTTON);             
          buttonUp.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_HEADSETHOOK));
          try {
-             this.parentActivity.sendOrderedBroadcast(buttonUp, "android.permission.CALL_PRIVILEGED");
+             this.parentService.sendOrderedBroadcast(buttonUp, "android.permission.CALL_PRIVILEGED");
          }
          catch (Exception e) {
              Utils.logOnScreen("Error sending broadcast", LogType.Call);
@@ -58,7 +74,7 @@ public class CallManager implements Runnable {
          headSetUnPluggedintent.putExtra("name", "Headset");
          // TODO: Should we require a permission?
          try {
-        	 this.parentActivity.sendOrderedBroadcast(headSetUnPluggedintent, null);
+        	 this.parentService.sendOrderedBroadcast(headSetUnPluggedintent, null);
              Utils.logOnScreen("Sent broadcast for headset hook", LogType.Call);
          }
          catch (Exception e) {
@@ -72,7 +88,7 @@ public class CallManager implements Runnable {
 	 */
 	private void declineCall() {
 		ITelephony telephonyService;
-		TelephonyManager telephony = (TelephonyManager) parentActivity
+		TelephonyManager telephony = (TelephonyManager) parentService
 				.getSystemService(Context.TELEPHONY_SERVICE);
 		try {
 			Class c = Class.forName(telephony.getClass().getName());
@@ -95,11 +111,11 @@ public class CallManager implements Runnable {
 		try
 		{
 		if (isWhiteListed(incomingNumber)) {
-			Utils.logOnScreen("Picking phone call from "+incomingNumber, LogType.Call);
+			Utils.doNotification(this.parentService, parentService.getResources().getString(R.string.app_name), "Picking phone call from "+incomingNumber); //, LogType.Call);
 			pickCall();
 			this.logCall(incomingNumber, CallType.Incoming.ordinal(), CallStatus.Picked.ordinal());
 		} else {
-			Utils.logOnScreen("Declining phone call from "+incomingNumber, LogType.Call);
+			Utils.doNotification(this.parentService, parentService.getResources().getString(R.string.app_name),"Declining phone call from "+incomingNumber);//, LogType.Call);
 			declineCall();
 			this.logCall(incomingNumber, CallType.Incoming.ordinal(),	CallStatus.Declined.ordinal());
 		}

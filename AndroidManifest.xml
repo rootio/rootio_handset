@@ -34,6 +34,8 @@
         <activity android:name="org.rootio.activities.synchronization.SynchronizationLogActivity"></activity>
         <activity android:name="org.rootio.activities.synchronization.SynchronizationLogDownloadActivity"></activity>
         <activity android:name="org.rootio.activities.synchronization.SynchronizationConfigurationFrequencyActivity"></activity>
+        <activity android:name="org.rootio.activities.services.ServicesActivity"></activity>
+        <activity android:name="org.rootio.activities.services.ServicesActionDialog"></activity>
         <activity
             android:name="org.rootio.activities.launch.LauncherActivity"
             android:label="@string/app_name" android:screenOrientation="portrait">
@@ -43,6 +45,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <service android:name="org.rootio.services.TelephonyService"></service>
+        <service android:name="org.rootio.services.DiagnosticsService"></service>
+        <service android:name="org.rootio.services.ProgramService"></service>
     </application>
 
 </manifest>
