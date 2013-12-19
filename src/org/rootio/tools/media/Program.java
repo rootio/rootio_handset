@@ -7,6 +7,7 @@ import org.rootio.tools.utils.Utils;
 
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
+import android.content.ContextWrapper;
 
 public class Program implements Runnable {
 
@@ -17,7 +18,7 @@ public class Program implements Runnable {
 	private Long id;
 	BroadcastReceiver broadcastReceiver;
 
-	public Program(String title, TimeSpan timeSpan) {
+	public Program(ContextWrapper parent, String title, TimeSpan timeSpan) {
 		this.programType = ProgramType.Call;
 		this.title = title;
 		this.timeSpan = timeSpan;
@@ -27,10 +28,10 @@ public class Program implements Runnable {
 		}
 	}
 
-	public Program(String title, TimeSpan timeSpan, String tag) {
+	public Program(ContextWrapper parent, String title, TimeSpan timeSpan, String tag) {
 		this.programType = ProgramType.Media;
 		this.title = title;
-		this.playList = new PlayList(tag);
+		this.playList = new PlayList(parent, tag);
 		this.timeSpan = timeSpan;
 		this.id = Utils.getProgramId(title, this.programType.ordinal());
 		if (this.id == null) {

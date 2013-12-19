@@ -4,10 +4,17 @@ import org.rootio.tools.persistence.DBAgent;
 import org.rootio.tools.utils.LogType;
 import org.rootio.tools.utils.Utils;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
+
+import android.content.ContextWrapper;
 import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
+import android.net.Uri;
 
 /**
  * Class for the definition of Playlists
@@ -15,10 +22,13 @@ import android.media.MediaPlayer;
  * @author UTL051109
  * 
  */
-public class PlayList {
-	private String tag;
+public class PlayList 	implements OnCompletionListener, Serializable {
+
+    private String tag;
 	private HashSet<Media> mediaList;
+	private Iterator<Media> mediaIterator;
 	private MediaPlayer mediaPlayer;
+	private ContextWrapper parent;
 
 	/**
 	 * Constructor for the playlist class
@@ -26,9 +36,10 @@ public class PlayList {
 	 * @param tag
 	 *            The tag to be used to construct the playlist
 	 */
-	public PlayList(String tag) {
+	public PlayList(ContextWrapper parent, String tag) {
 		this.tag = tag;
-		
+		this.parent = parent;
+
 	}
 
 	/**
@@ -36,7 +47,7 @@ public class PlayList {
 	 */
 	public void load() {
 		mediaList = loadMedia(this.tag);
-
+		mediaIterator = mediaList.iterator();
 	}
 
 	/**
@@ -44,45 +55,28 @@ public class PlayList {
 	 */
 	public void play() {
 		try {
-
-			boolean isPrepared = false;
-			for (Media media : mediaList) {
-				try
+			if (mediaIterator.hasNext()) {
+				Media media = mediaIterator.next();
+				Utils.toastOnScreen("playing "+media.getTitle());
+				mediaPlayer = MediaPlayer.create(this.parent, Uri.fromFile(new File(media.getFileLocation())));
+				if(mediaPlayer != null)
 				{
-				Utils.logOnScreen("Playing Media " + media.getFileLocation(), LogType.Radio);
-				mediaPlayer = new MediaPlayer();
-				if (!isPrepared) {
-					
-					mediaPlayer.setDataSource(media.getFileLocation());
-					mediaPlayer.prepare();
-
-					isPrepared = true;
-				} else {
-					mediaPlayer.reset();
-					mediaPlayer.setDataSource(media.getFileLocation());
-					mediaPlayer.prepare();
-				}
+				mediaPlayer.setOnCompletionListener(this);
 				mediaPlayer.start();
-				
-				try {
-					Thread.sleep(mediaPlayer.getDuration());
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
 				}
-				}
-				catch(Exception ex)
+				else
 				{
-					
+					this.play();
 				}
 			}
+
 		} catch (IllegalStateException e) {
 			// TODO Auto-generated catch block
-			Utils.logOnScreen("Illegal state", LogType.Radio);
+			Utils.toastOnScreen("Illegal state");
 			e.printStackTrace();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			Utils.logOnScreen("Exception Occured", LogType.Radio);
+			Utils.toastOnScreen("Exception Occured");
 			e.printStackTrace();
 		}
 	}
@@ -162,6 +156,13 @@ public class PlayList {
 	 */
 	public String getTag() {
 		return this.tag;
+	}
+
+	@Override
+	public void onCompletion(MediaPlayer mediaPlayer) {
+		mediaPlayer.release();
+		this.play();
+		
 	}
 
 }

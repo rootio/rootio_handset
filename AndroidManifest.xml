@@ -21,8 +21,9 @@
         <activity android:name="org.rootio.activities.RadioActivity" />
         <activity android:name="org.rootio.activities.PhoneActivity"/>
         <activity android:name="org.rootio.activities.DiagnosticActivity"/>
+        <activity android:name="org.rootio.activities.RadioPlaylistActivity"/>
         <activity android:name=".PhoneActivity" />
-        <activity android:name="org.rootio.activities.StationActivity"/>
+        <activity android:name="org.rootio.activities.stationDetails.StationActivity"/>
         <activity android:name="org.rootio.activities.cloud.CloudActivity" />
         <activity android:name="org.rootio.activities.telephoneLog.lists.BlackListActivity"/>
         <activity android:name="org.rootio.activities.telephoneLog.lists.WhitelistActivity"/>

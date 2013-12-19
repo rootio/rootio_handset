@@ -1,5 +1,6 @@
 package org.rootio.tools.radio;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import org.rootio.tools.persistence.DBAgent;
@@ -8,7 +9,11 @@ import org.rootio.tools.utils.Utils;
 import android.content.ContentValues;
 import android.text.format.DateFormat;
 
-public class TimeSpan {
+public class TimeSpan implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String name;
 	private Date startDate;
 	private Date endDate;
