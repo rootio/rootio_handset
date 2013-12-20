@@ -4,16 +4,13 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
+import android.os.Environment;
 
 public class DBAgent {
 	private String databaseName;
-	private String userName;
-	private String password;
-	private String host;
-	private int port;
-
+	
 	public DBAgent() {
-		this.databaseName = "/sdcard/rootio/rootio";
+		this.databaseName = Environment.getExternalStorageDirectory().getPath()+"/rootio/rootio";
 	}
 
 	/**

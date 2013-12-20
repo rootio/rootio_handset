@@ -22,7 +22,6 @@ import com.android.internal.telephony.ITelephony;
 
 public class CallManager implements Runnable {
 	private Service parentService;
-	private boolean isListening = true;
 	private TelephonyManager telephonyManager;
 
 	public CallManager(Service parentService)
@@ -41,7 +40,7 @@ public class CallManager implements Runnable {
 	
 	public void stop()
 	{
-		this.isListening = false;
+		//this.isListening = false;
 	}
 
 	private void waitForCalls() {
@@ -86,6 +85,7 @@ public class CallManager implements Runnable {
 	/**
 	 * Declines an incoming call or ends an ongoing call.
 	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void declineCall() {
 		ITelephony telephonyService;
 		TelephonyManager telephony = (TelephonyManager) parentService
