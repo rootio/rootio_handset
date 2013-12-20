@@ -1,15 +1,12 @@
 package org.rootio.tools.media;
 
+import java.io.File;
+import java.util.HashSet;
+import java.util.Iterator;
+
 import org.rootio.tools.persistence.DBAgent;
 import org.rootio.tools.utils.LogType;
 import org.rootio.tools.utils.Utils;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
 
 import android.content.ContextWrapper;
 import android.media.MediaPlayer;
@@ -22,7 +19,7 @@ import android.net.Uri;
  * @author UTL051109
  * 
  */
-public class PlayList 	implements OnCompletionListener, Serializable {
+public class PlayList 	implements OnCompletionListener {
 
     private String tag;
 	private HashSet<Media> mediaList;
@@ -110,8 +107,7 @@ public class PlayList 	implements OnCompletionListener, Serializable {
 	/**
 	 * Loads media with the specified tag into the playlist
 	 * 
-	 * @param tag
-	 *            The tag to be matched for media to be loaded into the playlist
+	 * @param tag The tag to be matched for media to be loaded into the playlist
 	 * @return Array of Media objects matching specified tag
 	 */
 	private HashSet<Media> loadMedia(String tag) {
@@ -129,11 +125,11 @@ public class PlayList 	implements OnCompletionListener, Serializable {
 			artists.add(new Artist(data[i][5], data[i][7], data[i][8]));
 			tags.add(data[i][8]);
 			if (i == 0 || !data[i][0].equals(data[i - 1][0])) {
-				media.add(new Media(data[i][1], data[i][0], genres
-						.toArray(new Genre[genres.size()]), tags
-						.toArray(new String[tags.size()]), artists
-						.toArray(new Artist[artists.size()])));
+				media.add(new Media(data[i][1], data[i][0], genres.toArray(new Genre[genres.size()]), tags.toArray(new String[tags.size()]), artists.toArray(new Artist[artists.size()])));
 				Utils.logOnScreen("added media " + data[i][0], LogType.Radio);
+				artists.clear();
+				genres.clear();
+				tags.clear();
 			}
 		}
 
