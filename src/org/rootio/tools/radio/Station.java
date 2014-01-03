@@ -2,6 +2,8 @@ package org.rootio.tools.radio;
 
 import org.rootio.tools.persistence.DBAgent;
 
+import android.content.Context;
+
 public class Station {
 	private String location;
 	private String owner;
@@ -9,8 +11,10 @@ public class Station {
 	private String telephoneNumber;
 	private String name;
 	private StationStatus stationStatus;
+	private Context context;
 
-	public Station() {
+	public Station(Context context) {
+		this.context = context;
         this.loadStationInfo();
 	}
 
@@ -41,7 +45,7 @@ public class Station {
 	private void loadStationInfo() {
 		String tableName = "station";
 		String[] columnsToFetch = new String[] { "location", "owner", "telephonenumber", "name", "frequency" };
-		DBAgent dbAgent = new DBAgent();
+		DBAgent dbAgent = new DBAgent(this.context);
 		String[][] stationDetails = dbAgent.getData(true, tableName, columnsToFetch, null, null, null, null, null, null);
 		if (stationDetails.length > 0) {
 			this.location = stationDetails[0][0];

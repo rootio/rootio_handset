@@ -145,7 +145,7 @@ public class CallManager implements Runnable {
 		String orderBy = null;
 		String limit = null;
 		String groupBy = null;
-		DBAgent agent = new DBAgent();
+		DBAgent agent = new DBAgent((Context)this.parentService);
 		String[][] result = agent.getData(distinct, tableName, columns, filter,selectionArgs, groupBy, having, orderBy, limit);
 		return result.length > 0;
 	}
@@ -169,7 +169,7 @@ public class CallManager implements Runnable {
 		String orderBy = null;
 		String limit = null;
 		String groupBy = null;
-		DBAgent agent = new DBAgent();
+		DBAgent agent = new DBAgent((Context)this.parentService);
 		String[][] result = agent.getData(distinct, tableName, columns, filter,
 				selectionArgs, groupBy, having, orderBy, limit);
 		return result.length > 0;
@@ -192,7 +192,7 @@ public class CallManager implements Runnable {
 		data.put("telephonenumber", telephoneNumber);
 		data.put("calltypeid", calltypeid);
 		data.put("callstatusid", callstatusid);
-		DBAgent dbagent = new DBAgent();
+		DBAgent dbagent = new DBAgent((Context)this.parentService);
 		dbagent.saveData(tableName, null, data);
 
 	}

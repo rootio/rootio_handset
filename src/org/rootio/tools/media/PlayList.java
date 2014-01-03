@@ -8,6 +8,7 @@ import org.rootio.tools.persistence.DBAgent;
 import org.rootio.tools.utils.LogType;
 import org.rootio.tools.utils.Utils;
 
+import android.content.Context;
 import android.content.ContextWrapper;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
@@ -25,7 +26,7 @@ public class PlayList 	implements OnCompletionListener {
 	private HashSet<Media> mediaList;
 	private Iterator<Media> mediaIterator;
 	private MediaPlayer mediaPlayer;
-	private ContextWrapper parent;
+	private Context parent;
 
 	/**
 	 * Constructor for the playlist class
@@ -33,7 +34,7 @@ public class PlayList 	implements OnCompletionListener {
 	 * @param tag
 	 *            The tag to be used to construct the playlist
 	 */
-	public PlayList(ContextWrapper parent, String tag) {
+	public PlayList(Context parent, String tag) {
 		this.tag = tag;
 		this.parent = parent;
 
@@ -117,15 +118,15 @@ public class PlayList 	implements OnCompletionListener {
 		HashSet<String> tags = new HashSet<String>();
 		String query = "select media.title, media.filelocation,media.wiki, genre.title, genre.id, artist.name, artist.id, artist.wiki, country.title, mediatag.tag from media left outer join mediagenre on media.id = mediagenre.mediaid join genre on mediagenre.genreid = genre.id join mediaartist on media.id = mediaartist.mediaid join artist on mediaartist.artistid = artist.id join country on artist.countryid = country.id join mediatag on media.id = mediatag.mediaid where mediatag.tag = ?";
 		String[] args = new String[] { tag };
-		DBAgent dbagent = new DBAgent();
+		DBAgent dbagent = new DBAgent(this.parent);
 		String[][] data = dbagent.getData(query, args);
 		HashSet<Media> media = new HashSet<Media>();
 		for (int i = 0; i < data.length; i++) {
-			genres.add(new Genre(data[i][3]));
-			artists.add(new Artist(data[i][5], data[i][7], data[i][8]));
+			genres.add(new Genre(this.parent, data[i][3]));
+			artists.add(new Artist(this.parent,data[i][5], data[i][7], data[i][8]));
 			tags.add(data[i][8]);
 			if (i == 0 || !data[i][0].equals(data[i - 1][0])) {
-				media.add(new Media(data[i][1], data[i][0], genres.toArray(new Genre[genres.size()]), tags.toArray(new String[tags.size()]), artists.toArray(new Artist[artists.size()])));
+				media.add(new Media(this.parent, data[i][1], data[i][0], genres.toArray(new Genre[genres.size()]), tags.toArray(new String[tags.size()]), artists.toArray(new Artist[artists.size()])));
 				Utils.logOnScreen("added media " + data[i][0], LogType.Radio);
 				artists.clear();
 				genres.clear();

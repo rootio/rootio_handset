@@ -3,6 +3,7 @@ package org.rootio.tools.media;
 import org.rootio.tools.persistence.DBAgent;
 import org.rootio.tools.utils.Utils;
 import android.content.ContentValues;
+import android.content.Context;
 
 /**
  * Describes an artist associated with Media
@@ -14,6 +15,7 @@ public class Artist {
 	private String country;
 	private String wiki;
 	private Long id;
+	private Context context;
 
 	/**
 	 * Constructor for case when only name is known
@@ -21,8 +23,8 @@ public class Artist {
 	 * @param name
 	 *            The name of the artist
 	 */
-	public Artist(String name) {
-		this(name, null, null);
+	public Artist(Context context, String name) {
+		this(context, name, null, null);
 	}
 
 	/**
@@ -34,8 +36,8 @@ public class Artist {
 	 * @param country
 	 *            The country of the artist
 	 */
-	public Artist(String name, String country) {
-		this(name, country, null);
+	public Artist(Context context, String name, String country) {
+		this(context, name, country, null);
 	}
 
 	/**
@@ -48,7 +50,7 @@ public class Artist {
 	 * @param wiki
 	 *            The URL to a wiki with information for this artist
 	 */
-	public Artist(String name, String country, String wiki) {
+	public Artist(Context context, String name, String country, String wiki) {
 		this.name = name;
 		this.country = country;
 		this.wiki = wiki;
@@ -105,7 +107,7 @@ public class Artist {
 		data.put("title", this.name);
 		data.put("wiki", this.wiki);
 		data.put("countryid", Utils.getCountryId(this.country));
-		DBAgent dbagent = new DBAgent();
+		DBAgent dbagent = new DBAgent(this.context);
 		return dbagent.saveData(tableName, null, data);
 	}
 }

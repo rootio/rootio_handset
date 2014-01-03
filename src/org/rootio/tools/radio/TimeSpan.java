@@ -6,6 +6,7 @@ import org.rootio.tools.persistence.DBAgent;
 import org.rootio.tools.utils.Utils;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.text.format.DateFormat;
 
 public class TimeSpan  {
@@ -16,8 +17,9 @@ public class TimeSpan  {
 	private EventTime[] eventTimes;
 	private boolean isRepeating;
 	private Long id;
+	private Context context;
 
-	public TimeSpan(Date startDate, Date endDate, EventTime[] eventTimes,
+	public TimeSpan(Context context, Date startDate, Date endDate, EventTime[] eventTimes,
 			boolean isRepeating) {
 		this.startDate = startDate;
 		this.endDate = endDate;
@@ -71,7 +73,7 @@ public class TimeSpan  {
 		data.put("enddate",
 				(String) DateFormat.format("yyyyMMdd", this.endDate));
 		data.put("isrepeating", this.isRepeating);
-		DBAgent agent = new DBAgent();
+		DBAgent agent = new DBAgent(this.context);
 		return agent.saveData(tableName, null, data);
 	}
 
@@ -81,7 +83,7 @@ public class TimeSpan  {
 	 */
 	private void persistTimeSpanEventTimes() {
 		String tableName = "timespaneventtimes";
-		DBAgent agent = new DBAgent();
+		DBAgent agent = new DBAgent(this.context);
 		for (EventTime eventTime : this.eventTimes) {
 			ContentValues data = new ContentValues();
 			data.put("timespanid", this.id);

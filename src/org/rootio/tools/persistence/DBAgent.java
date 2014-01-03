@@ -1,6 +1,16 @@
 package org.rootio.tools.persistence;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+
+import org.rootio.tools.utils.Utils;
+
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
@@ -8,9 +18,19 @@ import android.os.Environment;
 
 public class DBAgent {
 	private String databaseName;
-	
-	public DBAgent() {
-		this.databaseName = Environment.getExternalStorageDirectory().getPath()+"/rootio/rootio";
+	private Context context;
+
+	public DBAgent(Context context) {
+		this.context = context;
+		this.databaseName = this.context.getFilesDir()+"/rootio";
+		if (!this.databaseFileExists()) {
+			this.createDatabaseFile();
+		}
+		else
+		{
+			Utils.toastOnScreen("it exists");
+		}
+		
 	}
 
 	/**
@@ -28,51 +48,87 @@ public class DBAgent {
 			String groupBy, String having, String orderBy, String limit) {
 		SQLiteDatabase database = this.getDBConnection(this.databaseName, null,
 				SQLiteDatabase.OPEN_READONLY);
-		try
-		{
-			Cursor cursor = database.query(distinct, tableName, columns, filter,
-				selectionArgs, groupBy, having, orderBy, limit);
-		String[][] data = new String[cursor.getCount()][cursor.getColumnCount()];
-		for (int i = 0; i < cursor.getCount(); i++) {
-			cursor.moveToNext();
-			for (int j = 0; j < cursor.getColumnCount(); j++) {
-				data[i][j] = cursor.getString(j);
+		try {
+			Cursor cursor = database.query(distinct, tableName, columns,
+					filter, selectionArgs, groupBy, having, orderBy, limit);
+			String[][] data = new String[cursor.getCount()][cursor
+					.getColumnCount()];
+			for (int i = 0; i < cursor.getCount(); i++) {
+				cursor.moveToNext();
+				for (int j = 0; j < cursor.getColumnCount(); j++) {
+					data[i][j] = cursor.getString(j);
+				}
+
 			}
-			
+			return data;
+		} catch (Exception ex) {
+			return null;
+		} finally {
+			database.close();
 		}
-		return data;
-		}
-		catch(Exception ex)
-		{
-		 return null;
+	}
+
+	private boolean databaseFileExists() {
+		File databaseFile = new File(this.databaseName);
+		return databaseFile.exists();
+	}
+
+	private void createDatabaseFile() {
+		InputStream instr = null;
+		FileOutputStream foutstr = null;
+		File destinationFile = null;
+		try {
+			instr = this.context.getAssets().open("rootio");
+
+			byte[] buffer = new byte[1024000]; // 1 MB
+			instr.read(buffer);
+			destinationFile = new File(this.databaseName);
+			if (destinationFile.createNewFile()) {
+				foutstr = new FileOutputStream(destinationFile);
+				foutstr.write(buffer);
+			}
+			else
+			{
+				Utils.toastOnScreen("We cant create file");
+			}
+		} catch (IOException e) {
+			Utils.toastOnScreen("Error of IO "+e.getMessage());
 		}
 		finally
 		{
-			database.close();
+			try {
+				instr.close();
+			} catch (Exception ex) {
+				// rien a faire
+			}
+			
+			try {
+				foutstr.close();
+			} catch (Exception ex) {
+				// rien a faire
+			}
 		}
+
 	}
 
 	public String[][] getData(String rawQuery, String[] args) {
 		SQLiteDatabase database = this.getDBConnection(this.databaseName, null,
 				SQLiteDatabase.OPEN_READONLY);
-		
-		try
-		{Cursor cursor = database.rawQuery(rawQuery, args);
-		String[][] data = new String[cursor.getCount()][cursor.getColumnCount()];
-		for (int i = 0; i < cursor.getCount(); i++) {
-			cursor.moveToNext();
-			for (int j = 0; j < cursor.getColumnCount(); j++) {
-				data[i][j] = cursor.getString(j);
+
+		try {
+			Cursor cursor = database.rawQuery(rawQuery, args);
+			String[][] data = new String[cursor.getCount()][cursor
+					.getColumnCount()];
+			for (int i = 0; i < cursor.getCount(); i++) {
+				cursor.moveToNext();
+				for (int j = 0; j < cursor.getColumnCount(); j++) {
+					data[i][j] = cursor.getString(j);
+				}
 			}
-		}
-		return data;
-		}
-		catch(Exception ex)
-		{
+			return data;
+		} catch (Exception ex) {
 			return null;
-		}
-		finally
-		{
+		} finally {
 			database.close();
 		}
 	}
@@ -89,53 +145,41 @@ public class DBAgent {
 	 *            specified table
 	 * @return The row id of the inserted row
 	 */
-	public long saveData(String tableName, String nullColumnHack,ContentValues data) {
-		SQLiteDatabase database = this.getDBConnection(this.databaseName, null,	SQLiteDatabase.OPEN_READWRITE);
-		try
-		{
-		 
-		return database.insert(tableName, nullColumnHack, data);
-		}
-		catch(Exception ex)
-		{
+	public long saveData(String tableName, String nullColumnHack,
+			ContentValues data) {
+		SQLiteDatabase database = this.getDBConnection(this.databaseName, null,
+				SQLiteDatabase.OPEN_READWRITE);
+		try {
+
+			return database.insert(tableName, nullColumnHack, data);
+		} catch (Exception ex) {
 			return 0;
-		}
-		finally
-		{
+		} finally {
 			database.close();
 		}
 	}
-	
-	public int deleteRecords(String tableName, String whereClause, String[] args)
-	{
-		SQLiteDatabase database = this.getDBConnection(this.databaseName, null,	SQLiteDatabase.OPEN_READWRITE);
-		try
-		{
+
+	public int deleteRecords(String tableName, String whereClause, String[] args) {
+		SQLiteDatabase database = this.getDBConnection(this.databaseName, null,
+				SQLiteDatabase.OPEN_READWRITE);
+		try {
 			return database.delete(tableName, whereClause, args);
-		}
-		catch(Exception ex)
-		{
+		} catch (Exception ex) {
 			return 0;
-		}
-		finally
-		{
+		} finally {
 			database.close();
 		}
 	}
-	
-	public int updateRecords(String tableName, ContentValues data, String whereClause, String[] whereArgs)
-	{
-		SQLiteDatabase database = this.getDBConnection(this.databaseName, null,	SQLiteDatabase.OPEN_READWRITE);
-		try
-		{
+
+	public int updateRecords(String tableName, ContentValues data,
+			String whereClause, String[] whereArgs) {
+		SQLiteDatabase database = this.getDBConnection(this.databaseName, null,
+				SQLiteDatabase.OPEN_READWRITE);
+		try {
 			return database.update(tableName, data, whereClause, whereArgs);
-		}
-		catch(Exception ex)
-		{
+		} catch (Exception ex) {
 			return 0;
-		}
-		finally
-		{
+		} finally {
 			database.close();
 		}
 	}

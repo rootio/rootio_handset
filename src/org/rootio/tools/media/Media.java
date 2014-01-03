@@ -4,6 +4,7 @@ import org.rootio.tools.persistence.DBAgent;
 import org.rootio.tools.utils.Utils;
 
 import android.content.ContentValues;
+import android.content.Context;
 
 public class Media {
 	private Long id;
@@ -15,9 +16,10 @@ public class Media {
 	private Genre[] genres;
 	private String[] tags;
 	private Artist[] artists;
+	private Context context;
 
-	public Media(String fileLocation, String title, Genre[] genres,
-			String[] tags, Artist[] artists) {
+	public Media(Context context, String fileLocation, String title, Genre[] genres, String[] tags, Artist[] artists) {
+		this.context = context;
 		this.fileLocation = fileLocation;
 		this.title = title;
 		this.genres = genres;
@@ -105,7 +107,7 @@ public class Media {
 		data.put("title", this.title);
 		data.put("wiki", this.wiki);
 		data.put("filelocation", this.fileLocation);
-		DBAgent dbagent = new DBAgent();
+		DBAgent dbagent = new DBAgent(this.context);
 		return dbagent.saveData(tableName, null, data);
 	}
 
@@ -113,7 +115,7 @@ public class Media {
 	 * save the artists associated with this Media
 	 */
 	private void persistMediaArtists() {
-		DBAgent dbagent = new DBAgent();
+		DBAgent dbagent = new DBAgent(this.context);
 		for (Artist artist : this.artists) {
 			ContentValues data = new ContentValues();
 			String tableName = "mediaartist";
@@ -127,7 +129,7 @@ public class Media {
 	 * save the genres to which this media belongs
 	 */
 	private void persistMediaGenres() {
-		DBAgent dbagent = new DBAgent();
+		DBAgent dbagent = new DBAgent(this.context);
 		for (Genre genre : this.genres) {
 			ContentValues data = new ContentValues();
 			String tableName = "mediagenre";

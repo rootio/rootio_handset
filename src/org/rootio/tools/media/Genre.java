@@ -3,6 +3,7 @@ package org.rootio.tools.media;
 import org.rootio.tools.persistence.DBAgent;
 import org.rootio.tools.utils.Utils;
 import android.content.ContentValues;
+import android.content.Context;
 
 /**
  * Describes genre associated with Media
@@ -13,6 +14,7 @@ import android.content.ContentValues;
 public class Genre {
 	private String name;
 	private Long id;
+	private Context context;
 
 	/**
 	 * Constructor for the genre class
@@ -20,7 +22,8 @@ public class Genre {
 	 * @param name
 	 *            The name of the genre
 	 */
-	public Genre(String name) {
+	public Genre(Context context, String name) {
+		this.context = context;
 		this.name = name;
 		this.id = Utils.getGenreId(name);
 		if (this.id == null) {
@@ -56,7 +59,7 @@ public class Genre {
 		String tableName = "artist";
 		ContentValues data = new ContentValues();
 		data.put("title", this.name);
-		DBAgent dbagent = new DBAgent();
+		DBAgent dbagent = new DBAgent(this.context);
 		return dbagent.saveData(tableName, null, data);
 	}
 }

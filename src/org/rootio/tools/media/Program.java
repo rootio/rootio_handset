@@ -7,6 +7,7 @@ import org.rootio.tools.utils.Utils;
 
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.ContextWrapper;
 
 public class Program implements Runnable {
@@ -17,8 +18,10 @@ public class Program implements Runnable {
 	private ProgramType programType;
 	private Long id;
 	BroadcastReceiver broadcastReceiver;
+	private Context parent;
 
-	public Program(ContextWrapper parent, String title, TimeSpan timeSpan) {
+	public Program(Context parent, String title, TimeSpan timeSpan) {
+		this.parent = parent;
 		this.programType = ProgramType.Call;
 		this.title = title;
 		this.timeSpan = timeSpan;
@@ -28,10 +31,11 @@ public class Program implements Runnable {
 		}
 	}
 
-	public Program(ContextWrapper parent, String title, TimeSpan timeSpan, String tag) {
+	public Program(Context parent, String title, TimeSpan timeSpan, String tag) {
+		this.parent = parent;
 		this.programType = ProgramType.Media;
 		this.title = title;
-		this.playList = new PlayList(parent, tag);
+		this.playList = new PlayList(this.parent, tag);
 		this.timeSpan = timeSpan;
 		this.id = Utils.getProgramId(title, this.programType.ordinal());
 		if (this.id == null) {
@@ -114,7 +118,7 @@ public class Program implements Runnable {
 		data.put("title", this.title);
 		data.put("programtypeid", this.programType.ordinal());
 		data.put("tag", this.playList.getTag());
-		DBAgent agent = new DBAgent();
+		DBAgent agent = new DBAgent(this.parent);
 		return agent.saveData(tableName, null, data);
 	}
 }
