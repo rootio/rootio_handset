@@ -55,7 +55,6 @@ public class PlayList 	implements OnCompletionListener {
 		try {
 			if (mediaIterator.hasNext()) {
 				Media media = mediaIterator.next();
-				Utils.toastOnScreen("playing "+media.getTitle());
 				mediaPlayer = MediaPlayer.create(this.parent, Uri.fromFile(new File(media.getFileLocation())));
 				if(mediaPlayer != null)
 				{
@@ -83,9 +82,19 @@ public class PlayList 	implements OnCompletionListener {
 	 * Stops the media player and disposes it.
 	 */
 	public void stop() {
+		if(mediaPlayer != null)
+		{
+			try
+			{
 		mediaPlayer.stop();
 		mediaPlayer.release();
 		mediaPlayer = null;
+			}
+			catch(Exception ex)
+			{
+				//medi player not in stoppable state
+			}
+		}
 	}
 
 	/**
@@ -116,7 +125,7 @@ public class PlayList 	implements OnCompletionListener {
 		;
 		HashSet<Artist> artists = new HashSet<Artist>();
 		HashSet<String> tags = new HashSet<String>();
-		String query = "select media.title, media.filelocation,media.wiki, genre.title, genre.id, artist.name, artist.id, artist.wiki, country.title, mediatag.tag from media left outer join mediagenre on media.id = mediagenre.mediaid join genre on mediagenre.genreid = genre.id join mediaartist on media.id = mediaartist.mediaid join artist on mediaartist.artistid = artist.id join country on artist.countryid = country.id join mediatag on media.id = mediatag.mediaid where mediatag.tag = ?";
+		String query = "select media.title, media.filelocation,media.wiki, genre.title, genre.id, artist.name, artist.id, artist.wiki, country.title, mediatag.tag from media left outer join mediagenre on media.id = mediagenre.mediaid left outer join genre on mediagenre.genreid = genre.id join mediaartist on media.id = mediaartist.mediaid join artist on mediaartist.artistid = artist.id join country on artist.countryid = country.id join mediatag on media.id = mediatag.mediaid where mediatag.tag = ?";
 		String[] args = new String[] { tag };
 		DBAgent dbagent = new DBAgent(this.parent);
 		String[][] data = dbagent.getData(query, args);
@@ -127,7 +136,6 @@ public class PlayList 	implements OnCompletionListener {
 			tags.add(data[i][8]);
 			if (i == 0 || !data[i][0].equals(data[i - 1][0])) {
 				media.add(new Media(this.parent, data[i][1], data[i][0], genres.toArray(new Genre[genres.size()]), tags.toArray(new String[tags.size()]), artists.toArray(new Artist[artists.size()])));
-				Utils.logOnScreen("added media " + data[i][0], LogType.Radio);
 				artists.clear();
 				genres.clear();
 				tags.clear();

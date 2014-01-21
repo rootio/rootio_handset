@@ -22,15 +22,10 @@ public class DBAgent {
 
 	public DBAgent(Context context) {
 		this.context = context;
-		this.databaseName = this.context.getFilesDir()+"/rootio";
+		this.databaseName = this.context.getFilesDir()+"/rootio.sqlite";
 		if (!this.databaseFileExists()) {
 			this.createDatabaseFile();
 		}
-		else
-		{
-			Utils.toastOnScreen("it exists");
-		}
-		
 	}
 
 	/**
@@ -78,7 +73,7 @@ public class DBAgent {
 		FileOutputStream foutstr = null;
 		File destinationFile = null;
 		try {
-			instr = this.context.getAssets().open("rootio");
+			instr = this.context.getAssets().open("rootio.sqlite");
 
 			byte[] buffer = new byte[1024000]; // 1 MB
 			instr.read(buffer);

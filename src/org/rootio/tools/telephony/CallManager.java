@@ -46,12 +46,6 @@ public class CallManager implements Runnable {
 	private void waitForCalls() {
 		PhoneCallListener listener = new PhoneCallListener();
 		telephonyManager.listen(listener, PhoneStateListener.LISTEN_CALL_STATE);
-		while(!Thread.interrupted())
-		{
-			//really just wait for an interrupt
-		}
-		telephonyManager = null;
-		return;
 	}
 
 	/**
@@ -77,7 +71,7 @@ public class CallManager implements Runnable {
              Utils.logOnScreen("Sent broadcast for headset hook", LogType.Call);
          }
          catch (Exception e) {
-              //
+              System.err.println(e.getMessage());
          }
          Utils.logOnScreen("call answered", LogType.Call);  
 	}
@@ -139,7 +133,7 @@ public class CallManager implements Runnable {
 		boolean distinct = true;
 		String tableName = "whitelist";
 		String[] columns = new String[] { "telephonenumber" };
-		String filter = "where telephonenumber = ?";
+		String filter = "telephonenumber = ?";
 		String[] selectionArgs = new String[] { phoneNumber };
 		String having = null;
 		String orderBy = null;
@@ -202,7 +196,7 @@ public class CallManager implements Runnable {
 	 * 
 	 * @author UTL051109
 	 */
-	class PhoneCallListener extends PhoneStateListener {
+	public class PhoneCallListener extends PhoneStateListener {
 		@Override
 		public void onCallStateChanged(int state, String incomingNumber) {
 
