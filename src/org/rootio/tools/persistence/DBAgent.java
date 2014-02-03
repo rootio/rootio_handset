@@ -57,6 +57,7 @@ public class DBAgent {
 			}
 			return data;
 		} catch (Exception ex) {
+			System.err.println(ex);
 			return null;
 		} finally {
 			database.close();
