@@ -7,8 +7,6 @@ public class StationStatus {
 	private HashMap<String, Float> gpsLocation;
 	private int storageStatus;
 	private int memoryStatus;
-	private int cpuUtilization;
-
 	public StationStatus() {
 
 	}

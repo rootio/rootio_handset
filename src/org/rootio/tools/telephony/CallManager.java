@@ -4,14 +4,11 @@ import java.lang.reflect.Method;
 
 import org.rootio.radioClient.R;
 import org.rootio.tools.persistence.DBAgent;
-import org.rootio.tools.utils.LogType;
 import org.rootio.tools.utils.Utils;
 
-import android.app.Activity;
 import android.app.Service;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.Intent;
 import android.os.Looper;
 import android.telephony.PhoneStateListener;
@@ -58,7 +55,7 @@ public class CallManager implements Runnable {
              this.parentService.sendOrderedBroadcast(buttonUp, "android.permission.CALL_PRIVILEGED");
          }
          catch (Exception e) {
-             Utils.logOnScreen("Error sending broadcast", LogType.Call);
+             //Log.e(R.string.app_name,e.getMessage());
          }
 
          Intent headSetUnPluggedintent = new Intent(Intent.ACTION_HEADSET_PLUG);
@@ -68,13 +65,11 @@ public class CallManager implements Runnable {
          // TODO: Should we require a permission?
          try {
         	 this.parentService.sendOrderedBroadcast(headSetUnPluggedintent, null);
-             Utils.logOnScreen("Sent broadcast for headset hook", LogType.Call);
-         }
+            }
          catch (Exception e) {
               System.err.println(e.getMessage());
          }
-         Utils.logOnScreen("call answered", LogType.Call);  
-	}
+        }
 
 	/**
 	 * Declines an incoming call or ends an ongoing call.

@@ -1,46 +1,90 @@
 package org.rootio.tools.media;
 
+import java.util.ArrayList;
+import java.util.Date;
+
 import org.rootio.tools.persistence.DBAgent;
-import org.rootio.tools.radio.TimeSpan;
-import org.rootio.tools.utils.LogType;
+import org.rootio.tools.radio.EventTime;
 import org.rootio.tools.utils.Utils;
 
-import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.ContextWrapper;
 
 public class Program implements Runnable {
 
 	private String title;
 	private PlayList playList;
-	private TimeSpan timeSpan;
+	//private TimeSpan timeSpan;
 	private ProgramType programType;
-	private Long id;
-	BroadcastReceiver broadcastReceiver;
+	private String tag;
+	private ArrayList<EventTime> eventTimes;
+	private int scheduledIndex;
+	private Long id, cloudId;
 	private Context parent;
 
-	public Program(Context parent, String title, TimeSpan timeSpan) {
+	public Program(Context parent, long cloudId, String title, int programTypeId) {
 		this.parent = parent;
 		this.programType = ProgramType.Call;
+		this.cloudId = cloudId;
 		this.title = title;
-		this.timeSpan = timeSpan;
-		this.id = Utils.getProgramId(title, this.programType.ordinal());
+		this.id = Utils.getProgramId(this.parent, title, this.programType.ordinal());
 		if (this.id == null) {
 			this.id = this.persist();
+		}
+		this.setTag();
+		this.loadEventTimes(this.id);
+		this.createPlayList();
+	}
+	
+	
+
+
+	public Program(Context parent, long cloudId, String title, int programTypeId, String tag) {
+		this.parent = parent;
+		this.tag = tag;
+		this.setProgramType(programTypeId);
+		this.cloudId = cloudId;
+		this.title = title;
+		this.id = Utils.getProgramId(this.parent, title, this.programType.ordinal());
+		if (this.id == null) {
+			this.id = this.persist();
+		}
+		this.createPlayList();
+	}
+	
+	private void setTag()
+	{
+		if(this.programType == ProgramType.Music)
+		{
+			this.tag = this.getTag();
+		}
+		
+		else if (this.programType == ProgramType.Media)
+		{
+			EpisodeManager episodeManager = new EpisodeManager(this.parent, this);
+			this.tag = episodeManager.getEpisodeTag();
 		}
 	}
-
-	public Program(Context parent, String title, TimeSpan timeSpan, String tag) {
-		this.parent = parent;
-		this.programType = ProgramType.Media;
-		this.title = title;
-		this.playList = new PlayList(this.parent, tag);
-		this.timeSpan = timeSpan;
-		this.id = Utils.getProgramId(title, this.programType.ordinal());
-		if (this.id == null) {
-			this.id = this.persist();
+	
+	private void setProgramType(int programTypeId)
+	{
+		switch(programTypeId)
+		{
+		case 1:
+			this.programType = ProgramType.Media;
+			break;
+		case 2: 
+			this.programType = ProgramType.Call;
+			break;
+		case 3:
+			this.programType = ProgramType.Music;
+			break;
 		}
+	}
+	
+	private void createPlayList()
+	{
+			this.playList = new PlayList(this.parent, this.tag);
 	}
 
 	/**
@@ -69,19 +113,27 @@ public class Program implements Runnable {
 	public String getTitle() {
 		return this.title;
 	}
+	
+	public long getId()
+	{
+		return this.id;
+	}
 
 	/**
 	 * 
 	 */
 	public void run() {
 		if (this.programType == ProgramType.Call) {
-			Utils.logOnScreen("Waiting for call in...", LogType.Radio);
-		} else {
-			Utils.logOnScreen("Preparing playlist for the show " + this.title,
-					LogType.Radio);
+			//sit and wait for incoming phone calls. The telephony service will handle the calls
+			} else {
 			playList.load();
-			playList.play();
+			new JingleManager(this.parent, this).playJingle();
 		}
+	}
+	
+	void onJinglePlayFinish()
+	{
+		playList.play();
 	}
 	
 	public void pause()
@@ -97,16 +149,59 @@ public class Program implements Runnable {
 	public void stop() {
 		playList.stop();
 	}
+	
+	
 
 	/**
-	 * Gets the timespan associated with this show
+	 * Return the EventTime objects associated with this program
 	 * 
-	 * @return The TimeSpan object associated with this show.
+	 * @return Array of EventTime objects
 	 */
-	public TimeSpan getTimeSpan() {
-		return this.timeSpan;
+	public EventTime[] getEventTimes() {
+		return this.eventTimes.toArray(new EventTime[this.eventTimes.size()]);
 	}
-
+	
+	public int getScheduledIndex()
+	{
+		return this.scheduledIndex;
+	}
+	
+	public void setScheduledIndex(int scheduledIndex)
+	{
+		this.scheduledIndex = scheduledIndex;
+	}
+	
+	
+	private String getTag()
+	{
+		String tableName = "program";
+		String[] columns = new String[]{"tag"};
+		String whereClause = "id = ?";
+		String[] whereArgs = new String[]{String.valueOf(this.id)};
+		DBAgent dbAgent = new DBAgent(this.parent);
+		String[][] results = dbAgent.getData(true, tableName, columns, whereClause, whereArgs, null, null, null, null);
+		return results.length > 0 ? results[0][0] : null;
+	}
+	
+	private void loadEventTimes(long programId)
+	{
+		this.eventTimes = new ArrayList<EventTime>();
+	    String tableName = "programeventtime";
+	    String[] columns = new String[]{"programid", "scheduledate", "duration", "isrepeat"};
+	    String whereClause = "programid = ?" ;
+	    String[] whereArgs = new String[]{String.valueOf(programId)};
+	    DBAgent dbAgent = new DBAgent(this.parent);
+	    String[][] results = dbAgent.getData(true, tableName, columns, whereClause, whereArgs, null, null, null, null);
+	    for(String[] result : results)
+	    {
+	    	long eventTimeProgramId = Utils.parseLongFromString(result[0]);
+	    	Date eventTimeScheduleDate = Utils.getDateFromString(result[1],"yyyy-MM-dd HH:mm:ss");
+	    	int duration = Utils.parseIntFromString(result[2]);
+	    	boolean isRepeat = result[3].equals("1");
+	    	this.eventTimes.add(new EventTime(this.parent, eventTimeProgramId, eventTimeScheduleDate, duration, isRepeat ));
+	    }
+	}
+	
 	/**
 	 * Save this Program to the Rootio Database in case it is not yet persisted
 	 * 

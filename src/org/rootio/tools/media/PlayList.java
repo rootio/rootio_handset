@@ -5,11 +5,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 import org.rootio.tools.persistence.DBAgent;
-import org.rootio.tools.utils.LogType;
 import org.rootio.tools.utils.Utils;
 
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.net.Uri;
@@ -20,9 +18,9 @@ import android.net.Uri;
  * @author UTL051109
  * 
  */
-public class PlayList 	implements OnCompletionListener {
+public class PlayList implements OnCompletionListener {
 
-    private String tag;
+	private String tag;
 	private HashSet<Media> mediaList;
 	private Iterator<Media> mediaIterator;
 	private MediaPlayer mediaPlayer;
@@ -55,14 +53,12 @@ public class PlayList 	implements OnCompletionListener {
 		try {
 			if (mediaIterator.hasNext()) {
 				Media media = mediaIterator.next();
-				mediaPlayer = MediaPlayer.create(this.parent, Uri.fromFile(new File(media.getFileLocation())));
-				if(mediaPlayer != null)
-				{
-				mediaPlayer.setOnCompletionListener(this);
-				mediaPlayer.start();
-				}
-				else
-				{
+				mediaPlayer = MediaPlayer.create(this.parent,
+						Uri.fromFile(new File(media.getFileLocation())));
+				if (mediaPlayer != null) {
+					mediaPlayer.setOnCompletionListener(this);
+					mediaPlayer.start();
+				} else {
 					this.play();
 				}
 			}
@@ -82,17 +78,13 @@ public class PlayList 	implements OnCompletionListener {
 	 * Stops the media player and disposes it.
 	 */
 	public void stop() {
-		if(mediaPlayer != null)
-		{
-			try
-			{
-		mediaPlayer.stop();
-		mediaPlayer.release();
-		mediaPlayer = null;
-			}
-			catch(Exception ex)
-			{
-				//medi player not in stoppable state
+		if (mediaPlayer != null) {
+			try {
+				mediaPlayer.stop();
+				mediaPlayer.release();
+				mediaPlayer = null;
+			} catch (Exception ex) {
+				// medi player not in stoppable state
 			}
 		}
 	}
@@ -117,7 +109,8 @@ public class PlayList 	implements OnCompletionListener {
 	/**
 	 * Loads media with the specified tag into the playlist
 	 * 
-	 * @param tag The tag to be matched for media to be loaded into the playlist
+	 * @param tag
+	 *            The tag to be matched for media to be loaded into the playlist
 	 * @return Array of Media objects matching specified tag
 	 */
 	private HashSet<Media> loadMedia(String tag) {
@@ -132,10 +125,14 @@ public class PlayList 	implements OnCompletionListener {
 		HashSet<Media> media = new HashSet<Media>();
 		for (int i = 0; i < data.length; i++) {
 			genres.add(new Genre(this.parent, data[i][3]));
-			artists.add(new Artist(this.parent,data[i][5], data[i][7], data[i][8]));
+			artists.add(new Artist(this.parent, data[i][5], data[i][7],
+					data[i][8]));
 			tags.add(data[i][8]);
 			if (i == 0 || !data[i][0].equals(data[i - 1][0])) {
-				media.add(new Media(this.parent, data[i][1], data[i][0], genres.toArray(new Genre[genres.size()]), tags.toArray(new String[tags.size()]), artists.toArray(new Artist[artists.size()])));
+				media.add(new Media(this.parent, data[i][1], data[i][0], genres
+						.toArray(new Genre[genres.size()]), tags
+						.toArray(new String[tags.size()]), artists
+						.toArray(new Artist[artists.size()])));
 				artists.clear();
 				genres.clear();
 				tags.clear();
@@ -167,7 +164,7 @@ public class PlayList 	implements OnCompletionListener {
 	public void onCompletion(MediaPlayer mediaPlayer) {
 		mediaPlayer.release();
 		this.play();
-		
+
 	}
 
 }
