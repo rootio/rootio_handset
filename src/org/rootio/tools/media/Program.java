@@ -24,15 +24,15 @@ public class Program implements Runnable {
 
 	public Program(Context parent, long cloudId, String title, int programTypeId) {
 		this.parent = parent;
-		this.programType = ProgramType.Call;
+		this.setProgramType(programTypeId);
 		this.cloudId = cloudId;
 		this.title = title;
 		this.id = Utils.getProgramId(this.parent, title, this.programType.ordinal());
 		if (this.id == null) {
 			this.id = this.persist();
 		}
-		this.setTag();
 		this.loadEventTimes(this.id);
+		this.setTag();
 		this.createPlayList();
 	}
 	
@@ -49,6 +49,7 @@ public class Program implements Runnable {
 		if (this.id == null) {
 			this.id = this.persist();
 		}
+		this.loadEventTimes(this.id);
 		this.createPlayList();
 	}
 	
@@ -79,12 +80,15 @@ public class Program implements Runnable {
 		case 3:
 			this.programType = ProgramType.Music;
 			break;
+		case 4:
+			this.programType = ProgramType.Stream;
+			break;
 		}
 	}
 	
 	private void createPlayList()
 	{
-			this.playList = new PlayList(this.parent, this.tag);
+			this.playList = new PlayList(this.parent, this.tag, this.programType);
 	}
 
 	/**
@@ -125,11 +129,16 @@ public class Program implements Runnable {
 	public void run() {
 		if (this.programType == ProgramType.Call) {
 			//sit and wait for incoming phone calls. The telephony service will handle the calls
-			} else {
+			} 
+		else if(this.programType == ProgramType.Stream)
+			{
+			  
+			}
+			else {
+			}
 			playList.load();
 			new JingleManager(this.parent, this).playJingle();
 		}
-	}
 	
 	void onJinglePlayFinish()
 	{
@@ -186,7 +195,7 @@ public class Program implements Runnable {
 	private void loadEventTimes(long programId)
 	{
 		this.eventTimes = new ArrayList<EventTime>();
-	    String tableName = "programeventtime";
+	    String tableName = "eventtime";
 	    String[] columns = new String[]{"programid", "scheduledate", "duration", "isrepeat"};
 	    String whereClause = "programid = ?" ;
 	    String[] whereArgs = new String[]{String.valueOf(programId)};
@@ -197,7 +206,7 @@ public class Program implements Runnable {
 	    	long eventTimeProgramId = Utils.parseLongFromString(result[0]);
 	    	Date eventTimeScheduleDate = Utils.getDateFromString(result[1],"yyyy-MM-dd HH:mm:ss");
 	    	int duration = Utils.parseIntFromString(result[2]);
-	    	boolean isRepeat = result[3].equals("1");
+	    	boolean isRepeat = false; //result[3].equals("1");
 	    	this.eventTimes.add(new EventTime(this.parent, eventTimeProgramId, eventTimeScheduleDate, duration, isRepeat ));
 	    }
 	}

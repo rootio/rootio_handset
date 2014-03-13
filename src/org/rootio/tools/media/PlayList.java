@@ -20,8 +20,10 @@ import android.net.Uri;
  */
 public class PlayList implements OnCompletionListener {
 
+	private ProgramType programType;
 	private String tag;
 	private HashSet<Media> mediaList;
+	private Uri streamUrl;
 	private Iterator<Media> mediaIterator;
 	private MediaPlayer mediaPlayer;
 	private Context parent;
@@ -32,25 +34,38 @@ public class PlayList implements OnCompletionListener {
 	 * @param tag
 	 *            The tag to be used to construct the playlist
 	 */
-	public PlayList(Context parent, String tag) {
+	public PlayList(Context parent, String tag, ProgramType programType) {
 		this.tag = tag;
 		this.parent = parent;
-
+		this.programType = programType;
 	}
 
 	/**
 	 * Load media for this playlist from the database
 	 */
 	public void load() {
+		Utils.toastOnScreen("program type is "+ this.programType);
+		if(this.programType == ProgramType.Media)
+		{
 		mediaList = loadMedia(this.tag);
 		mediaIterator = mediaList.iterator();
+		}
+		if(this.programType == ProgramType.Stream)
+		{
+			String url  = this.getStreamingUrl();
+			this.streamUrl = Uri.parse(url);
+			Utils.toastOnScreen("tuning in to "+this.streamUrl);
+		}
 	}
 
 	/**
 	 * Play the media loaded in this playlist
 	 */
 	public void play() {
+		
 		try {
+			if(this.programType == ProgramType.Media)
+			{
 			if (mediaIterator.hasNext()) {
 				Media media = mediaIterator.next();
 				mediaPlayer = MediaPlayer.create(this.parent,
@@ -62,6 +77,12 @@ public class PlayList implements OnCompletionListener {
 					this.play();
 				}
 			}
+			}
+			else if(this.programType == ProgramType.Stream)
+			{
+				mediaPlayer = MediaPlayer.create(this.parent, this.streamUrl);
+				mediaPlayer.start();
+			}
 
 		} catch (IllegalStateException e) {
 			// TODO Auto-generated catch block
@@ -69,7 +90,7 @@ public class PlayList implements OnCompletionListener {
 			e.printStackTrace();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			Utils.toastOnScreen("Exception Occured");
+			Utils.toastOnScreen(e.getMessage());
 			e.printStackTrace();
 		}
 	}
@@ -140,6 +161,17 @@ public class PlayList implements OnCompletionListener {
 		}
 
 		return media;
+	}
+	
+	private String getStreamingUrl()
+	{
+		String tableName = "streamingConfiguration";
+		String[] columns = new String[]{"ipaddress", "port", "path"	};
+		String orderBy = "id desc";
+		String limit = "1";
+		DBAgent dbAgent = new DBAgent(this.parent);
+		String result[][] = dbAgent.getData(true, tableName, columns, null, null, null, null, orderBy, limit);
+		return result.length > 0? String.format("http://%s:%s/%s", result[0][0], result[0][1], result[0][2]): null;
 	}
 
 	/**
