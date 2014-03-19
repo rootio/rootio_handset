@@ -44,17 +44,13 @@ public class PlayList implements OnCompletionListener {
 	 * Load media for this playlist from the database
 	 */
 	public void load() {
-		Utils.toastOnScreen("program type is "+ this.programType);
-		if(this.programType == ProgramType.Media)
-		{
-		mediaList = loadMedia(this.tag);
-		mediaIterator = mediaList.iterator();
+		if (this.programType == ProgramType.Media) {
+			mediaList = loadMedia(this.tag);
+			mediaIterator = mediaList.iterator();
 		}
-		if(this.programType == ProgramType.Stream)
-		{
-			String url  = this.getStreamingUrl();
+		if (this.programType == ProgramType.Stream) {
+			String url = this.getStreamingUrl();
 			this.streamUrl = Uri.parse(url);
-			Utils.toastOnScreen("tuning in to "+this.streamUrl);
 		}
 	}
 
@@ -62,24 +58,23 @@ public class PlayList implements OnCompletionListener {
 	 * Play the media loaded in this playlist
 	 */
 	public void play() {
-		
+
 		try {
-			if(this.programType == ProgramType.Media)
-			{
-			if (mediaIterator.hasNext()) {
-				Media media = mediaIterator.next();
-				mediaPlayer = MediaPlayer.create(this.parent,
-						Uri.fromFile(new File(media.getFileLocation())));
-				if (mediaPlayer != null) {
-					mediaPlayer.setOnCompletionListener(this);
-					mediaPlayer.start();
-				} else {
-					this.play();
+			if (this.programType == ProgramType.Media) {
+				if (mediaIterator.hasNext()) {
+					Media media = mediaIterator.next();
+					try {
+						mediaPlayer = MediaPlayer
+								.create(this.parent, Uri.fromFile(new File(
+										media.getFileLocation())));
+						mediaPlayer.setOnCompletionListener(this);
+						mediaPlayer.start();
+
+					} catch (Exception ex) {
+						this.play();
+					}
 				}
-			}
-			}
-			else if(this.programType == ProgramType.Stream)
-			{
+			} else if (this.programType == ProgramType.Stream) {
 				mediaPlayer = MediaPlayer.create(this.parent, this.streamUrl);
 				mediaPlayer.start();
 			}
@@ -116,6 +111,7 @@ public class PlayList implements OnCompletionListener {
 	public void pause() {
 		if (mediaPlayer.isPlaying()) {
 			mediaPlayer.pause();
+			Utils.toastOnScreen("media player paused");
 		}
 	}
 
@@ -123,20 +119,18 @@ public class PlayList implements OnCompletionListener {
 	 * Resumes playback after it has been paused
 	 */
 	public void resume() {
-
-		mediaPlayer.start();
+		//mediaPlayer.start(); //works fine on Galaxy grand duos (4.2.2), fails on Galaxy pocket (4.0.2)
+		this.play();
 	}
 
 	/**
 	 * Loads media with the specified tag into the playlist
 	 * 
-	 * @param tag
-	 *            The tag to be matched for media to be loaded into the playlist
+	 * @param tag The tag to be matched for media to be loaded into the playlist
 	 * @return Array of Media objects matching specified tag
 	 */
 	private HashSet<Media> loadMedia(String tag) {
 		HashSet<Genre> genres = new HashSet<Genre>();
-		;
 		HashSet<Artist> artists = new HashSet<Artist>();
 		HashSet<String> tags = new HashSet<String>();
 		String query = "select media.title, media.filelocation,media.wiki, genre.title, genre.id, artist.name, artist.id, artist.wiki, country.title, mediatag.tag from media left outer join mediagenre on media.id = mediagenre.mediaid left outer join genre on mediagenre.genreid = genre.id join mediaartist on media.id = mediaartist.mediaid join artist on mediaartist.artistid = artist.id join country on artist.countryid = country.id join mediatag on media.id = mediatag.mediaid where mediatag.tag = ?";
@@ -162,16 +156,17 @@ public class PlayList implements OnCompletionListener {
 
 		return media;
 	}
-	
-	private String getStreamingUrl()
-	{
+
+	private String getStreamingUrl() {
 		String tableName = "streamingConfiguration";
-		String[] columns = new String[]{"ipaddress", "port", "path"	};
+		String[] columns = new String[] { "ipaddress", "port", "path" };
 		String orderBy = "id desc";
 		String limit = "1";
 		DBAgent dbAgent = new DBAgent(this.parent);
-		String result[][] = dbAgent.getData(true, tableName, columns, null, null, null, null, orderBy, limit);
-		return result.length > 0? String.format("http://%s:%s/%s", result[0][0], result[0][1], result[0][2]): null;
+		String result[][] = dbAgent.getData(true, tableName, columns, null,
+				null, null, null, orderBy, limit);
+		return result.length > 0 ? String.format("http://%s:%s/%s",
+				result[0][0], result[0][1], result[0][2]) : null;
 	}
 
 	/**

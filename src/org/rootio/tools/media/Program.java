@@ -10,11 +10,10 @@ import org.rootio.tools.utils.Utils;
 import android.content.ContentValues;
 import android.content.Context;
 
-public class Program implements Runnable {
+public class Program {
 
 	private String title;
 	private PlayList playList;
-	//private TimeSpan timeSpan;
 	private ProgramType programType;
 	private String tag;
 	private ArrayList<EventTime> eventTimes;
