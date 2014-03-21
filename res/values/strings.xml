@@ -46,5 +46,8 @@
     <string name="StartServiceLabel">Start Service</string>
     <string name="StopServiceLabel">Stop Service</string>
     <string name="RestartServiceLabel">Restart Service</string>
+    <string name="DiscoveryServiceTitle">Discovery Service</string>
+    <string name="MulticastIPAddressLable">IP Address:</string>
+    <string name="MulticastPortLable">Port:</string>
 
 </resources>

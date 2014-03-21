@@ -29,6 +29,7 @@
         <activity android:name="org.rootio.activities.RadioPlaylistActivity" />
         <activity android:name=".PhoneActivity" />
         <activity android:name="org.rootio.activities.stationDetails.StationActivity" />
+        <activity android:name="org.rootio.activities.stationDetails.MulticastConfigurationActivity" />
         <activity android:name="org.rootio.activities.cloud.CloudActivity" />
         <activity android:name="org.rootio.activities.telephoneLog.lists.BlackListActivity" />
         <activity android:name="org.rootio.activities.telephoneLog.lists.WhitelistActivity" />
@@ -63,6 +64,8 @@
         <service android:name="org.rootio.services.DiagnosticsService" >
         </service>
         <service android:name="org.rootio.services.ProgramService" >
+        </service>
+        <service android:name="org.rootio.services.DiscoveryService" >
         </service>
 
         <receiver android:name="org.rootio.services.BootMonitor" >
