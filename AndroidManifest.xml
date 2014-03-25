@@ -59,14 +59,11 @@
             </intent-filter>
         </activity>
 
-        <service android:name="org.rootio.services.TelephonyService" >
-        </service>
-        <service android:name="org.rootio.services.DiagnosticsService" >
-        </service>
-        <service android:name="org.rootio.services.ProgramService" >
-        </service>
-        <service android:name="org.rootio.services.DiscoveryService" >
-        </service>
+        <service android:name="org.rootio.services.TelephonyService" ></service>
+        <service android:name="org.rootio.services.DiagnosticsService" ></service>
+        <service android:name="org.rootio.services.ProgramService" ></service>
+        <service android:name="org.rootio.services.DiscoveryService" ></service>
+        <service android:name="org.rootio.services.SynchronizationService" ></service>
 
         <receiver android:name="org.rootio.services.BootMonitor" >
             <intent-filter>

@@ -27,7 +27,7 @@ public class Program {
 		this.cloudId = cloudId;
 		this.title = title;
 		this.id = Utils.getProgramId(this.parent, title, this.programType.ordinal());
-		if (this.id == null) {
+		if (this.id <= 0) {
 			this.id = this.persist();
 		}
 		this.loadEventTimes(this.id);
@@ -35,9 +35,6 @@ public class Program {
 		this.createPlayList();
 	}
 	
-	
-
-
 	public Program(Context parent, long cloudId, String title, int programTypeId, String tag) {
 		this.parent = parent;
 		this.tag = tag;
@@ -220,7 +217,7 @@ public class Program {
 		ContentValues data = new ContentValues();
 		data.put("title", this.title);
 		data.put("programtypeid", this.programType.ordinal());
-		data.put("tag", this.playList.getTag());
+		//data.put("tag", this.playList.getTag());
 		DBAgent agent = new DBAgent(this.parent);
 		return agent.saveData(tableName, null, data);
 	}
