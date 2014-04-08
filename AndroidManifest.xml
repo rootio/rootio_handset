@@ -15,7 +15,7 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <uses-sdk
-        android:minSdkVersion="8"
+        android:minSdkVersion="14"
         android:targetSdkVersion="17" />
 
     <application
@@ -31,6 +31,7 @@
         <activity android:name="org.rootio.activities.stationDetails.StationActivity" />
         <activity android:name="org.rootio.activities.stationDetails.MulticastConfigurationActivity" />
         <activity android:name="org.rootio.activities.cloud.CloudActivity" />
+        <activity android:name="org.rootio.activities.cloud.CloudConfigurationActivity" />
         <activity android:name="org.rootio.activities.telephoneLog.lists.BlackListActivity" />
         <activity android:name="org.rootio.activities.telephoneLog.lists.WhitelistActivity" />
         <activity android:name="org.rootio.activities.telephoneLog.TelephoneLogActivity" />
@@ -64,6 +65,7 @@
         <service android:name="org.rootio.services.ProgramService" ></service>
         <service android:name="org.rootio.services.DiscoveryService" ></service>
         <service android:name="org.rootio.services.SynchronizationService" ></service>
+        <service android:name="org.rootio.services.SampleService" ></service>
 
         <receiver android:name="org.rootio.services.BootMonitor" >
             <intent-filter>

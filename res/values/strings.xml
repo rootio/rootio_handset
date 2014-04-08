@@ -19,10 +19,10 @@
     <string name="ButtonPanelBGColor">#ffD8D8D8</string>
     <string name="BatteryConfigurationLabel">Battery Level</string>
     <string name="GSMSignalLabel">GSM Signal</string>
-    <string name="WirelessSignal">Wireless Signal</string>
+    <string name="WirelessSignal">WiFI Signal</string>
     <string name="StorageLevelLabel">Storage</string>
-    <string name="MemoryUtilizationLabel">Memory Usage</string>
-    <string name="GPSLocationLabel">GPS Location</string>
+    <string name="MemoryUtilizationLabel">Memory</string>
+    <string name="GPSLocationLabel">GPS</string>
     <string name="DiagnosticsMenuItem">Diagnostics</string>
     <string name="ProcessorConfigurationLabel">CPU Usage</string>
     <string name="SaveButtonText">Save</string>
@@ -38,15 +38,15 @@
     <string name="SynchronizationConfigureFrequencyStartTimeLabel">Start Time:</string>
     <string name="SynchronizationConfigureFrequencyEndTimeLabel">End Time:</string>
     <string name="SynchronizationConfigureFrequencyItem">Configure Frequency</string>
-    <string name="TelephonyServiceTitle">Telephony Service</string>
-    <string name="SMSServiceTitle">SMS Service</string>
-    <string name="DiagnosticsServiceTitle">Diagnostic Service</string>
-    <string name="ProgramServiceTitle">Program Service</string>
-    <string name="SynchronizationServiceTitle">Sync Service</string>
+    <string name="TelephonyServiceTitle">Telephony</string>
+    <string name="SMSServiceTitle">Messaging</string>
+    <string name="DiagnosticsServiceTitle">Diagnostics</string>
+    <string name="ProgramServiceTitle">Program</string>
+    <string name="SynchronizationServiceTitle">Sync</string>
     <string name="StartServiceLabel">Start Service</string>
     <string name="StopServiceLabel">Stop Service</string>
     <string name="RestartServiceLabel">Restart Service</string>
-    <string name="DiscoveryServiceTitle">Discovery Service</string>
+    <string name="DiscoveryServiceTitle">Discovery</string>
     <string name="MulticastIPAddressLable">IP Address:</string>
     <string name="MulticastPortLable">Port:</string>
 
