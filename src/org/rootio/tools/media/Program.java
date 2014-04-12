@@ -26,7 +26,7 @@ public class Program {
 		this.setProgramType(programTypeId);
 		this.cloudId = cloudId;
 		this.title = title;
-		this.id = Utils.getProgramId(this.parent, title, this.programType.ordinal());
+		this.id = Utils.getProgramId(this.parent, title, cloudId);
 		if (this.id <= 0) {
 			this.id = this.persist();
 		}
@@ -41,7 +41,7 @@ public class Program {
 		this.setProgramType(programTypeId);
 		this.cloudId = cloudId;
 		this.title = title;
-		this.id = Utils.getProgramId(this.parent, title, this.programType.ordinal());
+		this.id = Utils.getProgramId(this.parent, title, this.cloudId);
 		if (this.id == null) {
 			this.id = this.persist();
 		}
