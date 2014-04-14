@@ -1,5 +1,6 @@
 package org.rootio.services;
 
+import org.rootio.radioClient.R;
 import org.rootio.tools.sms.MessageProcessor;
 import org.rootio.tools.sms.SMSSwitch;
 import org.rootio.tools.utils.Utils;
@@ -9,8 +10,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.IBinder;
 import android.telephony.SmsMessage;
+import android.util.Log;
 
-public class SMSService extends Service implements IncomingSMSNotifiable {
+public class SMSService extends Service implements IncomingSMSNotifiable, ServiceInformationPublisher {
 
 	private boolean isRunning;
 	private int serviceId = 2;
@@ -51,7 +53,7 @@ public class SMSService extends Service implements IncomingSMSNotifiable {
 		}
 		catch(Exception ex)
 		{
-			//maybe do some logging
+		    Log.e(this.getString(R.string.app_name), ex.getMessage() == null?"Null pointer":ex.getMessage());
 		}
 		this.sendEventBroadcast();
 		Utils.doNotification(this,"RootIO","SMS Service started");
@@ -65,11 +67,15 @@ public class SMSService extends Service implements IncomingSMSNotifiable {
 		messageProcessor.ProcessMessage();
 	}
 	
+	@Override
 	public boolean isRunning()
 	{
 		return this.isRunning;
 	}
 	
+	/**
+	 *Sends out broadcasts to listeners informing them of service status changes
+	 */
 	private void sendEventBroadcast()
 	{
 		Intent intent = new Intent();
@@ -77,6 +83,11 @@ public class SMSService extends Service implements IncomingSMSNotifiable {
 		intent.putExtra("isRunning", this.isRunning);
 		intent.setAction("org.rootio.services.sms.EVENT");
 		this.sendBroadcast(intent);
+	}
+
+	@Override
+	public int getServiceId() {
+		return this.serviceId;
 	}
 
 }

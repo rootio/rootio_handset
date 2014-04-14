@@ -3,9 +3,14 @@ import android.content.ComponentName;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 
+/**
+ * This class helps activities to communicate with services through instances of the BindingAgent class
+ * @author Jude Mukundane
+ *
+ */
 public class ServiceConnectionAgent implements ServiceConnection{
 
-	private RunningStatusPublished service;
+	private ServiceInformationPublisher service;
 	private int serviceId;
 	private Notifiable servicesActivity;
 	
@@ -18,7 +23,7 @@ public class ServiceConnectionAgent implements ServiceConnection{
 	@Override
 	public void onServiceConnected(ComponentName name, IBinder service) {
 		BindingAgent bindingAgent = (BindingAgent) service;
-        this.service = (RunningStatusPublished)bindingAgent.getService();
+        this.service = (ServiceInformationPublisher)bindingAgent.getService();
         this.servicesActivity.notifyServiceConnection(this.serviceId);
 	}
 
@@ -27,7 +32,11 @@ public class ServiceConnectionAgent implements ServiceConnection{
 	
 	}
 	
-	public  RunningStatusPublished getService()
+	/**
+	 * Gets the Service information publisher for the service to which this object is connected
+	 * @return ServiceInformationPublisher object containing information about the service connected to
+	 */
+	public  ServiceInformationPublisher getService()
 	{
 		return this.service;
 	}

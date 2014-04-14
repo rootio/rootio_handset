@@ -31,6 +31,9 @@ public class DiagnosticsRunner implements Runnable {
 		}
 	}
 	
+	/**
+	 * Saves the diagnostics gathered to the database
+	 */
 	private void logToDB()
 	{
 		String tableName = "diagnostic";

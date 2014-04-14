@@ -17,12 +17,20 @@ public class EpisodeManager {
 		this.program = program;
 	}
 	
+	/**
+	 * Gets the string identifying the name of the episode to be aired
+	 * @return The file name of the episode to be played
+	 */
 	String getEpisodeTag()
 	{
 		this.episodeNumber = this.getEpisodeNumber();
 		return String.format("%s_%s", this.program.getId(), this.episodeNumber);
 	}
 	
+	/**
+	 * Gets the serial number for this episode
+	 * @return The serial number for this episode
+	 */
 	private int getEpisodeNumber()
 	{
 	    int maxEpisode = this.getMaxEpisode();
@@ -41,6 +49,12 @@ public class EpisodeManager {
 	    
 	}
 	
+	/**
+	 * Logs the airing of this episode
+	 * @param programId The ID of the Program with which this episode is associated
+	 * @param eventtimeid The ID of the event time with which this program is associated
+	 * @param episodeNumber The serial number of this episode
+	 */
 	private void logThisEpisode(long programId, long eventtimeid, int episodeNumber)
 	{
 		String tableName = "programlog";
@@ -52,6 +66,10 @@ public class EpisodeManager {
 		dbAgent.saveData(tableName, null, data);
 	}
 	
+	/**
+	 * Gets the last episode to be played for this program
+	 * @return Episode number of last episode
+	 */
 	private int getMaxEpisode()
 	{
 		String query = "select coalesce(max(episode), 0) from programlog join eventtime on programlog.eventtimeid = eventtime.id where programlog.programid = ? and isrepeat = 0";

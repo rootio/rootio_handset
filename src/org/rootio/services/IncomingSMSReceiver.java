@@ -6,6 +6,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.telephony.SmsMessage;
 
+/**
+ * This class is a listener for incoming SMS
+ * @author HP Envy
+ *
+ */
 public class IncomingSMSReceiver extends BroadcastReceiver{
 
 	private IncomingSMSNotifiable incomingSMSNotifiable;

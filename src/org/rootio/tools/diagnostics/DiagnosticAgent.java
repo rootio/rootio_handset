@@ -51,6 +51,9 @@ public class DiagnosticAgent {
 				.getSystemService(Context.LOCATION_SERVICE);
 	}
 
+	/**
+	 * Runs the checks for the various defined diagnostics
+	 */
 	public void runDiagnostics() {
 		this.loadIsConnectedToGSM();
 		this.loadIsConnectedToWifi();
@@ -62,18 +65,27 @@ public class DiagnosticAgent {
 		this.loadTelecomOperatorName();
 	}
 
+	/**
+	 * Loads the name of the telecom operator to which the phone is currently latched
+	 */
 	private void loadTelecomOperatorName() {
 		TelephonyManager telephonyManager = (TelephonyManager) this.parentActivity
 				.getSystemService(Context.TELEPHONY_SERVICE);
 		this.telecomOperatorName = telephonyManager.getSimOperatorName();
 	}
 
+	/**
+	 * Loads the wiFI connectivity status
+	 */
 	private void loadIsConnectedToWifi() {
 		NetworkInfo wifiInfo = connectivityManager
 				.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
 		this.isConnectedToWifi = wifiInfo.isConnected();
 	}
 
+	/**
+	 * Loads the battery level of the phone
+	 */
 	private void loadBatteryLevel() {
 		Intent batteryIntent = this.parentActivity.registerReceiver(null,
 				new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
@@ -88,12 +100,20 @@ public class DiagnosticAgent {
 		batteryLevel = ((float) level / (float) scale) * 100.0f;
 	}
 
+	/**
+	 * Loads the GSM connectivity status
+	 */
 	private void loadIsConnectedToGSM() {
 		NetworkInfo gsmInfo = connectivityManager
 				.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
 		this.isConnectedToGSM = gsmInfo.isConnected();
 	}
 
+	/**
+	 * This class is a listener for changes in phone GSM signal strength
+	 * @author Jude Mukundane
+	 *
+	 */
 	private class SignalStrengthListener extends PhoneStateListener {
 		@Override
 		public void onSignalStrengthsChanged(
@@ -104,12 +124,18 @@ public class DiagnosticAgent {
 	}
 
 	@SuppressLint("NewApi")
+	/**
+	 * Loads the percentage memory utilization of the phone
+	 */
 	private void loadMemoryStatus() {
 		MemoryInfo outInfo = new MemoryInfo();
 		activityManager.getMemoryInfo(outInfo);
 		this.memoryStatus = (100 * outInfo.availMem) / outInfo.totalMem;
 	}
 
+	/**
+	 * Loads the percentage CPU Utilization of the phone
+	 */
 	private void loadCPUutilization() {
 		try {
 			RandomAccessFile reader = new RandomAccessFile("/proc/stat", "r");
@@ -148,10 +174,16 @@ public class DiagnosticAgent {
 		// this.CPUUtilization = 0;
 	}
 
+	/**
+	 * Loads the GPS coordinates of the phone
+	 */
 	private void loadLatitudeLongitude() {
 		locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 	}
 
+	/**
+	 * Loads the percentage Utilization of the phone storage
+	 */
 	private void loadStorageUtilization() {
 		StatFs statFs = new StatFs(Environment.getExternalStorageDirectory()
 				.getAbsolutePath());
@@ -159,42 +191,81 @@ public class DiagnosticAgent {
 				.getBlockCount());
 	}
 
+	/**
+	 * Gets the name of the telecom operator to which the phone is latched
+	 * @return Name of the telecom operator
+	 */
 	public String getTelecomOperatorName() {
 		return this.telecomOperatorName;
 	}
 
+	/**Gets whether or not the phone is connected to WiFI
+	 * @return Boolean indicating connectivity. True: Connected, False: Not connected
+	 */
 	public boolean isConnectedToWifi() {
 		return this.isConnectedToWifi;
 	}
 
+	/**
+	 * Gets whether or not the phone is latched onto a GSM network
+	 * @return Boolean indicating GSM connection strength. True: Connected, False: Not connected
+	 */
 	public boolean isConnectedToGSM() {
 		return this.isConnectedToGSM;
 	}
 
+	/**
+	 * Gets the signal strength of the GSM network
+	 * @return GSM strength in decibels
+	 */
 	public int getGSMConnectionStrength() {
 		return this.GSMConnectionStrength;
 	}
 
+	/**
+	 * Gets memory utilization
+	 * @return Percentage memory Utilization
+	 */
 	public float getMemoryStatus() {
 		return this.memoryStatus;
 	}
 
+	/**
+	 * Gets the storage status of the phone
+	 * @return Percentage storage Utilization
+	 */
 	public double getStorageStatus() {
 		return this.storageStatus;
 	}
 
+	/**
+	 * Gets the CPU utilization of the phone
+	 * @return Percentage CPU Utilization of the phone
+	 */
 	public float getCPUUtilization() {
 		return this.CPUUtilization;
 	}
 
+	/**
+	 * Gets the battery level of the phone
+	 * @return Percentage battery utilization of the phone
+	 */
 	public float getBatteryLevel() {
 		return this.batteryLevel;
 	}
 
+	/**
+	 * Gets the latitude of the GPS position of the phone
+	 * @return Latitude of the phone
+	 */
 	public double getLatitude() {
 		return this.latitude;
 	}
 
+	/**
+	 * Gets the longitude of the GPS position of the phone
+	 * @return Longitude of the phone
+	 */
 	public double getLongitude() {
 		return this.longitude;
 	}

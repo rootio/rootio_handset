@@ -8,6 +8,7 @@ import java.net.UnknownHostException;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.rootio.radioClient.R;
 import org.rootio.tools.persistence.DBAgent;
 import org.rootio.tools.utils.Utils;
 
@@ -15,8 +16,9 @@ import android.app.Service;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.os.IBinder;
+import android.util.Log;
 
-public class DiscoveryService extends Service  implements RunningStatusPublished{
+public class DiscoveryService extends Service  implements ServiceInformationPublisher{
 
 	private InetAddress multicastAddress;
 	private int port;
@@ -55,6 +57,10 @@ public class DiscoveryService extends Service  implements RunningStatusPublished
 		this.sendEventBroadcast();
 	}
 
+	/**
+	 * Gets the ID of this service
+	 * @return Integer representation of the ID of this service
+	 */
 	public int getServiceId()
 	{
 		return this.serviceId;
@@ -66,6 +72,12 @@ public class DiscoveryService extends Service  implements RunningStatusPublished
 		return this.isRunning;
 	}
 	
+	/**
+	 * Persists the streaming the configuration of the streaming server received from broadcasts on the network
+	 * @param serverAddress The Address of the streaming server
+	 * @param port The port at which the streaming server is listening
+	 * @param path The path to the content to be played during the show
+	 */
 	private void saveStreamingConfiguration(InetAddress serverAddress,
 			int port, String path) {
 		String tableName = "streamingconfiguration";
@@ -77,6 +89,9 @@ public class DiscoveryService extends Service  implements RunningStatusPublished
 		dbAgent.saveData(tableName, null, data);
 	}
 
+	/**
+	 * Fetches the configuration for the discovery service from the database
+	 */
 	private void loadServiceDiscoveryConfiguration() {
 		String tableName = "station";
 		String[] columns = new String[] { "multicastipaddress", "multicastport" };
@@ -95,6 +110,9 @@ public class DiscoveryService extends Service  implements RunningStatusPublished
 		}
 	}
 	
+	/**
+	 * Sends out broadcasts to listeners informing them of change in the state of the service
+	 */
 	private void sendEventBroadcast() {
 		Intent intent = new Intent();
 		intent.putExtra("serviceId", this.serviceId);
@@ -103,8 +121,18 @@ public class DiscoveryService extends Service  implements RunningStatusPublished
 		this.sendBroadcast(intent);
 	}
 
+	/**
+	 * Defines the statuses that can be reached at the end of receipt and persistence of a discovery announcement
+	 * @author Jude Mukundane
+	 *
+	 */
 	enum Status{SUCCESS, FAILURE};
 	
+	/**
+	 * This class is used to listen for broadcast announcements on the network for streaming configuration
+	 * @author HP Envy
+	 *
+	 */
 	class StreamingServerAnnouncementListener implements Runnable {
 		byte[] receivedData = new byte[1024];
 		byte[] sentData = new byte[1024];
@@ -127,15 +155,20 @@ public class DiscoveryService extends Service  implements RunningStatusPublished
 					socket.send(sentPacket);
 				}
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Log.e(DiscoveryService.this.getString(R.string.app_name), e.getMessage());
 			} catch (NullPointerException e)
 			{
 				Utils.toastOnScreen("Can not Start service. Please specify the Multicast IP address and port number");
+				Log.e(DiscoveryService.this.getString(R.string.app_name), e.getMessage() == null?"Null pointer exception":e.getMessage());
 				DiscoveryService.this.onDestroy();
 			}
 		}
 
+		/**
+		 * Processes the JSON string received in the streaming service announcement
+		 * @param message The message that was received in the streaming server announcement
+		 * @return JSON String message with the result of the operation to be returned to the streaming server
+		 */
 		private String processMessage(String message) {
 			JSONObject json;
 			try {
@@ -147,20 +180,27 @@ public class DiscoveryService extends Service  implements RunningStatusPublished
 				DiscoveryService.this.saveStreamingConfiguration(serverAddress,	port, path);
 				return this.getStatusMessage(Status.SUCCESS);
 			} catch (JSONException e) {
+				Log.e(DiscoveryService.this.getString(R.string.app_name), e.getMessage());
 				return this.getStatusMessage(Status.FAILURE);
 			} catch (UnknownHostException e)
 			{
+				Log.e(DiscoveryService.this.getString(R.string.app_name), e.getMessage());
 				return this.getStatusMessage(Status.FAILURE);
 			}	
 		}
 		
+		/**
+		 * Constructs the JSON message to be returned to the streaming server upon a service announcement
+		 * @param status The status of processing the announcement that was received
+		 * @return A JSON string with status information about the processing of the received announcement
+		 */
 		private String getStatusMessage(Status status)
 		{
 			JSONObject json = new JSONObject();
 			try {
 				json.put("status", status.name());
 			} catch (JSONException e) {
-				//log this
+				Log.e(DiscoveryService.this.getString(R.string.app_name), e.getMessage());
 			}
 			return json.toString();
 		}

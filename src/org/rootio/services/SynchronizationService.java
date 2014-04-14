@@ -7,7 +7,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 
-public class SynchronizationService extends Service implements RunningStatusPublished{
+public class SynchronizationService extends Service implements ServiceInformationPublisher{
 
 	private int serviceId = 5;
 	private boolean isRunning;
@@ -39,6 +39,9 @@ public class SynchronizationService extends Service implements RunningStatusPubl
 		this.sendEventBroadcast();
 	}
 	
+	/**
+	 * Sends out broadcasts informing listeners of changes in service status
+	 */
 	private void sendEventBroadcast() {
 		Intent intent = new Intent();
 		intent.putExtra("serviceId", this.serviceId);
@@ -53,6 +56,7 @@ public class SynchronizationService extends Service implements RunningStatusPubl
 		return this.isRunning;
 	}
 	
+	@Override
 	public int getServiceId()
 	{
 		return this.serviceId;

@@ -8,8 +8,8 @@ import org.rootio.services.DiagnosticsService;
 import org.rootio.services.DiscoveryService;
 import org.rootio.services.Notifiable;
 import org.rootio.services.ProgramService;
-import org.rootio.services.RunningStatusPublished;
 import org.rootio.services.ServiceConnectionAgent;
+import org.rootio.services.ServiceInformationPublisher;
 import org.rootio.services.ServiceState;
 import org.rootio.services.SynchronizationService;
 import org.rootio.services.TelephonyService;
@@ -146,7 +146,7 @@ public class ServicesActivity extends Activity implements
 
 	@Override
 	public void notifyServiceConnection(int serviceId) {
-			 RunningStatusPublished  service = this.serviceComponents.get(serviceId).getServiceConnectionAgent().getService();
+		ServiceInformationPublisher  service = this.serviceComponents.get(serviceId).getServiceConnectionAgent().getService();
 			if (service == null) {
 				this.updateDisplay(serviceId, false);
 			} else {

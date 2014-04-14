@@ -15,7 +15,7 @@ import android.net.Uri;
 /**
  * Class for the definition of Playlists
  * 
- * @author UTL051109
+ * @author Jude Mukundane
  * 
  */
 public class PlayList implements OnCompletionListener {

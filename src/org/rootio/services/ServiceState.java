@@ -11,8 +11,7 @@ import android.content.Context;
 public class ServiceState {
 
 	private int serviceId;
-	private String serviceName;
-    private int serviceState;
+	private int serviceState;
     private Context context;
     private Date lastUpdatedDate;
 	
@@ -23,27 +22,37 @@ public class ServiceState {
 		this.fetchServiceState();
 	}
 	
-	String getServiceName()
-	{
-		return this.serviceName;
-	}
-	
+	/**
+	 * Gets the state of this service
+	 * @return Integer representing state of this service. 1: Service is runing, 0: Service is not running
+	 */
     int getServiceState()
 	{
 		return this.serviceState;
 	}
     
+    /**
+     * Sets the state of the service
+     * @param serviceState The integer specifying the state of the service
+     */
     public void setServiceState(int serviceState)
     {
     	this.serviceState = serviceState;
     	this.saveServiceState();
     }
     
+    /**
+     * Gets the date when the service state was last modified
+     * @return Date object representing when service state was last modified
+     */
     public Date getLastUpdatedDate()
     {
     	return this.lastUpdatedDate;
     }
     
+    /**
+     * Persists the state of the service for consideration across reboots or power failures
+     */
     private void saveServiceState()
     {
     	String tableName = "servicestate";
@@ -56,6 +65,9 @@ public class ServiceState {
     	agent.updateRecords(tableName, data, whereClause, whereArgs);	
     }
     
+    /**
+     * Fetches the state of the service as persisted in the database
+     */
     private void fetchServiceState()
     {
     	String tableName = "servicestate";
@@ -64,7 +76,6 @@ public class ServiceState {
     	String[] whereArgs = new String[]{String.valueOf(serviceId)};
     	DBAgent agent = new DBAgent(this.context);
     	String[][] result = agent.getData(true, tableName, columns, whereClause,whereArgs, null, null, null, null);
-    	this.serviceName = result.length > 0? result[0][0]: new String();
     	this.serviceState = result.length > 0? Utils.parseIntFromString(result[0][1]):0;
     }
 }

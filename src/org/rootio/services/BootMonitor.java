@@ -6,6 +6,11 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+/**
+ * This class listens for boot incidents and restores the services to the state they were in before the phone shut down
+ * @author Jude Mukundane
+ *
+ */
 public class BootMonitor extends BroadcastReceiver{
 
 	@Override

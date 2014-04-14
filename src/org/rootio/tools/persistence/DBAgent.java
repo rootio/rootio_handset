@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.rootio.radioClient.R;
 import org.rootio.tools.utils.Utils;
 
 import android.content.ContentValues;
@@ -12,6 +13,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
+import android.util.Log;
 
 public class DBAgent {
 	private String databaseName;
@@ -35,6 +37,19 @@ public class DBAgent {
 		return SQLiteDatabase.openDatabase(databaseName, null, flag);
 	}
 
+	/**
+	 * Fetches data from the database according to the criteria specified
+	 * @param distinct Boolean indicating whether to return  distinct values
+	 * @param tableName The name of the table to be queried
+	 * @param columns An arrays of the names of columns to be returned
+	 * @param filter A string with the where clause of the SQL query
+	 * @param selectionArgs String array of the values for the parameters in the where clause
+	 * @param groupBy The Group by clause of the SQL query
+	 * @param having The having clause of the SQL query
+	 * @param orderBy The Order by clause of the SQL query
+	 * @param limit The offset and number of rows to return
+	 * @return Array of String arrays each representing a record in the database
+	 */
 	public String[][] getData(boolean distinct, String tableName,
 			String[] columns, String filter, String[] selectionArgs,
 			String groupBy, String having, String orderBy, String limit) {
@@ -61,11 +76,18 @@ public class DBAgent {
 		}
 	}
 
+	/**
+	 * Checks if the database file exists
+	 * @return Boolean indicating whether or not the database file exists
+	 */
 	private boolean databaseFileExists() {
 		File databaseFile = new File(this.databaseName);
 		return databaseFile.exists();
 	}
 
+	/**
+	 * Creates the database file upon first run of the application
+	 */
 	private void createDatabaseFile() {
 		InputStream instr = null;
 		FileOutputStream foutstr = null;
@@ -85,25 +107,32 @@ public class DBAgent {
 				Utils.toastOnScreen("We cant create file");
 			}
 		} catch (IOException e) {
-			Utils.toastOnScreen("Error of IO "+e.getMessage());
+			Utils.toastOnScreen("Failed to create database file!");
+			Log.e(this.context.getString(R.string.app_name), e.getMessage());
 		}
 		finally
 		{
 			try {
 				instr.close();
 			} catch (Exception ex) {
-				// rien a faire
+				Log.e(this.context.getString(R.string.app_name), ex.getMessage() == null? "Null pointer exception": ex.getMessage());
 			}
 			
 			try {
 				foutstr.close();
 			} catch (Exception ex) {
-				// rien a faire
+				Log.e(this.context.getString(R.string.app_name), ex.getMessage() == null? "Null pointer exception": ex.getMessage());
 			}
 		}
 
 	}
 
+	/**
+	 * Fetches data from the database as per the specified query and filters
+	 * @param rawQuery The SQL query to be executed against the database
+	 * @param args Arguments for where clause parameters that may be specified
+	 * @return Array of String arrays each representing a record in the database
+	 */
 	public String[][] getData(String rawQuery, String[] args) {
 		SQLiteDatabase database = this.getDBConnection(this.databaseName, null,
 				SQLiteDatabase.OPEN_READONLY);
@@ -120,6 +149,7 @@ public class DBAgent {
 			}
 			return data;
 		} catch (Exception ex) {
+			Log.e(this.context.getString(R.string.app_name), ex.getMessage() == null? "Null pointer exception": ex.getMessage());
 			return null;
 		} finally {
 			database.close();
@@ -152,6 +182,13 @@ public class DBAgent {
 		}
 	}
 
+	/**
+	 * Deletes records from the database according to the specified criteria
+	 * @param tableName The name of the table from which to delete records
+	 * @param whereClause The where clause specifying the records to be deleted
+	 * @param args Arguments to the parameters specified in the where clause
+	 * @return The number of records affected by this delete action
+	 */
 	public int deleteRecords(String tableName, String whereClause, String[] args) {
 		SQLiteDatabase database = this.getDBConnection(this.databaseName, null,
 				SQLiteDatabase.OPEN_READWRITE);
@@ -164,6 +201,14 @@ public class DBAgent {
 		}
 	}
 
+	/**
+	 * Updates records in the database according to the specified criteria
+	 * @param tableName The name of the table whose records to update
+	 * @param data The values to replace the existing values
+	 * @param whereClause The where clause specifying the columns to be updated
+	 * @param whereArgs Arguments to the where clause
+	 * @return The number of rows affected by the update transaction
+	 */
 	public int updateRecords(String tableName, ContentValues data,
 			String whereClause, String[] whereArgs) {
 		SQLiteDatabase database = this.getDBConnection(this.databaseName, null,

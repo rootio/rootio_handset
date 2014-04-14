@@ -12,7 +12,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.IBinder;
 
-public class ProgramService extends Service implements TelephonyEventNotifiable, RunningStatusPublished {
+public class ProgramService extends Service implements TelephonyEventNotifiable, ServiceInformationPublisher {
 
 	private int serviceId = 4;
 	private boolean isRunning;
@@ -55,6 +55,9 @@ public class ProgramService extends Service implements TelephonyEventNotifiable,
 		}
 	}
 
+	/**
+	 * Sends out broadcasts informing listeners of change in the status of the service
+	 */
 	private void sendEventBroadcast() {
 		Intent intent = new Intent();
 		intent.putExtra("serviceId", this.serviceId);
@@ -68,6 +71,10 @@ public class ProgramService extends Service implements TelephonyEventNotifiable,
 		return this.isRunning;
 	}
 
+	/**
+	 * Gets the program slots that are defined for the current schedule
+	 * @return An ArrayList of ProgramSlot objects each representing a slot on the schedule of the radio
+	 */
 	public ArrayList<ProgramSlot> getProgramSlots() {
 		return radioRunner == null ? new ArrayList<ProgramSlot>() : radioRunner.getProgramSlots();
 	}
@@ -83,6 +90,11 @@ public class ProgramService extends Service implements TelephonyEventNotifiable,
 			this.radioRunner.resumeProgram();
 		}
 		
+	}
+
+	@Override
+	public int getServiceId() {
+		return this.serviceId;
 	}
 
 }

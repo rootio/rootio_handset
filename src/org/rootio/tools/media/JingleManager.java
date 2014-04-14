@@ -22,6 +22,11 @@ public class JingleManager implements OnCompletionListener {
 		this.program = program;
 	}
 	
+	/**
+	 * Gets the path of the Jingle for a specific program
+	 * @param programId The ID of the program for which a jingle is sought
+	 * @return The path to the audio file of the jingle for the specified program
+	 */
 	private String getJingle(long programId)
 	{
 		String tableName = "jingles";
@@ -34,6 +39,9 @@ public class JingleManager implements OnCompletionListener {
 		return results.length > 0 ? results[0][0] : null;
 	}
 	
+	/**
+	 * Plays the jingle for the specified program and then launches the program
+	 */
 	 void playJingle()
 	{
 		String jingleFile = this.getJingle(this.program.getId());

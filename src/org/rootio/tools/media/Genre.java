@@ -8,7 +8,7 @@ import android.content.Context;
 /**
  * Describes genre associated with Media
  * 
- * @author UTL051109
+ * @author Jude Mukundane
  * 
  */
 public class Genre {

@@ -8,7 +8,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 
-public class DiagnosticsService extends Service  implements RunningStatusPublished{
+public class DiagnosticsService extends Service  implements ServiceInformationPublisher{
 
 	private boolean isRunning;
 	private int serviceId = 3;
@@ -94,6 +94,11 @@ public class DiagnosticsService extends Service  implements RunningStatusPublish
 		intent.putExtra("isRunning", this.isRunning);
 		intent.setAction("org.rootio.services.diagnostic.EVENT");
 		this.sendBroadcast(intent);
+	}
+
+	@Override
+	public int getServiceId() {
+		return this.serviceId;
 	}
 
 }

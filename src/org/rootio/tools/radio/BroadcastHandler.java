@@ -43,6 +43,11 @@ public class BroadcastHandler extends BroadcastReceiver implements Runnable {
 		}
 	}
 
+	/**
+	 * Determines whether the event time for which a launch request was received is still valid or past its stop time
+	 * @param eventTime The event time being inspected for validity
+	 * @return Boolean indicating whether event time is expired or not
+	 */
 	private boolean isExpired(EventTime eventTime) {
 
 		Calendar referenceCalendar = Calendar.getInstance();

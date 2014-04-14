@@ -1,5 +1,6 @@
 package org.rootio.services.synchronization;
 import org.rootio.services.SynchronizationService;
+import org.rootio.tools.cloud.Cloud;
 import org.rootio.tools.persistence.DBAgent;
 import org.rootio.tools.utils.Utils;
 
@@ -8,8 +9,7 @@ import android.content.Context;
 public class SynchronizationDaemon implements Runnable {
 	private Context parent;
 	private int frequency;
-	private String serverKey;
-	private String serverBaseURL;
+	private Cloud cloud;
 
 	@Override
 	public void run() {
@@ -30,10 +30,13 @@ public class SynchronizationDaemon implements Runnable {
 	{
 		this.parent = parent;
 		this.frequency = this.getFrequency();
-		this.serverBaseURL = this.getServerBaseURL();
-		this.serverKey = this.getStationKey();
+		this.cloud = new Cloud(this.parent);
 	}
 	
+	/**
+	 * Fetches the number of seconds representing the interval at which to issue synchronization requests
+	 * @return Number of seconds representing synchronization interval
+	 */
 	private int getFrequency()
 	{
 		String tableName = "frequencyconfiguration";
@@ -59,26 +62,14 @@ public class SynchronizationDaemon implements Runnable {
 		return 0;
 	}
 	
-	private String getStationKey()
-	{
-		String tableName = "station";
-		String[] columns = new String[]{"stationid", "serverkey"};
-		DBAgent dbAgent = new DBAgent(this.parent);
-		String[][] results = dbAgent.getData(true, tableName, columns, null, null, null, null, null, null);
-		return results.length > 0? String.format("%s?api_key=%s", results[0][0], results[0][1]) : null;
-	}
-	
-	private String getServerBaseURL()
-	{
-		String tableName = "cloud";
-		String[] columns = new String[]{"ipaddress", "httpport"};
-		DBAgent dbAgent = new DBAgent(this.parent);
-		String[][] results = dbAgent.getData(true, tableName, columns, null, null, null, null, null, null);
-		return results.length > 0? String.format("http://%s:%s", results[0][0], results[0][1]) : null;
-	}
-	
+	/**
+	 * This class handles synchronization particularly for programs
+	 * @author Jude Mukundane
+	 *
+	 */
 class ProgramSynchronizer
 {
+	//TO-DO: introduce ID of the particular program
 	private String synchronizationURL;
 	
 	ProgramSynchronizer()
@@ -86,11 +77,18 @@ class ProgramSynchronizer
 		this.synchronizationURL = this.getSynchronizationURL();
 	}
 	
+	/**
+	 * Constructs the URL to check for Program updates
+	 * @return
+	 */
 	private String getSynchronizationURL()
 	{
-		return String.format("%s/%s/%s", SynchronizationDaemon.this.serverBaseURL, "api/program", SynchronizationDaemon.this.serverKey);
+		return String.format("http://%s:%s/%s/%s", SynchronizationDaemon.this.cloud.getIPAddress(),SynchronizationDaemon.this.cloud.getHTTPPort(), "api/program", SynchronizationDaemon.this.cloud.getServerKey());
 	}
 	
+	/**
+	 * Runs the synchronization for programs
+	 */
 	public void synchronize() {
 		String response = Utils.doHTTP(this.synchronizationURL);
 		ProgramHandler handler = new ProgramHandler(SynchronizationDaemon.this.parent, response);

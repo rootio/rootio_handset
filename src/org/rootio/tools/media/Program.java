@@ -49,6 +49,9 @@ public class Program {
 		this.createPlayList();
 	}
 	
+	/**
+	 * Sets the tag with which the show is associated
+	 */
 	private void setTag()
 	{
 		if(this.programType == ProgramType.Music)
@@ -63,6 +66,10 @@ public class Program {
 		}
 	}
 	
+	/**
+	 * Sets the program type for the specified program
+	 * @param programTypeId The ID of the program whose ID to set
+	 */
 	private void setProgramType(int programTypeId)
 	{
 		switch(programTypeId)
@@ -82,6 +89,9 @@ public class Program {
 		}
 	}
 	
+	/**
+	 * Initializes the playlist for this program
+	 */
 	private void createPlayList()
 	{
 			this.playList = new PlayList(this.parent, this.tag, this.programType);
@@ -89,7 +99,6 @@ public class Program {
 
 	/**
 	 * Get the playlist associated with this Program
-	 * 
 	 * @return PlayList object of this program's playlist
 	 */
 	public PlayList getPlayList() {
@@ -98,7 +107,6 @@ public class Program {
 
 	/**
 	 * Get the program type of this program
-	 * 
 	 * @return ProgramType object of this program's type
 	 */
 	public ProgramType getProgramType() {
@@ -107,21 +115,21 @@ public class Program {
 
 	/**
 	 * Returns the title of this program
-	 * 
 	 * @return String representation of the title of this program
 	 */
 	public String getTitle() {
 		return this.title;
 	}
 	
+	/**
+	 * Gets the ID for this program
+	 * @return long representation of the ID of this program
+	 */
 	public long getId()
 	{
 		return this.id;
 	}
 
-	/**
-	 * 
-	 */
 	public void run() {
 		if (this.programType == ProgramType.Call) {
 			//sit and wait for incoming phone calls. The telephony service will handle the calls
@@ -136,21 +144,33 @@ public class Program {
 			new JingleManager(this.parent, this).playJingle();
 		}
 	
+	/**
+	 * Called upon on completion of the jingle to play the content for the program
+	 */
 	void onJinglePlayFinish()
 	{
 		playList.play();
 	}
 	
+	/**
+	 * pauses this program
+	 */
 	public void pause()
 	{
 		playList.pause();
 	}
 	
+	/**
+	 * resumes this program if it was previously paused
+	 */
 	public void resume()
 	{
 		playList.resume();
 	}
 
+	/**
+	 * Stops this program
+	 */
 	public void stop() {
 		playList.stop();
 	}
@@ -166,17 +186,28 @@ public class Program {
 		return this.eventTimes.toArray(new EventTime[this.eventTimes.size()]);
 	}
 	
+	/**
+	 * Gets the index of the event time for this program that is playing
+	 * @return Index of the event time for this program that is currently playing
+	 */
 	public int getScheduledIndex()
 	{
 		return this.scheduledIndex;
 	}
 	
+	/**
+	 * Sets the index of the event time for this program that is playing
+	 * @param scheduledIndex The index of the event time that is playing
+	 */
 	public void setScheduledIndex(int scheduledIndex)
 	{
 		this.scheduledIndex = scheduledIndex;
 	}
 	
-	
+	/**
+	 * Gets the Tag associated with this program
+	 * @return The tag for this program
+	 */
 	private String getTag()
 	{
 		String tableName = "program";
@@ -188,6 +219,10 @@ public class Program {
 		return results.length > 0 ? results[0][0] : null;
 	}
 	
+	/**
+	 * Fetches the event times for which this program is scheduled
+	 * @param programId The ID of the program whose event times to fetch
+	 */
 	private void loadEventTimes(long programId)
 	{
 		this.eventTimes = new ArrayList<EventTime>();

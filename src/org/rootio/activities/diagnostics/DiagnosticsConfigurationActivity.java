@@ -117,6 +117,7 @@ public class DiagnosticsConfigurationActivity extends Activity implements OnChec
 	 */
 	private String[][] getSavedSettings()
 	{
+		//TO-DO: Represent this using a class
 		String tableName = "diagnosticsconfiguration";
 		String[] columns = new String[] {"_id", "title", "enabled"};
 		DBAgent agent = new DBAgent(this);

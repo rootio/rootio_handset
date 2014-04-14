@@ -15,7 +15,7 @@ import android.telephony.TelephonyManager;
 import android.view.KeyEvent;
 import com.android.internal.telephony.ITelephony;
 
-public class TelephonyService extends Service implements RunningStatusPublished{
+public class TelephonyService extends Service implements ServiceInformationPublisher{
 
 	private boolean isRunning;
 	private int serviceId = 1;
@@ -61,6 +61,9 @@ public class TelephonyService extends Service implements RunningStatusPublished{
 		}
 	}
 	
+	/**
+	 * Listens for Telephony activity coming into the phone
+	 */
 	private void waitForCalls()
 	{
 		this.telephonyManager = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
@@ -206,7 +209,7 @@ public class TelephonyService extends Service implements RunningStatusPublished{
 	/**
 	 * Class to handle telephony events received by the phone
 	 * 
-	 * @author UTL051109
+	 * @author Jude Mukundane
 	 */
 	class PhoneCallListener extends PhoneStateListener {
 		@Override
@@ -230,6 +233,9 @@ public class TelephonyService extends Service implements RunningStatusPublished{
 		return this.isRunning;
 	}
 	
+	/**
+	 * Sends out broadcasts informing listeners of change in service state
+	 */
 	private void sendEventBroadcast()
 	{
 		Intent intent = new Intent();
@@ -239,11 +245,21 @@ public class TelephonyService extends Service implements RunningStatusPublished{
 		this.sendBroadcast(intent);
 	}
 	
+	/**
+	 * Sends out broadcasts informing listeners of changes in status of the Telephone
+	 * @param isInCall Boolean indicating whether the Telephone is in a call or not. True: in call, False: Not in call
+	 */
 	private void sendTelephonyEventBroadcast(boolean isInCall)
 	{
 		Intent intent = new Intent();
 		intent.putExtra("Incall", isInCall);
 		intent.setAction("org.rootio.services.telephony.TELEPHONY_EVENT");	
 		this.sendBroadcast(intent);
+	}
+
+	@Override
+	public int getServiceId() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }
