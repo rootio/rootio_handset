@@ -53,6 +53,11 @@ public class ServicesSMSHandler implements MessageProcessor {
 		return false;
 	}
 
+	/**
+	 * Starts the service whose ID is specified
+	 * @param serviceId The ID of the service to start
+	 * @return Boolean indicating whether or not the operatoin was successful
+	 */
 	private boolean startService(int serviceId) {
 		Intent intent  = this.getServiceIntent(serviceId);
 		if(intent == null)
@@ -63,14 +68,29 @@ public class ServicesSMSHandler implements MessageProcessor {
 		return false;
 	}
 
+	/**
+	 * Stops the Service whose ID is specified
+	 * @param serviceId The ID of the service to be stopped
+	 * @return Boolean indicating whether or not the operation was successful
+	 */
 	private boolean stopService(int serviceId) {
 		return false;
 	}
 
+	/**
+	 * Gets the status of the service whose ID is specified
+	 * @param serviceId The ID of the service whose status to return
+	 * @return Boolean indicating whether or not the service is running. True: Running, False: Not running
+	 */
 	private boolean getServiceStatus(int serviceId) {
 		return false;
 	}
 
+	/**
+	 * Gets the Intent to be used to communicate with the intended service
+	 * @param serviceId The ID of the service with which to communicate
+	 * @return The intent to be used in communicating with the desired service
+	 */
 	private Intent getServiceIntent(int serviceId)
 	{
 		Intent intent = null;

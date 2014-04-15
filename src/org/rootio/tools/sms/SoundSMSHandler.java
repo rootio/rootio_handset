@@ -51,6 +51,11 @@ public class SoundSMSHandler implements MessageProcessor {
 		return false;	
 	}
 
+	/**
+	 * Sets the volume to the specified level
+	 * @param level The level to which to set the volume. ranging from 0 - 15
+	 * @return Boolean indicating whether or not the operation was successful
+	 */
 	private boolean setVolume(int level)
 	{
 		try
@@ -65,6 +70,11 @@ public class SoundSMSHandler implements MessageProcessor {
 		}
 	}
 	
+	/**
+	 * Sets the equaliser for the audio channel
+	 * @param equaliserName The name of the equaliser to apply to the audio channel
+	 * @return Boolean indicating whether or not the operation was successful
+	 */
 	private boolean setEqualiser(String equaliserName) throws Exception
 	{
 		

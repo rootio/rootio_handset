@@ -15,16 +15,30 @@ public class SMSSwitch {
 		this.messageParts = this.getMessageParts(message.getMessageBody().toLowerCase());
 	}
 	
+	/**
+	 * Gets a Message processor to be used to process the received message
+	 * @return A MessageProcessor object to process the message
+	 */
 	public MessageProcessor getMessageProcessor()
 	{
 		return this.switchSMS(this.messageParts);
 	}
 	
+	/**
+	 * Tokenizes the message into parts that can be analyzed for actions
+	 * @param message The message to be broken down
+	 * @return Array of strings representing tokens in the message
+	 */
 	private String[] getMessageParts(String message)
 	{
 		return message.split("");
 	}
 	
+	/**
+	 * Examines the message parts and returns a suitable message processor to process the message
+	 * @param messageParts Tokens from the message to be analyzed
+	 * @return a MessageProcessor to process the message
+	 */
 	private MessageProcessor switchSMS(String[] messageParts) {
 		String keyword = messageParts.length > 0? messageParts[0]: "";
 		if (keyword.equals("network")) {

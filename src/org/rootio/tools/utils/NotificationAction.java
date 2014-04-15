@@ -15,16 +15,28 @@ public class NotificationAction {
 		this.pendingIntent = pendingIntent;
 	}
 	
+	/**
+	 * Gets the title of this Notification action
+	 * @return Title of the notification action
+	 */
 	public String getTitle()
 	{
 		return this.text;
 	}
 	
+	/**
+	 * Gets the ID of the icon associated with this notification action
+	 * @return Integer ID of the resource that is the icon for this notification
+	 */
 	public int getIconId()
 	{
 		return this.iconId;
 	}
 	
+	/**
+	 * Gets the pending intent associated with this Notification Action
+	 * @return The pending intent associated with this notification
+	 */
 	public PendingIntent getPendingIntent()
 	{
 		return this.pendingIntent;

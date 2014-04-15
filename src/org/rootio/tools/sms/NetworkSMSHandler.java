@@ -60,6 +60,11 @@ public class NetworkSMSHandler implements MessageProcessor {
 		return false;
 	}
 	
+	/**
+	 * Sets the WiFI to the specified state
+	 * @param state The State to which to set the WiFI. "ON" puts the WiFI on, anything else turns it off
+	 * @return Boolean representing whether or not the operation was successful
+	 */
 	private boolean toggleWifi(String state)
 	{
 		try
@@ -73,6 +78,12 @@ public class NetworkSMSHandler implements MessageProcessor {
 		}
 	}
 	
+	/**
+	 * Connects to the wireless network with the specified SSID
+	 * @param SSID SSID of the network to which to connect
+	 * @param password The password of the network to which to connect
+	 * @return Boolean representing whether or not the operation was successful
+	 */
 	private boolean connectToWifi(String SSID, String password)
 	{
 		try
@@ -106,6 +117,10 @@ public class NetworkSMSHandler implements MessageProcessor {
 		}
 	}
 	
+	/**
+	 * Fetches the state of the GSM connection including the name of the Telecom operator and the signal strength
+	 * @return String containing information about the GSM connection
+	 */
 	private boolean  getGsmConnection()
 	{
 		try
@@ -123,6 +138,10 @@ public class NetworkSMSHandler implements MessageProcessor {
 		
 	}
 	
+	/**
+	 * Gets WiFI connectivity information including the network to which the phone is connected and the IP address it obtained
+	 * @return Boolean indicating whether or not getting WiFI information was successful
+	 */
 	private boolean getWifiConnection ()
 	{
 		WifiManager wifiManager = (WifiManager)this.parent.getSystemService(Context.WIFI_SERVICE);
@@ -139,11 +158,21 @@ public class NetworkSMSHandler implements MessageProcessor {
 		}
 	}
 	
-	private boolean toggleBluetooth()
+	/**
+	 * Sets the state of the bluetooth to the specified state
+	 * @param state The state to which to set the bluetooth. "ON" sets it on, anything else sets it off
+	 * @return Boolean representing whether the operation was successful
+	 */
+	private boolean toggleBluetooth(String state)
 	{
 		return false;
 	}
 	
+	/**
+	 * Connects to the specified bluetooth device
+	 * @param deviceName The name of the bluetooth device to which tio connect
+	 * @return Boolean representing whether or not the operation was successful
+	 */
 	private boolean connectBluetoothDevice(String deviceName)
 	{
 		return false;

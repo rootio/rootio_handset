@@ -35,6 +35,9 @@ public class RadioRunner implements Runnable {
 		this.parent.registerReceiver(broadcastReceiver, new IntentFilter(Intent.ACTION_HEADSET_PLUG));
 	}
 
+	/**
+	 * Sets up the alarming to handle the timing of the broadcasts
+	 */
 	private void setUpAlarming() {
 		am = (AlarmManager) this.parent.getSystemService(Context.ALARM_SERVICE);
 		br = new BroadcastHandler(this);
@@ -51,6 +54,10 @@ public class RadioRunner implements Runnable {
 
 	}
 
+	/**
+	 * Runs the program whose index is specified from the programs lined up
+	 * @param index The index of the program to run
+	 */
 	public void runProgram(int index) {
 		if (this.runningProgramIndex != null) {
 			this.programSlots.get(this.runningProgramIndex).getProgram().stop();
@@ -61,33 +68,53 @@ public class RadioRunner implements Runnable {
 		this.programSlots.get(this.runningProgramIndex).getProgram().run();
 	}
 
+	/**
+	 * Pauses the running program
+	 */
 	public void pauseProgram() {
 		if (this.runningProgramIndex != null) {
 			this.programSlots.get(this.runningProgramIndex).getProgram().pause();
 		}
 	}
-
+/**
+ * Resumes the program that is currently playing if it was paused before
+ */
 	public void resumeProgram() {
 		if (this.runningProgramIndex != null) {
 			this.programSlots.get(this.runningProgramIndex).getProgram().resume();
 		}
 	}
 
+	/**
+	 * Stops the program that is currently running
+	 */
 	public void stopProgram() {
 		if (this.runningProgramIndex != null) {
 			this.programSlots.get(this.runningProgramIndex).getProgram().stop();
 		}
 	}
 
+	/**
+	 * Returns all the program slots scheduled
+	 * @return ArrayList of ProgramSlot objects each representing a scheduled program
+	 */
 	public ArrayList<ProgramSlot> getProgramSlots() {
 		return this.programSlots;
 	}
 	
+	/**
+	 * Gets the running program
+	 * @return The curently running program
+	 */
 	public Program getRunningProgram()
 	{
 		return this.programSlots.get(this.runningProgramIndex).getProgram();
 	}
 
+	/**
+	 * Schedules the supplied programs according to their schedule information
+	 * @param programs ArrayList of the programs tobe scheduled
+	 */
 	private void schedulePrograms(ArrayList<Program> programs) {
 		for (int i = 0; i < programs.size(); i++) {
 			EventTime[] eventTimes = programs.get(i).getEventTimes();
@@ -104,6 +131,11 @@ public class RadioRunner implements Runnable {
 		}
 	}
 
+	/**
+	 * Adds the element at the supplied index to the Alarm as per the supplied time
+	 * @param index The index of the event to be added to the Alarm Manager
+	 * @param startTime The time at which the event is supposed to start
+	 */
 	private void addAlarmEvent(int index, Date startTime) { 
 		try {
 			pi = PendingIntent.getBroadcast(parent, 0, new Intent(String.valueOf(index)), 0);
@@ -120,6 +152,10 @@ public class RadioRunner implements Runnable {
 
 	}
 
+	/**
+	 * Fetches program information as stored in the database
+	 * @return ArrayList of Program objects each representing a database record
+	 */
 	private ArrayList<Program> fetchPrograms() {
 		DBAgent agent = new DBAgent(this.parent);
 		String query = "select program.id, program.title, program.cloudid, programtypeid , tag from program where program.id in (select programid from eventtime where date(scheduledate) = date())";
@@ -145,7 +181,11 @@ public class RadioRunner implements Runnable {
 
 		}
 	}
-
+/**
+ * This class listens for the exit of the Program service, stopping the currently running program
+ * @author Jude Mukundane
+ *
+ */
 	class RadioRunnerExitIntentListener extends BroadcastReceiver {
 
 		@Override

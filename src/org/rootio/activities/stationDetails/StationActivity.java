@@ -74,7 +74,7 @@ public class StationActivity extends Activity {
 			this.startActivity(intent);
 			break;
 		case R.id.refresh_station_details_menu_item:
-			this.fetchStationInformation(this.cloud.getServerAddress(), this.cloud.getHTTPPort(), this.station.getStationId(), cloud.getServerKey());
+			this.fetchStationInformation(this.cloud.getServerAddress(), this.cloud.getHTTPPort(), this.cloud.getStationId(), cloud.getServerKey());
 			break;
 		default: //handles the click of the application icon
 			this.finish();
