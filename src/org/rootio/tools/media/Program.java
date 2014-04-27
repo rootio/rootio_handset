@@ -49,6 +49,13 @@ public class Program {
 		this.createPlayList();
 	}
 	
+	public Program(Context  parent, long cloudId)
+	{
+		this.parent = parent;
+		this.cloudId = cloudId;
+		this.loadProgramInfo();
+	}
+	
 	/**
 	 * Sets the tag with which the show is associated
 	 */
@@ -252,8 +259,24 @@ public class Program {
 		ContentValues data = new ContentValues();
 		data.put("title", this.title);
 		data.put("programtypeid", this.programType.ordinal());
-		//data.put("tag", this.playList.getTag());
+		data.put("cloudid", this.cloudId);
 		DBAgent agent = new DBAgent(this.parent);
 		return agent.saveData(tableName, null, data);
+	}
+	
+	private void loadProgramInfo()
+	{
+		String tableName = "program";
+		String[] columns = new String[]{"id","title","tag"};
+		String whereClause = "cloudid = ?";
+		String[] whereArgs = new String[]{String.valueOf(this.cloudId)};
+		DBAgent agent = new DBAgent(this.parent);
+		String[][] result = agent.getData(true, tableName, columns, whereClause, whereArgs, null, null, null, null);
+		if(result.length > 0)
+		{
+			this.title = result[0][1];
+			this.tag = result[0][2];
+			this.id = Utils.parseLongFromString(result[0][0]);
+		}
 	}
 }

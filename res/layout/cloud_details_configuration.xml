@@ -6,7 +6,9 @@
 
 <ScrollView
     android:layout_width="match_parent"
-    android:layout_height="wrap_content" android:layout_weight="1">
+    android:layout_height="wrap_content"
+    android:layout_weight="1"
+    android:background="@drawable/beige_bg" >
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -17,12 +19,15 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/activity_horizontal_margin" >
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:layout_marginTop="@dimen/activity_horizontal_margin"
+            android:background="@drawable/shadow_background"
+            android:padding="@dimen/activity_horizontal_margin" >
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="6dp"
                 android:text="Cloud IP Addr:"
                 android:textSize="@dimen/SmallerContentText"
                 android:textStyle="bold" >
@@ -39,20 +44,19 @@
             </EditText>
 
         </LinearLayout>
-<ImageView
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:scaleType="fitXY"
-                android:src="?android:attr/listDivider" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/activity_horizontal_margin" >
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:layout_marginTop="@dimen/activity_horizontal_margin"
+            android:background="@drawable/shadow_background"
+            android:padding="@dimen/activity_horizontal_margin" >
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="6dp"
                 android:text="HTTP Port:"
                 android:textSize="@dimen/SmallerContentText"
                 android:textStyle="bold" />
@@ -66,21 +70,19 @@
                 android:inputType="number" />
 
         </LinearLayout>
-<ImageView
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:scaleType="fitXY"
-                android:src="?android:attr/listDivider" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/SmallerContentText" >
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:layout_marginTop="@dimen/activity_horizontal_margin"
+            android:background="@drawable/shadow_background"
+            android:padding="@dimen/activity_horizontal_margin" >
 
             <TextView
-                 android:layout_width="wrap_content"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="6dp"
                 android:text="Cloud Key:"
                 android:textSize="@dimen/SmallerContentText"
                 android:textStyle="bold" />
@@ -94,21 +96,19 @@
                 android:inputType="textPassword" />
 
         </LinearLayout>
-        <ImageView
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:scaleType="fitXY"
-                android:src="?android:attr/listDivider" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/SmallerContentText" >
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:layout_marginTop="@dimen/activity_horizontal_margin"
+            android:background="@drawable/shadow_background"
+            android:padding="@dimen/activity_horizontal_margin" >
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="6dp"
                 android:text="Confirm Key:"
                 android:textSize="@dimen/SmallerContentText"
                 android:textStyle="bold" />
@@ -122,22 +122,20 @@
                 android:inputType="textPassword" />
 
         </LinearLayout>
-<ImageView
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:scaleType="fitXY"
-                android:src="?android:attr/listDivider" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/SmallerContentText" >
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:layout_marginTop="@dimen/activity_horizontal_margin"
+            android:background="@drawable/shadow_background"
+            android:padding="@dimen/activity_horizontal_margin" >
 
             <TextView
                 android:id="@+id/cloud_station_id_lb"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="6dp"
                 android:text="Station Id:"
                 android:textSize="@dimen/SmallerContentText"
                 android:textStyle="bold" />
@@ -151,11 +149,6 @@
                 android:inputType="number" />
 
         </LinearLayout>
-<ImageView
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:scaleType="fitXY"
-                android:src="?android:attr/listDivider" />
     </LinearLayout>
 </ScrollView>
 <LinearLayout
