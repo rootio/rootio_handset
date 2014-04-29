@@ -10,6 +10,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.text.Html;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.CheckedTextView;
@@ -38,7 +39,16 @@ public class SynchronizationConfigurationFrequencyActivity extends
 		this.prepareFrequencyDropdown();
 		this.synchronizationConfiguration = new SynchronizationConfiguration(this);
 		this.renderCurrentConfiguration(synchronizationConfiguration);
-		
+		this.setNotificationText();
+	}
+	
+	/**
+	 * Sets the notification text about general guidelines for setting the multicast address
+	 */
+	private void setNotificationText()
+	{
+		TextView tv = (TextView)this.findViewById(R.id.synchronization_configuration_note_tv);
+		tv.setText(Html.fromHtml(this.getString(R.string.SynchronizationConfigurationNoteMessage)));
 	}
 
 	/**

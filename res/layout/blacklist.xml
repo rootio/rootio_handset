@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/beige_bg"
     android:orientation="vertical" >
 
 <ListView
@@ -9,7 +10,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_weight="1"
-    android:choiceMode="multipleChoice" >
+    android:choiceMode="none"
+    android:divider="@null"
+    android:paddingBottom="1dp" >
 
 "
 

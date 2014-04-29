@@ -2,109 +2,153 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:divider="?android:attr/listDivider"
-    android:orientation="vertical"
-    android:showDividers="end" >
+    android:background="@drawable/beige_bg"
+    android:orientation="vertical" >
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1" >
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/activity_horizontal_margin"
-        android:layout_weight="0"
-        android:orientation="horizontal" >
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/DiagnosticsFrequencyLabel"
-            android:textSize="@dimen/LabelTextSize" >
-        </TextView>
-
-        <EditText
-            android:id="@+id/synchronization_frequency_configuration_etv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:inputType="number" />
-
-        <Spinner
-            android:id="@+id/synchronization_frequency_configuration_spn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:prompt="@string/DiagnosticsConfigurationFrequencyUnit" >
-        </Spinner>
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/activity_horizontal_margin"
-        android:layout_weight="1"
         android:orientation="vertical" >
 
-        <CheckedTextView
-            android:id="@+id/synchronization_configure_frequency_syncduringparticulartimes_ctv"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:checkMark="@android:drawable/checkbox_off_background"
-            android:clickable="true"
-            android:onClick="onCheck"
-            android:text="@string/SynchronizationTimespanLabel"
-            android:textSize="@dimen/SmallerContentText" />
+            android:layout_margin="@dimen/activity_horizontal_margin"
+            android:background="@drawable/shadow_background"
+            android:orientation="horizontal" >
 
-        <TableLayout
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="@string/DiagnosticsFrequencyLabel"
+                android:textSize="@dimen/SmallerContentText"
+                android:textStyle="bold" >
+            </TextView>
+
+            <EditText
+                android:id="@+id/synchronization_frequency_configuration_etv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:inputType="number" />
+
+            <Spinner
+                android:id="@+id/synchronization_frequency_configuration_spn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:prompt="@string/DiagnosticsConfigurationFrequencyUnit" >
+            </Spinner>
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1" >
+            android:layout_marginBottom="@dimen/activity_horizontal_margin"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:layout_weight="0"
+            android:background="@drawable/shadow_background"
+            android:orientation="vertical"
+            android:padding="@dimen/activity_horizontal_margin" >
 
-            <TableRow
-                android:id="@+id/synchronization_configure_frequency_starttime_tbr"
-                android:layout_marginTop="@dimen/activity_horizontal_margin"
-                android:enabled="false"
-                android:onClick="onSetStartTime" >
-
-                <TextView
-                    android:id="@+id/synchronization_configure_frequency_starttimelabel_tv"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:enabled="true"
-                    android:text="@string/SynchronizationConfigureFrequencyStartTimeLabel"
-                    android:textSize="@dimen/LabelTextSize" />
-
-                <TextView
-                    android:id="@+id/synchronization_configure_frequency_starttime_tv"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginLeft="@dimen/Smaller"
-                    android:text="sample"
-                    android:textSize="@dimen/SmallerContentText" />
-            </TableRow>
-
-            <TableRow
-                android:id="@+id/synchronization_configure_frequency_endtime_tbr"
+            <CheckedTextView
+                android:id="@+id/synchronization_configure_frequency_syncduringparticulartimes_ctv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/activity_horizontal_margin"
-                android:onClick="onSetEndTime" >
+                android:layout_weight="0"
+                android:checkMark="@android:drawable/checkbox_off_background"
+                android:clickable="true"
+                android:onClick="onCheck"
+                android:text="@string/SynchronizationTimespanLabel"
+                android:textSize="@dimen/SmallerContentText" />
 
-                <TextView
-                    android:id="@+id/synchronization_configure_frequency_endtimelabel_tv"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/SynchronizationConfigureFrequencyEndTimeLabel"
-                    android:textSize="@dimen/LabelTextSize" />
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" >
 
-                <TextView
-                    android:id="@+id/synchronization_configure_frequency_endtime_tv"
+                <TableRow
+                    android:id="@+id/synchronization_configure_frequency_starttime_tbr"
+                    android:layout_marginTop="@dimen/activity_horizontal_margin"
+                    android:enabled="false"
+                    android:onClick="onSetStartTime" >
+
+                    <TextView
+                        android:id="@+id/synchronization_configure_frequency_starttimelabel_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:enabled="true"
+                        android:text="@string/SynchronizationConfigureFrequencyStartTimeLabel"
+                        android:textSize="@dimen/SmallerContentText"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/synchronization_configure_frequency_starttime_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="@dimen/Smaller"
+                        android:text="sample"
+                        android:textSize="@dimen/SmallerContentText" />
+                </TableRow>
+
+                <TableRow
+                    android:id="@+id/synchronization_configure_frequency_endtime_tbr"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/Smaller"
-                    android:text="sample"
-                    android:textSize="@dimen/SmallerContentText" />
-            </TableRow>
-        </TableLayout>
-    </LinearLayout>
+                    android:layout_marginTop="@dimen/activity_horizontal_margin"
+                    android:onClick="onSetEndTime" >
 
+                    <TextView
+                        android:id="@+id/synchronization_configure_frequency_endtimelabel_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/SynchronizationConfigureFrequencyEndTimeLabel"
+                        android:textSize="@dimen/SmallerContentText"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/synchronization_configure_frequency_endtime_tv"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/Smaller"
+                        android:text="sample"
+                        android:textSize="@dimen/SmallerContentText" />
+                </TableRow>
+            </TableLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/activity_horizontal_margin"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:layout_weight="0"
+            android:background="@drawable/shadow_background"
+            android:orientation="vertical"
+            android:padding="@dimen/Smaller" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/SynchronizationFrequencyNoteTitle"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/synchronization_configuration_note_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/SynchronizationConfigurationNoteMessage" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

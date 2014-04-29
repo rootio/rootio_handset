@@ -92,7 +92,6 @@ public class ProgramHandler {
 	
 	private Date getLastUpdatedDate(JSONObject object)
 	{
-		
 		try {
 			String dateString;
 			dateString = object.getString("updated_at");
@@ -100,8 +99,7 @@ public class ProgramHandler {
 		} catch (JSONException e) {
 			Log.e(this.parent.getString(R.string.app_name), e.getMessage());
 			return null;
-		}
-		
+		}	
 	}
 	
 	

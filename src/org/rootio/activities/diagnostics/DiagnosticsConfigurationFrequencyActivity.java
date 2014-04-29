@@ -10,10 +10,12 @@ import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 public class DiagnosticsConfigurationFrequencyActivity extends Activity {
 
@@ -25,6 +27,16 @@ public class DiagnosticsConfigurationFrequencyActivity extends Activity {
 		this.setContentView(R.layout.diagnostics_configuration_frequency);
 		this.prepareFrequencyDropdown();
 		this.setTitle("Set Diagnostics Frequency");
+		this.setNotificationText();
+	}
+	
+	/**
+	 * Sets the notification text about general guidelines for setting the multicast address
+	 */
+	private void setNotificationText()
+	{
+		TextView tv = (TextView)this.findViewById(R.id.diagnostic_frequency_configuration_note_tv);
+		tv.setText(Html.fromHtml(this.getString(R.string.DiagnosticsConfigurationNoteMessage)));
 	}
 
 	/**

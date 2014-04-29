@@ -1,5 +1,7 @@
 package org.rootio.tools.sms;
 
+import org.rootio.tools.utils.Utils;
+
 import android.content.Context;
 import android.telephony.SmsMessage;
 
@@ -12,6 +14,7 @@ public class SMSSwitch {
 	public SMSSwitch(Context parent, SmsMessage message){
 		this.parent = parent;
 		this.from = message.getOriginatingAddress();
+		Utils.toastOnScreen(message.getMessageBody());
 		this.messageParts = this.getMessageParts(message.getMessageBody().toLowerCase());
 	}
 	
@@ -31,7 +34,10 @@ public class SMSSwitch {
 	 */
 	private String[] getMessageParts(String message)
 	{
-		return message.split("");
+		Utils.toastOnScreen(message);
+		String[] parts = message.split("[|]");
+		Utils.toastOnScreen(String.valueOf(parts.length));
+		return parts;
 	}
 	
 	/**
@@ -59,6 +65,10 @@ public class SMSSwitch {
 		if (keyword.equals("sound")) {
 
 			return new SoundSMSHandler(this.parent, from, messageParts);
+		}
+		if (keyword.equals("diagnostic")) {
+Utils.toastOnScreen("received msg");
+			return new DiagnosticsSMSHandler(this.parent, from, messageParts);
 		}
 		return null;
 	}

@@ -19,11 +19,16 @@ public class SynchronizationDaemon implements Runnable {
 	public void run() {
 		ProgramSynchronizer programSynchronizer = new ProgramSynchronizer();
 		EventTimeSynchronizer eventTimeSynchronizer = new EventTimeSynchronizer();
+		StationInformationSynchronizer stationInformationSynchronizer = new StationInformationSynchronizer();
+		DiagnosticsSynchronizer diagnosticsSynchronizer = new DiagnosticsSynchronizer();
 		while(((SynchronizationService)this.parent).isRunning())
 		{
 			Utils.toastOnScreen("synchronizing...");
 			programSynchronizer.synchronize();
 			eventTimeSynchronizer.synchronize();
+			stationInformationSynchronizer.synchronize();
+			diagnosticsSynchronizer.synchronize();
+			
 			try {
 				Thread.sleep(this.frequency * 1000);//frequency is in seconds
 			} catch (InterruptedException e) {
@@ -144,5 +149,66 @@ class EventTimeSynchronizer
 	}
 }
 
+class StationInformationSynchronizer
+{
+	private SynchronizationUtils synchronizationUtils;
+	
+	StationInformationSynchronizer()
+	{
+		this.synchronizationUtils = new SynchronizationUtils(SynchronizationDaemon.this.parent);
+	}
+	
+	
+	/**
+	 * Constructs the URL to check for EventTime updates
+	 * @return
+	 */
+	private String getSynchronizationURL()
+	{
+		return String.format("http://%s:%s/%s/%s?api_key=%s", SynchronizationDaemon.this.cloud.getServerAddress(),SynchronizationDaemon.this.cloud.getHTTPPort(), "api/station", SynchronizationDaemon.this.cloud.getStationId(), SynchronizationDaemon.this.cloud.getServerKey());
+	}
+	
+	/**
+	 * Runs the synchronization for programs
+	 */
+	public void synchronize() 
+	{
+		String synchronizationUrl = this.getSynchronizationURL();
+		String response = Utils.doHTTP(synchronizationUrl);
+		EventTimeHandler handler = new EventTimeHandler(SynchronizationDaemon.this.parent, response,this.synchronizationUtils);
+		handler.processEventTimes();	
+	}
+}
 
+class DiagnosticsSynchronizer
+{
+	private SynchronizationUtils synchronizationUtils;
+	
+	DiagnosticsSynchronizer()
+	{
+		this.synchronizationUtils = new SynchronizationUtils(SynchronizationDaemon.this.parent);
+	}
+	
+	/**
+	 * Constructs the URL to check for EventTime updates
+	 * @return
+	 */
+	private String getSynchronizationURL()
+	{
+		return String.format("http://%s:%s/%s/%s?api_key=%s", SynchronizationDaemon.this.cloud.getServerAddress(),SynchronizationDaemon.this.cloud.getHTTPPort(), "api/station", SynchronizationDaemon.this.cloud.getStationId(), SynchronizationDaemon.this.cloud.getServerKey());
+	}
+	
+	/**
+	 * Runs the synchronization for programs
+	 */
+	public void synchronize() 
+	{
+		DiagnosticsHandler handler = new DiagnosticsHandler(SynchronizationDaemon.this.parent, this.synchronizationUtils);
+			for (int i = 0; i < handler.getSize(); i++) {
+				String synchronizationUrl = this.getSynchronizationURL();
+				String response = Utils.doPostHTTP(synchronizationUrl, handler.getSynchronizationData(i));
+				handler.processDiagnosticSynchronizationResponse(response, i);
+			}
+	}
+}
 }

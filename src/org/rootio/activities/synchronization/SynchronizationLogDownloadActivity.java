@@ -3,7 +3,11 @@ package org.rootio.activities.synchronization;
 import org.rootio.radioClient.R;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.ListView;
 
 public class SynchronizationLogDownloadActivity extends Activity {
@@ -20,6 +24,28 @@ private int limit = 100;
 	    listView.setAdapter(adapter);
 	    this.setTitle("Download Backlog");
 		
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		super.onCreateOptionsMenu(menu);
+		MenuInflater menuInflater = this.getMenuInflater();
+		menuInflater
+				.inflate(R.menu.synchronization_configuration_frequency, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.synchronization_configuration_frequency_menu_item:
+			Intent intent = new Intent(this,
+					SynchronizationConfigurationFrequencyActivity.class);
+			this.startActivity(intent);
+			return true;
+		default:
+			return false;
+		}
 	}
 	
 	

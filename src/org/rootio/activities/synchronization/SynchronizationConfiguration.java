@@ -19,7 +19,7 @@ public class SynchronizationConfiguration {
     private int quantity;
     private Context context;
 	
-	SynchronizationConfiguration(Context context)
+	public SynchronizationConfiguration(Context context)
 	{
 		this.context = context;
 		String[][] configuration = this.loadConfiguration();
@@ -62,7 +62,7 @@ public class SynchronizationConfiguration {
 	 * Gets the date when this configuration was last modified
 	 * @return The date of last modification of this configuration
 	 */
-	Date getChangeDate()
+	public Date getChangeDate()
 	{
 		return this.changeDate;
 	}
@@ -71,7 +71,7 @@ public class SynchronizationConfiguration {
 	 * Gets whether or not synchronizations should be limited to a given time frame
 	 * @return Boolean of whether synchronizations are limited to a given time or not. True: limited, False: not limited
 	 */
-	boolean syncDuringParticularTimes()
+	public boolean syncDuringParticularTimes()
 	{
 		return this.syncDuringParticularTimes;
 	}
@@ -80,7 +80,7 @@ public class SynchronizationConfiguration {
 	 * Gets the start time of the synchronization window
 	 * @return String representation of the start time of the Sync window in HH:mm:ss format
 	 */
-	String getSyncStartTime()
+	public String getSyncStartTime()
 	{
 		return this.syncStartTime;
 	}
@@ -89,7 +89,7 @@ public class SynchronizationConfiguration {
 	 * Gets the end time of the synchronization window
 	 * @return String representation of the end time of the Sync window in HH:mm:ss format
 	 */
-	String getSyncEndTime()
+	public String getSyncEndTime()
 	{
 		return this.syncEndTime;
 	}
@@ -98,7 +98,7 @@ public class SynchronizationConfiguration {
 	 * The ID of the unit used to define the frequency of Synchronization
 	 * @return Integer representing the ID of the unit used to define the frequency of synchronization
 	 */
-	int getUnitId()
+	public int getUnitId()
 	{
 		return this.unitId;
 	}
@@ -107,7 +107,7 @@ public class SynchronizationConfiguration {
 	 * Gets the quantity of time in specified units at which to do the synchronization
 	 * @return Integer quantity of time units
 	 */
-	int getQuantity()
+	public int getQuantity()
 	{
 		return this.quantity;
 	}
@@ -116,7 +116,7 @@ public class SynchronizationConfiguration {
 	 * Sets whether or not to synchronize in aparticular time window
 	 * @param syncDuringParticularTimes Boolean specifying whether to sync during particular time window. True:yes, False:no
 	 */
-    void setSyncDuringParticularTimes(boolean syncDuringParticularTimes)
+    public void setSyncDuringParticularTimes(boolean syncDuringParticularTimes)
     {
     	this.syncDuringParticularTimes = syncDuringParticularTimes;
     }
@@ -125,7 +125,7 @@ public class SynchronizationConfiguration {
      * Sets the time at which the synchronization time window starts
      * @param syncStartTime String representation of the Synchronization start time in the format HH:mm:ss
      */
-    void setSyncStartTime(String syncStartTime)
+    public void setSyncStartTime(String syncStartTime)
     {
     	this.syncStartTime = syncStartTime;
     }
@@ -135,7 +135,7 @@ public class SynchronizationConfiguration {
      * Sets the time at which the synchronization time window ends
      * @param syncEndTime String representation of the Synchronization end time in the format HH:mm:ss
      */
-    void setSyncEndTime(String syncEndTime)
+    public void setSyncEndTime(String syncEndTime)
     {
     	this.syncEndTime = syncEndTime;
     }
@@ -144,7 +144,7 @@ public class SynchronizationConfiguration {
      * Sets the ID of the unit used to measure the duration of the synchronization intervals
      * @param unitId Integer ID of the unit used to measure the time interval between synchronizations
      */
-    void setUnitId(int unitId)
+    public void setUnitId(int unitId)
     {
     	this.unitId = unitId;
     }
@@ -153,7 +153,7 @@ public class SynchronizationConfiguration {
      * Sets the quantity of the time units specifying the interval between synchronizations
      * @param quantity Integer representation of the number of time units between synchronizations
      */
-    void setQuantity(int quantity)
+    public void setQuantity(int quantity)
     {
     	this.quantity = quantity;
     }
@@ -162,7 +162,7 @@ public class SynchronizationConfiguration {
      * Saves the frequency configuration details
      * @return integer number of the rows affected by this transaction in the database
      */
-    int save() {
+    public int save() {
 		String tableName = "frequencyconfiguration";
 		String whereClause = "title = ?";
 		String[] whereArgs = new String[] { title };

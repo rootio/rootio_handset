@@ -13,6 +13,7 @@ import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.View;
 import android.widget.TextView;
 
@@ -24,6 +25,16 @@ public class MulticastConfigurationActivity extends Activity implements DialogIn
 		super.onCreate(savedInstanceState);
 		this.setTitle("Multicast Configuration");
 		this.setContentView(R.layout.multicast_configuration);
+		this.setNotificationText();
+	}
+	
+	/**
+	 * Sets the notification text about general guidelines for setting the multicast address
+	 */
+	private void setNotificationText()
+	{
+		TextView tv = (TextView)this.findViewById(R.id.multicast_configuration_note_tv);
+		tv.setText(Html.fromHtml(this.getString(R.string.MulticastNoteMessage)));
 	}
 	
 	/**

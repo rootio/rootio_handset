@@ -13,13 +13,13 @@ public class SynchronizationUtils {
 	private Context parent;
 	
 	
-	SynchronizationUtils(Context parent)
+	public SynchronizationUtils(Context parent)
 	{
 		this.parent = parent;
 	}
 	
 	
-	Date getLastUpdateDate(SynchronizationType synchronizationType)
+	public Date getLastUpdateDate(SynchronizationType synchronizationType)
 	{
 		String tableName = "downloadbacklog";
 		String[] columns = new String[]{"updatedate"};

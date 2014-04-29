@@ -62,7 +62,7 @@ public class DiagnosticsService extends Service  implements ServiceInformationPu
 		DBAgent dbAgent = new DBAgent(this);
 		String[][] results = dbAgent.getData(true, tableName, columnsToReturn,
 				whereClause, whereArgs, null, null, null, null);
-		return results.length > 1 ? this.getMillisToSleep(
+		return results.length > 0 ? this.getMillisToSleep(
 				Utils.parseIntFromString(results[0][0]),
 				Utils.parseIntFromString(results[0][1])) : 0;
 	}

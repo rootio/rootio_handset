@@ -8,11 +8,13 @@ import org.rootio.services.DiagnosticsService;
 import org.rootio.services.DiscoveryService;
 import org.rootio.services.Notifiable;
 import org.rootio.services.ProgramService;
+import org.rootio.services.SMSService;
 import org.rootio.services.ServiceConnectionAgent;
 import org.rootio.services.ServiceInformationPublisher;
 import org.rootio.services.ServiceState;
 import org.rootio.services.SynchronizationService;
 import org.rootio.services.TelephonyService;
+import org.rootio.tools.utils.Utils;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -86,7 +88,7 @@ public class ServicesActivity extends Activity implements
 								(TextView) this
 										.findViewById(R.id.messaging_service_tv),
 								new ServiceState(this, 2), new Intent(this,
-										TelephonyService.class), this));
+										SMSService.class), this));
 		this.serviceComponents.put(
 				3,
 				new ServiceComponents(null,
@@ -205,7 +207,6 @@ public class ServicesActivity extends Activity implements
 					.getServiceConnectionAgent());
 			this.serviceComponents.get(serviceId).setServiceConnectionAgent(
 					null);
-			;
 		} catch (Exception ex) // may not be bound
 		{
 
@@ -218,6 +219,7 @@ public class ServicesActivity extends Activity implements
 	 * @param serviceId The ID of the service to start
 	 */
 	private void startService(int serviceId) {
+		Utils.toastOnScreen("Starting "+serviceId);
 		Intent serviceIntent = this.serviceComponents.get(serviceId)
 				.getIntent();
 		this.bindServiceConnection(serviceId);

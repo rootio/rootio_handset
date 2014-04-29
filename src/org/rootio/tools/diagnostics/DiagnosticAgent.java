@@ -9,6 +9,7 @@ import android.app.ActivityManager.MemoryInfo;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.location.Location;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -178,17 +179,27 @@ public class DiagnosticAgent {
 	 * Loads the GPS coordinates of the phone
 	 */
 	private void loadLatitudeLongitude() {
-		locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+		Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+		if(location != null)
+		{
+			this.latitude = location.getLatitude();
+			this.longitude = location.getLongitude();
+		}
 	}
 
 	/**
 	 * Loads the percentage Utilization of the phone storage
 	 */
 	private void loadStorageUtilization() {
-		StatFs statFs = new StatFs(Environment.getExternalStorageDirectory()
-				.getAbsolutePath());
-		this.storageStatus = 100 - ((statFs.getAvailableBlocks() * 100) / statFs
-				.getBlockCount());
+		try
+		{
+		   StatFs statFs = new StatFs(Environment.getExternalStorageDirectory().getAbsolutePath());
+		   this.storageStatus = 100 - ((statFs.getAvailableBlocks() * 100) / statFs.getBlockCount());
+		}
+		catch(Exception ex)
+		{
+			this.storageStatus = 0;
+		}
 	}
 
 	/**

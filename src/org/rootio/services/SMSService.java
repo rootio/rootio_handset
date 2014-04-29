@@ -64,6 +64,8 @@ public class SMSService extends Service implements IncomingSMSNotifiable, Servic
 	public void notifyIncomingSMS(SmsMessage message) {
 		SMSSwitch smsSwitch = new SMSSwitch(this, message);
 		MessageProcessor messageProcessor = smsSwitch.getMessageProcessor();
+		if(messageProcessor != null)
+			
 		messageProcessor.ProcessMessage();
 	}
 	

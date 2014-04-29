@@ -2,6 +2,7 @@ package org.rootio.tools.utils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
@@ -18,6 +19,7 @@ import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.os.Handler;
@@ -182,7 +184,44 @@ public class Utils {
 		}
 	}
 
-
+	public static String doPostHTTP(String httpUrl, ContentValues data) {
+        URL url;
+        try {
+            url = new URL("http://demo.rootio.org/api/station/2/analytics?api_key=q0hMmMm1Pg");
+            StringBuilder parameters =  new StringBuilder();
+            for(String key : data.keySet())
+            {
+            	parameters.append(String.format("%s=%s&", key, data.get(key)));
+            }
+            HttpURLConnection httpUrlConnection = (HttpURLConnection) url.openConnection();
+            httpUrlConnection.setRequestMethod("POST");
+            httpUrlConnection.setDoOutput(true);
+            httpUrlConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            httpUrlConnection.connect();
+            OutputStream outstr = httpUrlConnection.getOutputStream();
+            outstr.write(parameters.toString().getBytes());
+            outstr.flush();
+            InputStream instr = httpUrlConnection.getInputStream();
+            StringBuilder response = new StringBuilder();
+            while (true) {
+                int tmp = instr.read();
+                if (tmp < 0) {
+                    break;
+                }
+                response.append((char) tmp);
+            }
+            return response.toString();
+        } catch (MalformedURLException e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+            return null;
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
+	
 	public static boolean validateNumber(String input) {
 		try {
 			@SuppressWarnings("unused")

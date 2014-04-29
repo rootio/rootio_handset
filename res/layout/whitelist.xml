@@ -9,9 +9,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_weight="1"
-    android:choiceMode="multipleChoice" >
-
-"
+    android:background="@drawable/beige_bg"
+    android:choiceMode="multipleChoice"
+    android:paddingBottom="1dp" >
 
 </ListView>
 

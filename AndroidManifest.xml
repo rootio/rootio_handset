@@ -13,7 +13,13 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-
+    <uses-permission android:name="android.permission.READ_SMS" >
+    </uses-permission>
+    <uses-permission android:name="android.permission.RECEIVE_SMS" >
+    </uses-permission>
+    <uses-permission android:name="android.permission.SEND_SMS" >
+    </uses-permission>
+    
     <uses-sdk
         android:minSdkVersion="14"
         android:targetSdkVersion="17" />
@@ -62,6 +68,7 @@
 
         <service android:name="org.rootio.services.TelephonyService" ></service>
         <service android:name="org.rootio.services.DiagnosticsService" ></service>
+        <service android:name="org.rootio.services.SMSService" ></service>
         <service android:name="org.rootio.services.ProgramService" ></service>
         <service android:name="org.rootio.services.DiscoveryService" ></service>
         <service android:name="org.rootio.services.SynchronizationService" ></service>
