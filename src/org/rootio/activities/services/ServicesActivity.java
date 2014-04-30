@@ -3,6 +3,7 @@ package org.rootio.activities.services;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+import org.rootio.activities.diagnostics.DiagnosticsConfigurationFrequencyActivity;
 import org.rootio.radioClient.R;
 import org.rootio.services.DiagnosticsService;
 import org.rootio.services.DiscoveryService;
@@ -22,6 +23,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
@@ -41,6 +43,7 @@ public class ServicesActivity extends Activity implements
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.services);
 		this.setTitle("Services");
+		this.getActionBar().setDisplayHomeAsUpEnabled(true);
 		setupBroadcastHandling();
 		setupServiceComponents();
 		this.getServiceConnections();
@@ -143,6 +146,15 @@ public class ServicesActivity extends Activity implements
 			this.unregisterReceiver(broadCastIntentHandler);
 		} catch (Exception ex) {
 
+		}
+	}
+	
+	@Override
+	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+		switch (item.getItemId()) {
+		default: //handles the click of the application icon
+			this.finish();
+			return false;
 		}
 	}
 

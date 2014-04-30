@@ -11,6 +11,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.text.Html;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.CheckedTextView;
@@ -35,11 +36,21 @@ public class SynchronizationConfigurationFrequencyActivity extends
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.synchronization_configuration_frequency);
 		this.setTitle("Configure Frequency");
+		this.getActionBar().setDisplayHomeAsUpEnabled(true);
 		this.lookUpControls();
 		this.prepareFrequencyDropdown();
 		this.synchronizationConfiguration = new SynchronizationConfiguration(this);
 		this.renderCurrentConfiguration(synchronizationConfiguration);
 		this.setNotificationText();
+	}
+	
+	@Override
+	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+		switch (item.getItemId()) {
+		default: //handles the click of the application icon
+			this.finish();
+			return false;
+		}
 	}
 	
 	/**

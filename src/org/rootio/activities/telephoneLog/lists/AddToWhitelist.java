@@ -7,6 +7,7 @@ import org.rootio.tools.utils.Utils;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
@@ -18,6 +19,16 @@ public class AddToWhitelist extends Activity {
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.add_to_whitelist);
 		this.setTitle("Add Number to Whitelist");
+		this.getActionBar().setDisplayHomeAsUpEnabled(true);
+	}
+	
+	@Override
+	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+		switch (item.getItemId()) {
+		default: //handles the click of the application icon
+			this.finish();
+			return false;
+		}
 	}
 	
 	/**

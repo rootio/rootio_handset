@@ -14,6 +14,7 @@ import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.Html;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
@@ -26,6 +27,7 @@ public class MulticastConfigurationActivity extends Activity implements DialogIn
 		this.setTitle("Multicast Configuration");
 		this.setContentView(R.layout.multicast_configuration);
 		this.setNotificationText();
+		this.getActionBar().setDisplayHomeAsUpEnabled(true);
 	}
 	
 	/**
@@ -117,6 +119,15 @@ public class MulticastConfigurationActivity extends Activity implements DialogIn
 			Utils.toastOnScreen("Please supply a valid port number");	
 		}	
 		
+	}
+	
+	@Override
+	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+		switch (item.getItemId()) {
+		default: //handles the click of the application icon
+			this.finish();
+			return false;
+		}
 	}
 
 	/**

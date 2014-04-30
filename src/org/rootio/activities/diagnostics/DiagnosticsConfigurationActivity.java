@@ -26,6 +26,7 @@ public class DiagnosticsConfigurationActivity extends Activity implements OnChec
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.diagnostics_configuration);
 		this.setTitle("Configure Diagnostics");
+		this.getActionBar().setDisplayHomeAsUpEnabled(true);
 		setSwitches();
 	}
 
@@ -70,7 +71,8 @@ public class DiagnosticsConfigurationActivity extends Activity implements OnChec
 			Intent intent = new Intent(this, DiagnosticsConfigurationFrequencyActivity.class);
 			this.startActivity(intent);
 			return true;
-		default:
+		default: //handles the click of the application icon
+			this.finish();
 			return false;
 		}
 	}

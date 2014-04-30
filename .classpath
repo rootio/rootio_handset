@@ -6,6 +6,5 @@
 	<classpathentry exported="true" kind="lib" path="C:/Users/HP Envy/Documents/adt-bundle-windows-x86-20130219/sdk/extras/android/support/v4/android-support-v4.jar"/>
 	<classpathentry kind="lib" path="C:/Users/HP Envy/Documents/adt-bundle-windows-x86-20130219/sdk/platforms/android-17/android.jar"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>
-	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

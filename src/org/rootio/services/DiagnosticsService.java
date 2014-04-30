@@ -1,10 +1,12 @@
 package org.rootio.services;
 
-import org.rootio.tools.diagnostics.DiagnosticsRunner;
+import org.rootio.tools.diagnostics.DiagnosticAgent;
 import org.rootio.tools.persistence.DBAgent;
 import org.rootio.tools.utils.Utils;
 
 import android.app.Service;
+import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 
@@ -40,7 +42,6 @@ public class DiagnosticsService extends Service  implements ServiceInformationPu
 	public void onDestroy() {
 		if (runnerThread != null) {
 			super.onDestroy();
-			runnerThread.interrupt();
 			this.isRunning = false;
 			this.sendEventBroadCast();
 		}
@@ -99,6 +100,53 @@ public class DiagnosticsService extends Service  implements ServiceInformationPu
 	@Override
 	public int getServiceId() {
 		return this.serviceId;
+	}
+	
+	class DiagnosticsRunner implements Runnable {
+		private DiagnosticAgent diagnosticAgent;
+		private Context parentActivity;
+		private long delay;
+		
+		public DiagnosticsRunner(Context parentActivity, long delay) {
+			this.parentActivity = parentActivity;
+			this.diagnosticAgent = new DiagnosticAgent(this.parentActivity);
+			this.delay = delay;
+		}
+
+		@Override
+		public void run() {
+			while (isRunning) {
+				diagnosticAgent.runDiagnostics();
+				this.logToDB();
+				try {
+					Thread.sleep(delay);
+				} catch (InterruptedException ex) {
+					
+				}
+			}
+		}
+		
+		/**
+		 * Saves the diagnostics gathered to the database
+		 */
+		private void logToDB()
+		{
+			String tableName = "diagnostic";
+			ContentValues values = new ContentValues();
+			values.put("batterylevel", diagnosticAgent.getBatteryLevel());
+			values.put("memoryutilization", diagnosticAgent.getMemoryStatus());
+			values.put("storageutilization", diagnosticAgent.getStorageStatus());
+			values.put("CPUutilization",diagnosticAgent.getCPUUtilization());
+			values.put("wificonnected", diagnosticAgent.isConnectedToWifi());
+			values.put("gsmconnected", diagnosticAgent.isConnectedToGSM());
+			values.put("gsmstrength", diagnosticAgent.getGSMConnectionStrength());
+			values.put("latitude",diagnosticAgent.getLatitude());
+			values.put("longitude", diagnosticAgent.getLongitude());
+			DBAgent dbAgent = new DBAgent(this.parentActivity);
+			dbAgent.saveData(tableName, null, values);
+		}
+
+		
 	}
 
 }

@@ -63,6 +63,7 @@ public class RadioActivity extends Activity implements Notifiable, ServiceExitIn
 			return true;
 		case R.id.telephony_menu_item:
 			intent = new Intent(this, TelephoneLogActivity.class);
+			intent.putExtra("isHomeScreen",false);
 			startActivity(intent);
 			return true;
 		case R.id.diagnostics_menu_item:

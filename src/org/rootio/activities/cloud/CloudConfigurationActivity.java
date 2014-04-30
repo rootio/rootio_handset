@@ -9,6 +9,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
@@ -21,6 +22,7 @@ public class CloudConfigurationActivity extends Activity {
 	{
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.cloud_details_configuration);
+		this.getActionBar().setDisplayHomeAsUpEnabled(true);
 	}
 	
 	@Override
@@ -28,6 +30,15 @@ public class CloudConfigurationActivity extends Activity {
 	{
 		super.onStart();
 		this.cloud = new Cloud(this);
+	}
+	
+	@Override
+	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+		switch (item.getItemId()) {
+		default: //handles the click of the application icon
+			this.finish();
+			return false;
+		}
 	}
 	
 	/**

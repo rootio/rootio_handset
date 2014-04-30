@@ -11,6 +11,7 @@ import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.Html;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -27,7 +28,17 @@ public class DiagnosticsConfigurationFrequencyActivity extends Activity {
 		this.setContentView(R.layout.diagnostics_configuration_frequency);
 		this.prepareFrequencyDropdown();
 		this.setTitle("Set Diagnostics Frequency");
+		this.getActionBar().setDisplayHomeAsUpEnabled(true);
 		this.setNotificationText();
+	}
+	
+	@Override
+	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+		switch (item.getItemId()) {
+		default: //handles the click of the application icon
+			this.finish();
+			return false;
+		}
 	}
 	
 	/**

@@ -16,6 +16,7 @@ public final class R {
     }
     public static final class dimen {
         public static final int ButtonPanelPadding=0x7f050003;
+        public static final int DiagnosticTextSize=0x7f050007;
         public static final int LabelTextSize=0x7f050004;
         public static final int ListingText=0x7f050005;
         public static final int Smaller=0x7f050002;

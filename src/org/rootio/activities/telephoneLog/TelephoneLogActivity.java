@@ -1,5 +1,10 @@
 package org.rootio.activities.telephoneLog;
 
+import org.rootio.activities.cloud.CloudActivity;
+import org.rootio.activities.diagnostics.DiagnosticsConfigurationActivity;
+import org.rootio.activities.services.ServicesActivity;
+import org.rootio.activities.stationDetails.StationActivity;
+import org.rootio.activities.synchronization.SynchronizationLogDownloadActivity;
 import org.rootio.activities.telephoneLog.lists.BlackListActivity;
 import org.rootio.activities.telephoneLog.lists.WhitelistActivity;
 import org.rootio.radioClient.R;
@@ -20,6 +25,7 @@ public class TelephoneLogActivity extends Activity implements OnRefreshListener 
 	private SwipeRefreshLayout swipeContainer;
 	private ListView telephoneLogView;
 	private TelephoneLogAdapter telephoneLogAdapter;
+	private boolean isHomeScreen;
 	
 	@SuppressLint("NewApi")
 	@Override
@@ -32,7 +38,8 @@ public class TelephoneLogActivity extends Activity implements OnRefreshListener 
 		telephoneLogAdapter = new TelephoneLogAdapter(this);
 		telephoneLogView.setAdapter(telephoneLogAdapter);
 		this.setTitle("Call Records");
-		if(!this.getIntent().getBooleanExtra("isHomeScreen", true))
+		this.isHomeScreen = this.getIntent().getBooleanExtra("isHomeScreen", true);
+		if(!this.isHomeScreen)
 		{
 			this.getActionBar().setDisplayHomeAsUpEnabled(true);
 		}
@@ -50,7 +57,14 @@ public class TelephoneLogActivity extends Activity implements OnRefreshListener 
 	{
 		super.onCreateOptionsMenu(menu);
 		MenuInflater menuInflater = this.getMenuInflater();
-		menuInflater.inflate(R.menu.activity_telephony, menu);
+		if(this.isHomeScreen)
+		{
+			//home menu is displayed
+		}
+		else
+		{
+			menuInflater.inflate(R.menu.activity_telephony, menu);
+		}
 		return true;
 	}
 	
@@ -67,6 +81,38 @@ public class TelephoneLogActivity extends Activity implements OnRefreshListener 
 		case R.id.white_list_menu_item:
 			Intent intent2 = new Intent(this, WhitelistActivity.class);
 			this.startActivity(intent2);
+			return true;
+		case R.id.station_menu_item:
+			intent = new Intent(this, StationActivity.class);
+			startActivity(intent);
+			return true;
+		case R.id.cloud_menu_item :
+			intent = new Intent(this, CloudActivity.class);
+			startActivity(intent);
+			return true;
+		case R.id.telephony_menu_item:
+			intent = new Intent(this, TelephoneLogActivity.class);
+			intent.putExtra("isHomeScreen",false);
+			startActivity(intent);
+			return true;
+		case R.id.diagnostics_menu_item:
+			intent = new Intent(this, DiagnosticsConfigurationActivity.class);
+			intent.putExtra("isHomeScreen", true);
+			startActivity(intent);
+			return true;
+		case R.id.quity_menu_item:
+		
+			//radioRunner.stop
+			this.onStop();
+			this.finish();
+			return true;
+		case R.id.synchronization_menu_item:
+			intent = new Intent(this, SynchronizationLogDownloadActivity.class);
+			this.startActivity(intent);
+			return true;
+		case R.id.services_menu_item:
+			intent = new Intent(this, ServicesActivity.class);
+			this.startActivity(intent);
 			return true;
 		default: //handles icon click
 			this.finish();

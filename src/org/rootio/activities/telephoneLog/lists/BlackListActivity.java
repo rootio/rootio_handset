@@ -31,6 +31,7 @@ public class BlackListActivity extends Activity {
 		listView.setAdapter(adapter);
 		listView.setOnItemClickListener(new ListViewItemClickListener());
 		this.setTitle("Blacklisted Numbers");
+		this.getActionBar().setDisplayHomeAsUpEnabled(true);
 	}
 	
 	@Override
@@ -52,13 +53,16 @@ public class BlackListActivity extends Activity {
 	@Override
 	public boolean onMenuItemSelected(int featureId, MenuItem menuItem)
 	{
-		if(menuItem.getItemId() == R.id.blacklistmenu_add_number_item)
+		switch(menuItem.getItemId())
 		{
-			Intent addBlacklistNumberIntent = new Intent(this, AddToBlacklist.class);
+		case R.id.blacklistmenu_add_number_item:
+		    Intent addBlacklistNumberIntent = new Intent(this, AddToBlacklist.class);
 			this.startActivity(addBlacklistNumberIntent);
 			return true;
+		default:
+			this.finish();
+			return true;
 		}
-		return false;
 	}
 	
 	/**

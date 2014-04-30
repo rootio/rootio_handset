@@ -23,6 +23,7 @@ private int limit = 100;
 	    SynchronizationLogDownloadAdapter adapter = new SynchronizationLogDownloadAdapter(this,this.offset, this.limit);
 	    listView.setAdapter(adapter);
 	    this.setTitle("Download Backlog");
+	    this.getActionBar().setDisplayHomeAsUpEnabled(true);
 		
 	}
 	
@@ -30,8 +31,7 @@ private int limit = 100;
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 		MenuInflater menuInflater = this.getMenuInflater();
-		menuInflater
-				.inflate(R.menu.synchronization_configuration_frequency, menu);
+		menuInflater				.inflate(R.menu.synchronization_configuration_frequency, menu);
 		return true;
 	}
 
@@ -44,7 +44,8 @@ private int limit = 100;
 			this.startActivity(intent);
 			return true;
 		default:
-			return false;
+			this.finish();
+			return true;
 		}
 	}
 	

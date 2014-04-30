@@ -9,11 +9,13 @@ import org.rootio.tools.telephony.CallStatus;
 import org.rootio.tools.telephony.CallType;
 import org.rootio.tools.utils.Utils;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class TelephoneLogAdapter extends BaseAdapter {
@@ -61,6 +63,7 @@ public class TelephoneLogAdapter extends BaseAdapter {
 		return arg0;
 	}
 
+	@SuppressLint("NewApi")
 	@Override
 	public View getView(int index, View view, ViewGroup parent) {
 		Call call = calls.get(index);
@@ -82,8 +85,18 @@ public class TelephoneLogAdapter extends BaseAdapter {
 		TextView callStatusTv = (TextView)view.findViewById(R.id.call_status_tv);
 		callStatusTv.setText(call.getCallStatus().toString());
 		
+		//Paint background basing on status
+		LinearLayout background = (LinearLayout)view.findViewById(R.id.telephone_log_llt);
+		int leftPadding = background.getPaddingLeft();
+		int topPadding = background.getPaddingTop();
+		int rightPadding = background.getPaddingRight();
+		int bottomPadding = background.getPaddingBottom();
+		background.setBackground(call.getCallStatus() == CallStatus.Picked ?this.context.getResources().getDrawable(R.drawable.green_background):this.context.getResources().getDrawable(R.drawable.pink_background));
+		background.setPadding(leftPadding, topPadding, rightPadding, bottomPadding);
 		return view;
 	}
+	
+	
 	
 	
  

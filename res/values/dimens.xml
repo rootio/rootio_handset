@@ -8,5 +8,6 @@
     <dimen name="LabelTextSize">30sp</dimen>
     <dimen name="ListingText">20sp</dimen>
     <dimen name="SmallerContentText">20sp</dimen>
+    <dimen name="DiagnosticTextSize">15sp</dimen>
 
 </resources>

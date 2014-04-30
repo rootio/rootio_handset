@@ -31,6 +31,7 @@ public class WhitelistActivity extends Activity {
 		listView.setAdapter(adapter);
 		listView.setOnItemClickListener(new ListViewItemClickListener());
 		this.setTitle("Whitelisted Numbers");
+		this.getActionBar().setDisplayHomeAsUpEnabled(true);
 	}
 	
 	@Override
@@ -52,13 +53,16 @@ public class WhitelistActivity extends Activity {
 	@Override
 	public boolean onMenuItemSelected(int featureId, MenuItem menuItem)
 	{
-		if(menuItem.getItemId() == R.id.whitelistmenu_add_number_item)
+		switch(menuItem.getItemId())
 		{
-			Intent addWhitelistNumberIntent = new Intent(this, AddToWhitelist.class);
+		case R.id.whitelistmenu_add_number_item:
+		    Intent addWhitelistNumberIntent = new Intent(this, AddToWhitelist.class);
 			this.startActivity(addWhitelistNumberIntent);
 			return true;
+		default:
+			this.finish();
+			return true;
 		}
-		return false;
 	}
 	
 	private void uncheckAll()
