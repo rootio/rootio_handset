@@ -36,7 +36,7 @@ public class RadioActivity extends Activity implements Notifiable, ServiceExitIn
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.station_activity);
-		this.setTitle("Station Details");
+		this.setTitle("Station Details"); 
 	}
 	
 	@Override

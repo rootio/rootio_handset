@@ -22,11 +22,11 @@ public class RadioPlaylistActivityAdapter extends BaseAdapter {
 	RadioPlaylistActivityAdapter(Program program)
 	{
 		this.program = program;
-		PlayList playList = this.program.getPlayList();
+		PlayList playList = this.program.getProgramManager().getPlayList();
 		playList.load();
 		if(program != null)
 		{
-		this.media = playList.getMedia().toArray(new Media[this.program.getPlayList().getMedia().size()]);
+		this.media = playList.getMedia().toArray(new Media[this.program.getProgramManager().getPlayList().getMedia().size()]);
 		}
 		else
 		{

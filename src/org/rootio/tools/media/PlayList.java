@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import org.rootio.radioClient.R;
+import org.rootio.tools.media.ProgramManager.ProgramActionType;
 import org.rootio.tools.persistence.DBAgent;
 import org.rootio.tools.utils.Utils;
 
@@ -11,6 +13,7 @@ import android.content.Context;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.net.Uri;
+import android.util.Log;
 
 /**
  * Class for the definition of Playlists
@@ -20,8 +23,8 @@ import android.net.Uri;
  */
 public class PlayList implements OnCompletionListener {
 
-	private ProgramType programType;
-	private String tag;
+	private ProgramActionType programActionType;
+	private String argument;
 	private HashSet<Media> mediaList;
 	private Uri streamUrl;
 	private Iterator<Media> mediaIterator;
@@ -34,22 +37,22 @@ public class PlayList implements OnCompletionListener {
 	 * @param tag
 	 *            The tag to be used to construct the playlist
 	 */
-	public PlayList(Context parent, String tag, ProgramType programType) {
-		this.tag = tag;
+	public PlayList(Context parent, String argument, ProgramActionType programActionType) {
+		this.argument = argument;
 		this.parent = parent;
-		this.programType = programType;
+		this.programActionType = programActionType;
 	}
 
 	/**
 	 * Load media for this playlist from the database
 	 */
 	public void load() {
-		if (this.programType == ProgramType.Media) {
-			mediaList = loadMedia(this.tag);
+		if (this.programActionType == ProgramActionType.Media || this.programActionType == ProgramActionType.Music) {
+			mediaList = loadMedia(this.argument);
 			mediaIterator = mediaList.iterator();
 		}
-		if (this.programType == ProgramType.Stream) {
-			String url = this.getStreamingUrl();
+		if (this.programActionType == ProgramActionType.Stream) {
+			String url =  this.argument.isEmpty()? this.getStreamingUrl(): this.argument;
 			this.streamUrl = Uri.parse(url);
 		}
 	}
@@ -60,13 +63,14 @@ public class PlayList implements OnCompletionListener {
 	public void play() {
 
 		try {
-			if (this.programType == ProgramType.Media) {
+			if (this.programActionType == ProgramActionType.Media  || this.programActionType == ProgramActionType.Music) {
 				if (mediaIterator.hasNext()) {
 					Media media = mediaIterator.next();
 					try {
 						mediaPlayer = MediaPlayer
 								.create(this.parent, Uri.fromFile(new File(
 										media.getFileLocation())));
+						Utils.toastOnScreen("Playing "+media.getFileLocation());
 						mediaPlayer.setOnCompletionListener(this);
 						mediaPlayer.start();
 
@@ -74,19 +78,15 @@ public class PlayList implements OnCompletionListener {
 						this.play();
 					}
 				}
-			} else if (this.programType == ProgramType.Stream) {
+			} else if (this.programActionType == ProgramActionType.Stream) {
 				mediaPlayer = MediaPlayer.create(this.parent, this.streamUrl);
 				mediaPlayer.start();
 			}
 
-		} catch (IllegalStateException e) {
-			// TODO Auto-generated catch block
-			Utils.toastOnScreen("Illegal state");
-			e.printStackTrace();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			Utils.toastOnScreen(e.getMessage());
-			e.printStackTrace();
+		} catch (IllegalStateException ex) {
+			Log.e(this.parent.getString(R.string.app_name), ex.getMessage());
+		} catch (Exception ex) {
+			Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null? "Null pointer exception(PlayList.stop)": ex.getMessage());
 		}
 	}
 
@@ -100,7 +100,7 @@ public class PlayList implements OnCompletionListener {
 				mediaPlayer.release();
 				mediaPlayer = null;
 			} catch (Exception ex) {
-				// medi player not in stoppable state
+				Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null? "Null pointer exception(PlayList.stop)": ex.getMessage());
 			}
 		}
 	}
@@ -111,7 +111,6 @@ public class PlayList implements OnCompletionListener {
 	public void pause() {
 		if (mediaPlayer.isPlaying()) {
 			mediaPlayer.pause();
-			Utils.toastOnScreen("media player paused");
 		}
 	}
 
@@ -119,7 +118,7 @@ public class PlayList implements OnCompletionListener {
 	 * Resumes playback after it has been paused
 	 */
 	public void resume() {
-		//mediaPlayer.start(); //works fine on Galaxy grand duos (4.2.2), fails on Galaxy pocket (4.0.2)
+		//mediaPlayer.start(); //works fine on Galaxy grand duos (4.2.2), fails on Galaxy pocket (4.0.2) because Media player is reclaimed by system
 		this.play();
 	}
 
@@ -153,8 +152,7 @@ public class PlayList implements OnCompletionListener {
 				tags.clear();
 			}
 		}
-
-		return media;
+ 		return media;
 	}
 
 	private String getStreamingUrl() {
@@ -183,8 +181,8 @@ public class PlayList implements OnCompletionListener {
 	 * 
 	 * @return String representation of the tag used to construct this playlist
 	 */
-	public String getTag() {
-		return this.tag;
+	public String getArgument() {
+		return this.argument;
 	}
 
 	@Override

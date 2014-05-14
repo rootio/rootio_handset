@@ -43,7 +43,6 @@ public class SynchronizationLogDownloadAdapter extends BaseAdapter{
 	}
 
 	
-	@SuppressLint("NewApi")
 	@Override
 	public View getView(int index, View view, ViewGroup parent) {
 		if(view == null)
@@ -82,16 +81,16 @@ public class SynchronizationLogDownloadAdapter extends BaseAdapter{
 		switch(currentRecord.getDownloadStatusId())
 		{
 		case 1://pending
-			linearLayout.setBackground(this.context.getResources().getDrawable(R.drawable.shadow_background));
+			linearLayout.setBackgroundResource(R.drawable.shadow_background);
 			break;
 		case 2://ongoing
-			linearLayout.setBackground(this.context.getResources().getDrawable(R.drawable.yellow_background));
+			linearLayout.setBackgroundResource(R.drawable.yellow_background);
 			break;
 		case 3://done
-			linearLayout.setBackground(this.context.getResources().getDrawable(R.drawable.green_background));
+			linearLayout.setBackgroundResource(R.drawable.green_background);
 			break;
 		case 4://failed
-			linearLayout.setBackground(this.context.getResources().getDrawable(R.drawable.pink_background));
+			linearLayout.setBackgroundResource(R.drawable.pink_background);
 			break;
 		}
 		linearLayout.setPadding(leftPadding, topPadding, rightPadding, bottomPadding);

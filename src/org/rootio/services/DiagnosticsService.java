@@ -145,8 +145,6 @@ public class DiagnosticsService extends Service  implements ServiceInformationPu
 			DBAgent dbAgent = new DBAgent(this.parentActivity);
 			dbAgent.saveData(tableName, null, values);
 		}
-
-		
 	}
 
 }

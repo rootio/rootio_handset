@@ -19,6 +19,7 @@ import android.os.StatFs;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 
+@SuppressLint("NewApi")
 public class DiagnosticAgent {
 
 	private boolean isConnectedToWifi;
@@ -124,14 +125,22 @@ public class DiagnosticAgent {
 		}
 	}
 
-	@SuppressLint("NewApi")
 	/**
 	 * Loads the percentage memory utilization of the phone
 	 */
 	private void loadMemoryStatus() {
+		try
+		{
 		MemoryInfo outInfo = new MemoryInfo();
 		activityManager.getMemoryInfo(outInfo);
 		this.memoryStatus = (100 * outInfo.availMem) / outInfo.totalMem;
+		}
+		catch(Exception ex)
+		{
+			MemoryInfo outInfo = new MemoryInfo();
+			activityManager.getMemoryInfo(outInfo);
+			this.memoryStatus = (100 * outInfo.availMem) / 466616320;
+		}
 	}
 
 	/**

@@ -100,7 +100,6 @@ public class DiscoveryService extends Service  implements ServiceInformationPubl
 				null, null, null, null, null);
 		if (results.length > 0) {
 			try {
-				Utils.toastOnScreen("ip "+results[0][0]+ " port "+results[0][1]);
 				this.multicastAddress = InetAddress.getByName(results[0][0]);
 				this.port = Utils.parseIntFromString(results[0][1]);
 				
@@ -148,7 +147,6 @@ public class DiscoveryService extends Service  implements ServiceInformationPubl
 					DatagramPacket receivedPacket = new DatagramPacket(receivedData, receivedData.length);
 					socket.receive(receivedPacket);
 					String message = new String(receivedPacket.getData());
-					Utils.toastOnScreen("received message "+message);
 					String response = this.processMessage(message);
 					sentData = response.getBytes();
 					DatagramPacket sentPacket = new DatagramPacket(sentData, sentData.length, receivedPacket.getAddress(), receivedPacket.getPort());

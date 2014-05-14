@@ -63,7 +63,6 @@ public class TelephoneLogAdapter extends BaseAdapter {
 		return arg0;
 	}
 
-	@SuppressLint("NewApi")
 	@Override
 	public View getView(int index, View view, ViewGroup parent) {
 		Call call = calls.get(index);
@@ -91,7 +90,7 @@ public class TelephoneLogAdapter extends BaseAdapter {
 		int topPadding = background.getPaddingTop();
 		int rightPadding = background.getPaddingRight();
 		int bottomPadding = background.getPaddingBottom();
-		background.setBackground(call.getCallStatus() == CallStatus.Picked ?this.context.getResources().getDrawable(R.drawable.green_background):this.context.getResources().getDrawable(R.drawable.pink_background));
+		background.setBackgroundResource(call.getCallStatus() == CallStatus.Picked ?R.drawable.green_background:R.drawable.pink_background);
 		background.setPadding(leftPadding, topPadding, rightPadding, bottomPadding);
 		return view;
 	}

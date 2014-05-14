@@ -25,6 +25,7 @@ public class RadioRunner implements Runnable {
 	private Context parent;
 	private ArrayList<ProgramSlot> programSlots;
 	private RadioRunnerExitIntentListener broadcastReceiver;
+	private IntentFilter intentFilter;
 	private Integer runningProgramIndex = null;
 
 	public RadioRunner(Context parent) {
@@ -39,8 +40,11 @@ public class RadioRunner implements Runnable {
 	 * Sets up the alarming to handle the timing of the broadcasts
 	 */
 	private void setUpAlarming() {
-		am = (AlarmManager) this.parent.getSystemService(Context.ALARM_SERVICE);
-		br = new BroadcastHandler(this);
+		this.am = (AlarmManager) this.parent.getSystemService(Context.ALARM_SERVICE);
+		this.intentFilter = new IntentFilter();
+		this.intentFilter.addAction("org.rootio.RadioRunner");
+		this.br = new BroadcastHandler(this);
+		this.parent.registerReceiver(this.br, this.intentFilter);
 	}
 
 	@Override
@@ -60,12 +64,12 @@ public class RadioRunner implements Runnable {
 	 */
 	public void runProgram(int index) {
 		if (this.runningProgramIndex != null) {
-			this.programSlots.get(this.runningProgramIndex).getProgram().stop();
+			this.programSlots.get(this.runningProgramIndex).getProgram().getProgramManager().stop();
 			this.programSlots.get(runningProgramIndex).setFinishedRunning();
 		}
 		this.runningProgramIndex = index;
 		this.programSlots.get(this.runningProgramIndex).setRunning();
-		this.programSlots.get(this.runningProgramIndex).getProgram().run();
+		this.programSlots.get(this.runningProgramIndex).getProgram().getProgramManager().runProgram();
 	}
 
 	/**
@@ -73,7 +77,7 @@ public class RadioRunner implements Runnable {
 	 */
 	public void pauseProgram() {
 		if (this.runningProgramIndex != null) {
-			this.programSlots.get(this.runningProgramIndex).getProgram().pause();
+			this.programSlots.get(this.runningProgramIndex).getProgram().getProgramManager().pause();
 		}
 	}
 /**
@@ -81,7 +85,7 @@ public class RadioRunner implements Runnable {
  */
 	public void resumeProgram() {
 		if (this.runningProgramIndex != null) {
-			this.programSlots.get(this.runningProgramIndex).getProgram().resume();
+			this.programSlots.get(this.runningProgramIndex).getProgram().getProgramManager().play();
 		}
 	}
 
@@ -90,7 +94,7 @@ public class RadioRunner implements Runnable {
 	 */
 	public void stopProgram() {
 		if (this.runningProgramIndex != null) {
-			this.programSlots.get(this.runningProgramIndex).getProgram().stop();
+			this.programSlots.get(this.runningProgramIndex).getProgram().getProgramManager().stop();
 		}
 	}
 
@@ -113,7 +117,7 @@ public class RadioRunner implements Runnable {
 
 	/**
 	 * Schedules the supplied programs according to their schedule information
-	 * @param programs ArrayList of the programs tobe scheduled
+	 * @param programs ArrayList of the programs to be scheduled
 	 */
 	private void schedulePrograms(ArrayList<Program> programs) {
 		for (int i = 0; i < programs.size(); i++) {
@@ -138,10 +142,9 @@ public class RadioRunner implements Runnable {
 	 */
 	private void addAlarmEvent(int index, Date startTime) { 
 		try {
-			pi = PendingIntent.getBroadcast(parent, 0, new Intent(String.valueOf(index)), 0);
-			IntentFilter intentFilter = new IntentFilter();
-			intentFilter.addAction(String.valueOf(index));
-			this.parent.registerReceiver(new BroadcastHandler(this), intentFilter);
+			Intent intent = new Intent("org.rootio.RadioRunner");
+			intent.putExtra("index",index);
+			this.pi = PendingIntent.getBroadcast(parent, 0, intent, 0);
 			this.am.set(AlarmManager.RTC_WAKEUP, startTime.getTime(), this.pi);
 			} catch (Exception e) {
 			//log this

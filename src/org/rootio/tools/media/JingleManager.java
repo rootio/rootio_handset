@@ -55,20 +55,27 @@ public class JingleManager implements OnCompletionListener {
 				mediaPlayer.start();
 				Utils.toastOnScreen(jingleFile);
 			} 
-			else
-			{
-				this.program.onJinglePlayFinish();
-			}
-		}
-		else
-		{
-			this.program.onJinglePlayFinish();
+			
 		}
 	}
+	 void play()
+	 {
+		 this.mediaPlayer.start();
+	 }
+	 
+	 void pause()
+	 {
+		 this.mediaPlayer.pause();
+	 }
+	 
+	 void stop()
+	 {
+		this.mediaPlayer.stop(); 
+	 }
 
 	@Override
 	public void onCompletion(MediaPlayer arg0) {
-		this.program.onJinglePlayFinish();
+		//
 	}
  
 	 

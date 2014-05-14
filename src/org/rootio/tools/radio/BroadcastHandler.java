@@ -9,7 +9,7 @@ import android.content.Intent;
 public class BroadcastHandler extends BroadcastReceiver implements Runnable {
 
 	private RadioRunner radioRunner;
-	private int currentIndex;
+	private int currentIndex = 1000000; //prevent initial assignment to 0
 
 	public BroadcastHandler(RadioRunner radioRunner) {
 		this.radioRunner = radioRunner;
@@ -30,17 +30,13 @@ public class BroadcastHandler extends BroadcastReceiver implements Runnable {
 
 	@Override
 	public void onReceive(Context c, Intent i) {
-		String possibleIndex = i.getAction();
-		if(Integer.parseInt(possibleIndex) == currentIndex)
+		int possibleIndex = i.getIntExtra("index", 0);
+		if(possibleIndex == currentIndex)
 		{
-			return;
+			return; //scheduled twice maybe
 		}
-		try {
-			currentIndex = Integer.parseInt(possibleIndex);
+			currentIndex = possibleIndex;
 			new Thread(this).start();
-		} catch (NumberFormatException ex) {
-
-		}
 	}
 
 	/**

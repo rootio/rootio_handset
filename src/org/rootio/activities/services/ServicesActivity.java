@@ -3,7 +3,6 @@ package org.rootio.activities.services;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import org.rootio.activities.diagnostics.DiagnosticsConfigurationFrequencyActivity;
 import org.rootio.radioClient.R;
 import org.rootio.services.DiagnosticsService;
 import org.rootio.services.DiscoveryService;
@@ -231,7 +230,6 @@ public class ServicesActivity extends Activity implements
 	 * @param serviceId The ID of the service to start
 	 */
 	private void startService(int serviceId) {
-		Utils.toastOnScreen("Starting "+serviceId);
 		Intent serviceIntent = this.serviceComponents.get(serviceId)
 				.getIntent();
 		this.bindServiceConnection(serviceId);

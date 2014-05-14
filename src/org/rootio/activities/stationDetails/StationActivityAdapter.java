@@ -55,20 +55,7 @@ public class StationActivityAdapter extends BaseAdapter {
 
 		// determine the image to render
 		ImageView icon = (ImageView) view.findViewById(R.id.progam_icon_iv);
-		switch (program.getProgramType()) {
-		case Media:
-			icon.setImageResource(R.drawable.music);
-			break;
-		case Call:
-			icon.setImageResource(R.drawable.phone);
-			break;
-		case Stream:
-			icon.setImageResource(R.drawable.multicast);
-			break;
-		default:
-		    icon.setImageResource(R.drawable.music);
-			break;
-		}
+		icon.setImageResource(R.drawable.music);
 		
 		//render the title
 		TextView titleTextView = (TextView)view.findViewById(R.id.program_title_tv);

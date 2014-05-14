@@ -23,7 +23,6 @@ public class SynchronizationDaemon implements Runnable {
 		DiagnosticsSynchronizer diagnosticsSynchronizer = new DiagnosticsSynchronizer();
 		while(((SynchronizationService)this.parent).isRunning())
 		{
-			Utils.toastOnScreen("synchronizing...");
 			programSynchronizer.synchronize();
 			eventTimeSynchronizer.synchronize();
 			stationInformationSynchronizer.synchronize();

@@ -13,12 +13,11 @@ import android.content.Context;
 public class Program {
 
 	private String title;
-	private PlayList playList;
 	private ProgramType programType;
-	private String tag;
 	private ArrayList<EventTime> eventTimes;
 	private int scheduledIndex;
 	private Long id, cloudId;
+	private ProgramManager programManager;
 	private Context parent;
 
 	public Program(Context parent, long cloudId, String title, int programTypeId) {
@@ -31,13 +30,11 @@ public class Program {
 			this.id = this.persist();
 		}
 		this.loadEventTimes(this.id);
-		this.setTag();
-		this.createPlayList();
+		this.programManager = new ProgramManager(this.parent, this);
 	}
 	
 	public Program(Context parent, long cloudId, String title, int programTypeId, String tag) {
 		this.parent = parent;
-		this.tag = tag;
 		this.setProgramType(programTypeId);
 		this.cloudId = cloudId;
 		this.title = title;
@@ -46,7 +43,7 @@ public class Program {
 			this.id = this.persist();
 		}
 		this.loadEventTimes(this.id);
-		this.createPlayList();
+		this.programManager = new ProgramManager(this.parent, this);
 	}
 	
 	public Program(Context  parent, long cloudId)
@@ -56,23 +53,7 @@ public class Program {
 		this.loadProgramInfo();
 	}
 	
-	/**
-	 * Sets the tag with which the show is associated
-	 */
-	private void setTag()
-	{
-		if(this.programType == ProgramType.Music)
-		{
-			this.tag = this.getTag();
-		}
-		
-		else if (this.programType == ProgramType.Media)
-		{
-			EpisodeManager episodeManager = new EpisodeManager(this.parent, this);
-			this.tag = episodeManager.getEpisodeTag();
-		}
-	}
-	
+
 	/**
 	 * Sets the program type for the specified program
 	 * @param programTypeId The ID of the program whose ID to set
@@ -96,22 +77,6 @@ public class Program {
 		}
 	}
 	
-	/**
-	 * Initializes the playlist for this program
-	 */
-	private void createPlayList()
-	{
-			this.playList = new PlayList(this.parent, this.tag, this.programType);
-	}
-
-	/**
-	 * Get the playlist associated with this Program
-	 * @return PlayList object of this program's playlist
-	 */
-	public PlayList getPlayList() {
-		return this.playList;
-	}
-
 	/**
 	 * Get the program type of this program
 	 * @return ProgramType object of this program's type
@@ -147,42 +112,16 @@ public class Program {
 			}
 			else {
 			}
-			playList.load();
-			new JingleManager(this.parent, this).playJingle();
-		}
+	}	
 	
 	/**
-	 * Called upon on completion of the jingle to play the content for the program
+	 * Gets the ProgramManager instance that is used to manage this program
+	 * @return ProgramManager object for the current program
 	 */
-	void onJinglePlayFinish()
+	public ProgramManager getProgramManager()
 	{
-		playList.play();
+		return this.programManager;
 	}
-	
-	/**
-	 * pauses this program
-	 */
-	public void pause()
-	{
-		playList.pause();
-	}
-	
-	/**
-	 * resumes this program if it was previously paused
-	 */
-	public void resume()
-	{
-		playList.resume();
-	}
-
-	/**
-	 * Stops this program
-	 */
-	public void stop() {
-		playList.stop();
-	}
-	
-	
 
 	/**
 	 * Return the EventTime objects associated with this program
@@ -209,21 +148,6 @@ public class Program {
 	public void setScheduledIndex(int scheduledIndex)
 	{
 		this.scheduledIndex = scheduledIndex;
-	}
-	
-	/**
-	 * Gets the Tag associated with this program
-	 * @return The tag for this program
-	 */
-	private String getTag()
-	{
-		String tableName = "program";
-		String[] columns = new String[]{"tag"};
-		String whereClause = "id = ?";
-		String[] whereArgs = new String[]{String.valueOf(this.id)};
-		DBAgent dbAgent = new DBAgent(this.parent);
-		String[][] results = dbAgent.getData(true, tableName, columns, whereClause, whereArgs, null, null, null, null);
-		return results.length > 0 ? results[0][0] : null;
 	}
 	
 	/**
@@ -275,7 +199,6 @@ public class Program {
 		if(result.length > 0)
 		{
 			this.title = result[0][1];
-			this.tag = result[0][2];
 			this.id = Utils.parseLongFromString(result[0][0]);
 		}
 	}
