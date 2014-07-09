@@ -43,7 +43,7 @@ public class BootMonitor extends BroadcastReceiver{
 			intent = new Intent(context, TelephonyService.class);
 			break;
 		case 2: //SMS service
-			intent = new Intent(context, TelephonyService.class);
+			intent = new Intent(context, SMSService.class);
 			break;
 		case 3: //Diagnostic Service
 			intent = new Intent(context, DiagnosticsService.class);
@@ -52,7 +52,10 @@ public class BootMonitor extends BroadcastReceiver{
 			intent = new Intent(context, ProgramService.class);
 			break;
 		case 5: //Sync Service
-			intent = new Intent(context, TelephonyService.class);
+			intent = new Intent(context, SynchronizationService.class);
+			break;
+		case 6: //Discovery Service
+			intent = new Intent(context, DiscoveryService.class);
 			break;
 		}
 		return intent;

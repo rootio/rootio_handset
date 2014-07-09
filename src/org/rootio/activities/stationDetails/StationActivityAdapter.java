@@ -7,8 +7,6 @@ import org.rootio.tools.media.Program;
 import org.rootio.tools.radio.ProgramSlot;
 import org.rootio.tools.utils.Utils;
 
-import android.annotation.SuppressLint;
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,15 +15,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-@SuppressLint("NewApi")
+
 public class StationActivityAdapter extends BaseAdapter {
 
 	private ArrayList<ProgramSlot> programSlots;
-	private Context Parent;
-
-	public StationActivityAdapter(Context parent, ArrayList<ProgramSlot> programSlots) {
+	
+	public StationActivityAdapter(ArrayList<ProgramSlot> programSlots) {
 		this.programSlots = programSlots;
-		this.Parent = parent;
 	}
 
 	@Override
@@ -79,13 +75,13 @@ public class StationActivityAdapter extends BaseAdapter {
 		switch(this.programSlots.get(index).getRunState())
 		{
 		case 0: //not started
-			programLinearLayout.setBackground(this.Parent.getResources().getDrawable(R.drawable.yellow_background));//yellow
+			programLinearLayout.setBackgroundResource(R.drawable.yellow_background);//yellow
 			break;
 		case 1: //running
-			programLinearLayout.setBackground(this.Parent.getResources().getDrawable(R.drawable.green_background));//green
+			programLinearLayout.setBackgroundResource(R.drawable.green_background);//green
 			break;
 		case 2: //terminated
-			programLinearLayout.setBackground(this.Parent.getResources().getDrawable(R.drawable.pink_background));//red
+			programLinearLayout.setBackgroundResource(R.drawable.pink_background);//red
 			break;
 		}
 		programLinearLayout.setPadding(leftPadding, topPadding, rightPadding, bottomPadding);

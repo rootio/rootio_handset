@@ -77,6 +77,7 @@ public class RadioRunner implements Runnable {
 	 */
 	public void pauseProgram() {
 		if (this.runningProgramIndex != null) {
+			Utils.toastOnScreen("program is " + this.programSlots.get(this.runningProgramIndex).getProgram().getTitle());
 			this.programSlots.get(this.runningProgramIndex).getProgram().getProgramManager().pause();
 		}
 	}
@@ -93,7 +94,10 @@ public class RadioRunner implements Runnable {
 	 * Stops the program that is currently running
 	 */
 	public void stopProgram() {
+		Utils.toastOnScreen("id is "+ this.runningProgramIndex);
 		if (this.runningProgramIndex != null) {
+			Utils.toastOnScreen("program is " +this.programSlots.get(this.runningProgramIndex).getProgram().getTitle());
+			Utils.toastOnScreen("Program manager is "+this.programSlots.get(this.runningProgramIndex).getProgram().getProgramManager());
 			this.programSlots.get(this.runningProgramIndex).getProgram().getProgramManager().stop();
 		}
 	}

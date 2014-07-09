@@ -14,7 +14,6 @@ import org.rootio.services.ServiceInformationPublisher;
 import org.rootio.services.ServiceState;
 import org.rootio.services.SynchronizationService;
 import org.rootio.services.TelephonyService;
-import org.rootio.tools.utils.Utils;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -48,7 +47,7 @@ public class ServicesActivity extends Activity implements
 		this.getServiceConnections();
 	}
 /**
- * set up a broadacst receiver for Intents thrown by various services
+ * set up a broadcast receiver for Intents thrown by various services
  */
 	private void setupBroadcastHandling() {
 		this.broadCastIntentHandler = new BroadcastIntentHandler(this);

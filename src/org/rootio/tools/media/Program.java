@@ -51,6 +51,7 @@ public class Program {
 		this.parent = parent;
 		this.cloudId = cloudId;
 		this.loadProgramInfo();
+		this.programManager = new ProgramManager(this.parent, this);
 	}
 	
 

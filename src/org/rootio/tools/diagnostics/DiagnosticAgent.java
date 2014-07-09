@@ -3,6 +3,9 @@ package org.rootio.tools.diagnostics;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
+import org.rootio.radioClient.R;
+import org.rootio.tools.utils.Utils;
+
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.ActivityManager.MemoryInfo;
@@ -18,8 +21,8 @@ import android.os.Environment;
 import android.os.StatFs;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 
-@SuppressLint("NewApi")
 public class DiagnosticAgent {
 
 	private boolean isConnectedToWifi;
@@ -131,16 +134,41 @@ public class DiagnosticAgent {
 	private void loadMemoryStatus() {
 		try
 		{
-		MemoryInfo outInfo = new MemoryInfo();
-		activityManager.getMemoryInfo(outInfo);
-		this.memoryStatus = (100 * outInfo.availMem) / outInfo.totalMem;
+		MemoryInfo memInfo = new MemoryInfo();
+		activityManager.getMemoryInfo(memInfo);
+		this.memoryStatus = (100 * memInfo.availMem) /this.getTotalMemory(); //memInfo.totalMem; doesnt work before jellybean
 		}
 		catch(Exception ex)
 		{
-			MemoryInfo outInfo = new MemoryInfo();
-			activityManager.getMemoryInfo(outInfo);
-			this.memoryStatus = (100 * outInfo.availMem) / 466616320;
+			Log.e(parentActivity.getString(R.string.app_name), ex.getMessage() == null? "NullPointer(DiagnosticAgent.getTotalMemory)":ex.getMessage());	
 		}
+	}
+	
+	private long getTotalMemory()
+	{
+		RandomAccessFile memInfo  = null;
+		String load = null;
+		try
+		{
+			memInfo = new RandomAccessFile("/proc/meminfo","r");
+			load = memInfo.readLine();
+		}
+		catch(Exception ex)
+		{
+			Log.e(parentActivity.getString(R.string.app_name), ex.getMessage() == null? "NullPointer(DiagnosticAgent.getTotalMemory)":ex.getMessage());
+		}
+		finally
+		{
+			try
+			{
+				memInfo.close();
+			}
+			catch(Exception ex)
+			{
+				Log.e(parentActivity.getString(R.string.app_name), ex.getMessage() == null? "NullPointer(DiagnosticAgent.getTotalMemory)":ex.getMessage());	
+			}
+		}
+		return Utils.parseLongFromString(load);
 	}
 
 	/**

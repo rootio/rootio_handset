@@ -94,6 +94,7 @@ public class PlayList implements OnCompletionListener {
 	 * Stops the media player and disposes it.
 	 */
 	public void stop() {
+		Utils.toastOnScreen("stopping in playlist");
 		if (mediaPlayer != null) {
 			try {
 				mediaPlayer.stop();

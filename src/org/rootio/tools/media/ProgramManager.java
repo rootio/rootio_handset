@@ -62,7 +62,8 @@ public class ProgramManager {
 			intentFilter.addAction(String.valueOf(i));	
 		}
 		
-		this.parent.registerReceiver(new AlertHandler(), intentFilter);
+		//this.parent.registerReceiver(new AlertHandler(), intentFilter);
+		this.parent.registerReceiver(alertHandler, intentFilter);
 		
 		for(int i = 0; i < programActions.size(); i++)
 		{
@@ -188,6 +189,7 @@ public class ProgramManager {
 				ProgramManager.this.jingleManager.pause();
 				break;
 			case Call:
+				ProgramManager.this.playlist.pause();
 				break;
 			}
 		}
@@ -199,6 +201,7 @@ public class ProgramManager {
 			case Media:
 			case Music:
 			case Stream:
+				Utils.toastOnScreen("stopping in program manager");
 				ProgramManager.this.playlist.stop();
 				break;
 			case Jingle:
@@ -232,20 +235,22 @@ public class ProgramManager {
 		
 		private void runProgramAction(Intent intent, Program program, ArrayList<ProgramAction> programActions)
 		{
-			
+			Utils.toastOnScreen("running action...");
 			int index = intent.getIntExtra("index", 0);
 			if (index != currentIndex) {
 				currentIndex = index;
 
 				if (this.runningProgramAction != null) {
+					Utils.toastOnScreen("prog action is not null at start");
 					this.runningProgramAction.stop();
 				}
 				if (!isExpired(program, programActions.get(index))) {
 					programActions.get(index).run();
+					Utils.toastOnScreen("prog not expired...");
 					this.runningProgramAction = programActions.get(index);
+					Utils.toastOnScreen(this.runningProgramAction == null? "null after assignment" : "not null after assignment");
 				} 
 			}
-			
 		}
 		
 		private boolean isExpired(Program program, ProgramAction programAction)
@@ -284,7 +289,13 @@ public class ProgramManager {
 		private void stopProgramAction()
 		{
 			if (this.runningProgramAction != null) {
+				Utils.toastOnScreen("running prog action is not null");
 				this.runningProgramAction.stop();
+				Utils.toastOnScreen("running prog action is not null");
+			}
+			else
+			{
+				Utils.toastOnScreen("running prog action is null");
 			}
 		}
 	}

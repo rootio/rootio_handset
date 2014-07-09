@@ -126,7 +126,7 @@ public class RadioActivity extends Activity implements Notifiable, ServiceExitIn
 	public void notifyServiceConnection(int serviceId) {
 		ProgramService programService = (ProgramService) programServiceConnection.getService();
 		final ArrayList<ProgramSlot> programSlots = programService.getProgramSlots();
-		StationActivityAdapter stationActivityAdapter = new StationActivityAdapter(this, programSlots);
+		StationActivityAdapter stationActivityAdapter = new StationActivityAdapter(programSlots);
 		ListView stationActivityList = (ListView)this.findViewById(R.id.station_activity_lv);
 		stationActivityList.setAdapter(stationActivityAdapter);
 		stationActivityList.setOnItemClickListener(new OnItemClickListener(){
