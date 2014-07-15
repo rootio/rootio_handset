@@ -1,4 +1,4 @@
-package org.rootio.services;
+package org.rootio.tools.radio;
 
 import org.rootio.activities.services.TelephonyEventNotifiable;
 
