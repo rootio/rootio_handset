@@ -73,17 +73,16 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable {
 	 *            The index of the program to run
 	 */
 	public void runProgram(int index) {
-		if (this.runningProgramIndex != null) {
-			this.programSlots.get(this.runningProgramIndex).getProgram().getProgramManager().stop();
-			this.programSlots.get(runningProgramIndex).setFinishedRunning();
-		}
+		this.stopProgram();
+
 		this.runningProgramIndex = index;
-		this.programSlots.get(this.runningProgramIndex);
+
 		Utils.toastOnScreen("the state is " + this.state);
 
 		// Check to see that we are not in a phone call before launching program
 		if (this.state != State.PAUSED) {
 			this.programSlots.get(this.runningProgramIndex).setRunning();
+			Utils.toastOnScreen("Starting " + this.programSlots.get(this.runningProgramIndex).getProgram().getTitle());
 			this.programSlots.get(this.runningProgramIndex).getProgram().getProgramManager().runProgram();
 			this.state = State.PLAYING;
 		}
@@ -169,8 +168,13 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable {
 	 */
 	private void addAlarmEvent(int index, Date startTime) {
 		try {
-			Intent intent = new Intent("org.rootio.RadioRunner");
+			Intent intent = new Intent(String.valueOf(index));// "org.rootio.RadioRunner");
 			intent.putExtra("index", index);
+
+			// receiver to handle the Intent that will be thrown by Alarm
+			// manager
+			this.parent.registerReceiver(new BroadcastHandler(this), new IntentFilter(String.valueOf(index)));
+
 			this.pi = PendingIntent.getBroadcast(parent, 0, intent, 0);
 			this.am.set(AlarmManager.RTC_WAKEUP, startTime.getTime(), this.pi);
 		} catch (Exception e) {
@@ -210,7 +214,7 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable {
 			if (this.state == State.PAUSED) {
 				int state = this.programSlots.get(this.runningProgramIndex).getRunState();
 				if (state == 0) {// The program had not begun, was waiting for
-									// the call to end in order to begin
+					// the call to end in order to begin
 					this.programSlots.get(this.runningProgramIndex).setRunning();
 					this.programSlots.get(this.runningProgramIndex).getProgram().getProgramManager().runProgram();
 				} else { // The program had begun, it was paused by the call
