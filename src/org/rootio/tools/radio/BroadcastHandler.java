@@ -31,7 +31,7 @@ public class BroadcastHandler extends BroadcastReceiver implements Runnable {
 	public void onReceive(Context c, Intent i) {
 		int possibleIndex = i.getIntExtra("index", 0);
 		if (possibleIndex == currentIndex) {
-			return; // scheduled twice maybe
+			return; // intents are thrown twice sometimes
 		}
 		currentIndex = possibleIndex;
 		new Thread(this).start();
