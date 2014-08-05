@@ -40,12 +40,12 @@ public class ProgramService extends Service implements ServiceInformationPublish
 
 	@Override
 	public void onDestroy() {
-		Utils.doNotification(this, "RootIO", "Radio Service Stopped");
-		if (radioRunner != null) {
+		if (radioRunner != null && this.isRunning) {
 			super.onDestroy();
 			radioRunner.stopProgram();
 			this.isRunning = false;
 			this.sendEventBroadcast();
+			Utils.doNotification(this, "RootIO", "Radio Service Stopped");
 		}
 	}
 

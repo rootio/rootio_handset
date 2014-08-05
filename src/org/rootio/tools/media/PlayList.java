@@ -82,7 +82,7 @@ public class PlayList implements OnCompletionListener {
 		} catch (IllegalStateException ex) {
 			Log.e(this.parent.getString(R.string.app_name), ex.getMessage());
 		} catch (Exception ex) {
-			Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(PlayList.stop)" : ex.getMessage());
+			Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(PlayList.play)" : ex.getMessage());
 		}
 	}
 

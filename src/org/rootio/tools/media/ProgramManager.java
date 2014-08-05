@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.rootio.radioClient.R;
 import org.rootio.tools.persistence.DBAgent;
 import org.rootio.tools.utils.Utils;
 
@@ -13,10 +14,11 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.util.Log;
 
 public class ProgramManager {
 
-	enum ProgramActionType {
+	public enum ProgramActionType {
 		Jingle, Media, Music, Stream, Call
 	};
 
@@ -24,17 +26,18 @@ public class ProgramManager {
 	private JingleManager jingleManager;
 	private PlayList playlist;
 	private final Program program;
-	private ArrayList<ProgramAction> programActions;
+	private final ArrayList<ProgramAction> programActions;
 	private final AlertHandler alertHandler;
 
 	ProgramManager(Context parent, Program program) {
 		this.parent = parent;
 		this.program = program;
 		this.alertHandler = new AlertHandler();
+		this.programActions = fetchProgramActions(this.program);
 	}
 
 	public void runProgram() {
-		this.programActions = fetchProgramActions(this.program);
+
 		this.setupAlertReceiver(this.program, alertHandler, programActions);
 	}
 
@@ -48,6 +51,10 @@ public class ProgramManager {
 
 	public void stop() {
 		this.alertHandler.stopProgramAction();
+	}
+
+	public ArrayList<ProgramAction> getProgramActions() {
+		return this.programActions;
 	}
 
 	private void setupAlertReceiver(Program program, AlertHandler alertHandler, ArrayList<ProgramAction> programActions) {
@@ -80,16 +87,20 @@ public class ProgramManager {
 
 	private ArrayList<ProgramAction> fetchProgramActions(Program program) {
 		ArrayList<ProgramAction> programActions = new ArrayList<ProgramAction>();
-		long id = program.getEventTimes()[program.getScheduledIndex()].getId();
-		String tableName = "programaction";
-		String[] columns = new String[] { "starttime", "duration", "programactiontypeid", "argument" };
-		String whereClause = "eventtimeid = ?";
-		String[] whereArgs = new String[] { String.valueOf(id) };
-		DBAgent dbAgent = new DBAgent(this.parent);
-		String[][] results = dbAgent.getData(true, tableName, columns, whereClause, whereArgs, null, null, null, null);
-		for (String[] result : results) {
-			ProgramAction programAction = new ProgramAction(Utils.parseIntFromString(result[1]), Utils.getDateFromString(result[0], "HH:mm:ss"), this.getProgramActionType(Utils.parseIntFromString(result[2])), result[3]);
-			programActions.add(programAction);
+		try {
+			long id = program.getEventTimes()[program.getScheduledIndex()].getId();
+			String tableName = "programaction";
+			String[] columns = new String[] { "starttime", "duration", "programactiontypeid", "argument" };
+			String whereClause = "eventtimeid = ?";
+			String[] whereArgs = new String[] { String.valueOf(id) };
+			DBAgent dbAgent = new DBAgent(this.parent);
+			String[][] results = dbAgent.getData(true, tableName, columns, whereClause, whereArgs, null, null, null, null);
+			for (String[] result : results) {
+				ProgramAction programAction = new ProgramAction(Utils.parseIntFromString(result[1]), Utils.getDateFromString(result[0], "HH:mm:ss"), this.getProgramActionType(Utils.parseIntFromString(result[2])), result[3]);
+				programActions.add(programAction);
+			}
+		} catch (ArrayIndexOutOfBoundsException e) {
+			Log.i(this.parent.getString(R.string.app_name), String.format("[Program Manager] %s", e.getMessage()));
 		}
 		return programActions;
 	}
@@ -108,7 +119,7 @@ public class ProgramManager {
 		}
 	}
 
-	class ProgramAction {
+	public class ProgramAction {
 		private final int duration;
 		private final Date time;
 		private final String argument;
@@ -187,12 +198,16 @@ public class ProgramManager {
 			}
 		}
 
-		Date getStartTime() {
+		public Date getStartTime() {
 			return this.time;
 		}
 
-		int getDuration() {
+		public int getDuration() {
 			return this.duration;
+		}
+
+		public ProgramActionType getProgramActionType() {
+			return this.programActionType;
 		}
 	}
 
@@ -210,10 +225,10 @@ public class ProgramManager {
 			if (index != currentIndex) {
 				currentIndex = index;
 
-				if (this.runningProgramAction != null) {
-					this.runningProgramAction.stop();
-				}
 				if (!isExpired(program, programActions.get(index))) {
+					if (this.runningProgramAction != null) {
+						this.runningProgramAction.stop();
+					}
 					programActions.get(index).run();
 					this.runningProgramAction = programActions.get(index);
 				}

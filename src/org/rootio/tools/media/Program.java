@@ -16,9 +16,10 @@ public class Program {
 	private ProgramType programType;
 	private ArrayList<EventTime> eventTimes;
 	private int scheduledIndex;
-	private Long id, cloudId;
-	private ProgramManager programManager;
-	private Context parent;
+	private Long id;
+	private final Long cloudId;
+	private final ProgramManager programManager;
+	private final Context parent;
 
 	public Program(Context parent, long cloudId, String title, int programTypeId) {
 		this.parent = parent;
@@ -32,7 +33,7 @@ public class Program {
 		this.loadEventTimes(this.id);
 		this.programManager = new ProgramManager(this.parent, this);
 	}
-	
+
 	public Program(Context parent, long cloudId, String title, int programTypeId, String tag) {
 		this.parent = parent;
 		this.setProgramType(programTypeId);
@@ -45,41 +46,41 @@ public class Program {
 		this.loadEventTimes(this.id);
 		this.programManager = new ProgramManager(this.parent, this);
 	}
-	
-	public Program(Context  parent, long cloudId)
-	{
+
+	public Program(Context parent, long cloudId) {
 		this.parent = parent;
 		this.cloudId = cloudId;
 		this.loadProgramInfo();
+		this.loadEventTimes(this.id);
 		this.programManager = new ProgramManager(this.parent, this);
 	}
-	
 
 	/**
 	 * Sets the program type for the specified program
-	 * @param programTypeId The ID of the program whose ID to set
+	 * 
+	 * @param programTypeId
+	 *            The ID of the program whose ID to set
 	 */
-	private void setProgramType(int programTypeId)
-	{
-		switch(programTypeId)
-		{
-		case 1:
-			this.programType = ProgramType.Media;
-			break;
-		case 2: 
-			this.programType = ProgramType.Call;
-			break;
-		case 3:
-			this.programType = ProgramType.Music;
-			break;
-		case 4:
-			this.programType = ProgramType.Stream;
-			break;
+	private void setProgramType(int programTypeId) {
+		switch (programTypeId) {
+			case 1:
+				this.programType = ProgramType.Media;
+				break;
+			case 2:
+				this.programType = ProgramType.Call;
+				break;
+			case 3:
+				this.programType = ProgramType.Music;
+				break;
+			case 4:
+				this.programType = ProgramType.Stream;
+				break;
 		}
 	}
-	
+
 	/**
 	 * Get the program type of this program
+	 * 
 	 * @return ProgramType object of this program's type
 	 */
 	public ProgramType getProgramType() {
@@ -88,39 +89,38 @@ public class Program {
 
 	/**
 	 * Returns the title of this program
+	 * 
 	 * @return String representation of the title of this program
 	 */
 	public String getTitle() {
 		return this.title;
 	}
-	
+
 	/**
 	 * Gets the ID for this program
+	 * 
 	 * @return long representation of the ID of this program
 	 */
-	public long getId()
-	{
+	public long getId() {
 		return this.id;
 	}
 
 	public void run() {
 		if (this.programType == ProgramType.Call) {
-			//sit and wait for incoming phone calls. The telephony service will handle the calls
-			} 
-		else if(this.programType == ProgramType.Stream)
-			{
-			  
-			}
-			else {
-			}
-	}	
-	
+			// sit and wait for incoming phone calls. The telephony service will
+			// handle the calls
+		} else if (this.programType == ProgramType.Stream) {
+
+		} else {
+		}
+	}
+
 	/**
 	 * Gets the ProgramManager instance that is used to manage this program
+	 * 
 	 * @return ProgramManager object for the current program
 	 */
-	public ProgramManager getProgramManager()
-	{
+	public ProgramManager getProgramManager() {
 		return this.programManager;
 	}
 
@@ -132,48 +132,50 @@ public class Program {
 	public EventTime[] getEventTimes() {
 		return this.eventTimes.toArray(new EventTime[this.eventTimes.size()]);
 	}
-	
+
 	/**
 	 * Gets the index of the event time for this program that is playing
-	 * @return Index of the event time for this program that is currently playing
+	 * 
+	 * @return Index of the event time for this program that is currently
+	 *         playing
 	 */
-	public int getScheduledIndex()
-	{
+	public int getScheduledIndex() {
 		return this.scheduledIndex;
 	}
-	
+
 	/**
 	 * Sets the index of the event time for this program that is playing
-	 * @param scheduledIndex The index of the event time that is playing
+	 * 
+	 * @param scheduledIndex
+	 *            The index of the event time that is playing
 	 */
-	public void setScheduledIndex(int scheduledIndex)
-	{
+	public void setScheduledIndex(int scheduledIndex) {
 		this.scheduledIndex = scheduledIndex;
 	}
-	
+
 	/**
 	 * Fetches the event times for which this program is scheduled
-	 * @param programId The ID of the program whose event times to fetch
+	 * 
+	 * @param programId
+	 *            The ID of the program whose event times to fetch
 	 */
-	private void loadEventTimes(long programId)
-	{
+	private void loadEventTimes(long programId) {
 		this.eventTimes = new ArrayList<EventTime>();
-	    String tableName = "eventtime";
-	    String[] columns = new String[]{"programid", "scheduledate", "duration", "isrepeat"};
-	    String whereClause = "programid = ?" ;
-	    String[] whereArgs = new String[]{String.valueOf(programId)};
-	    DBAgent dbAgent = new DBAgent(this.parent);
-	    String[][] results = dbAgent.getData(true, tableName, columns, whereClause, whereArgs, null, null, null, null);
-	    for(String[] result : results)
-	    {
-	    	long eventTimeProgramId = Utils.parseLongFromString(result[0]);
-	    	Date eventTimeScheduleDate = Utils.getDateFromString(result[1],"yyyy-MM-dd HH:mm:ss");
-	    	int duration = Utils.parseIntFromString(result[2]);
-	    	boolean isRepeat = false; //result[3].equals("1");
-	    	this.eventTimes.add(new EventTime(this.parent, eventTimeProgramId, eventTimeScheduleDate, duration, isRepeat ));
-	    }
+		String tableName = "eventtime";
+		String[] columns = new String[] { "programid", "scheduledate", "duration", "isrepeat" };
+		String whereClause = "programid = ?";
+		String[] whereArgs = new String[] { String.valueOf(programId) };
+		DBAgent dbAgent = new DBAgent(this.parent);
+		String[][] results = dbAgent.getData(true, tableName, columns, whereClause, whereArgs, null, null, null, null);
+		for (String[] result : results) {
+			long eventTimeProgramId = Utils.parseLongFromString(result[0]);
+			Date eventTimeScheduleDate = Utils.getDateFromString(result[1], "yyyy-MM-dd HH:mm:ss");
+			int duration = Utils.parseIntFromString(result[2]);
+			boolean isRepeat = false; // result[3].equals("1");
+			this.eventTimes.add(new EventTime(this.parent, eventTimeProgramId, eventTimeScheduleDate, duration, isRepeat));
+		}
 	}
-	
+
 	/**
 	 * Save this Program to the Rootio Database in case it is not yet persisted
 	 * 
@@ -188,17 +190,15 @@ public class Program {
 		DBAgent agent = new DBAgent(this.parent);
 		return agent.saveData(tableName, null, data);
 	}
-	
-	private void loadProgramInfo()
-	{
+
+	private void loadProgramInfo() {
 		String tableName = "program";
-		String[] columns = new String[]{"id","title","tag"};
+		String[] columns = new String[] { "id", "title", "tag" };
 		String whereClause = "cloudid = ?";
-		String[] whereArgs = new String[]{String.valueOf(this.cloudId)};
+		String[] whereArgs = new String[] { String.valueOf(this.cloudId) };
 		DBAgent agent = new DBAgent(this.parent);
 		String[][] result = agent.getData(true, tableName, columns, whereClause, whereArgs, null, null, null, null);
-		if(result.length > 0)
-		{
+		if (result.length > 0) {
 			this.title = result[0][1];
 			this.id = Utils.parseLongFromString(result[0][0]);
 		}

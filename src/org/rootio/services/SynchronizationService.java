@@ -7,19 +7,18 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 
-public class SynchronizationService extends Service implements ServiceInformationPublisher{
+public class SynchronizationService extends Service implements ServiceInformationPublisher {
 
-	private int serviceId = 5;
+	private final int serviceId = 5;
 	private boolean isRunning;
-	
+
 	@Override
 	public IBinder onBind(Intent arg0) {
-        return new BindingAgent(this);
+		return new BindingAgent(this);
 	}
-	
+
 	@Override
-	public int onStartCommand(Intent intent, int flags, int startId)
-	{
+	public int onStartCommand(Intent intent, int flags, int startId) {
 		if (!this.isRunning) {
 			SynchronizationDaemon synchronizationDaemon = new SynchronizationDaemon(this);
 			Thread thread = new Thread(synchronizationDaemon);
@@ -30,15 +29,16 @@ public class SynchronizationService extends Service implements ServiceInformatio
 		}
 		return Service.START_STICKY;
 	}
-	
+
 	@Override
-	public void onDestroy()
-	{
-		this.isRunning = false;
-		Utils.doNotification(this, "RootIO", "Synchronization Service Stopped");
-		this.sendEventBroadcast();
+	public void onDestroy() {
+		if (this.isRunning) {
+			this.isRunning = false;
+			Utils.doNotification(this, "RootIO", "Synchronization Service Stopped");
+			this.sendEventBroadcast();
+		}
 	}
-	
+
 	/**
 	 * Sends out broadcasts informing listeners of changes in service status
 	 */
@@ -51,17 +51,13 @@ public class SynchronizationService extends Service implements ServiceInformatio
 	}
 
 	@Override
-	public boolean isRunning()
-	{
+	public boolean isRunning() {
 		return this.isRunning;
 	}
-	
+
 	@Override
-	public int getServiceId()
-	{
+	public int getServiceId() {
 		return this.serviceId;
 	}
-	
-	
-	
+
 }

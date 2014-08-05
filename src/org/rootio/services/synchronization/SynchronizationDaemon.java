@@ -1,6 +1,5 @@
 package org.rootio.services.synchronization;
 
-
 import java.util.Date;
 
 import org.rootio.services.SynchronizationService;
@@ -11,9 +10,9 @@ import org.rootio.tools.utils.Utils;
 import android.content.Context;
 
 public class SynchronizationDaemon implements Runnable {
-	private Context parent;
-	private int frequency;
-	private Cloud cloud;
+	private final Context parent;
+	private final int frequency;
+	private final Cloud cloud;
 
 	@Override
 	public void run() {
@@ -21,193 +20,181 @@ public class SynchronizationDaemon implements Runnable {
 		EventTimeSynchronizer eventTimeSynchronizer = new EventTimeSynchronizer();
 		StationInformationSynchronizer stationInformationSynchronizer = new StationInformationSynchronizer();
 		DiagnosticsSynchronizer diagnosticsSynchronizer = new DiagnosticsSynchronizer();
-		while(((SynchronizationService)this.parent).isRunning())
-		{
+		while (((SynchronizationService) this.parent).isRunning()) {
 			programSynchronizer.synchronize();
 			eventTimeSynchronizer.synchronize();
 			stationInformationSynchronizer.synchronize();
 			diagnosticsSynchronizer.synchronize();
-			
+
 			try {
-				Thread.sleep(this.frequency * 1000);//frequency is in seconds
+				Thread.sleep(this.frequency * 1000);// frequency is in seconds
 			} catch (InterruptedException e) {
 				e.printStackTrace();
-			} 
+			}
 		}
 	}
 
-	public SynchronizationDaemon(Context parent)
-	{
+	public SynchronizationDaemon(Context parent) {
 		this.parent = parent;
 		this.frequency = this.getFrequency();
 		this.cloud = new Cloud(this.parent);
 	}
-	
+
 	/**
-	 * Fetches the number of seconds representing the interval at which to issue synchronization requests
+	 * Fetches the number of seconds representing the interval at which to issue
+	 * synchronization requests
+	 * 
 	 * @return Number of seconds representing synchronization interval
 	 */
-	private int getFrequency()
-	{
+	private int getFrequency() {
 		String tableName = "frequencyconfiguration";
-		String[] columns = new String[]{"quantity","frequencyunitid"};
+		String[] columns = new String[] { "quantity", "frequencyunitid" };
 		String orderBy = "_id desc";
 		String whereClause = "title = ?";
-		String[] whereArgs = new String[] {"synchronization"};
+		String[] whereArgs = new String[] { "synchronization" };
 		DBAgent dbAgent = new DBAgent(this.parent);
 		String[][] results = dbAgent.getData(false, tableName, columns, whereClause, whereArgs, null, null, orderBy, null);
-		if(results.length > 0)
-		{
+		if (results.length > 0) {
 			int unit = Utils.parseIntFromString(results[0][1]);
-			switch(unit)
-			{
-			case 1:
-				return Utils.parseIntFromString(results[0][0]) * 3600;
-			case 2:
-				return Utils.parseIntFromString(results[0][0]) * 60;
-			case 3:
-				return Utils.parseIntFromString(results[0][0]);
+			switch (unit) {
+				case 1:
+					return Utils.parseIntFromString(results[0][0]) * 3600;
+				case 2:
+					return Utils.parseIntFromString(results[0][0]) * 60;
+				case 3:
+					return Utils.parseIntFromString(results[0][0]);
 			}
 		}
 		return 0;
 	}
-	
+
 	/**
 	 * This class handles synchronization particularly for programs
+	 * 
 	 * @author Jude Mukundane
-	 *
+	 * 
 	 */
-class ProgramSynchronizer
-{
-	private ProgramsHandler programsHandler;
-	private SynchronizationUtils synchronizationUtils;
-	
-	ProgramSynchronizer()
-	{
-		this.synchronizationUtils = new SynchronizationUtils(SynchronizationDaemon.this.parent);
-		this.programsHandler = new ProgramsHandler(SynchronizationDaemon.this.parent, cloud.getServerAddress(), cloud.getHTTPPort(), cloud.getStationId(), cloud.getServerKey(), this.synchronizationUtils.getLastUpdateDate(SynchronizationType.Program));
-	}
-	
-	/**
-	 * Constructs the URL to check for Program updates
-	 * @return
-	 */
-	private String getSynchronizationURL(int programId)
-	{
-		return String.format("http://%s:%s/%s/%s?api_key=%s", SynchronizationDaemon.this.cloud.getServerAddress(),SynchronizationDaemon.this.cloud.getHTTPPort(), "api/program", programId, SynchronizationDaemon.this.cloud.getServerKey());
-	}
-	
-	/**
-	 * Runs the synchronization for programs
-	 */
-	public void synchronize() {
-		for(Integer programId : this.programsHandler.getProgramIds())
-		{
-			String synchronizationUrl = this.getSynchronizationURL(programId);
-			String response = Utils.doHTTP(synchronizationUrl);
-			ProgramHandler handler = new ProgramHandler(SynchronizationDaemon.this.parent, response, new SynchronizationUtils(SynchronizationDaemon.this.parent));
-			handler.processProgram();	
-		}	
-	}
-}
+	class ProgramSynchronizer {
+		private final ProgramsHandler programsHandler;
+		private final SynchronizationUtils synchronizationUtils;
 
-class EventTimeSynchronizer
-{
-	
-	EventTimeSynchronizer()
-	{
-		this.synchronizationUtils = new SynchronizationUtils(SynchronizationDaemon.this.parent);
+		ProgramSynchronizer() {
+			this.synchronizationUtils = new SynchronizationUtils(SynchronizationDaemon.this.parent);
+			this.programsHandler = new ProgramsHandler(SynchronizationDaemon.this.parent, cloud.getServerAddress(), cloud.getHTTPPort(), cloud.getStationId(), cloud.getServerKey(), this.synchronizationUtils.getLastUpdateDate(SynchronizationType.Program));
+		}
+
+		/**
+		 * Constructs the URL to check for Program updates
+		 * 
+		 * @return
+		 */
+		private String getSynchronizationURL(int programId) {
+			return String.format("http://%s:%s/%s/%s?api_key=%s", SynchronizationDaemon.this.cloud.getServerAddress(), SynchronizationDaemon.this.cloud.getHTTPPort(), "api/program", programId, SynchronizationDaemon.this.cloud.getServerKey());
+		}
+
+		/**
+		 * Runs the synchronization for programs
+		 */
+		public void synchronize() {
+			for (Integer programId : this.programsHandler.getProgramIds()) {
+				String synchronizationUrl = this.getSynchronizationURL(programId);
+				String response = Utils.doHTTP(synchronizationUrl);
+				ProgramHandler handler = new ProgramHandler(SynchronizationDaemon.this.parent, response, new SynchronizationUtils(SynchronizationDaemon.this.parent));
+				handler.processProgram();
+			}
+		}
 	}
-	private SynchronizationUtils synchronizationUtils;
-	/**
-	 * Constructs the URL to check for EventTime updates
-	 * @return
-	 */
-	private String getSynchronizationURL()
-	{
-		String sincePart = this.getSincePart();
-		//http://demo.rootio.org/api/station/2/schedule?all=1
-		return String.format("http://%s:%s/%s/%s/schedule?api_key=%s&%s", SynchronizationDaemon.this.cloud.getServerAddress(),SynchronizationDaemon.this.cloud.getHTTPPort(), "api/station", SynchronizationDaemon.this.cloud.getStationId(), SynchronizationDaemon.this.cloud.getServerKey(),sincePart);
-	}
-	
-	/**
-	 * Runs the synchronization for programs
-	 */
-	public void synchronize() {
-		
+
+	class EventTimeSynchronizer {
+
+		EventTimeSynchronizer() {
+			this.synchronizationUtils = new SynchronizationUtils(SynchronizationDaemon.this.parent);
+		}
+
+		private final SynchronizationUtils synchronizationUtils;
+
+		/**
+		 * Constructs the URL to check for EventTime updates
+		 * 
+		 * @return
+		 */
+		private String getSynchronizationURL() {
+			String sincePart = this.getSincePart();
+			System.out.println(String.format("http://%s:%s/%s/%s/schedule?api_key=%s&%s", SynchronizationDaemon.this.cloud.getServerAddress(), SynchronizationDaemon.this.cloud.getHTTPPort(), "api/station", SynchronizationDaemon.this.cloud.getStationId(), SynchronizationDaemon.this.cloud.getServerKey(), sincePart));
+			return String.format("http://%s:%s/%s/%s/schedule?api_key=%s&%s", SynchronizationDaemon.this.cloud.getServerAddress(), SynchronizationDaemon.this.cloud.getHTTPPort(), "api/station", SynchronizationDaemon.this.cloud.getStationId(), SynchronizationDaemon.this.cloud.getServerKey(), sincePart);
+		}
+
+		/**
+		 * Runs the synchronization for programs
+		 */
+		public void synchronize() {
+
 			String synchronizationUrl = this.getSynchronizationURL();
 			String response = Utils.doHTTP(synchronizationUrl);
-			EventTimeHandler handler = new EventTimeHandler(SynchronizationDaemon.this.parent, response,this.synchronizationUtils);
-			handler.processEventTimes();	
-	}
-	
-	private String getSincePart()
-	{
-		Date dt = this.synchronizationUtils.getLastUpdateDate(SynchronizationType.EventTime);
-		return dt == null? "all=1":String.format("updated_since=%s&all=1", Utils.getDateString(dt, "yyyy-MM-dd'T'HH:mm:ss" ));
-	}
-}
+			EventTimeHandler handler = new EventTimeHandler(SynchronizationDaemon.this.parent, response, this.synchronizationUtils);
+			handler.processEventTimes();
+		}
 
-class StationInformationSynchronizer
-{
-	private SynchronizationUtils synchronizationUtils;
-	
-	StationInformationSynchronizer()
-	{
-		this.synchronizationUtils = new SynchronizationUtils(SynchronizationDaemon.this.parent);
+		private String getSincePart() {
+			Date dt = this.synchronizationUtils.getLastUpdateDate(SynchronizationType.EventTime);
+			return dt == null ? "all=1" : String.format("updated_since=%s&all=1", Utils.getDateString(dt, "yyyy-MM-dd'T'HH:mm:ss"));
+		}
 	}
-	
-	
-	/**
-	 * Constructs the URL to check for EventTime updates
-	 * @return
-	 */
-	private String getSynchronizationURL()
-	{
-		return String.format("http://%s:%s/%s/%s?api_key=%s", SynchronizationDaemon.this.cloud.getServerAddress(),SynchronizationDaemon.this.cloud.getHTTPPort(), "api/station", SynchronizationDaemon.this.cloud.getStationId(), SynchronizationDaemon.this.cloud.getServerKey());
-	}
-	
-	/**
-	 * Runs the synchronization for programs
-	 */
-	public void synchronize() 
-	{
-		String synchronizationUrl = this.getSynchronizationURL();
-		String response = Utils.doHTTP(synchronizationUrl);
-		EventTimeHandler handler = new EventTimeHandler(SynchronizationDaemon.this.parent, response,this.synchronizationUtils);
-		handler.processEventTimes();	
-	}
-}
 
-class DiagnosticsSynchronizer
-{
-	private SynchronizationUtils synchronizationUtils;
-	
-	DiagnosticsSynchronizer()
-	{
-		this.synchronizationUtils = new SynchronizationUtils(SynchronizationDaemon.this.parent);
+	class StationInformationSynchronizer {
+		private final SynchronizationUtils synchronizationUtils;
+
+		StationInformationSynchronizer() {
+			this.synchronizationUtils = new SynchronizationUtils(SynchronizationDaemon.this.parent);
+		}
+
+		/**
+		 * Constructs the URL to check for EventTime updates
+		 * 
+		 * @return
+		 */
+		private String getSynchronizationURL() {
+			System.out.println(String.format("http://%s:%s/%s/%s/scheduled_programs?api_key=%s", SynchronizationDaemon.this.cloud.getServerAddress(), SynchronizationDaemon.this.cloud.getHTTPPort(), "api/station", SynchronizationDaemon.this.cloud.getStationId(), SynchronizationDaemon.this.cloud.getServerKey()));
+			return String.format("http://%s:%s/%s/%s/scheduled_programs?api_key=%s", SynchronizationDaemon.this.cloud.getServerAddress(), SynchronizationDaemon.this.cloud.getHTTPPort(), "api/station", SynchronizationDaemon.this.cloud.getStationId(), SynchronizationDaemon.this.cloud.getServerKey());
+		}
+
+		/**
+		 * Runs the synchronization for programs
+		 */
+		public void synchronize() {
+			String synchronizationUrl = this.getSynchronizationURL();
+			String response = Utils.doHTTP(synchronizationUrl);
+			EventTimeHandler handler = new EventTimeHandler(SynchronizationDaemon.this.parent, response, this.synchronizationUtils);
+			handler.processEventTimes();
+		}
 	}
-	
-	/**
-	 * Constructs the URL to check for EventTime updates
-	 * @return
-	 */
-	private String getSynchronizationURL()
-	{
-		return String.format("http://%s:%s/%s/%s?api_key=%s", SynchronizationDaemon.this.cloud.getServerAddress(),SynchronizationDaemon.this.cloud.getHTTPPort(), "api/station", SynchronizationDaemon.this.cloud.getStationId(), SynchronizationDaemon.this.cloud.getServerKey());
-	}
-	
-	/**
-	 * Runs the synchronization for programs
-	 */
-	public void synchronize() 
-	{
-		DiagnosticsHandler handler = new DiagnosticsHandler(SynchronizationDaemon.this.parent, this.synchronizationUtils);
+
+	class DiagnosticsSynchronizer {
+		private final SynchronizationUtils synchronizationUtils;
+
+		DiagnosticsSynchronizer() {
+			this.synchronizationUtils = new SynchronizationUtils(SynchronizationDaemon.this.parent);
+		}
+
+		/**
+		 * Constructs the URL to check for EventTime updates
+		 * 
+		 * @return
+		 */
+		private String getSynchronizationURL() {
+			return String.format("http://%s:%s/%s/%s?api_key=%s", SynchronizationDaemon.this.cloud.getServerAddress(), SynchronizationDaemon.this.cloud.getHTTPPort(), "api/station", SynchronizationDaemon.this.cloud.getStationId(), SynchronizationDaemon.this.cloud.getServerKey());
+		}
+
+		/**
+		 * Runs the synchronization for programs
+		 */
+		public void synchronize() {
+			DiagnosticsHandler handler = new DiagnosticsHandler(SynchronizationDaemon.this.parent, this.synchronizationUtils);
 			for (int i = 0; i < handler.getSize(); i++) {
 				String synchronizationUrl = this.getSynchronizationURL();
 				String response = Utils.doPostHTTP(synchronizationUrl, handler.getSynchronizationData(i));
 				handler.processDiagnosticSynchronizationResponse(response, i);
 			}
+		}
 	}
-}
 }

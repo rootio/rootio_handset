@@ -141,9 +141,12 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable {
 		for (int i = 0; i < programs.size(); i++) {
 			EventTime[] eventTimes = programs.get(i).getEventTimes();
 			for (int j = 0; j < eventTimes.length; j++) {
-				programs.get(i).setScheduledIndex(j);
-				this.programSlots.add(new ProgramSlot(programs.get(i), j));
 
+				// check if it has a slot for today.
+				if (isScheduledToday(eventTimes[j])) {
+					programs.get(i).setScheduledIndex(j);
+					this.programSlots.add(new ProgramSlot(programs.get(i), j));
+				}
 			}
 		}
 
@@ -161,6 +164,13 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable {
 		for (int i = 0; i < this.programSlots.size(); i++) {
 			addAlarmEvent(i, this.programSlots.get(i).getProgram().getEventTimes()[this.programSlots.get(i).getScheduledIndex()].getScheduledDate());
 		}
+	}
+
+	private boolean isScheduledToday(EventTime eventTime) {
+		Date dt = new Date();
+		Date eventDate = eventTime.getScheduledDate();
+		return dt.getMonth() == eventDate.getMonth() && dt.getYear() == eventDate.getYear() && dt.getDate() == eventDate.getDate();
+		// return false;
 	}
 
 	/**
@@ -204,6 +214,7 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable {
 			program = new Program(this.parent, Utils.parseLongFromString(data[i][2]), data[i][1], Utils.parseIntFromString(data[i][3]), data[i][4]);
 			programs.add(program);
 		}
+		Utils.toastOnScreen("found programs" + programs.size());
 		return programs;
 	}
 

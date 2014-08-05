@@ -36,12 +36,11 @@ public class RadioActivity extends Activity implements Notifiable, ServiceExitIn
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.station_activity);
-		this.setTitle("Station Details"); 
+		this.setTitle("Station Details");
 	}
-	
+
 	@Override
-	public void onResume()
-	{
+	public void onResume() {
 		super.onResume();
 		this.bindToService();
 		this.setupExitIntentListener();
@@ -50,45 +49,45 @@ public class RadioActivity extends Activity implements Notifiable, ServiceExitIn
 	@Override
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
 		Intent intent;
-		
-		switch(item.getItemId())
-		{
-		case R.id.station_menu_item:
-			intent = new Intent(this, StationActivity.class);
-			startActivity(intent);
-			return true;
-		case R.id.cloud_menu_item :
-			intent = new Intent(this, CloudActivity.class);
-			startActivity(intent);
-			return true;
-		case R.id.telephony_menu_item:
-			intent = new Intent(this, TelephoneLogActivity.class);
-			intent.putExtra("isHomeScreen",false);
-			startActivity(intent);
-			return true;
-		case R.id.diagnostics_menu_item:
-			intent = new Intent(this, DiagnosticsConfigurationActivity.class);
-			startActivity(intent);
-			return true;
-		case R.id.quity_menu_item:
-		    this.onStop();
-			this.finish();
-			return true;
-		case R.id.synchronization_menu_item:
-			intent = new Intent(this, SynchronizationLogDownloadActivity.class);
-			this.startActivity(intent);
-			return true;
-		case R.id.services_menu_item:
-			intent = new Intent(this, ServicesActivity.class);
-			this.startActivity(intent);
-			return true;
-		default:
-		return super.onContextItemSelected(item);
+
+		switch (item.getItemId()) {
+			case R.id.station_menu_item:
+				intent = new Intent(this, StationActivity.class);
+				startActivity(intent);
+				return true;
+			case R.id.cloud_menu_item:
+				intent = new Intent(this, CloudActivity.class);
+				startActivity(intent);
+				return true;
+			case R.id.telephony_menu_item:
+				intent = new Intent(this, TelephoneLogActivity.class);
+				intent.putExtra("isHomeScreen", false);
+				startActivity(intent);
+				return true;
+			case R.id.diagnostics_menu_item:
+				intent = new Intent(this, DiagnosticsConfigurationActivity.class);
+				startActivity(intent);
+				return true;
+			case R.id.quity_menu_item:
+				this.onStop();
+				this.finish();
+				return true;
+			case R.id.synchronization_menu_item:
+				intent = new Intent(this, SynchronizationLogDownloadActivity.class);
+				this.startActivity(intent);
+				return true;
+			case R.id.services_menu_item:
+				intent = new Intent(this, ServicesActivity.class);
+				this.startActivity(intent);
+				return true;
+			default:
+				return super.onContextItemSelected(item);
 		}
 	}
-	
+
 	/**
-	 * Binds to the program service to get status of programs that are displayed on the home radio screen
+	 * Binds to the program service to get status of programs that are displayed
+	 * on the home radio screen
 	 */
 	private void bindToService() {
 		programServiceConnection = new ServiceConnectionAgent(this, 4);
@@ -97,27 +96,24 @@ public class RadioActivity extends Activity implements Notifiable, ServiceExitIn
 			// just wait for the async call
 		}
 	}
-	
+
 	/**
-	 * Set up a listener to detect exit of the program service. This is so that the activity can unbind from the service in order for the service to shut down
+	 * Set up a listener to detect exit of the program service. This is so that
+	 * the activity can unbind from the service in order for the service to shut
+	 * down
 	 */
-	private void setupExitIntentListener()
-	{
-		this.exitBroadCastHandler = new  RadioServiceExitBroadcastHandler(this);
+	private void setupExitIntentListener() {
+		this.exitBroadCastHandler = new RadioServiceExitBroadcastHandler(this);
 		IntentFilter intentFilter = new IntentFilter();
 		intentFilter.addAction("org.rootio.activities.services.RADIO_SERVICE_STOP");
 		this.registerReceiver(exitBroadCastHandler, intentFilter);
 	}
-	
+
 	@Override
-	public void disconnectFromRadioService()
-	{
-		try
-		{
-		    this.getApplicationContext().unbindService(this.programServiceConnection);
-		}
-		catch(Exception ex) 
-		{
+	public void disconnectFromRadioService() {
+		try {
+			this.getApplicationContext().unbindService(this.programServiceConnection);
+		} catch (Exception ex) {
 			Log.e(this.getString(R.string.app_name), ex.getMessage());
 		}
 	}
@@ -127,22 +123,22 @@ public class RadioActivity extends Activity implements Notifiable, ServiceExitIn
 		ProgramService programService = (ProgramService) programServiceConnection.getService();
 		final ArrayList<ProgramSlot> programSlots = programService.getProgramSlots();
 		StationActivityAdapter stationActivityAdapter = new StationActivityAdapter(programSlots);
-		ListView stationActivityList = (ListView)this.findViewById(R.id.station_activity_lv);
+		ListView stationActivityList = (ListView) this.findViewById(R.id.station_activity_lv);
 		stationActivityList.setAdapter(stationActivityAdapter);
-		stationActivityList.setOnItemClickListener(new OnItemClickListener(){
+		stationActivityList.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int index,long arg3) {
-				Intent intent = new Intent(RadioActivity.this, RadioPlaylistActivity.class);
+			public void onItemClick(AdapterView<?> arg0, View arg1, int index, long arg3) {
+				Intent intent = new Intent(RadioActivity.this, RadioProgramActionsActivity.class);
 				intent.putExtra("index", index);
 				RadioActivity.this.startActivity(intent);
-			}});
+			}
+		});
 
 	}
-	
+
 	@Override
-	public void onPause()
-	{
+	public void onPause() {
 		super.onPause();
 		this.disconnectFromRadioService();
 	}
@@ -150,8 +146,7 @@ public class RadioActivity extends Activity implements Notifiable, ServiceExitIn
 	@Override
 	public void notifyServiceDisconnection(int serviceId) {
 		this.bindToService();
-		
+
 	}
 
-	
 }
