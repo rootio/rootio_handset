@@ -22,7 +22,6 @@ enum State {
 
 @SuppressLint("SimpleDateFormat")
 public class RadioRunner implements Runnable, TelephonyEventNotifiable {
-
 	private AlarmManager am;
 	private BroadcastHandler br;
 	private PendingIntent pi;
@@ -37,7 +36,6 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable {
 		this.parent = parent;
 		this.setUpAlarming();
 		this.programSlots = new ArrayList<ProgramSlot>();
-
 		this.telephonyEventBroadcastReceiver = new TelephonyEventBroadcastReceiver(this);
 		IntentFilter intentFilter = new IntentFilter();
 		intentFilter.addAction("org.rootio.services.telephony.TELEPHONY_EVENT");
@@ -70,9 +68,7 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable {
 	 */
 	public void runProgram(int index) {
 		this.stopProgram();
-
 		this.runningProgramIndex = index;
-
 		// Check to see that we are not in a phone call before launching program
 		if (this.state != State.PAUSED) {
 			this.programSlots.get(this.runningProgramIndex).setRunning();
@@ -141,7 +137,6 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable {
 		for (int i = 0; i < programs.size(); i++) {
 			EventTime[] eventTimes = programs.get(i).getEventTimes();
 			for (int j = 0; j < eventTimes.length; j++) {
-
 				// check if it has a slot for today.
 				if (isScheduledToday(eventTimes[j])) {
 					programs.get(i).setScheduledIndex(j);
@@ -149,17 +144,14 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable {
 				}
 			}
 		}
-
 		// register receiver before scheduling, events maybe thrown immediately
 		// after scheduling
 		for (int i = 0; i < this.programSlots.size(); i++) {
 			intentFilter.addAction("org.rootio.RadioRunner" + String.valueOf(i));
 		}
 		this.parent.registerReceiver(br, intentFilter);
-
 		// Sort the program slots by time at which they will play
 		Collections.sort(this.programSlots);
-
 		// Schedule the program slots
 		for (int i = 0; i < this.programSlots.size(); i++) {
 			addAlarmEvent(i, this.programSlots.get(i).getProgram().getEventTimes()[this.programSlots.get(i).getScheduledIndex()].getScheduledDate());
@@ -186,7 +178,6 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable {
 		try {
 			Intent intent = new Intent("org.rootio.RadioRunner" + String.valueOf(index));
 			intent.putExtra("index", index);
-
 			this.pi = PendingIntent.getBroadcast(parent, 0, intent, 0);
 			this.am.set(AlarmManager.RTC_WAKEUP, startTime.getTime(), this.pi);
 		} catch (Exception e) {
@@ -195,7 +186,6 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable {
 	}
 
 	private void addPadding() {
-
 	}
 
 	/**
@@ -205,7 +195,7 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable {
 	 */
 	private ArrayList<Program> fetchPrograms() {
 		DBAgent agent = new DBAgent(this.parent);
-		String query = "select program.id, program.title, program.cloudid, programtypeid , tag from program where program.id in (select programid from eventtime where date(scheduledate) = date())";
+		String query = "select program.id, program.title, program.cloudid, programtypeid , tag from program where program.id in (select programid from eventtime where date(scheduledate) = date(current_timestamp,'localtime'))";
 		String[] args = new String[] {};
 		String[][] data = agent.getData(query, args);
 		ArrayList<Program> programs = new ArrayList<Program>();
@@ -236,6 +226,5 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable {
 				}
 			}
 		}
-
 	}
 }

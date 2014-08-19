@@ -1,7 +1,5 @@
 package org.rootio.activities;
 
-import java.util.ArrayList;
-
 import org.rootio.activities.cloud.CloudActivity;
 import org.rootio.activities.diagnostics.DiagnosticsConfigurationActivity;
 import org.rootio.activities.services.ServiceExitInformable;
@@ -14,7 +12,6 @@ import org.rootio.radioClient.R;
 import org.rootio.services.Notifiable;
 import org.rootio.services.ProgramService;
 import org.rootio.services.ServiceConnectionAgent;
-import org.rootio.tools.radio.ProgramSlot;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -114,15 +111,14 @@ public class RadioActivity extends Activity implements Notifiable, ServiceExitIn
 		try {
 			this.getApplicationContext().unbindService(this.programServiceConnection);
 		} catch (Exception ex) {
-			Log.e(this.getString(R.string.app_name), ex.getMessage());
+			Log.e(this.getString(R.string.app_name), String.format("[RadioActivity.disconnectFromRadioService] %s", ex.getMessage()));
 		}
 	}
 
 	@Override
 	public void notifyServiceConnection(int serviceId) {
 		ProgramService programService = (ProgramService) programServiceConnection.getService();
-		final ArrayList<ProgramSlot> programSlots = programService.getProgramSlots();
-		StationActivityAdapter stationActivityAdapter = new StationActivityAdapter(programSlots);
+		StationActivityAdapter stationActivityAdapter = new StationActivityAdapter(programService.getProgramSlots());
 		ListView stationActivityList = (ListView) this.findViewById(R.id.station_activity_lv);
 		stationActivityList.setAdapter(stationActivityAdapter);
 		stationActivityList.setOnItemClickListener(new OnItemClickListener() {

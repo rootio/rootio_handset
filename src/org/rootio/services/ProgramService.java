@@ -1,14 +1,23 @@
 package org.rootio.services;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
+import org.rootio.radioClient.R;
 import org.rootio.tools.radio.ProgramSlot;
 import org.rootio.tools.radio.RadioRunner;
 import org.rootio.tools.utils.Utils;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.IBinder;
+import android.util.Log;
 
 public class ProgramService extends Service implements ServiceInformationPublisher {
 
@@ -16,6 +25,9 @@ public class ProgramService extends Service implements ServiceInformationPublish
 	private boolean isRunning;
 	private Thread runnerThread;
 	private RadioRunner radioRunner;
+	private NewDayScheduleHandler newDayScheduleHandler;
+	private PendingIntent pi;
+	private AlarmManager am;
 
 	@Override
 	public IBinder onBind(Intent arg0) {
@@ -28,14 +40,26 @@ public class ProgramService extends Service implements ServiceInformationPublish
 
 		if (!this.isRunning) {
 			Utils.doNotification(this, "RootIO", "Radio Service Started");
-			radioRunner = new RadioRunner(this);
-			runnerThread = new Thread(radioRunner);
-			runnerThread.start();
+			this.am = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+			runTodaySchedule();
+			this.setupNewDayScheduleListener();
 			this.isRunning = true;
-
 			this.sendEventBroadcast();
 		}
 		return Service.START_STICKY;
+	}
+
+	private void setupNewDayScheduleListener() {
+		this.newDayScheduleHandler = new NewDayScheduleHandler();
+		IntentFilter intentFilter = new IntentFilter("org.rootio.services.program.NEW_DAY_SCHEDULE");
+		this.registerReceiver(newDayScheduleHandler, intentFilter);
+	}
+
+	private void runTodaySchedule() {
+		radioRunner = new RadioRunner(this);
+		runnerThread = new Thread(radioRunner);
+		runnerThread.start();
+		this.scheduleNextDayAlarm();
 	}
 
 	@Override
@@ -44,6 +68,11 @@ public class ProgramService extends Service implements ServiceInformationPublish
 			super.onDestroy();
 			radioRunner.stopProgram();
 			this.isRunning = false;
+			try {
+				this.unregisterReceiver(newDayScheduleHandler);
+			} catch (Exception ex) {
+				Log.e(this.getString(R.string.app_name), String.format("[ProgramService.onDestroy] %s", ex.getMessage() == null ? "Null pointer exception" : ex.getMessage()));
+			}
 			this.sendEventBroadcast();
 			Utils.doNotification(this, "RootIO", "Radio Service Stopped");
 		}
@@ -79,6 +108,34 @@ public class ProgramService extends Service implements ServiceInformationPublish
 	@Override
 	public int getServiceId() {
 		return this.serviceId;
+	}
+
+	private void scheduleNextDayAlarm() {
+		Date dt = this.getTomorrowBaseDate();
+		Intent intent = new Intent("org.rootio.services.program.NEW_DAY_SCHEDULE");
+
+		this.pi = PendingIntent.getBroadcast(this, 0, intent, 0);
+		this.am.set(AlarmManager.RTC_WAKEUP, dt.getTime(), this.pi);
+	}
+
+	private Date getTomorrowBaseDate() {
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.DAY_OF_MONTH, 1);
+		cal.set(Calendar.HOUR_OF_DAY, 0);
+		cal.set(Calendar.MINUTE, 0);
+		cal.set(Calendar.SECOND, 0);
+		return cal.getTime();
+	}
+
+	class NewDayScheduleHandler extends BroadcastReceiver {
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			ProgramService.this.radioRunner.stopProgram();
+			// ProgramService.this.finalize()
+			ProgramService.this.runTodaySchedule();
+
+		}
 	}
 
 }

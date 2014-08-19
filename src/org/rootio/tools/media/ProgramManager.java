@@ -17,7 +17,6 @@ import android.content.IntentFilter;
 import android.util.Log;
 
 public class ProgramManager {
-
 	public enum ProgramActionType {
 		Jingle, Media, Music, Stream, Call
 	};
@@ -37,7 +36,6 @@ public class ProgramManager {
 	}
 
 	public void runProgram() {
-
 		this.setupAlertReceiver(this.program, alertHandler, programActions);
 	}
 
@@ -63,16 +61,13 @@ public class ProgramManager {
 		for (int i = 0; i < programActions.size(); i++) {
 			intentFilter.addAction(this.program.getTitle() + this.program.getScheduledIndex() + String.valueOf(i));
 		}
-
 		this.parent.registerReceiver(alertHandler, intentFilter);
-
 		for (int i = 0; i < programActions.size(); i++) {
 			Intent intent = new Intent(this.program.getTitle() + this.program.getScheduledIndex() + String.valueOf(i));
 			intent.putExtra("index", i);
 			PendingIntent pendingIntent = PendingIntent.getBroadcast(this.parent, 0, intent, 0);
 			am.set(0, this.getStartTime(program, programActions.get(i).getStartTime()), pendingIntent);
 		}
-
 	}
 
 	private long getStartTime(Program program, Date programActionDate) {
@@ -224,7 +219,6 @@ public class ProgramManager {
 			int index = intent.getIntExtra("index", 0);
 			if (index != currentIndex) {
 				currentIndex = index;
-
 				if (!isExpired(program, programActions.get(index))) {
 					if (this.runningProgramAction != null) {
 						this.runningProgramAction.stop();
@@ -242,10 +236,8 @@ public class ProgramManager {
 			calendar.add(Calendar.HOUR_OF_DAY, programAction.getStartTime().getHours());
 			calendar.add(Calendar.MINUTE, programAction.getStartTime().getMinutes());
 			calendar.add(Calendar.SECOND, programAction.getStartTime().getSeconds());
-
 			// add the duration in minutes
 			calendar.add(Calendar.MINUTE, programAction.getDuration());
-
 			// compare if the time for the scheduled event is already past
 			Calendar calendar2 = Calendar.getInstance();
 			return calendar2.after(calendar);
@@ -274,5 +266,4 @@ public class ProgramManager {
 	public PlayList getPlayList() {
 		return this.playlist;
 	}
-
 }
