@@ -2,8 +2,6 @@ package org.rootio.tools.radio;
 
 import java.util.Calendar;
 
-import org.rootio.tools.utils.Utils;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -22,7 +20,6 @@ public class BroadcastHandler extends BroadcastReceiver implements Runnable {
 		ProgramSlot programSlot = radioRunner.getProgramSlots().get(currentIndex);
 		EventTime eventTime = programSlot.getProgram().getEventTimes()[programSlot.getScheduledIndex()];
 		if (!isExpired(eventTime)) {
-			Utils.toastOnScreen("received index " + currentIndex);
 			this.radioRunner.stopProgram();
 			this.radioRunner.runProgram(currentIndex);
 		} else {

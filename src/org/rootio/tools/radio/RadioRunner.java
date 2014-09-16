@@ -72,7 +72,7 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable {
 		// Check to see that we are not in a phone call before launching program
 		if (this.state != State.PAUSED) {
 			this.programSlots.get(this.runningProgramIndex).setRunning();
-			this.programSlots.get(this.runningProgramIndex).getProgram().getProgramManager().runProgram();
+			this.programSlots.get(this.runningProgramIndex).getProgram().getProgramManager().runProgram(this.programSlots.get(this.runningProgramIndex).getScheduledIndex());
 			this.state = State.PLAYING;
 		}
 	}
@@ -101,6 +101,7 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable {
 	public void stopProgram() {
 		if (this.runningProgramIndex != null) {
 			this.programSlots.get(this.runningProgramIndex).getProgram().getProgramManager().stop();
+			this.programSlots.get(this.runningProgramIndex).setFinishedRunning();
 			if (this.state != State.PAUSED) {
 				this.state = State.STOPPED;
 			}
@@ -139,7 +140,7 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable {
 			for (int j = 0; j < eventTimes.length; j++) {
 				// check if it has a slot for today.
 				if (isScheduledToday(eventTimes[j])) {
-					programs.get(i).setScheduledIndex(j);
+
 					this.programSlots.add(new ProgramSlot(programs.get(i), j));
 				}
 			}
@@ -219,7 +220,7 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable {
 				if (state == 0) {// The program had not begun, was waiting for
 					// the call to end in order to begin
 					this.programSlots.get(this.runningProgramIndex).setRunning();
-					this.programSlots.get(this.runningProgramIndex).getProgram().getProgramManager().runProgram();
+					this.programSlots.get(this.runningProgramIndex).getProgram().getProgramManager().runProgram(this.programSlots.get(this.runningProgramIndex).getScheduledIndex());
 				} else { // The program had begun, it was paused by the call
 					this.resumeProgram();
 					this.state = State.PLAYING;

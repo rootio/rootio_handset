@@ -35,8 +35,9 @@ public class ProgramManager {
 		this.programActions = fetchProgramActions(this.program);
 	}
 
-	public void runProgram() {
-		this.setupAlertReceiver(this.program, alertHandler, programActions);
+	public void runProgram(int scheduledIndex) {
+		this.program.setScheduledIndex(scheduledIndex);
+		this.setupAlertReceiver(this.program, scheduledIndex, alertHandler, programActions);
 	}
 
 	public void pause() {
@@ -55,7 +56,7 @@ public class ProgramManager {
 		return this.programActions;
 	}
 
-	private void setupAlertReceiver(Program program, AlertHandler alertHandler, ArrayList<ProgramAction> programActions) {
+	private void setupAlertReceiver(Program program, int scheduledIndex, AlertHandler alertHandler, ArrayList<ProgramAction> programActions) {
 		IntentFilter intentFilter = new IntentFilter();
 		AlarmManager am = (AlarmManager) this.parent.getSystemService(Context.ALARM_SERVICE);
 		for (int i = 0; i < programActions.size(); i++) {
@@ -63,9 +64,11 @@ public class ProgramManager {
 		}
 		this.parent.registerReceiver(alertHandler, intentFilter);
 		for (int i = 0; i < programActions.size(); i++) {
+			// problem is here
 			Intent intent = new Intent(this.program.getTitle() + this.program.getScheduledIndex() + String.valueOf(i));
 			intent.putExtra("index", i);
 			PendingIntent pendingIntent = PendingIntent.getBroadcast(this.parent, 0, intent, 0);
+			Utils.toastOnScreen("scheduling for " + this.getStartTime(program, programActions.get(i).getStartTime()));
 			am.set(0, this.getStartTime(program, programActions.get(i).getStartTime()), pendingIntent);
 		}
 	}
@@ -77,6 +80,7 @@ public class ProgramManager {
 		calendar.add(Calendar.HOUR_OF_DAY, programActionDate.getHours());
 		calendar.add(Calendar.MINUTE, programActionDate.getMinutes());
 		calendar.add(Calendar.SECOND, programActionDate.getSeconds());
+		Utils.toastOnScreen(calendar.getTime().toGMTString());
 		return calendar.getTimeInMillis();
 	}
 
@@ -217,6 +221,7 @@ public class ProgramManager {
 
 		private void runProgramAction(Intent intent, Program program, ArrayList<ProgramAction> programActions) {
 			int index = intent.getIntExtra("index", 0);
+			Utils.toastOnScreen("alert handler...");
 			if (index != currentIndex) {
 				currentIndex = index;
 				if (!isExpired(program, programActions.get(index))) {
@@ -225,6 +230,9 @@ public class ProgramManager {
 					}
 					programActions.get(index).run();
 					this.runningProgramAction = programActions.get(index);
+					Utils.toastOnScreen("we should be running....");
+				} else {
+					Utils.toastOnScreen("we are expired...");
 				}
 			}
 		}
@@ -236,8 +244,8 @@ public class ProgramManager {
 			calendar.add(Calendar.HOUR_OF_DAY, programAction.getStartTime().getHours());
 			calendar.add(Calendar.MINUTE, programAction.getStartTime().getMinutes());
 			calendar.add(Calendar.SECOND, programAction.getStartTime().getSeconds());
-			// add the duration in minutes
-			calendar.add(Calendar.MINUTE, programAction.getDuration());
+			// add the duration in seconds
+			calendar.add(Calendar.SECOND, programAction.getDuration());
 			// compare if the time for the scheduled event is already past
 			Calendar calendar2 = Calendar.getInstance();
 			return calendar2.after(calendar);
