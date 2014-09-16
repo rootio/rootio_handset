@@ -163,7 +163,6 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable {
 		Date dt = new Date();
 		Date eventDate = eventTime.getScheduledDate();
 		return dt.getMonth() == eventDate.getMonth() && dt.getYear() == eventDate.getYear() && dt.getDate() == eventDate.getDate();
-		// return false;
 	}
 
 	/**
@@ -205,7 +204,6 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable {
 			program = new Program(this.parent, Utils.parseLongFromString(data[i][2]), data[i][1], Utils.parseIntFromString(data[i][3]), data[i][4]);
 			programs.add(program);
 		}
-		Utils.toastOnScreen("found programs" + programs.size());
 		return programs;
 	}
 

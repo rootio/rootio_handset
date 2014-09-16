@@ -68,7 +68,6 @@ public class ProgramManager {
 			Intent intent = new Intent(this.program.getTitle() + this.program.getScheduledIndex() + String.valueOf(i));
 			intent.putExtra("index", i);
 			PendingIntent pendingIntent = PendingIntent.getBroadcast(this.parent, 0, intent, 0);
-			Utils.toastOnScreen("scheduling for " + this.getStartTime(program, programActions.get(i).getStartTime()));
 			am.set(0, this.getStartTime(program, programActions.get(i).getStartTime()), pendingIntent);
 		}
 	}
@@ -80,7 +79,6 @@ public class ProgramManager {
 		calendar.add(Calendar.HOUR_OF_DAY, programActionDate.getHours());
 		calendar.add(Calendar.MINUTE, programActionDate.getMinutes());
 		calendar.add(Calendar.SECOND, programActionDate.getSeconds());
-		Utils.toastOnScreen(calendar.getTime().toGMTString());
 		return calendar.getTimeInMillis();
 	}
 
@@ -221,7 +219,6 @@ public class ProgramManager {
 
 		private void runProgramAction(Intent intent, Program program, ArrayList<ProgramAction> programActions) {
 			int index = intent.getIntExtra("index", 0);
-			Utils.toastOnScreen("alert handler...");
 			if (index != currentIndex) {
 				currentIndex = index;
 				if (!isExpired(program, programActions.get(index))) {
@@ -230,9 +227,6 @@ public class ProgramManager {
 					}
 					programActions.get(index).run();
 					this.runningProgramAction = programActions.get(index);
-					Utils.toastOnScreen("we should be running....");
-				} else {
-					Utils.toastOnScreen("we are expired...");
 				}
 			}
 		}
