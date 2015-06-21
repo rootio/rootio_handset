@@ -67,8 +67,11 @@ public class SMSSwitch {
 			return new SoundSMSHandler(this.parent, from, messageParts);
 		}
 		if (keyword.equals("diagnostic")) {
-Utils.toastOnScreen("received msg");
 			return new DiagnosticsSMSHandler(this.parent, from, messageParts);
+		}
+		if(keyword.equals("whitelist"))
+		{
+			return new WhiteListSMSHandler(this.parent, from, messageParts);
 		}
 		return null;
 	}
