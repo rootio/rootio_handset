@@ -8,15 +8,15 @@ import android.content.Context;
 
 public class Media {
 	private Long id;
-	private String title;
-	private String fileLocation;
+	private final String title;
+	private final String fileLocation;
 	private String wiki;
 	private int duration;
 	private byte[] content;
-	private Genre[] genres;
-	private String[] tags;
-	private Artist[] artists;
-	private Context context;
+	private final Genre[] genres;
+	private final String[] tags;
+	private final Artist[] artists;
+	private final Context context;
 
 	public Media(Context context, String fileLocation, String title, Genre[] genres, String[] tags, Artist[] artists) {
 		this.context = context;
@@ -93,7 +93,8 @@ public class Media {
 	 * @return String representation of the title of this media
 	 */
 	public String getFileLocation() {
-		return this.fileLocation;
+		// return this.fileLocation;
+		return String.format("%s/music/%s", "/mnt/extSdCard", this.title);
 	}
 
 	/**

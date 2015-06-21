@@ -12,6 +12,8 @@ import org.rootio.radioClient.R;
 import org.rootio.services.Notifiable;
 import org.rootio.services.ProgramService;
 import org.rootio.services.ServiceConnectionAgent;
+import org.rootio.services.ServiceStopNotifiable;
+import org.rootio.services.ServiceStopReceiver;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -24,16 +26,18 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
-public class RadioActivity extends Activity implements Notifiable, ServiceExitInformable {
+public class RadioActivity extends Activity implements Notifiable, ServiceExitInformable, ServiceStopNotifiable {
 
 	private ServiceConnectionAgent programServiceConnection;
 	private RadioServiceExitBroadcastHandler exitBroadCastHandler;
+	private ServiceStopReceiver serviceStopReceiver;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.station_activity);
 		this.setTitle("Station Details");
+		this.setUpServiceStopHandling();
 	}
 
 	@Override
@@ -106,6 +110,13 @@ public class RadioActivity extends Activity implements Notifiable, ServiceExitIn
 		this.registerReceiver(exitBroadCastHandler, intentFilter);
 	}
 
+	private void setUpServiceStopHandling() {
+		this.serviceStopReceiver = new ServiceStopReceiver(this);
+		IntentFilter intentFilter = new IntentFilter();
+		intentFilter.addAction("org.rootio.services.STOP_EVENT");
+		this.registerReceiver(this.serviceStopReceiver, intentFilter);
+	}
+
 	@Override
 	public void disconnectFromRadioService() {
 		try {
@@ -141,7 +152,13 @@ public class RadioActivity extends Activity implements Notifiable, ServiceExitIn
 
 	@Override
 	public void notifyServiceDisconnection(int serviceId) {
-		this.bindToService();
+		// this.bindToService();
+
+	}
+
+	@Override
+	public void notifyServiceStop(int serviceId) {
+		this.disconnectFromRadioService();
 
 	}
 

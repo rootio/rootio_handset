@@ -91,7 +91,7 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable {
 	 */
 	public void resumeProgram() {
 		if (this.runningProgramIndex != null) {
-			this.programSlots.get(this.runningProgramIndex).getProgram().getProgramManager().play();
+			this.programSlots.get(this.runningProgramIndex).getProgram().getProgramManager().resume();
 		}
 	}
 

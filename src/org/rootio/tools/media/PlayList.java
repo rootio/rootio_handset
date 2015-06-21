@@ -7,10 +7,14 @@ import java.util.Iterator;
 import org.rootio.radioClient.R;
 import org.rootio.tools.media.ProgramManager.ProgramActionType;
 import org.rootio.tools.persistence.DBAgent;
+import org.rootio.tools.utils.Utils;
 
 import android.content.Context;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
+import android.media.MediaPlayer.OnErrorListener;
+import android.media.MediaPlayer.OnPreparedListener;
 import android.net.Uri;
 import android.util.Log;
 
@@ -20,7 +24,7 @@ import android.util.Log;
  * @author Jude Mukundane
  * 
  */
-public class PlayList implements OnCompletionListener {
+public class PlayList implements OnCompletionListener, OnPreparedListener, OnErrorListener {
 
 	private final ProgramActionType programActionType;
 	private final String argument;
@@ -28,7 +32,11 @@ public class PlayList implements OnCompletionListener {
 	private Uri streamUrl;
 	private Iterator<Media> mediaIterator;
 	private MediaPlayer mediaPlayer;
+	private MediaPlayer callSignPlayer;
+	private final CallSignProvider callSignProvider;
 	private final Context parent;
+	private Media currentMedia;
+	private int mediaPosition;
 
 	/**
 	 * Constructor for the playlist class
@@ -40,6 +48,7 @@ public class PlayList implements OnCompletionListener {
 		this.argument = argument;
 		this.parent = parent;
 		this.programActionType = programActionType;
+		this.callSignProvider = new CallSignProvider(this.parent, this);
 	}
 
 	/**
@@ -60,18 +69,38 @@ public class PlayList implements OnCompletionListener {
 	 * Play the media loaded in this playlist
 	 */
 	public void play() {
+		startPlayer();
+		this.callSignProvider.start();
+	}
+
+	private void startPlayer() {
+
+		AudioManager audioManager = (AudioManager) this.parent.getSystemService(Context.AUDIO_SERVICE);
+		audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC) - 2, AudioManager.FLAG_SHOW_UI);
 
 		try {
 			if (this.programActionType == ProgramActionType.Media || this.programActionType == ProgramActionType.Music) {
 				if (mediaIterator.hasNext()) {
-					Media media = mediaIterator.next();
+					currentMedia = mediaIterator.next();
 					try {
-						mediaPlayer = MediaPlayer.create(this.parent, Uri.fromFile(new File(media.getFileLocation())));
+						mediaPlayer = new MediaPlayer();
+						mediaPlayer.setDataSource(this.parent, Uri.fromFile(new File(currentMedia.getFileLocation())));
+						Utils.toastOnScreen("media player created for " + currentMedia.getFileLocation());
+						mediaPlayer.setOnPreparedListener(this);
 						mediaPlayer.setOnCompletionListener(this);
-						mediaPlayer.start();
+						mediaPlayer.setOnErrorListener(this);
+						mediaPlayer.prepareAsync();
 
 					} catch (Exception ex) {
-						this.play();
+						Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(PlayList.startPlayer)" : ex.getMessage());
+						this.onCompletion(mediaPlayer);
+					}
+				} else {
+					if (mediaList.size() > 0) // reload playlist if only ther
+												// were some songs in it
+					{
+						this.load();
+						this.startPlayer();
 					}
 				}
 			} else if (this.programActionType == ProgramActionType.Stream) {
@@ -80,18 +109,53 @@ public class PlayList implements OnCompletionListener {
 			}
 
 		} catch (IllegalStateException ex) {
+			Utils.toastOnScreen(ex.getMessage());
 			Log.e(this.parent.getString(R.string.app_name), ex.getMessage());
 		} catch (Exception ex) {
+			Utils.toastOnScreen(ex.getMessage());
 			Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(PlayList.play)" : ex.getMessage());
 		}
+	}
+
+	@Override
+	public void onPrepared(MediaPlayer mp) {
+		// check that a callsign is not playing before upping
+		// the volume
+		try {
+			if (this.callSignPlayer != null || this.callSignPlayer.isPlaying()) {
+				this.mediaPlayer.setVolume(0.07f, 0.07f);
+			} else {
+				this.mediaPlayer.setVolume(1f, 1f);
+			}
+
+		} catch (Exception ex) {
+			this.mediaPlayer.setVolume(1f, 1f);
+		}
+		mediaPlayer.start();
+	}
+
+	@Override
+	public boolean onError(MediaPlayer mp, int what, int extra) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 	/**
 	 * Stops the media player and disposes it.
 	 */
 	public void stop() {
+		this.callSignProvider.stop();
+		if (this.callSignPlayer != null)
+			try {
+				this.callSignPlayer.stop();
+				this.callSignPlayer.release();
+			} catch (Exception ex) {
+				Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(PlayList.stop)" : ex.getMessage());
+			}
+
 		if (mediaPlayer != null) {
 			try {
+				Utils.toastOnScreen("Stopping media player in " + this.argument);
 				mediaPlayer.stop();
 				mediaPlayer.release();
 			} catch (Exception ex) {
@@ -104,8 +168,16 @@ public class PlayList implements OnCompletionListener {
 	 * Pauses the currently playing media
 	 */
 	public void pause() {
-		if (mediaPlayer.isPlaying()) {
-			mediaPlayer.pause();
+		try {
+			if (mediaPlayer.isPlaying()) {
+				this.mediaPosition = this.mediaPlayer.getCurrentPosition();
+				mediaPlayer.pause();
+
+				this.callSignPlayer.release();
+				this.callSignProvider.stop();
+			}
+		} catch (Exception ex) {
+			// investiate tis
 		}
 	}
 
@@ -113,9 +185,25 @@ public class PlayList implements OnCompletionListener {
 	 * Resumes playback after it has been paused
 	 */
 	public void resume() {
-		// mediaPlayer.start(); //works fine on Galaxy grand duos (4.2.2), fails
-		// on Galaxy pocket (4.0.2) because Media player is reclaimed by system
-		this.play();
+		try {
+			// raise the volume Android levels it after phone call
+			AudioManager audioManager = (AudioManager) this.parent.getSystemService(Context.AUDIO_SERVICE);
+			audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC) - 2, AudioManager.FLAG_SHOW_UI);
+
+			// mediaPlayer.start(); //works fine on Galaxy grand duos (4.2.2),
+			// fails
+			// on Galaxy pocket (4.0.2) because Media player is reclaimed by
+			// system
+			this.mediaPlayer = MediaPlayer.create(this.parent, Uri.fromFile(new File(this.currentMedia.getFileLocation())));
+			this.mediaPlayer.setOnCompletionListener(this);
+			this.mediaPlayer.seekTo(mediaPosition);
+			this.mediaPlayer.start();
+
+			// resume the callSign provider
+			this.callSignProvider.start();
+		} catch (Exception ex) {
+			// investiate tois
+		}
 	}
 
 	/**
@@ -129,8 +217,14 @@ public class PlayList implements OnCompletionListener {
 		HashSet<Genre> genres = new HashSet<Genre>();
 		HashSet<Artist> artists = new HashSet<Artist>();
 		HashSet<String> tags = new HashSet<String>();
-		String query = "select media.title, media.filelocation,media.wiki, genre.title, genre.id, artist.name, artist.id, artist.wiki, country.title, mediatag.tag from media left outer join mediagenre on media.id = mediagenre.mediaid left outer join genre on mediagenre.genreid = genre.id join mediaartist on media.id = mediaartist.mediaid join artist on mediaartist.artistid = artist.id join country on artist.countryid = country.id join mediatag on media.id = mediatag.mediaid where mediatag.tag = ?";
+
+		String query = "select media.title, media.filelocation,media.wiki, genre.title, genre.id, artist.name, artist.id, artist.wiki, country.title, mediatag.tag from media left outer join mediagenre on media.id = mediagenre.mediaid left outer join genre on mediagenre.genreid = genre.id left outer join mediaartist on media.id = mediaartist.mediaid left outer join artist on mediaartist.artistid = artist.id left outer join country on artist.countryid = country.id join mediatag on media.id = mediatag.mediaid where mediatag.tag = ?";
 		String[] args = new String[] { tag };
+		if (argument.equals("random")) {
+			query = "select media.title, media.filelocation,media.wiki, genre.title, genre.id, artist.name, artist.id, artist.wiki, country.title, mediatag.tag from media left outer join mediagenre on media.id = mediagenre.mediaid left outer join genre on mediagenre.genreid = genre.id left outer join mediaartist on media.id = mediaartist.mediaid left outer join artist on mediaartist.artistid = artist.id left outer join country on artist.countryid = country.id left outer join mediatag on media.id = mediatag.mediaid";
+			args = new String[] {};
+		}
+
 		DBAgent dbagent = new DBAgent(this.parent);
 		String[][] data = dbagent.getData(query, args);
 		HashSet<Media> media = new HashSet<Media>();
@@ -176,11 +270,55 @@ public class PlayList implements OnCompletionListener {
 		return this.argument;
 	}
 
+	void onReceiveCallSign(String Url) {
+
+		Utils.toastOnScreen("playing " + Url);
+		try {
+			if (this.mediaPlayer.isPlaying()) {
+				try {
+					callSignPlayer = MediaPlayer.create(this.parent, Uri.fromFile(new File(Url)));
+					if (callSignPlayer == null) {
+						return;
+					}
+				} catch (Exception ex) {
+					Utils.toastOnScreen(ex.getMessage());
+					return;
+				}
+
+				this.mediaPlayer.setVolume(0.07f, 0.07f);
+				callSignPlayer.setVolume(1.0f, 1.0f);
+				callSignPlayer.start();
+				callSignPlayer.setOnCompletionListener(new OnCompletionListener() {
+
+					@Override
+					public void onCompletion(MediaPlayer arg0) {
+						try {
+							PlayList.this.mediaPlayer.setVolume(1.0f, 1.0f);
+							callSignPlayer.release();
+							callSignPlayer = null;
+						} catch (Exception ex) {
+							// claims callsign player is null
+						}
+					}
+				});
+			}
+		} catch (Exception ex) {
+			// investigate this
+		}
+
+	}
+
 	@Override
 	public void onCompletion(MediaPlayer mediaPlayer) {
-		mediaPlayer.release();
-		this.play();
+		try {
 
+			mediaPlayer.reset();
+			mediaPlayer.release();
+			mediaPlayer = null;
+		} catch (Exception ex) {
+
+		}
+		this.startPlayer();
 	}
 
 }

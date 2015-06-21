@@ -44,6 +44,10 @@ public class ProgramManager {
 		this.alertHandler.pauseProgramAction();
 	}
 
+	public void resume() {
+		this.alertHandler.resumeProgramAction();
+	}
+
 	public void play() {
 		this.alertHandler.playProgramAction();
 	}
@@ -149,6 +153,21 @@ public class ProgramManager {
 			}
 		}
 
+		void resume() {
+			switch (this.programActionType) {
+				case Media:
+				case Music:
+				case Stream:
+					ProgramManager.this.playlist.resume();
+					break;
+				case Jingle:
+					ProgramManager.this.jingleManager.play();
+					break;
+				case Call:
+					break;
+			}
+		}
+
 		void play() {
 			switch (this.programActionType) {
 				case Media:
@@ -185,6 +204,7 @@ public class ProgramManager {
 				case Media:
 				case Music:
 				case Stream:
+					Utils.toastOnScreen("Stopping program " + ProgramManager.this.program.getTitle());
 					ProgramManager.this.playlist.stop();
 					break;
 				case Jingle:
@@ -223,6 +243,7 @@ public class ProgramManager {
 				currentIndex = index;
 				if (!isExpired(program, programActions.get(index))) {
 					if (this.runningProgramAction != null) {
+						Utils.toastOnScreen("not expired " + index);
 						this.runningProgramAction.stop();
 					}
 					programActions.get(index).run();
@@ -251,6 +272,12 @@ public class ProgramManager {
 			}
 		}
 
+		private void resumeProgramAction() {
+			if (this.runningProgramAction != null) {
+				this.runningProgramAction.resume();
+			}
+		}
+
 		private void playProgramAction() {
 			if (this.runningProgramAction != null) {
 				this.runningProgramAction.play();
@@ -268,4 +295,5 @@ public class ProgramManager {
 	public PlayList getPlayList() {
 		return this.playlist;
 	}
+
 }

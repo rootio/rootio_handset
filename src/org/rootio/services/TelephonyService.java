@@ -9,6 +9,7 @@ import android.app.Service;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.media.AudioManager;
 import android.os.IBinder;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
@@ -85,7 +86,11 @@ public class TelephonyService extends Service implements ServiceInformationPubli
 														// Headset without
 														// microphone
 		headSetUnPluggedintent.putExtra("name", "Headset");
-		// TODO: Should we require a permission?
+
+		// adjust the volume
+		AudioManager audioManager = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
+		audioManager.setStreamVolume(AudioManager.STREAM_VOICE_CALL, audioManager.getStreamMaxVolume(AudioManager.STREAM_VOICE_CALL), AudioManager.FLAG_SHOW_UI);
+
 		try {
 			this.sendOrderedBroadcast(headSetUnPluggedintent, null);
 		} catch (Exception e) {

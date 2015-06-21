@@ -47,13 +47,12 @@ public class JingleManager implements OnCompletionListener {
 		String jingleFile = this.getJingle(this.program.getId());
 		Utils.toastOnScreen("id is " + this.program.getId());
 		if (jingleFile != null) {
-			mediaPlayer = MediaPlayer.create(this.parent, Uri.fromFile(new File(jingleFile)));
+			mediaPlayer = MediaPlayer.create(this.parent, Uri.fromFile(new File(String.format("/mnt/extSdCard/jingle/%s", jingleFile))));
 			if (mediaPlayer != null) {
 				mediaPlayer.setOnCompletionListener(this);
 				mediaPlayer.start();
 				Utils.toastOnScreen(jingleFile);
 			}
-
 		}
 	}
 
