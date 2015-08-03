@@ -9,9 +9,13 @@ import org.rootio.activities.stationDetails.StationActivity;
 import org.rootio.activities.synchronization.SynchronizationLogDownloadActivity;
 import org.rootio.activities.telephoneLog.TelephoneLogActivity;
 import org.rootio.radioClient.R;
+import org.rootio.services.CrashMonitor;
 import org.rootio.tools.utils.Utils;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.TabActivity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -24,11 +28,13 @@ import android.widget.TabHost.TabSpec;
 @SuppressWarnings("deprecation")
 public class LauncherActivity extends TabActivity {
 
+	PendingIntent crashIntent;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
 
 		Resources ressources = getResources();
 		TabHost tabHost = getTabHost();
@@ -109,4 +115,6 @@ public class LauncherActivity extends TabActivity {
 		return super.onContextItemSelected(item);
 		}
 	}
+	
+		
 }

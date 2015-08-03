@@ -17,9 +17,11 @@
     </uses-permission>
     <uses-permission android:name="android.permission.RECEIVE_SMS" >
     </uses-permission>
+    <uses-permission android:name="android.permission.STORAGE"/>
     <uses-permission android:name="android.permission.SEND_SMS" >
     </uses-permission>
-    
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
     <uses-sdk
         android:minSdkVersion="14"
         android:targetSdkVersion="17" />
@@ -77,6 +79,12 @@
         <receiver android:name="org.rootio.services.BootMonitor" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" >
+                </action>
+            </intent-filter>
+        </receiver>
+        <receiver android:name="org.rootio.services.CrashMonitor" >
+            <intent-filter>
+                <action android:name="org.rootio.services.restartServices" >
                 </action>
             </intent-filter>
         </receiver>

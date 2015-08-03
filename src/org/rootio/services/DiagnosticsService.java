@@ -15,6 +15,7 @@ public class DiagnosticsService extends Service  implements ServiceInformationPu
 	private boolean isRunning;
 	private int serviceId = 3;
 	private Thread runnerThread;
+	private boolean wasStoppedOnPurpose = true;
 
 	@Override
 	public IBinder onBind(Intent arg0) {
@@ -37,9 +38,40 @@ public class DiagnosticsService extends Service  implements ServiceInformationPu
 		}
 		return Service.START_STICKY;
 	}
+	
+	@Override
+	public void onTaskRemoved(Intent intent)
+	{
+		super.onTaskRemoved(intent);
+		if(intent != null)	
+		{
+			wasStoppedOnPurpose  = intent.getBooleanExtra("wasStoppedOnPurpose", false);
+			if(wasStoppedOnPurpose)
+			{
+				this.shutDownService();
+			}
+			else
+			{
+				this.onDestroy();
+			}
+		}
+	}
 
 	@Override
 	public void onDestroy() {
+		if(this.wasStoppedOnPurpose == false)
+		{
+			Intent intent = new Intent("org.rootio.services.restartServices");
+			sendBroadcast(intent);
+		}
+		else
+		{
+			this.shutDownService();
+		}
+		super.onDestroy();
+	}
+
+	private void shutDownService() {
 		if (runnerThread != null) {
 			super.onDestroy();
 			this.isRunning = false;

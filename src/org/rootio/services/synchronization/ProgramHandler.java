@@ -1,5 +1,6 @@
 package org.rootio.services.synchronization;
 
+import java.util.Calendar;
 import java.util.Date;
 
 import org.json.JSONException;
@@ -32,6 +33,10 @@ public class ProgramHandler {
 		{
 		this.processJSONObject(object);
 		}
+		else
+		{
+			Utils.toastOnScreen("JSON is null!", this.parent);
+		}
 		
 	}
 
@@ -62,7 +67,7 @@ public class ProgramHandler {
 	 */
 	private void processJSONObject(JSONObject programDefinition)
 	{
-	     try {
+		 try {
 			Program program = getProgram(programDefinition);
 			this.synchronizationUtils.logSynchronization(SynchronizationType.Program, program.getId(), 1, this.getLastUpdatedDate(programDefinition));
 			} catch (Exception e) {
@@ -82,7 +87,11 @@ public class ProgramHandler {
 	     String title = programSchedules.getString("name");
 	     int programTypeId = programSchedules.getInt("program_type_id");
 	     //this.logSynchronization(SynchronizationType.Program, program.getId(), 1);
-	     
+	     Program downloadedProgram = new Program(this.parent, cloudId, title, programTypeId);
+	     if(programSchedules.has("description"))
+	     {
+	    	 downloadedProgram.setProgramDescription(programSchedules.getString("description"));
+	     }
 	     return new Program(this.parent, cloudId, title, programTypeId);
 		} catch (JSONException e) {
 			Log.e(this.parent.getResources().getString(R.string.app_name),	e.getMessage());
@@ -95,7 +104,9 @@ public class ProgramHandler {
 		try {
 			String dateString;
 			dateString = object.getString("updated_at");
-			return Utils.getDateFromString(dateString, "yyyy-MM-dd'T'HH:mm:ss");
+			Date lastUpdateDate = Utils.getDateFromString(dateString, "yyyy-MM-dd'T'HH:mm:ss");
+			lastUpdateDate.setSeconds(lastUpdateDate.getSeconds() + 1);
+			return lastUpdateDate;
 		} catch (JSONException e) {
 			Log.e(this.parent.getString(R.string.app_name), e.getMessage());
 			return null;

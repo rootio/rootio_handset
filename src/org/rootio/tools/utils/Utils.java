@@ -79,11 +79,11 @@ public class Utils {
 		return results.length >0 ? Long.parseLong(results[0][0]) : 0l;
 	}
 
-	public static void toastOnScreen(final String message) {
+	public static void toastOnScreen(final String message, final Context context) {
 		Runnable toaster = new Runnable() {
 			@Override
 			public void run() {
-				Toast toast = Toast.makeText(Utils.context, message,
+				Toast toast = Toast.makeText(context, message,
 						Toast.LENGTH_LONG);
 				toast.show();
 			}
@@ -187,7 +187,7 @@ public class Utils {
 	public static String doPostHTTP(String httpUrl, ContentValues data) {
         URL url;
         try {
-            url = new URL("http://demo.rootio.org/api/station/2/analytics?api_key=q0hMmMm1Pg");
+            url = new URL(httpUrl);
             StringBuilder parameters =  new StringBuilder();
             for(String key : data.keySet())
             {

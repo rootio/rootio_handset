@@ -20,6 +20,7 @@ public class Program {
 	private final Long cloudId;
 	private final ProgramManager programManager;
 	private final Context parent;
+	private String programDescription;
 
 	public Program(Context parent, long cloudId, String title, int programTypeId) {
 		this.parent = parent;
@@ -175,11 +176,23 @@ public class Program {
 			this.eventTimes.add(new EventTime(this.parent, eventTimeProgramId, eventTimeScheduleDate, duration, isRepeat));
 		}
 	}
+	
+	public void setProgramDescription(String programDescription)
+	{
+		this.programDescription = programDescription;
+		this.update();
+	}
+	
+	public String getProgramDescription()
+	{
+		return this.programDescription;
+	}
+	
 
 	/**
-	 * Save this Program to the Rootio Database in case it is not yet persisted
+	 * Save this Program to the RootIO Database in case it is not yet persisted
 	 * 
-	 * @return Long id of the row stored in the Rootio database
+	 * @return Long id of the row stored in the RootIO database
 	 */
 	private Long persist() {
 		String tableName = "program";
@@ -187,8 +200,23 @@ public class Program {
 		data.put("title", this.title);
 		data.put("programtypeid", this.programType.ordinal());
 		data.put("cloudid", this.cloudId);
+		data.put("programdescription", this.programDescription);
 		DBAgent agent = new DBAgent(this.parent);
 		return agent.saveData(tableName, null, data);
+	}
+	
+	private  int update()
+	{
+		String tableName = "program";
+		ContentValues data = new ContentValues();
+		String whereClause = "id = ?";
+		String[] whereArgs = new String[] {String.valueOf(this.id)};
+		data.put("title", this.title);
+		data.put("programtypeid", this.programType.ordinal());
+		data.put("cloudid", this.cloudId);
+		data.put("programdescription", this.programDescription.toString());
+		DBAgent agent = new DBAgent(this.parent);
+		return agent.updateRecords(tableName, data, whereClause, whereArgs);
 	}
 
 	private void loadProgramInfo() {

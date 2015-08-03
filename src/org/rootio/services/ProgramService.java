@@ -28,23 +28,24 @@ public class ProgramService extends Service implements ServiceInformationPublish
 	private NewDayScheduleHandler newDayScheduleHandler;
 	private PendingIntent pi;
 	private AlarmManager am;
+	private boolean wasStoppedOnPurpose = true;
 
 	@Override
 	public IBinder onBind(Intent arg0) {
 		BindingAgent bindingAgent = new BindingAgent(this);
 		return bindingAgent;
 	}
+	
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-
 		if (!this.isRunning) {
 			Utils.doNotification(this, "RootIO", "Radio Service Started");
 			this.am = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
 			runTodaySchedule();
 			this.setupNewDayScheduleListener();
 			this.isRunning = true;
-			this.sendEventBroadcast();
+			this.sendEventBroadcast(); 
 		}
 		return Service.START_STICKY;
 	}
@@ -61,9 +62,41 @@ public class ProgramService extends Service implements ServiceInformationPublish
 		runnerThread.start();
 		this.scheduleNextDayAlarm();
 	}
+	
+	@Override
+	public void onTaskRemoved(Intent intent)
+	{
+		super.onTaskRemoved(intent);
+		if(intent != null)	
+		{
+			wasStoppedOnPurpose  = intent.getBooleanExtra("wasStoppedOnPurpose", false);
+			if(wasStoppedOnPurpose)
+			{
+				this.shutDownService();
+			}
+			else
+			{
+				this.onDestroy();
+			}
+		}
+	}
 
 	@Override
 	public void onDestroy() {
+		if(this.wasStoppedOnPurpose == false)
+		{
+			Intent intent = new Intent("org.rootio.services.restartServices");
+			sendBroadcast(intent);
+		}
+		else
+		{
+			this.shutDownService();
+		}
+		super.onDestroy();
+	}
+
+
+	private void shutDownService() {
 		if (radioRunner != null && this.isRunning) {
 			super.onDestroy();
 			radioRunner.stopProgram();
@@ -74,6 +107,7 @@ public class ProgramService extends Service implements ServiceInformationPublish
 				Log.e(this.getString(R.string.app_name), String.format("[ProgramService.onDestroy] %s", ex.getMessage() == null ? "Null pointer exception" : ex.getMessage()));
 			}
 			this.sendEventBroadcast();
+			this.stopSelf();
 			Utils.doNotification(this, "RootIO", "Radio Service Stopped");
 		}
 	}

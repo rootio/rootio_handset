@@ -1,12 +1,18 @@
 package org.rootio.tools.sms;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+
+import org.rootio.radioClient.R;
 import org.rootio.tools.diagnostics.DiagnosticAgent;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.telephony.SmsManager;
+import android.util.Log;
 
 public class NetworkSMSHandler implements MessageProcessor {
 
@@ -48,18 +54,43 @@ public class NetworkSMSHandler implements MessageProcessor {
 			}
 		}
 		
-		if(messageParts[2].equals("gsm"))
+		else if(messageParts[2].equals("gsm"))
 		{
 			if(messageParts[3].equals("status"))
 			{
 				return this.getGsmConnection();
 			}
 		}
-		
+		else if(messageParts[2].equals("data"))
+		{
+			if(messageParts[3].equals("on") || messageParts[3].equals("off"))
+			{
+				return this.toggleData(messageParts[3]);
+			}
+		}		
 		//Gibberish
 		return false;
 	}
 	
+	private boolean toggleData(String status) {
+		try {
+	    	final ConnectivityManager conman = (ConnectivityManager) this.parent.getSystemService(Context.CONNECTIVITY_SERVICE);
+	        Class conmanClass;
+			conmanClass = Class.forName(conman.getClass().getName());		
+	        final Field iConnectivityManagerField = conmanClass.getDeclaredField("mService");
+	        iConnectivityManagerField.setAccessible(true);
+	        final Object iConnectivityManager = iConnectivityManagerField.get(conman);
+	        final Class iConnectivityManagerClass = Class.forName(iConnectivityManager.getClass().getName());
+	        final Method setMobileDataEnabledMethod = iConnectivityManagerClass.getDeclaredMethod("setMobileDataEnabled", Boolean.TYPE);
+	        setMobileDataEnabledMethod.setAccessible(true);
+	        setMobileDataEnabledMethod.invoke(iConnectivityManager, status.equals("on")? true : false);
+	        return true;
+	    	} catch (Exception ex) {
+	    		Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(NetworkSMSHandler.getGSMConnection)" : ex.getMessage());
+				return false;
+			}
+	}
+
 	/**
 	 * Sets the WiFI to the specified state
 	 * @param state The State to which to set the WiFI. "ON" puts the WiFI on, anything else turns it off
@@ -133,6 +164,7 @@ public class NetworkSMSHandler implements MessageProcessor {
 		}
 		catch(Exception ex)
 		{
+			Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(NetworkSMSHandler.toggleData)" : ex.getMessage());
 			return false;
 		}
 		

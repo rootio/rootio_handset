@@ -43,7 +43,7 @@ public class ServicesSMSHandler implements MessageProcessor, Notifiable {
 		// starting a srevice
 		if (messageParts[1].equals("start")) {
 			try {
-				Utils.toastOnScreen("starting service " + messageParts[2]);
+				Utils.toastOnScreen("starting service " + messageParts[2], this.parent);
 				return this.startService(Integer.parseInt(messageParts[2]));
 			} catch (Exception ex) {
 				return false;

@@ -27,7 +27,7 @@ public class SynchronizationConfigurationFrequencyActivity extends
 	private SynchronizationConfiguration synchronizationConfiguration;
 	private Spinner spinner;
 	private TextView startTimeLabel, endTimeLabel, startTimeTextView, endTimeTextView;
-	private CheckedTextView syncDuringParticularTimesCheckedTextView;
+	private CheckedTextView syncDuringParticularTimesCheckedTextView, enableDataToSync;
 	private EditText quantityEditText;
 	private TableRow startTimeTableRow, endTimeTableRow;
 
@@ -71,6 +71,7 @@ public class SynchronizationConfigurationFrequencyActivity extends
 		this.syncDuringParticularTimesCheckedTextView = (CheckedTextView) findViewById(R.id.synchronization_configure_frequency_syncduringparticulartimes_ctv);
 		this.startTimeTextView = (TextView) findViewById(R.id.synchronization_configure_frequency_starttime_tv);
 		this.endTimeTextView = (TextView) findViewById(R.id.synchronization_configure_frequency_endtime_tv);
+		this.enableDataToSync = (CheckedTextView)findViewById(R.id.synchronization_configure_enable_data_to_sync_ctv);
 		this.startTimeLabel = (TextView) this
 				.findViewById(R.id.synchronization_configure_frequency_starttimelabel_tv);
 		this.endTimeLabel = (TextView) this
@@ -205,6 +206,9 @@ public class SynchronizationConfigurationFrequencyActivity extends
 						synchronizationConfiguration
 								.setSyncEndTime(endTimeTextView.getText()
 										.toString());
+						
+						//enable data to sync
+						synchronizationConfiguration.setEnableDataToSync(enableDataToSync.isChecked());
 
 						synchronizationConfiguration.save();
 
@@ -218,10 +222,11 @@ public class SynchronizationConfigurationFrequencyActivity extends
 	 */
 	private void renderCurrentConfiguration(SynchronizationConfiguration synchronizationConfiguration) {
 		this.quantityEditText.setText(String.valueOf(synchronizationConfiguration.getQuantity()));
-		//this.syncDuringParticularTimesCheckedTextView.setChecked(synchronizationConfiguration.syncDuringParticularTimes());
+		this.toggleCheckState(this.enableDataToSync, true, this.synchronizationConfiguration.getEnableDataToSync());
 		this.toggleCheckState(this.syncDuringParticularTimesCheckedTextView, true, this.synchronizationConfiguration.syncDuringParticularTimes());
 		this.startTimeTextView.setText(synchronizationConfiguration.getSyncStartTime());
 		this.endTimeTextView.setText(synchronizationConfiguration.getSyncEndTime());
+		this.spinner.setSelection(synchronizationConfiguration.getUnitId() -1);		
 	}
 
 	/**
@@ -229,7 +234,6 @@ public class SynchronizationConfigurationFrequencyActivity extends
 	 * @param v The view (CheckedTextView) That was clicked
 	 */
 	public void onCheck(View v) {
-		
 		toggleCheckState(v, false,false);
 	}
 
@@ -244,7 +248,10 @@ public class SynchronizationConfigurationFrequencyActivity extends
 		checkedTextView.setChecked(isInit? initialValue: !checkedTextView.isChecked());
 		checkedTextView.setCheckMarkDrawable(checkedTextView.isChecked() ? android.R.drawable.checkbox_on_background
 						: android.R.drawable.checkbox_off_background);
-		this.toggleControls(checkedTextView.isChecked());
+		if(v.equals(this.syncDuringParticularTimesCheckedTextView))
+		{
+		    this.toggleControls(checkedTextView.isChecked());
+		}
 	}
 
 	/**

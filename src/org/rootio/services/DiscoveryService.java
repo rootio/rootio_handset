@@ -24,6 +24,7 @@ public class DiscoveryService extends Service implements ServiceInformationPubli
 	private int port;
 	private boolean isRunning;
 	private final int serviceId = 6;
+	private boolean wasStoppedOnPurpose = true;
 
 	@Override
 	public IBinder onBind(Intent arg0) {
@@ -43,11 +44,41 @@ public class DiscoveryService extends Service implements ServiceInformationPubli
 			this.sendEventBroadcast();
 		}
 		return Service.START_STICKY;
-
+	}
+	
+	@Override
+	public void onTaskRemoved(Intent intent)
+	{
+		super.onTaskRemoved(intent);
+		if(intent != null)	
+		{
+			wasStoppedOnPurpose  = intent.getBooleanExtra("wasStoppedOnPurpose", false);
+			if(wasStoppedOnPurpose)
+			{
+				this.shutDownService();
+			}
+			else
+			{
+				this.onDestroy();
+			}
+		}
 	}
 
 	@Override
 	public void onDestroy() {
+		if(this.wasStoppedOnPurpose == false)
+		{
+			Intent intent = new Intent("org.rootio.services.restartServices");
+			sendBroadcast(intent);
+		}
+		else
+		{
+			this.shutDownService();
+		}
+		super.onDestroy();
+	}
+
+	private void shutDownService() {
 		if (this.isRunning) {
 			this.isRunning = false;
 			Utils.doNotification(this, "RootIO", "Discovery Service Stopped");
@@ -161,7 +192,7 @@ public class DiscoveryService extends Service implements ServiceInformationPubli
 			} catch (IOException e) {
 				Log.e(DiscoveryService.this.getString(R.string.app_name), e.getMessage());
 			} catch (NullPointerException e) {
-				Utils.toastOnScreen("Can not Start service. Please specify the Multicast IP address and port number");
+				Utils.toastOnScreen("Can not Start service. Please specify the Multicast IP address and port number", DiscoveryService.this);
 				Log.e(DiscoveryService.this.getString(R.string.app_name), e.getMessage() == null ? "Null pointer exception" : e.getMessage());
 				DiscoveryService.this.onDestroy();
 			}

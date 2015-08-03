@@ -144,12 +144,13 @@ public class StationActivity extends Activity {
 			this.station.setFrequency(object.has("frequency") ? Utils.parseFloatFromString(object.getString("frequency")):this.station.getFrequency());
 			this.station.setLocation(object.has("location") ? object.getJSONObject("location").getString("addressline1"):this.station.getLocation());
 			this.station.setName(object.has("name") ? object.getString("name") : this.station.getName());
-			this.station.setTelephoneNumber(object.has("transmitter_phone") ? object.getString("transmitter_phone") : this.station.getTelephoneNumber());
+			JSONObject cloudTelephone = object.has("cloud_phone")? object.getJSONObject("cloud_phone"):null;
+			this.station.setTelephoneNumber(cloudTelephone!= null && cloudTelephone.has("raw_number") ? cloudTelephone.getString("raw_number") : this.station.getTelephoneNumber());
 			this.station.setOwner(object.has("owner_id") ? object.getString("owner_id") : this.station.getOwner());
 			this.station.persist();
-			Utils.toastOnScreen("Station information successfully updated");
+			Utils.toastOnScreen("Station information successfully updated", this);
 		} catch (JSONException ex) {
-            Utils.toastOnScreen("Error encountered trying to refressh station information");
+            Utils.toastOnScreen("Error encountered trying to refresh station information", this);
 		}
 
 	}

@@ -74,8 +74,9 @@
         When Setting the synchronization frequency please consider the following factors:
         <br/>1) A very low frequency could lead to faster battery and storage depletion
         <br/>2) A very low frequency leads to higher internet usage
-        <br/>3) A very low value could lead to delay in getting critical station information
+        <br/>3) A very high value could lead to delay in getting critical station information
         <br/>4) Unless you have a reason not to, please use the default 1 hour
         ]]>
     </string>
+<string name="SynchronizationEnableData">Enable Data</string>
 </resources>

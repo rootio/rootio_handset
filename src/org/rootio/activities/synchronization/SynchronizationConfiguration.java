@@ -17,6 +17,7 @@ public class SynchronizationConfiguration {
 	private String syncEndTime;
 	private int unitId;
     private int quantity;
+    private boolean enableDataToSync;
     private Context context;
 	
 	public SynchronizationConfiguration(Context context)
@@ -41,6 +42,7 @@ public class SynchronizationConfiguration {
 		this.syncEndTime = configuration[0][4];
 		this.quantity = Utils.parseIntFromString(configuration[0][5]);
 		this.unitId = Utils.parseIntFromString(configuration[0][6]);
+		this.enableDataToSync = configuration[0][7].equals("1");
 		}
 	}
 	
@@ -51,7 +53,7 @@ public class SynchronizationConfiguration {
 	private String[][] loadConfiguration()
 	{
 		String tableName = "frequencyconfiguration";
-		String[] columnsToReturn = new String[] {"title","changedate","syncduringparticulartime","syncstarttime","syncendtime","quantity","frequencyunitid"};
+		String[] columnsToReturn = new String[] {"title","changedate","syncduringparticulartime","syncstarttime","syncendtime","quantity","frequencyunitid","enabledatatosync"};
 		String whereClause = "title = ?";
 		String[] whereArgs = new String[] {"synchronization"};
 		DBAgent agent = new DBAgent(this.context);
@@ -158,6 +160,16 @@ public class SynchronizationConfiguration {
     	this.quantity = quantity;
     }
     
+    public boolean getEnableDataToSync()
+    {
+    	return this.enableDataToSync;
+    }
+    
+    public void setEnableDataToSync(boolean value)
+    {
+    	this.enableDataToSync = value;
+    }
+    
     /**
      * Saves the frequency configuration details
      * @return integer number of the rows affected by this transaction in the database
@@ -173,6 +185,7 @@ public class SynchronizationConfiguration {
 		data.put("syncduringparticulartime", this.syncDuringParticularTimes);
 		data.put("syncstarttime", this.syncStartTime);
 		data.put("syncendtime", this.syncEndTime);
+		data.put("enabledatatosync", String.valueOf(this.enableDataToSync ? "1": "0"));
 		DBAgent agent = new DBAgent(this.context);
 		return agent.updateRecords(tableName, data, whereClause, whereArgs);
 	}

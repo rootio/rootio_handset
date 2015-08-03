@@ -3,7 +3,6 @@ package org.rootio.tools.media;
 import java.io.File;
 
 import org.rootio.tools.persistence.DBAgent;
-import org.rootio.tools.utils.Utils;
 
 import android.content.Context;
 import android.media.MediaPlayer;
@@ -45,13 +44,11 @@ public class JingleManager implements OnCompletionListener {
 	 */
 	void playJingle() {
 		String jingleFile = this.getJingle(this.program.getId());
-		Utils.toastOnScreen("id is " + this.program.getId());
 		if (jingleFile != null) {
 			mediaPlayer = MediaPlayer.create(this.parent, Uri.fromFile(new File(String.format("/mnt/extSdCard/jingle/%s", jingleFile))));
 			if (mediaPlayer != null) {
 				mediaPlayer.setOnCompletionListener(this);
 				mediaPlayer.start();
-				Utils.toastOnScreen(jingleFile);
 			}
 		}
 	}

@@ -73,7 +73,7 @@ public class AddToBlacklist extends Activity {
 	 */
 	private void showResult(String msisdn, long result)
 	{
-		Utils.toastOnScreen(result > 0? String.format("The number %s was successfully blacklisted",msisdn) : String.format("Blacklisting the number %s failed. Please check the number format and try again",msisdn));
+		Utils.toastOnScreen(result > 0? String.format("The number %s was successfully blacklisted",msisdn) : String.format("Blacklisting the number %s failed. Please check the number format and try again",msisdn), this);
 	    this.finish();
 	}
 }

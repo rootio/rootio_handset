@@ -73,7 +73,7 @@ public class AddToWhitelist extends Activity {
 	 */
 	private void announceResult(String msisdn, long result)
 	{
-		Utils.toastOnScreen(result > 0? String.format("The number %s was successfully whitelisted",msisdn) : String.format("Whitelisting the number %s failed. Please check the number format and try again",msisdn));
+		Utils.toastOnScreen(result > 0? String.format("The number %s was successfully whitelisted",msisdn) : String.format("Whitelisting the number %s failed. Please check the number format and try again",msisdn), this);
 	    this.finish();
 	}
 }

@@ -20,9 +20,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.ListView;
 
-public class TelephoneLogActivity extends Activity implements OnRefreshListener {
+public class TelephoneLogActivity extends Activity {
 
-	private SwipeRefreshLayout swipeContainer;
+	//private SwipeRefreshLayout swipeContainer;
 	private ListView telephoneLogView;
 	private TelephoneLogAdapter telephoneLogAdapter;
 	private boolean isHomeScreen;
@@ -33,7 +33,7 @@ public class TelephoneLogActivity extends Activity implements OnRefreshListener 
 	{
 		super.onCreate(savedInstance);
 		this.setContentView(R.layout.telephone_log);
-		this.swipeContainer = (SwipeRefreshLayout)this.findViewById(R.id.swipe_container);
+		//this.swipeContainer = (SwipeRefreshLayout)this.findViewById(R.id.swipe_container);
 		telephoneLogView = (ListView)this.findViewById(R.id.call_log_lv);
 		telephoneLogAdapter = new TelephoneLogAdapter(this);
 		telephoneLogView.setAdapter(telephoneLogAdapter);
@@ -49,7 +49,7 @@ public class TelephoneLogActivity extends Activity implements OnRefreshListener 
 	public void onStart()
 	{
 		super.onStart();
-		this.swipeContainer.setOnRefreshListener(this);
+		//this.swipeContainer.setOnRefreshListener(this);
 	}
 	
 	@Override
@@ -120,10 +120,10 @@ public class TelephoneLogActivity extends Activity implements OnRefreshListener 
 	}
 }
 
-	@Override
-	public void onRefresh() {
-		this.telephoneLogAdapter.notifyDataSetChanged();
-		this.swipeContainer.setRefreshing(false);
+	//@Override
+	//public void onRefresh() {
+		//this.telephoneLogAdapter.notifyDataSetChanged();
+		//this.swipeContainer.setRefreshing(false);
 		
-	}
+	//}
 }

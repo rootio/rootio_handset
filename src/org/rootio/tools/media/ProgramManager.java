@@ -89,11 +89,11 @@ public class ProgramManager {
 	private ArrayList<ProgramAction> fetchProgramActions(Program program) {
 		ArrayList<ProgramAction> programActions = new ArrayList<ProgramAction>();
 		try {
-			long id = program.getEventTimes()[program.getScheduledIndex()].getId();
+			//long id = program.getEventTimes()[program.getScheduledIndex()].getId();
 			String tableName = "programaction";
 			String[] columns = new String[] { "starttime", "duration", "programactiontypeid", "argument" };
 			String whereClause = "eventtimeid = ?";
-			String[] whereArgs = new String[] { String.valueOf(id) };
+			String[] whereArgs = new String[] { String.valueOf(program.getId()) };
 			DBAgent dbAgent = new DBAgent(this.parent);
 			String[][] results = dbAgent.getData(true, tableName, columns, whereClause, whereArgs, null, null, null, null);
 			for (String[] result : results) {
@@ -138,7 +138,8 @@ public class ProgramManager {
 				case Media:
 				case Music:
 				case Stream:
-					ProgramManager.this.playlist = new PlayList(ProgramManager.this.parent, this.argument, this.programActionType);
+					ProgramManager.this.playlist = PlayList.getInstance();
+					ProgramManager.this.playlist.init(ProgramManager.this.parent, this.argument, this.programActionType);
 					ProgramManager.this.playlist.load();
 					ProgramManager.this.playlist.play();
 					break;
@@ -204,7 +205,6 @@ public class ProgramManager {
 				case Media:
 				case Music:
 				case Stream:
-					Utils.toastOnScreen("Stopping program " + ProgramManager.this.program.getTitle());
 					ProgramManager.this.playlist.stop();
 					break;
 				case Jingle:
@@ -243,7 +243,6 @@ public class ProgramManager {
 				currentIndex = index;
 				if (!isExpired(program, programActions.get(index))) {
 					if (this.runningProgramAction != null) {
-						Utils.toastOnScreen("not expired " + index);
 						this.runningProgramAction.stop();
 					}
 					programActions.get(index).run();

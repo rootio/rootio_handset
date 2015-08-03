@@ -2,6 +2,7 @@ package org.rootio.activities;
 
 import org.rootio.activities.cloud.CloudActivity;
 import org.rootio.activities.diagnostics.DiagnosticsConfigurationActivity;
+import org.rootio.activities.launch.LauncherActivity;
 import org.rootio.activities.services.ServiceExitInformable;
 import org.rootio.activities.services.ServicesActivity;
 import org.rootio.activities.stationDetails.StationActivity;
@@ -9,6 +10,7 @@ import org.rootio.activities.stationDetails.StationActivityAdapter;
 import org.rootio.activities.synchronization.SynchronizationLogDownloadActivity;
 import org.rootio.activities.telephoneLog.TelephoneLogActivity;
 import org.rootio.radioClient.R;
+import org.rootio.services.CrashMonitor;
 import org.rootio.services.Notifiable;
 import org.rootio.services.ProgramService;
 import org.rootio.services.ServiceConnectionAgent;
@@ -16,6 +18,9 @@ import org.rootio.services.ServiceStopNotifiable;
 import org.rootio.services.ServiceStopReceiver;
 
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -31,13 +36,25 @@ public class RadioActivity extends Activity implements Notifiable, ServiceExitIn
 	private ServiceConnectionAgent programServiceConnection;
 	private RadioServiceExitBroadcastHandler exitBroadCastHandler;
 	private ServiceStopReceiver serviceStopReceiver;
+	private PendingIntent crashIntent;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.station_activity);
 		this.setTitle("Station Details");
-		this.setUpServiceStopHandling();
+		/*this.setUpServiceStopHandling();
+		Intent intent = new Intent(this, CrashMonitor.class);
+		intent.setAction("org.rootio.recovery.APP_CRASH");
+		crashIntent = PendingIntent.getActivity(getBaseContext(), 0, intent, 0);
+		Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler(){
+
+			@Override
+			public void uncaughtException(Thread thread, Throwable ex) {
+				unexpectedStophandler(thread, ex);
+			}
+		
+		});*/
 	}
 
 	@Override
@@ -153,7 +170,6 @@ public class RadioActivity extends Activity implements Notifiable, ServiceExitIn
 	@Override
 	public void notifyServiceDisconnection(int serviceId) {
 		// this.bindToService();
-
 	}
 
 	@Override
@@ -161,5 +177,10 @@ public class RadioActivity extends Activity implements Notifiable, ServiceExitIn
 		this.disconnectFromRadioService();
 
 	}
-
+	/*public void unexpectedStophandler(Thread paramThread, Throwable throwable)
+	{
+		AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+		am.set(AlarmManager.RTC, System.currentTimeMillis() + 5000, crashIntent);
+		System.exit(2);
+	}*/
 }

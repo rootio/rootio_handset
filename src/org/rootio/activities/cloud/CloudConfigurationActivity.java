@@ -72,7 +72,7 @@ public class CloudConfigurationActivity extends Activity {
 	{
 		if(!serverKey.equals(serverKeyConfirmation))
 		{
-			Utils.toastOnScreen("The server key does not match its confirmation");
+			Utils.toastOnScreen("The server key does not match its confirmation", this);
 			return;
 		}
 		this.cloud.setHTTPPort(Utils.parseIntFromString(HTTPPort));
@@ -80,7 +80,7 @@ public class CloudConfigurationActivity extends Activity {
 		this.cloud.setServerKey(serverKey.isEmpty()? this.cloud.getServerKey() : serverKey);
 		this.cloud.setStationId(Utils.parseIntFromString(stationId));
 		this.cloud.persist();
-		Utils.toastOnScreen("Cloud configuration details have been saved.");
+		Utils.toastOnScreen("Cloud configuration details have been saved.", this);
 		this.finish();
 	}
 	

@@ -48,8 +48,8 @@ public class ProgramsHandler {
 			JSONArray objects = jsonObject.getJSONArray("objects");
 			for (int i = 0; i < objects.length(); i++) {
 				JSONObject tmp = objects.getJSONObject(i);
-				if (tmp.has("program_id")) {
-					programIds.add(tmp.getInt("program_id"));
+				if (tmp.has("id")) {
+					programIds.add(tmp.getInt("id"));
 				}
 			}
 		} catch (JSONException e) {
@@ -69,8 +69,9 @@ public class ProgramsHandler {
 	
 	private String getHttpUrl(String serverAddress, int port, int stationId, String serverKey, Date since)
 	{
-		String sincePart = this.since == null?"all=1":String.format("since=%s",Utils.getDateString(since, "yyyy-MM-dd'T'HH:mm:ss"));
-		String httpUrl = String.format("http://%s:%s/api/station/%s/programs?api_key=%s&%s", serverAddress, port, stationId,serverKey,sincePart);
+		String sincePart = this.since == null?"all=1":String.format("updated_since=%s",Utils.getDateString(since, "yyyy-MM-dd'T'HH:mm:ss"));
+		//String httpUrl = String.format("http://%s:%s/api/station/%s/programs?api_key=%s&%s", serverAddress, port, stationId,serverKey,sincePart);
+		String httpUrl = String.format("http://%s:%s/api/program?api_key=%s&%s", serverAddress, port,serverKey,sincePart);
 		return httpUrl;
 	}
 }

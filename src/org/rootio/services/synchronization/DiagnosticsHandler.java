@@ -76,8 +76,8 @@ public class DiagnosticsHandler {
 	private void processJSONObject(JSONObject synchronizationResponse, int index)
 	{
 	     try {
-	    	 String response = synchronizationResponse.has("message")?synchronizationResponse.getString("message"):"";
-			this.synchronizationUtils.logSynchronization(SynchronizationType.Diagnostic, (Integer)this.diagnosticStatistics.getRecord(index).get("ID"), response.equals("success")?1:0, (Date)this.diagnosticStatistics.getRecord(index).get("Record Date"));
+	    	 boolean success = synchronizationResponse.has("success")?synchronizationResponse.getBoolean("success"): false;
+			this.synchronizationUtils.logSynchronization(SynchronizationType.Diagnostic, (Integer)this.diagnosticStatistics.getRecord(index).get("ID"), success?1:0, (Date)this.diagnosticStatistics.getRecord(index).get("Record Date"));
 			} catch (Exception e) {
 			Log.e(this.parent.getString(R.string.app_name), e.getMessage() == null?"Null pointer[ProgramHandler.processJSONObject]":e.getMessage());
 		}

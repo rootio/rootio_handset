@@ -26,29 +26,47 @@ import android.util.Log;
  */
 public class PlayList implements OnCompletionListener, OnPreparedListener, OnErrorListener {
 
-	private final ProgramActionType programActionType;
-	private final String argument;
+	private ProgramActionType programActionType;
+	private String argument;
 	private HashSet<Media> mediaList;
 	private Uri streamUrl;
 	private Iterator<Media> mediaIterator;
 	private MediaPlayer mediaPlayer;
 	private MediaPlayer callSignPlayer;
-	private final CallSignProvider callSignProvider;
-	private final Context parent;
+	private CallSignProvider callSignProvider;
+	private Context parent;
 	private Media currentMedia;
 	private int mediaPosition;
+	private static PlayList playListInstance;
 
 	/**
 	 * Constructor for the playlist class
 	 * 
 	 * @param tag
 	 *            The tag to be used to construct the playlist
+	 * @return 
 	 */
-	public PlayList(Context parent, String argument, ProgramActionType programActionType) {
+	
+	protected PlayList()
+	{
+		//do not instantiate
+	}
+	
+	public void init(Context parent, String argument, ProgramActionType programActionType) {
 		this.argument = argument;
 		this.parent = parent;
 		this.programActionType = programActionType;
 		this.callSignProvider = new CallSignProvider(this.parent, this);
+	}
+	
+	public static PlayList getInstance()
+	{
+		if(PlayList.playListInstance != null)
+		{
+			PlayList.playListInstance.stop();
+		}
+		PlayList.playListInstance = new PlayList();
+		return playListInstance;
 	}
 
 	/**
@@ -85,7 +103,6 @@ public class PlayList implements OnCompletionListener, OnPreparedListener, OnErr
 					try {
 						mediaPlayer = new MediaPlayer();
 						mediaPlayer.setDataSource(this.parent, Uri.fromFile(new File(currentMedia.getFileLocation())));
-						Utils.toastOnScreen("media player created for " + currentMedia.getFileLocation());
 						mediaPlayer.setOnPreparedListener(this);
 						mediaPlayer.setOnCompletionListener(this);
 						mediaPlayer.setOnErrorListener(this);
@@ -109,10 +126,8 @@ public class PlayList implements OnCompletionListener, OnPreparedListener, OnErr
 			}
 
 		} catch (IllegalStateException ex) {
-			Utils.toastOnScreen(ex.getMessage());
 			Log.e(this.parent.getString(R.string.app_name), ex.getMessage());
 		} catch (Exception ex) {
-			Utils.toastOnScreen(ex.getMessage());
 			Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(PlayList.play)" : ex.getMessage());
 		}
 	}
@@ -155,7 +170,6 @@ public class PlayList implements OnCompletionListener, OnPreparedListener, OnErr
 
 		if (mediaPlayer != null) {
 			try {
-				Utils.toastOnScreen("Stopping media player in " + this.argument);
 				mediaPlayer.stop();
 				mediaPlayer.release();
 			} catch (Exception ex) {
@@ -272,7 +286,7 @@ public class PlayList implements OnCompletionListener, OnPreparedListener, OnErr
 
 	void onReceiveCallSign(String Url) {
 
-		Utils.toastOnScreen("playing " + Url);
+		Utils.toastOnScreen("playing " + Url, this.parent);
 		try {
 			if (this.mediaPlayer.isPlaying()) {
 				try {
@@ -281,7 +295,7 @@ public class PlayList implements OnCompletionListener, OnPreparedListener, OnErr
 						return;
 					}
 				} catch (Exception ex) {
-					Utils.toastOnScreen(ex.getMessage());
+					Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(PlayList.onReceiveCallSign)" : ex.getMessage());
 					return;
 				}
 
@@ -297,7 +311,8 @@ public class PlayList implements OnCompletionListener, OnPreparedListener, OnErr
 							callSignPlayer.release();
 							callSignPlayer = null;
 						} catch (Exception ex) {
-							// claims callsign player is null
+							Log.e(PlayList.this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(PlayList.onCompletion)" : ex.getMessage());
+							
 						}
 					}
 				});
@@ -311,14 +326,23 @@ public class PlayList implements OnCompletionListener, OnPreparedListener, OnErr
 	@Override
 	public void onCompletion(MediaPlayer mediaPlayer) {
 		try {
-
 			mediaPlayer.reset();
 			mediaPlayer.release();
 			mediaPlayer = null;
 		} catch (Exception ex) {
-
 		}
 		this.startPlayer();
+	}
+	
+	@Override
+	protected void finalize()
+	{
+		this.stop();
+		try {
+			super.finalize();
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
 	}
 
 }

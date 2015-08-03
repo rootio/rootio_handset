@@ -121,7 +121,7 @@ public class DiagnosticsSMSHandler implements MessageProcessor {
 	@Override
 	public void respondAsyncStatusRequest(String from, String data) {
 		SmsManager smsManager = SmsManager.getDefault();
-		Utils.toastOnScreen(data  + "to" +from);
+		Utils.toastOnScreen(data  + "to" +from, this.parent);
 		smsManager.sendTextMessage(from, null, data, null, null);
 		
 	}

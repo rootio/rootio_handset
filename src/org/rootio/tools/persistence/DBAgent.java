@@ -108,22 +108,22 @@ public class DBAgent {
 				foutstr = new FileOutputStream(destinationFile);
 				foutstr.write(buffer);
 			} else {
-				Utils.toastOnScreen("We cant create file");
+				Utils.toastOnScreen("We cant create file", this.context);
 			}
-		} catch (IOException e) {
-			Utils.toastOnScreen("Failed to create database file!");
-			Log.e(this.context.getString(R.string.app_name), e.getMessage());
+		} catch (IOException ex) {
+			Log.e(this.context.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(DBAgent.createDatabaseFile)" : ex.getMessage());
+			
 		} finally {
 			try {
 				instr.close();
 			} catch (Exception ex) {
-				Log.e(this.context.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception" : ex.getMessage());
+				Log.e(this.context.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(DBAgent.createDatabaseFile)" : ex.getMessage());
 			}
 
 			try {
 				foutstr.close();
 			} catch (Exception ex) {
-				Log.e(this.context.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception" : ex.getMessage());
+				Log.e(this.context.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(DBAgent.createDatabaseFile)" : ex.getMessage());
 			}
 		}
 

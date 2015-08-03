@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
+	<classpathentry kind="lib" path="/Users/user/Desktop/adt-bundle-mac-x86_64-20140702/sdk/extras/android/support/v4/android-support-v4.jar"/>
+	<classpathentry kind="lib" path="/Users/user/Desktop/adt-bundle-mac-x86_64-20140702/sdk/platforms/android-17/android.jar"/>
+	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
-	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
-	<classpathentry exported="true" kind="lib" path="C:/Users/HP Envy/Documents/adt-bundle-windows-x86-20130219/sdk/extras/android/support/v4/android-support-v4.jar"/>
-	<classpathentry kind="lib" path="C:/Users/HP Envy/Documents/adt-bundle-windows-x86-20130219/sdk/platforms/android-17/android.jar"/>
-	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>
+	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

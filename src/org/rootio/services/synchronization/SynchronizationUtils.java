@@ -26,9 +26,10 @@ public class SynchronizationUtils {
 		String whereClause = "changetypeid = ?";
 		String[] whereArgs = new String[]{String.valueOf(synchronizationType.ordinal() + 1)};
 		String orderBy = "updatedate desc";
-		String limit = " 1";
+		//String limit = " 1";
 		DBAgent agent = new DBAgent(this.parent);
-		String[][]result = agent.getData(true, tableName, columns, whereClause, whereArgs, null, null, orderBy, limit);
+		
+		String[][]result = agent.getData(true, tableName, columns, whereClause, whereArgs, null, null, orderBy, null);
 		return result.length > 0? Utils.getDateFromString(result[0][0], "yyyy-MM-dd HH:mm:ss"):null;
 	}
 	

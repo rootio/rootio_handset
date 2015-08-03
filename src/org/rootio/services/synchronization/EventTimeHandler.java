@@ -19,7 +19,8 @@ public class EventTimeHandler {
 	private final String JSON;
 	private final SynchronizationUtils synchronizationUtils;
 
-	EventTimeHandler(Context parent, String JSON, SynchronizationUtils synchronizationUtils) {
+	EventTimeHandler(Context parent, String JSON,
+			SynchronizationUtils synchronizationUtils) {
 		this.parent = parent;
 		this.JSON = JSON;
 		this.synchronizationUtils = synchronizationUtils;
@@ -49,10 +50,13 @@ public class EventTimeHandler {
 		try {
 			return new JSONObject(input);
 		} catch (JSONException ex) {
-			Log.e(this.parent.getString(R.string.app_name), String.format("[EventTimeHandler.parseJSON] %s", ex.getMessage()));
+			Log.e(this.parent.getString(R.string.app_name),
+					String.format("[EventTimeHandler.parseJSON] %s",
+							ex.getMessage()));
 			return null;
 		} catch (NullPointerException ex) {
-			Log.e(this.parent.getString(R.string.app_name), "[EventTimeHandler.parseJSON] Null Pointer");
+			Log.e(this.parent.getString(R.string.app_name),
+					"[EventTimeHandler.parseJSON] Null Pointer");
 			return null;
 		}
 	}
@@ -69,10 +73,14 @@ public class EventTimeHandler {
 			JSONArray eventTimes = eventTimesDefinition.getJSONArray("objects");
 			for (int i = 0; i < eventTimes.length(); i++) {
 				EventTime eventTime = getEventTime(eventTimes.getJSONObject(i));
-				this.synchronizationUtils.logSynchronization(SynchronizationType.EventTime, eventTime.getId(), 1, this.getLastUpdatedDate(eventTimes.getJSONObject(i)));
+				this.synchronizationUtils.logSynchronization(
+						SynchronizationType.EventTime, eventTime.getId(), 1,
+						this.getLastUpdatedDate(eventTimes.getJSONObject(i)));
 			}
 		} catch (JSONException e) {
-			Log.e(this.parent.getString(R.string.app_name), e.getMessage() == null ? "[EventTimeHandler.processJSONObject] Null pointer" : e.getMessage());
+			Log.e(this.parent.getString(R.string.app_name),
+					e.getMessage() == null ? "[EventTimeHandler.processJSONObject] Null pointer"
+							: e.getMessage());
 		}
 	}
 
@@ -85,16 +93,27 @@ public class EventTimeHandler {
 	 */
 	private EventTime getEventTime(JSONObject eventTimeObject) {
 		try {
-			long programId = eventTimeObject.getLong("program_id");
-			Date scheduleDate = Utils.getDateFromString(eventTimeObject.getString("start"), "yyyy-MM-dd'T'HH:mm:ss");
-			Date endDate = Utils.getDateFromString(eventTimeObject.getString("end"), "yyyy-MM-dd'T'HH:mm:ss");
-			boolean isRepeat = eventTimeObject.has("is_repeat") ? eventTimeObject.getBoolean("is_repeat") : false;
-			EventTime eventTime = new EventTime(this.parent, new Program(this.parent, programId).getId(), scheduleDate, this.getEventTimeDuration(scheduleDate, endDate), isRepeat);
-			return eventTime;
+			if (eventTimeObject != null) {
+				long programId = eventTimeObject.getLong("program_id");
+				Date scheduleDate = Utils.getDateFromString(
+						eventTimeObject.getString("start"),
+						"yyyy-MM-dd'T'HH:mm:ss");
+				Date endDate = Utils.getDateFromString(
+						eventTimeObject.getString("end"),
+						"yyyy-MM-dd'T'HH:mm:ss");
+				boolean isRepeat = eventTimeObject.has("is_repeat") ? eventTimeObject
+						.getBoolean("is_repeat") : false;
+				EventTime eventTime = new EventTime(this.parent, new Program(
+						this.parent, programId).getId(), scheduleDate,
+						this.getEventTimeDuration(scheduleDate, endDate),
+						isRepeat);
+				return eventTime;
+			}
 		} catch (JSONException e) {
-			Log.e(this.parent.getResources().getString(R.string.app_name), e.getMessage());
-			return null;
+			Log.e(this.parent.getResources().getString(R.string.app_name),
+					e.getMessage());
 		}
+		return null;
 	}
 
 	private int getEventTimeDuration(Date startDate, Date endDate) {

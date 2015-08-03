@@ -154,6 +154,7 @@ public class ServicesActivity extends Activity implements OnCheckedChangeListene
 	 */
 	private void stopService(int serviceId) {
 		Intent serviceIntent = this.serviceComponents.get(serviceId).getIntent();
+		serviceIntent.putExtra("wasStoppedOnPurpose", true);
 		this.unbindServiceConnection(serviceId);
 		this.stopService(serviceIntent);
 		this.serviceComponents.get(serviceId).getServiceState().setServiceState(0);

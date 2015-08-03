@@ -11,6 +11,7 @@ public class SynchronizationService extends Service implements ServiceInformatio
 
 	private final int serviceId = 5;
 	private boolean isRunning;
+	private boolean wasStoppedOnPurpose = true;
 
 	@Override
 	public IBinder onBind(Intent arg0) {
@@ -31,7 +32,38 @@ public class SynchronizationService extends Service implements ServiceInformatio
 	}
 
 	@Override
+	public void onTaskRemoved(Intent intent)
+	{
+		super.onTaskRemoved(intent);
+		if(intent != null)	
+		{
+			wasStoppedOnPurpose   = intent.getBooleanExtra("wasStoppedOnPurpose", false);
+			if(wasStoppedOnPurpose)
+			{
+				this.shutDownService();
+			}
+			else
+			{
+				this.onDestroy();
+			}
+		}
+	}
+	
+	@Override
 	public void onDestroy() {
+		if(this.wasStoppedOnPurpose == false)
+		{
+			Intent intent = new Intent("org.rootio.services.restartServices");
+			sendBroadcast(intent);
+		}
+		else
+		{
+			this.shutDownService();
+		}
+		super.onDestroy();
+	}
+
+	private void shutDownService() {
 		if (this.isRunning) {
 			this.isRunning = false;
 			Utils.doNotification(this, "RootIO", "Synchronization Service Stopped");

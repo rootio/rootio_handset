@@ -14,7 +14,6 @@ public class SMSSwitch {
 	public SMSSwitch(Context parent, SmsMessage message){
 		this.parent = parent;
 		this.from = message.getOriginatingAddress();
-		Utils.toastOnScreen(message.getMessageBody());
 		this.messageParts = this.getMessageParts(message.getMessageBody().toLowerCase());
 	}
 	
@@ -34,9 +33,8 @@ public class SMSSwitch {
 	 */
 	private String[] getMessageParts(String message)
 	{
-		Utils.toastOnScreen(message);
+		Utils.toastOnScreen(message, this.parent);
 		String[] parts = message.split("[|]");
-		Utils.toastOnScreen(String.valueOf(parts.length));
 		return parts;
 	}
 	

@@ -3,6 +3,7 @@ package org.rootio.services;
 import java.lang.reflect.Method;
 
 import org.rootio.tools.persistence.DBAgent;
+import org.rootio.tools.telephony.CallRecorder;
 import org.rootio.tools.utils.Utils;
 
 import android.app.Service;
@@ -23,6 +24,8 @@ public class TelephonyService extends Service implements ServiceInformationPubli
 	private final int serviceId = 1;
 	private TelephonyManager telephonyManager;
 	private PhoneCallListener listener;
+	private boolean wasStoppedOnPurpose = true;
+	private CallRecorder callRecorder;
 
 	@Override
 	public IBinder onBind(Intent arg0) {
@@ -46,9 +49,40 @@ public class TelephonyService extends Service implements ServiceInformationPubli
 		return Service.START_STICKY;
 
 	}
+	
+	@Override
+	public void onTaskRemoved(Intent intent)
+	{
+		super.onTaskRemoved(intent);
+		if(intent != null)	
+		{
+			wasStoppedOnPurpose  = intent.getBooleanExtra("wasStoppedOnPurpose", false);
+			if(wasStoppedOnPurpose)
+			{
+				this.shutDownService();
+			}
+			else
+			{
+				this.onDestroy();
+			}
+		}
+	}
 
 	@Override
 	public void onDestroy() {
+		if(this.wasStoppedOnPurpose == false)
+		{
+			Intent intent = new Intent("org.rootio.services.restartServices");
+			sendBroadcast(intent);
+		}
+		else
+		{
+			this.shutDownService();
+		}
+		super.onDestroy();
+	}
+
+	private void shutDownService() {
 		if (this.isRunning) {
 			Utils.doNotification(this, "RootIO", "Telephony Service stopped");
 			this.isRunning = false;
@@ -114,6 +148,12 @@ public class TelephonyService extends Service implements ServiceInformationPubli
 		}
 
 	}
+	
+	private void setupCallRecording()
+	{
+		this.callRecorder = new CallRecorder(this);
+		this.callRecorder.startRecording();
+	}
 
 	/**
 	 * Processes a call noticed by the listener. Determines whether or not to
@@ -124,6 +164,7 @@ public class TelephonyService extends Service implements ServiceInformationPubli
 		if (isWhiteListed(incomingNumber)) {
 			this.sendTelephonyEventBroadcast(true);
 			pickCall();
+			this.setupCallRecording();
 			this.logCall(incomingNumber, 1, 1);
 		} else {
 			declineCall();
@@ -216,6 +257,11 @@ public class TelephonyService extends Service implements ServiceInformationPubli
 					break;
 				case TelephonyManager.CALL_STATE_IDLE:
 					TelephonyService.this.sendTelephonyEventBroadcast(false);
+					if(TelephonyService.this.callRecorder != null)
+					{
+						TelephonyService.this.callRecorder.stopRecording();
+						TelephonyService.this.callRecorder = null;					
+					}
 					break;
 			}
 		}

@@ -102,21 +102,21 @@ public class MulticastConfigurationActivity extends Activity implements DialogIn
 			TextView portTv = (TextView)this.findViewById(R.id.multicast_configuration_port_etv);
 			if(!this.isMulticastAddress(inetAddress))
 			{
-				Utils.toastOnScreen("Please enter an IP address between 224.0.0.0 and 239.255.255.255");
+				Utils.toastOnScreen("Please enter an IP address between 224.0.0.0 and 239.255.255.255", this);
 				return;
 			}
 			int port = Integer.parseInt(portTv.getText().toString());
 			this.saveConfiguration(inetAddress, port);
-			Utils.toastOnScreen("The multicast IP address and port number have been successfully saved.");
+			Utils.toastOnScreen("The multicast IP address and port number have been successfully saved.", this);
 			this.finish();
 		}
 		catch(UnknownHostException ex)
 		{
-			Utils.toastOnScreen("Please supply a valid IP address");
+			Utils.toastOnScreen("Please supply a valid IP address", this);
 		}
 		catch(NumberFormatException ex)
 		{
-			Utils.toastOnScreen("Please supply a valid port number");	
+			Utils.toastOnScreen("Please supply a valid port number", this);	
 		}	
 		
 	}

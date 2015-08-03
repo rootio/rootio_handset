@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 import org.rootio.tools.persistence.DBAgent;
-import org.rootio.tools.utils.Utils;
 
 import android.content.Context;
 
@@ -31,7 +30,6 @@ public class CallSignProvider implements Runnable {
 		String[] args = new String[] { "callsign" };
 		DBAgent dbagent = new DBAgent(this.parent);
 		String[][] data = dbagent.getData(query, args);
-		Utils.toastOnScreen("records found " + data.length);
 		for (int i = 0; i < data.length; i++) {
 			genres.add(new Genre(this.parent, data[i][3]));
 			artists.add(new Artist(this.parent, data[i][5], data[i][7], data[i][8]));
@@ -69,14 +67,10 @@ public class CallSignProvider implements Runnable {
 	private void playCallSign() {
 
 		if (mediaIterator.hasNext()) {
-			Utils.toastOnScreen("found one...");
 			this.playlist.onReceiveCallSign(String.format("/mnt/extSdCard/callsign/%s", mediaIterator.next().getTitle()));
 		} else {
-			Utils.toastOnScreen("size is " + callSigns.size());
 			if (callSigns.size() > 0) {
-				Utils.toastOnScreen("size is 0");
 				mediaIterator = callSigns.iterator(); // reset the iterator to 0
-				Utils.toastOnScreen("call sign is " + String.format("/mnt/extSdCard/callsign/%s", mediaIterator.next().getTitle()));
 				this.playlist.onReceiveCallSign(String.format("/mnt/extSdCard/callsign/%s", mediaIterator.next().getTitle()));
 			}
 		}
