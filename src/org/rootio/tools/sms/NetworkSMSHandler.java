@@ -31,41 +31,41 @@ public class NetworkSMSHandler implements MessageProcessor {
 	public boolean ProcessMessage() {
 		
 		//not enough parameters
-		if(this.messageParts.length < 4)
+		if(this.messageParts.length < 3)
 		{
 			return false;
 		}
 		
-		if(messageParts[2].equals("wifi"))
+		if(messageParts[1].equals("wifi"))
 		{
-			if(messageParts[3].equals("on") || messageParts[3].equals("off"))
+			if(messageParts[2].equals("on") || messageParts[2].equals("off"))
 			{
 				return this.toggleWifi(messageParts[3]);
 			}
 			
-			if(messageParts[3].equals("status"))
+			if(messageParts[2].equals("status"))
 			{
 				return this.getWifiConnection();
 			}
 			
-			if(messageParts[3].equals("connect"))
+			if(messageParts[2].equals("connect"))
 			{
-				return this.connectToWifi(messageParts[4], messageParts[5]);
+				return this.connectToWifi(messageParts[3], messageParts[4]);
 			}
 		}
 		
-		else if(messageParts[2].equals("gsm"))
+		else if(messageParts[1].equals("gsm"))
 		{
-			if(messageParts[3].equals("status"))
+			if(messageParts[2].equals("status"))
 			{
 				return this.getGsmConnection();
 			}
 		}
-		else if(messageParts[2].equals("data"))
+		else if(messageParts[1].equals("data"))
 		{
-			if(messageParts[3].equals("on") || messageParts[3].equals("off"))
+			if(messageParts[2].equals("on") || messageParts[2].equals("off"))
 			{
-				return this.toggleData(messageParts[3]);
+				return this.toggleData(messageParts[2]);
 			}
 		}		
 		//Gibberish

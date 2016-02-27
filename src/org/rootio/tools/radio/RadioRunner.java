@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Date;
 
 import org.rootio.activities.services.TelephonyEventNotifiable;
+import org.rootio.radioClient.R;
 import org.rootio.tools.media.Program;
 import org.rootio.tools.persistence.DBAgent;
 import org.rootio.tools.utils.Utils;
@@ -15,6 +16,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.util.Log;
 
 enum State {
 	PLAYING, PAUSED, STOPPED
@@ -107,6 +109,18 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable {
 			}
 		}
 	}
+	
+	public void stop()
+	{
+		this.stopProgram();
+		this.parent.unregisterReceiver(telephonyEventBroadcastReceiver);
+		this.parent.unregisterReceiver(br);
+		try {
+			this.finalize();
+		} catch (Throwable e) {
+			Log.e(this.parent.getString(R.string.app_name), e.getMessage() == null ? "Null pointer exception(RadioRunner.stop)" : e.getMessage());
+		}
+	}
 
 	/**
 	 * Returns all the program slots scheduled
@@ -180,8 +194,8 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable {
 			intent.putExtra("index", index);
 			this.pi = PendingIntent.getBroadcast(parent, 0, intent, 0);
 			this.am.set(AlarmManager.RTC_WAKEUP, startTime.getTime(), this.pi);
-		} catch (Exception e) {
-			// log this
+		} catch (Exception ex) {
+			Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(RadioRunner.addAlarmEvent)" : ex.getMessage());
 		}
 	}
 

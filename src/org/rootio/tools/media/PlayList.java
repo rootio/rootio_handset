@@ -33,7 +33,7 @@ public class PlayList implements OnCompletionListener, OnPreparedListener, OnErr
 	private Iterator<Media> mediaIterator;
 	private MediaPlayer mediaPlayer;
 	private MediaPlayer callSignPlayer;
-	private CallSignProvider callSignProvider;
+	//private CallSignProvider callSignProvider;
 	private Context parent;
 	private Media currentMedia;
 	private int mediaPosition;
@@ -56,7 +56,7 @@ public class PlayList implements OnCompletionListener, OnPreparedListener, OnErr
 		this.argument = argument;
 		this.parent = parent;
 		this.programActionType = programActionType;
-		this.callSignProvider = new CallSignProvider(this.parent, this);
+//		this.callSignProvider = new CallSignProvider(this.parent, this);
 	}
 	
 	public static PlayList getInstance()
@@ -88,7 +88,7 @@ public class PlayList implements OnCompletionListener, OnPreparedListener, OnErr
 	 */
 	public void play() {
 		startPlayer();
-		this.callSignProvider.start();
+	//	this.callSignProvider.start();
 	}
 
 	private void startPlayer() {
@@ -159,14 +159,14 @@ public class PlayList implements OnCompletionListener, OnPreparedListener, OnErr
 	 * Stops the media player and disposes it.
 	 */
 	public void stop() {
-		this.callSignProvider.stop();
-		if (this.callSignPlayer != null)
+		//this.callSignProvider.stop();
+		/*if (this.callSignPlayer != null)
 			try {
 				this.callSignPlayer.stop();
 				this.callSignPlayer.release();
 			} catch (Exception ex) {
 				Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(PlayList.stop)" : ex.getMessage());
-			}
+			}*/
 
 		if (mediaPlayer != null) {
 			try {
@@ -187,8 +187,8 @@ public class PlayList implements OnCompletionListener, OnPreparedListener, OnErr
 				this.mediaPosition = this.mediaPlayer.getCurrentPosition();
 				mediaPlayer.pause();
 
-				this.callSignPlayer.release();
-				this.callSignProvider.stop();
+				//this.callSignPlayer.release();
+		//		this.callSignProvider.stop();
 			}
 		} catch (Exception ex) {
 			// investiate tis
@@ -214,7 +214,7 @@ public class PlayList implements OnCompletionListener, OnPreparedListener, OnErr
 			this.mediaPlayer.start();
 
 			// resume the callSign provider
-			this.callSignProvider.start();
+	//		this.callSignProvider.start();
 		} catch (Exception ex) {
 			// investiate tois
 		}
@@ -231,7 +231,7 @@ public class PlayList implements OnCompletionListener, OnPreparedListener, OnErr
 		HashSet<Genre> genres = new HashSet<Genre>();
 		HashSet<Artist> artists = new HashSet<Artist>();
 		HashSet<String> tags = new HashSet<String>();
-
+		
 		String query = "select media.title, media.filelocation,media.wiki, genre.title, genre.id, artist.name, artist.id, artist.wiki, country.title, mediatag.tag from media left outer join mediagenre on media.id = mediagenre.mediaid left outer join genre on mediagenre.genreid = genre.id left outer join mediaartist on media.id = mediaartist.mediaid left outer join artist on mediaartist.artistid = artist.id left outer join country on artist.countryid = country.id join mediatag on media.id = mediatag.mediaid where mediatag.tag = ?";
 		String[] args = new String[] { tag };
 		if (argument.equals("random")) {

@@ -165,8 +165,13 @@ public class ProgramService extends Service implements ServiceInformationPublish
 
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			ProgramService.this.radioRunner.stopProgram();
-			// ProgramService.this.finalize()
+			ProgramService.this.radioRunner.stop();
+			try {
+				ProgramService.this.finalize();
+			} catch (Throwable e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			ProgramService.this.runTodaySchedule();
 
 		}

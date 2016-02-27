@@ -164,7 +164,7 @@ public class Program {
 		this.eventTimes = new ArrayList<EventTime>();
 		String tableName = "eventtime";
 		String[] columns = new String[] { "programid", "scheduledate", "duration", "isrepeat" };
-		String whereClause = "programid = ?";
+		String whereClause = "programid = ? and date(scheduledate) = current_date";
 		String[] whereArgs = new String[] { String.valueOf(programId) };
 		DBAgent dbAgent = new DBAgent(this.parent);
 		String[][] results = dbAgent.getData(true, tableName, columns, whereClause, whereArgs, null, null, null, null);

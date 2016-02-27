@@ -13,6 +13,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
+import android.database.sqlite.SQLiteException;
 import android.util.Log;
 
 public class DBAgent {
@@ -33,7 +34,16 @@ public class DBAgent {
 	 * @return Database connection to the specified database
 	 */
 	private SQLiteDatabase getDBConnection(String databaseName, CursorFactory factory, int flag) {
-		return SQLiteDatabase.openDatabase(databaseName, null, flag);
+		try
+		{
+			return SQLiteDatabase.openDatabase(databaseName, null, flag);
+		}
+		catch(SQLiteException ex)
+		{
+			//db file is corrupt, reinstall db
+			this.createDatabaseFile();
+			return SQLiteDatabase.openDatabase(databaseName, null, flag);
+		}
 	}
 
 	/**
@@ -104,6 +114,10 @@ public class DBAgent {
 			byte[] buffer = new byte[1024000]; // 1 MB
 			instr.read(buffer);
 			destinationFile = new File(this.databaseName);
+			if(destinationFile.exists())
+			{
+				destinationFile.delete();
+			}
 			if (destinationFile.createNewFile()) {
 				foutstr = new FileOutputStream(destinationFile);
 				foutstr.write(buffer);

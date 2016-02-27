@@ -93,7 +93,7 @@ public class Media {
 	 * @return String representation of the title of this media
 	 */
 	public String getFileLocation() {
-		// return this.fileLocation;
+		 //return this.fileLocation;
 		return String.format("%s/music/%s", "/mnt/extSdCard", this.title);
 	}
 

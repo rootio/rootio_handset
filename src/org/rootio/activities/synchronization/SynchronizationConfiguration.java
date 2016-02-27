@@ -37,12 +37,12 @@ public class SynchronizationConfiguration {
 		{
 		this.title = configuration[0][0];
 		this.changeDate = Utils.getDateFromString(configuration[0][1], "yyyy-MM-dd HH:mm:ss");
-		this.syncDuringParticularTimes = configuration[0][2].equals(new String("1")); 
+		this.syncDuringParticularTimes = "1".equals(configuration[0][2]); 
 		this.syncStartTime = configuration[0][3];
 		this.syncEndTime = configuration[0][4];
 		this.quantity = Utils.parseIntFromString(configuration[0][5]);
 		this.unitId = Utils.parseIntFromString(configuration[0][6]);
-		this.enableDataToSync = configuration[0][7].equals("1");
+		this.enableDataToSync = "1".equals(configuration[0][7]);
 		}
 	}
 	

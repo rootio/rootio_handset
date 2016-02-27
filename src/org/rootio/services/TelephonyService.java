@@ -164,7 +164,7 @@ public class TelephonyService extends Service implements ServiceInformationPubli
 		if (isWhiteListed(incomingNumber)) {
 			this.sendTelephonyEventBroadcast(true);
 			pickCall();
-			this.setupCallRecording();
+			//this.setupCallRecording();
 			this.logCall(incomingNumber, 1, 1);
 		} else {
 			declineCall();
