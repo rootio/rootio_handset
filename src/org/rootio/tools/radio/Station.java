@@ -2,16 +2,19 @@ package org.rootio.tools.radio;
 
 import java.net.InetAddress;
 
+import org.json.JSONObject;
+import org.rootio.radioClient.R;
 import org.rootio.tools.persistence.DBAgent;
 import org.rootio.tools.utils.Utils;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.util.Log;
 
 public class Station {
 	private String location;
 	private String owner;
-	private float frequency;
+	private double frequency;
 	private String telephoneNumber;
 	private String name;
 	private Context parent;
@@ -62,7 +65,7 @@ public class Station {
 	 * Gets the FM frequency at which the station for this phone is licensed to broadcast
 	 * @return Long representation of the frequency of the station
 	 */
-	public float getFrequency() {
+	public double getFrequency() {
 		return this.frequency;
 	}
 	
@@ -124,7 +127,7 @@ public class Station {
 	 * Sets the frequency at which the station for this phone is supposed to transmit
 	 * @param frequency The frequency at which this station is transmitting
 	 */
-	public void setFrequency(float frequency)
+	public void setFrequency(double frequency)
 	{
 		this.frequency = frequency;
 	}
@@ -150,6 +153,7 @@ public class Station {
 	/**
 	 * Persists station information to the database
 	 */
+	@Deprecated
 	public void persist()
 	{
 		String tableName = "station";
@@ -167,9 +171,12 @@ public class Station {
 		dbAgent.updateRecords(tableName, data, null, null);
 	}
 	
+	
+	
 	/**
 	 * Fetches station information from the database
 	 */
+	/*@Deprecated
 	private void loadStationInfo() {
 		String tableName = "station";
 		String[] columnsToFetch = new String[] { "location", "owner", "telephonenumber", "name", "frequency", "multicastipaddress", "multicastport", "stationid", "serverkey" };
@@ -185,6 +192,25 @@ public class Station {
 			this.multicastIPAddress = Utils.parseInetAddressFromString(stationDetails[0][5]);
 			this.stationId = Utils.parseIntFromString(stationDetails[0][7]);
 			this.serverKey = stationDetails[0][8];
+		}
+	}*/
+	
+	private void loadStationInfo()
+	{
+		try
+		{
+		JSONObject stationInformation = Utils.getJSONFromFile(this.parent, this.parent.getAssets().open("station.json"));
+		this.location = stationInformation.getString("location");
+		//this.owner = stationDetails[0][1];
+		this.telephoneNumber = stationInformation.getString("telephone");
+		this.name = stationInformation.getString("name");
+		this.multicastPort = stationInformation.getInt("multicast_port");
+		this.frequency = stationInformation.getDouble("frequency");
+		this.multicastIPAddress = Utils.parseInetAddressFromString(stationInformation.getString("multicast_IP"));
+		}
+		catch(Exception ex)
+		{
+			Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "NullPointer(Station.LoadStationInfo)" : ex.getMessage());
 		}
 	}
 

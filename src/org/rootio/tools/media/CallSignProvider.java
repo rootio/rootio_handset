@@ -51,8 +51,8 @@ public class CallSignProvider implements Runnable {
 		this.mediaIterator = callSigns.iterator();
 		while (this.isRunning) {
 			try {
-				Thread.sleep(2700000);// 45 mins
 				this.playCallSign();
+				Thread.sleep(1200000);// 20 mins				
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -65,15 +65,15 @@ public class CallSignProvider implements Runnable {
 	}
 
 	private void playCallSign() {
-
-		if (mediaIterator.hasNext()) {
+		this.playlist.onReceiveCallSign("/mnt/extSdCard/callsign/jingle.mp3");
+		/*if (mediaIterator.hasNext()) {
 			this.playlist.onReceiveCallSign(String.format("/mnt/extSdCard/callsign/%s", mediaIterator.next().getTitle()));
 		} else {
 			if (callSigns.size() > 0) {
 				mediaIterator = callSigns.iterator(); // reset the iterator to 0
 				this.playlist.onReceiveCallSign(String.format("/mnt/extSdCard/callsign/%s", mediaIterator.next().getTitle()));
 			}
-		}
+		}*/
 	}
 
 	public void start() {

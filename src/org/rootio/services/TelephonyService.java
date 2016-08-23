@@ -3,6 +3,7 @@ package org.rootio.services;
 import java.lang.reflect.Method;
 
 import org.rootio.tools.persistence.DBAgent;
+import org.rootio.tools.telephony.CallAuthenticator;
 import org.rootio.tools.telephony.CallRecorder;
 import org.rootio.tools.utils.Utils;
 
@@ -161,6 +162,7 @@ public class TelephonyService extends Service implements ServiceInformationPubli
 	 * incomingNumber
 	 */
 	public void handleCall(String incomingNumber) {
+		//if (new CallAuthenticator(this).isWhiteListed(incomingNumber)) {
 		if (isWhiteListed(incomingNumber)) {
 			this.sendTelephonyEventBroadcast(true);
 			pickCall();

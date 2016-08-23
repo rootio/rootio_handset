@@ -11,6 +11,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.rootio.radioClient.R;
 import org.rootio.tools.persistence.DBAgent;
 import android.annotation.SuppressLint;
@@ -24,6 +26,7 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -31,7 +34,6 @@ import android.widget.Toast;
 public class Utils {
 
 	private static Handler handler = new Handler();
-	private static Context context;
 	public static View currentView;
 	public static boolean isLoaded = false;
 
@@ -40,7 +42,6 @@ public class Utils {
 	}
 
 	public static void setContext(Context context) {
-		Utils.context = context;
 	}
 
 	public static Long getCountryId(String countryName) {
@@ -299,5 +300,29 @@ public class Utils {
 			} catch (Exception ex) {
 			return null;
 		}
+	}
+	
+	public static JSONObject getJSONFromFile(Context context, InputStream input)
+	{
+		try {
+			byte[] buffer = new byte[1024];
+			input.read(buffer);
+			return new JSONObject(new String(buffer));
+			} catch (Exception ex) {
+			Log.e(context.getString(R.string.app_name), ex.getMessage() == null ? "NullPointerException(CallAuthenticator.isWhiteListed)": ex.getMessage());
+			return null;
+		}
+		finally
+		{
+			try
+			{
+				input.close();
+			}
+			catch(Exception ex)
+			{
+				//log the exception
+			}
+		}
+		
 	}
 }

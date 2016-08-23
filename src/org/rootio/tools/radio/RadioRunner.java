@@ -42,6 +42,7 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable {
 		IntentFilter intentFilter = new IntentFilter();
 		intentFilter.addAction("org.rootio.services.telephony.TELEPHONY_EVENT");
 		this.parent.registerReceiver(telephonyEventBroadcastReceiver, intentFilter);
+		Utils.toastOnScreen("I got inited, nigger!", this.parent);
 	}
 
 	/**
@@ -58,7 +59,6 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable {
 	@Override
 	public void run() {
 		ArrayList<Program> programs = fetchPrograms();
-		this.addPadding();
 		this.schedulePrograms(programs);
 	}
 
@@ -73,6 +73,7 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable {
 		this.runningProgramIndex = index;
 		// Check to see that we are not in a phone call before launching program
 		if (this.state != State.PAUSED) {
+			Utils.toastOnScreen("Got request for show "+ this.programSlots.get(this.runningProgramIndex).getProgram().getTitle(), this.parent);
 			this.programSlots.get(this.runningProgramIndex).setRunning();
 			this.programSlots.get(this.runningProgramIndex).getProgram().getProgramManager().runProgram(this.programSlots.get(this.runningProgramIndex).getScheduledIndex());
 			this.state = State.PLAYING;
@@ -169,8 +170,10 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable {
 		Collections.sort(this.programSlots);
 		// Schedule the program slots
 		for (int i = 0; i < this.programSlots.size(); i++) {
+			Utils.toastOnScreen("Scheduling " + this.programSlots.get(i).getProgram() + "to start at "+this.programSlots.get(i).getProgram().getEventTimes()[this.programSlots.get(i).getScheduledIndex()].getScheduledDate().toLocaleString() , this.parent);
 			addAlarmEvent(i, this.programSlots.get(i).getProgram().getEventTimes()[this.programSlots.get(i).getScheduledIndex()].getScheduledDate());
 		}
+		Utils.toastOnScreen("Am done scheduling em,  ma man", this.parent);
 	}
 
 	private boolean isScheduledToday(EventTime eventTime) {
@@ -199,9 +202,6 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable {
 		}
 	}
 
-	private void addPadding() {
-	}
-
 	/**
 	 * Fetches program information as stored in the database
 	 * 
@@ -218,6 +218,7 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable {
 			program = new Program(this.parent, Utils.parseLongFromString(data[i][2]), data[i][1], Utils.parseIntFromString(data[i][3]), data[i][4]);
 			programs.add(program);
 		}
+		Utils.toastOnScreen("I fetched em!!", this.parent);
 		return programs;
 	}
 

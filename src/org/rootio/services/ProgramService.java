@@ -150,6 +150,7 @@ public class ProgramService extends Service implements ServiceInformationPublish
 
 		this.pi = PendingIntent.getBroadcast(this, 0, intent, 0);
 		this.am.set(AlarmManager.RTC_WAKEUP, dt.getTime(), this.pi);
+		Utils.toastOnScreen("I scheduled next day for " + dt.toGMTString(), this);
 	}
 
 	private Date getTomorrowBaseDate() {
@@ -172,6 +173,7 @@ public class ProgramService extends Service implements ServiceInformationPublish
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			Utils.toastOnScreen("I got a schedule for today!!", ProgramService.this);
 			ProgramService.this.runTodaySchedule();
 
 		}

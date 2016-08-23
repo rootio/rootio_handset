@@ -41,9 +41,10 @@ public class DBAgent {
 		catch(SQLiteException ex)
 		{
 			//db file is corrupt, reinstall db
-			this.createDatabaseFile();
-			return SQLiteDatabase.openDatabase(databaseName, null, flag);
+			//this.createDatabaseFile();
+			//return SQLiteDatabase.openDatabase(databaseName, null, flag);
 		}
+		return null;
 	}
 
 	/**

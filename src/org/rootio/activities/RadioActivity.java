@@ -2,7 +2,6 @@ package org.rootio.activities;
 
 import org.rootio.activities.cloud.CloudActivity;
 import org.rootio.activities.diagnostics.DiagnosticsConfigurationActivity;
-import org.rootio.activities.launch.LauncherActivity;
 import org.rootio.activities.services.ServiceExitInformable;
 import org.rootio.activities.services.ServicesActivity;
 import org.rootio.activities.stationDetails.StationActivity;
@@ -10,7 +9,6 @@ import org.rootio.activities.stationDetails.StationActivityAdapter;
 import org.rootio.activities.synchronization.SynchronizationLogDownloadActivity;
 import org.rootio.activities.telephoneLog.TelephoneLogActivity;
 import org.rootio.radioClient.R;
-import org.rootio.services.CrashMonitor;
 import org.rootio.services.Notifiable;
 import org.rootio.services.ProgramService;
 import org.rootio.services.ServiceConnectionAgent;
@@ -18,9 +16,7 @@ import org.rootio.services.ServiceStopNotifiable;
 import org.rootio.services.ServiceStopReceiver;
 
 import android.app.Activity;
-import android.app.AlarmManager;
 import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;

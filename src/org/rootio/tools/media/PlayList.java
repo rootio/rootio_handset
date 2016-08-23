@@ -33,7 +33,7 @@ public class PlayList implements OnCompletionListener, OnPreparedListener, OnErr
 	private Iterator<Media> mediaIterator;
 	private MediaPlayer mediaPlayer;
 	private MediaPlayer callSignPlayer;
-	//private CallSignProvider callSignProvider;
+	private CallSignProvider callSignProvider;
 	private Context parent;
 	private Media currentMedia;
 	private int mediaPosition;
@@ -56,7 +56,7 @@ public class PlayList implements OnCompletionListener, OnPreparedListener, OnErr
 		this.argument = argument;
 		this.parent = parent;
 		this.programActionType = programActionType;
-//		this.callSignProvider = new CallSignProvider(this.parent, this);
+		this.callSignProvider = new CallSignProvider(this.parent, this);
 	}
 	
 	public static PlayList getInstance()
@@ -75,6 +75,7 @@ public class PlayList implements OnCompletionListener, OnPreparedListener, OnErr
 	public void load() {
 		if (this.programActionType == ProgramActionType.Media || this.programActionType == ProgramActionType.Music) {
 			mediaList = loadMedia(this.argument);
+			Utils.toastOnScreen("Found " + mediaList.size() + "media", this.parent);
 			mediaIterator = mediaList.iterator();
 		}
 		if (this.programActionType == ProgramActionType.Stream) {
@@ -88,7 +89,7 @@ public class PlayList implements OnCompletionListener, OnPreparedListener, OnErr
 	 */
 	public void play() {
 		startPlayer();
-	//	this.callSignProvider.start();
+		this.callSignProvider.start();
 	}
 
 	private void startPlayer() {
@@ -160,20 +161,37 @@ public class PlayList implements OnCompletionListener, OnPreparedListener, OnErr
 	 */
 	public void stop() {
 		//this.callSignProvider.stop();
-		/*if (this.callSignPlayer != null)
+		if (this.callSignPlayer != null)
 			try {
 				this.callSignPlayer.stop();
 				this.callSignPlayer.release();
 			} catch (Exception ex) {
 				Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(PlayList.stop)" : ex.getMessage());
-			}*/
+			}
 
 		if (mediaPlayer != null) {
 			try {
+				this.fadeOut();
 				mediaPlayer.stop();
 				mediaPlayer.release();
 			} catch (Exception ex) {
 				Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(PlayList.stop)" : ex.getMessage());
+			}
+		}
+	}
+	
+	private void fadeOut()
+	{
+		float volume = 1.0F;
+		while(volume > 0)
+		{
+			volume = volume - 0.02F;
+			mediaPlayer.setVolume(volume, volume);
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
 	}
@@ -187,8 +205,8 @@ public class PlayList implements OnCompletionListener, OnPreparedListener, OnErr
 				this.mediaPosition = this.mediaPlayer.getCurrentPosition();
 				mediaPlayer.pause();
 
-				//this.callSignPlayer.release();
-		//		this.callSignProvider.stop();
+				this.callSignPlayer.release();
+				this.callSignProvider.stop();
 			}
 		} catch (Exception ex) {
 			// investiate tis
@@ -214,7 +232,7 @@ public class PlayList implements OnCompletionListener, OnPreparedListener, OnErr
 			this.mediaPlayer.start();
 
 			// resume the callSign provider
-	//		this.callSignProvider.start();
+			this.callSignProvider.start();
 		} catch (Exception ex) {
 			// investiate tois
 		}

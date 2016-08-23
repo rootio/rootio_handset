@@ -55,9 +55,9 @@ public class ProgramsHandler {
 		} catch (JSONException e) {
 			Log.e(this.parent.getString(R.string.app_name), e.getMessage());
 		}
-		catch (NullPointerException e) {
-			Log.e(this.parent.getString(R.string.app_name), e.getMessage()==null?"NullPointerException(ProgramsHandler.getProgramIds)":e.getMessage());
-		}
+//		catch (NullPointerException e) {
+//			Log.e(this.parent.getString(R.string.app_name), e.getMessage()==null?"NullPointerException(ProgramsHandler.getProgramIds)":e.getMessage());
+//		}
 		return programIds;
 	}
 	
