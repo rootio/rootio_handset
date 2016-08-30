@@ -66,19 +66,6 @@ public class DiagnosticsConfigurationActivity extends Activity implements OnChec
 	}
 
 	@Override
-	public boolean onMenuItemSelected(int featureId, MenuItem item) {
-		switch (item.getItemId()) {
-		case R.id.diagnostics_configuration_frequency_menu_item:
-			Intent intent = new Intent(this, DiagnosticsConfigurationFrequencyActivity.class);
-			this.startActivity(intent);
-			return true;
-		default: // handles the click of the application icon
-			this.finish();
-			return false;
-		}
-	}
-
-	@Override
 	public void onStart() {
 		super.onStart();
 		String[][] savedSettings = this.getSavedSettings();

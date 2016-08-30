@@ -21,84 +21,64 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/activity_horizontal_margin"
             android:background="@drawable/shadow_background"
-            android:orientation="horizontal"
+            android:orientation="vertical"
             android:padding="@dimen/activity_horizontal_margin" >
-        
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0"
-            android:text="@string/DiagnosticsFrequencyLabel"
-            android:textSize="@dimen/SmallerContentText"
-            android:textStyle="bold" >
 
-        </TextView>
+            <TextView
+                android:id="@+id/TextView01"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Diagnostics Frequency"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
 
-        <EditText
-            android:id="@+id/diagnostic_frequency_configuration_etv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:inputType="number" />
+            <TextView
+                android:id="@+id/diagnostic_frequency_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Medium Text"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
 
-        <Spinner
-            android:id="@+id/diagnostic_frequency_configuration_spn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0"
-            android:prompt="@string/DiagnosticsConfigurationFrequencyUnit" >
+            <TextView
+                android:id="@+id/textView4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Small Text"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
 
-        </Spinner>
-</LinearLayout>
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/activity_horizontal_margin"
-            android:layout_marginRight="@dimen/activity_horizontal_margin"
-            android:layout_marginTop="@dimen/activity_horizontal_margin"
+            android:layout_margin="@dimen/activity_horizontal_margin"
             android:background="@drawable/shadow_background"
             android:orientation="vertical"
-            android:padding="@dimen/Smaller" >
+            android:padding="@dimen/activity_horizontal_margin" >
 
             <TextView
-                android:id="@+id/textView1"
+                android:id="@+id/textView2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/DiagnosticsConfigurationNoteTitle"
-                android:textStyle="bold" />
+                android:text="Sync Frequency"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
 
             <TextView
-                android:id="@+id/diagnostic_frequency_configuration_note_tv"
+                android:id="@+id/sync_frequency_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/DiagnosticsConfigurationNoteMessage" />
+                android:text="Medium Text"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
 
-        </LinearLayout>
+            <TextView
+                android:id="@+id/textView5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Small Text"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+
+</LinearLayout>
 
         
-    </LinearLayout>
-    
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:layout_weight="0"
-        android:background="#ffD8D8D8"
-        android:gravity="center_horizontal"
-        android:padding="@dimen/ButtonPanelPadding" >
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="onSave"
-            android:text="@string/SaveButtonText" />
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="onCancel"
-            android:text="@string/CancelButtonText" />
     </LinearLayout>
 
 </LinearLayout>

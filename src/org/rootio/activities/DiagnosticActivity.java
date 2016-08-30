@@ -2,6 +2,7 @@ package org.rootio.activities;
 
 import org.rootio.activities.cloud.CloudActivity;
 import org.rootio.activities.diagnostics.DiagnosticsConfigurationActivity;
+import org.rootio.activities.diagnostics.FrequencyActivity;
 import org.rootio.activities.services.ServicesActivity;
 import org.rootio.activities.stationDetails.StationActivity;
 import org.rootio.activities.synchronization.SynchronizationLogDownloadActivity;
@@ -88,8 +89,8 @@ public class DiagnosticActivity extends Activity {
 			intent.putExtra("isHomeScreen", false);
 			startActivity(intent);
 			return true;
-		case R.id.diagnostics_menu_item:
-			intent = new Intent(this, DiagnosticsConfigurationActivity.class);
+		case R.id.frequency_menu_item:
+			intent = new Intent(this, FrequencyActivity.class);
 			startActivity(intent);
 			return true;
 		case R.id.quity_menu_item:
@@ -97,10 +98,6 @@ public class DiagnosticActivity extends Activity {
 			// radioRunner.stop
 			this.onStop();
 			this.finish();
-			return true;
-		case R.id.synchronization_menu_item:
-			intent = new Intent(this, SynchronizationLogDownloadActivity.class);
-			this.startActivity(intent);
 			return true;
 		case R.id.services_menu_item:
 			intent = new Intent(this, ServicesActivity.class);

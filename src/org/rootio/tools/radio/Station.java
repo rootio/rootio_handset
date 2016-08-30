@@ -211,7 +211,7 @@ public class Station {
 
 	private void loadStationInfo() {
 		try {
-			JSONObject stationInformation = Utils.getJSONFromFile(this.parent, this.parent.getAssets().open("station.json"));
+			JSONObject stationInformation = Utils.getJSONFromFile(this.parent, this.parent.getFilesDir().getAbsolutePath() + "/station.json");
 			this.location = stationInformation.getString("location");
 			// this.owner = stationDetails[0][1];
 			this.telephoneNumber = stationInformation.getString("telephone");

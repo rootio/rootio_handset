@@ -38,7 +38,7 @@ public class Cloud {
 	 * @return String representation of cloud server address
 	 */
 	public String getServerAddress() {
-		return "192.168.10.2"; //this.serverAddress;
+		return "192.168.10.180"; //this.serverAddress;
 	}
 
 	/**

@@ -1,5 +1,7 @@
 package org.rootio.tools.utils;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -287,8 +289,11 @@ public class Utils {
 		}
 	}
 
-	public static JSONObject getJSONFromFile(Context context, InputStream input) {
+	public static JSONObject getJSONFromFile(Context context, String fileName) {
+		File jsonFile = new File(fileName);
+	    FileInputStream input = null;
 		try {
+			input = new FileInputStream(jsonFile);
 			byte[] buffer = new byte[1024];
 			input.read(buffer);
 			return new JSONObject(new String(buffer));

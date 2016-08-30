@@ -43,6 +43,7 @@ public class SynchronizationDaemon implements Runnable {
 			this.synchronize(new SMSLogHandler(this.parent, this.cloud));
 			//this.synchronize(new ProgramsHandler(this.parent, this.cloud));
 			this.synchronize(new WhitelistHandler(this.parent, this.cloud));
+			this.synchronize(new FrequencyHandler(this.parent, this.cloud));
 
 			if (syncConfig.getEnableDataToSync()) {
 				// turn off mobile data

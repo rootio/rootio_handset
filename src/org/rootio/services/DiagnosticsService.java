@@ -92,7 +92,7 @@ public class DiagnosticsService extends Service implements ServiceInformationPub
 
 	private long getDelay() {
 		try {
-			JSONObject frequencyInformation = Utils.getJSONFromFile(this, this.getAssets().open("frequencies.json"));
+			JSONObject frequencyInformation = Utils.getJSONFromFile(this, this.getFilesDir().getAbsolutePath() + "/frequency.json");
 			return this.getMillisToSleep(frequencyInformation.getJSONObject("diagnostic").getString("units"), frequencyInformation.getJSONObject("diagnostic").getInt("interval"));
 		} catch (Exception ex) {
 			return this.getMillisToSleep("minutes", 10);

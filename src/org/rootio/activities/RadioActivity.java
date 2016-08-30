@@ -1,7 +1,7 @@
 package org.rootio.activities;
 
 import org.rootio.activities.cloud.CloudActivity;
-import org.rootio.activities.diagnostics.DiagnosticsConfigurationActivity;
+import org.rootio.activities.diagnostics.FrequencyActivity;
 import org.rootio.activities.services.ServiceExitInformable;
 import org.rootio.activities.services.ServicesActivity;
 import org.rootio.activities.stationDetails.StationActivity;
@@ -16,7 +16,6 @@ import org.rootio.services.ServiceStopNotifiable;
 import org.rootio.services.ServiceStopReceiver;
 
 import android.app.Activity;
-import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -32,8 +31,6 @@ public class RadioActivity extends Activity implements Notifiable, ServiceExitIn
 	private ServiceConnectionAgent programServiceConnection;
 	private RadioServiceExitBroadcastHandler exitBroadCastHandler;
 	private ServiceStopReceiver serviceStopReceiver;
-	private PendingIntent crashIntent;
-
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -79,17 +76,13 @@ public class RadioActivity extends Activity implements Notifiable, ServiceExitIn
 			intent.putExtra("isHomeScreen", false);
 			startActivity(intent);
 			return true;
-		case R.id.diagnostics_menu_item:
-			intent = new Intent(this, DiagnosticsConfigurationActivity.class);
+		case R.id.frequency_menu_item:
+			intent = new Intent(this, FrequencyActivity.class);
 			startActivity(intent);
 			return true;
 		case R.id.quity_menu_item:
 			this.onStop();
 			this.finish();
-			return true;
-		case R.id.synchronization_menu_item:
-			intent = new Intent(this, SynchronizationLogDownloadActivity.class);
-			this.startActivity(intent);
 			return true;
 		case R.id.services_menu_item:
 			intent = new Intent(this, ServicesActivity.class);

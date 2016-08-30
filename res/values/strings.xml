@@ -79,4 +79,6 @@
         ]]>
     </string>
 <string name="SynchronizationEnableData">Enable Data</string>
+<string name="sync_frequency_label">Synchronization Frequency</string>
+<string name="FrequencyMenuItem">Frequencies</string>
 </resources>
