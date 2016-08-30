@@ -1,7 +1,8 @@
 package org.rootio.tools.telephony;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,27 +22,23 @@ public class CallAuthenticator {
 	}
 
 	private JSONObject loadWhiteList() {
-		InputStream instr = null; 
+		FileInputStream instr = null;
 		try {
-			instr = this.parent.getAssets().open("whitelist.json");
+			File whitelistFile = new File(this.parent.getFilesDir().getAbsolutePath() + "whitelist.json");
+			
+			instr = new FileInputStream(whitelistFile);
 			byte[] buffer = new byte[1024];
 			instr.read(buffer);
 			return new JSONObject(new String(buffer));
 		} catch (IOException ex) {
-			Log.e(this.parent.getString(R.string.app_name),
-					ex.getMessage() == null ? "NullPointerException(CallAuthenticator.loadWhitelist)"
-							: ex.getMessage());
+			Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "NullPointerException(CallAuthenticator.loadWhitelist)" : ex.getMessage());
 		} catch (JSONException ex) {
-			Log.e(this.parent.getString(R.string.app_name),
-					ex.getMessage() == null ? "NullPointerException(CallAuthenticator.loadWhitelist)"
-							: ex.getMessage());
+			Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "NullPointerException(CallAuthenticator.loadWhitelist)" : ex.getMessage());
 		} finally {
 			try {
 				instr.close();
 			} catch (Exception ex) {
-				Log.e(this.parent.getString(R.string.app_name),
-						ex.getMessage() == null ? "NullPointerException(CallAuthenticator.loadWhitelist)"
-								: ex.getMessage());
+				Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "NullPointerException(CallAuthenticator.loadWhitelist)" : ex.getMessage());
 			}
 		}
 		return null;
@@ -50,16 +47,12 @@ public class CallAuthenticator {
 	public boolean isWhiteListed(String phoneNumber) {
 		try {
 			String sanitizedPhoneNumber = this.sanitizePhoneNumber(phoneNumber);
-			return this.whiteList.getJSONArray("whitelist").toString()
-					.contains(sanitizedPhoneNumber); // potentially problematic
+			return this.whiteList.getJSONArray("whitelist").toString().contains(sanitizedPhoneNumber); // potentially
+																										// problematic
 		} catch (JSONException ex) {
-			Log.e(this.parent.getString(R.string.app_name),
-					ex.getMessage() == null ? "NullPointerException(CallAuthenticator.isWhiteListed)"
-							: ex.getMessage());
+			Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "NullPointerException(CallAuthenticator.isWhiteListed)" : ex.getMessage());
 		} catch (NullPointerException ex) {
-			Log.e(this.parent.getString(R.string.app_name),
-					ex.getMessage() == null ? "NullPointerException(CallAuthenticator.isWhiteListed)"
-							: ex.getMessage());
+			Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "NullPointerException(CallAuthenticator.isWhiteListed)" : ex.getMessage());
 		}
 		return false;
 	}

@@ -16,39 +16,36 @@ public class BlacklistAdapter extends BaseAdapter {
 
 	private ArrayList<String> numbers;
 	private Context context;
-	
-	public BlacklistAdapter(Context context)
-	{
+
+	public BlacklistAdapter(Context context) {
 		this.context = context;
 		this.refresh();
 	}
-	
+
 	/**
 	 * Refreshes information in the adapter from the database
 	 */
-	public void refresh()
-	{
+	public void refresh() {
 		this.numbers = getBlacklistedNumbers();
 	}
-	
+
 	/**
 	 * Fetches blacklisted numbers form the database
+	 * 
 	 * @return An ArrayList of Strings each representing a blacklisted number
 	 */
-	private ArrayList<String> getBlacklistedNumbers()
-	{
+	private ArrayList<String> getBlacklistedNumbers() {
 		ArrayList<String> numbers = new ArrayList<String>();
 		String tableName = "blacklist";
 		DBAgent dbAgent = new DBAgent(this.context);
-		String[] columnsToReturn = new String[]{"telephonenumber"};
+		String[] columnsToReturn = new String[] { "telephonenumber" };
 		String[][] results = dbAgent.getData(true, tableName, columnsToReturn, null, null, null, null, null, null);
-		for(String[] result : results)
-		{
+		for (String[] result : results) {
 			numbers.add(result[0]);
 		}
 		return numbers;
 	}
-	
+
 	@Override
 	public int getCount() {
 		return numbers.size();
@@ -66,16 +63,15 @@ public class BlacklistAdapter extends BaseAdapter {
 
 	@Override
 	public View getView(int index, View view, ViewGroup parent) {
-		if(view == null)
-		{
+		if (view == null) {
 			LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-			view = layoutInflater.inflate(R.layout.blacklist_row, parent,false);
+			view = layoutInflater.inflate(R.layout.blacklist_row, parent, false);
 		}
-		
-		CheckedTextView checkedTv = (CheckedTextView)view.findViewById(R.id.blacklisted_number_ctv);
+
+		CheckedTextView checkedTv = (CheckedTextView) view.findViewById(R.id.blacklisted_number_ctv);
 		checkedTv.setText(numbers.get(index));
-		
+
 		return view;
-	}	
+	}
 
 }

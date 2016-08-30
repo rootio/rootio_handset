@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 import org.rootio.radioClient.R;
-import org.rootio.tools.media.ProgramManager.ProgramActionType;
 import org.rootio.tools.persistence.DBAgent;
 import org.rootio.tools.utils.Utils;
 
@@ -27,7 +26,7 @@ import android.util.Log;
 public class PlayList implements OnCompletionListener, OnPreparedListener, OnErrorListener {
 
 	private ProgramActionType programActionType;
-	private String argument;
+	private String[] arguments;
 	private HashSet<Media> mediaList;
 	private Uri streamUrl;
 	private Iterator<Media> mediaIterator;
@@ -38,31 +37,30 @@ public class PlayList implements OnCompletionListener, OnPreparedListener, OnErr
 	private Media currentMedia;
 	private int mediaPosition;
 	private static PlayList playListInstance;
+	private MediaLibrary mediaLib;
 
 	/**
 	 * Constructor for the playlist class
 	 * 
 	 * @param tag
 	 *            The tag to be used to construct the playlist
-	 * @return 
+	 * @return
 	 */
-	
-	protected PlayList()
-	{
-		//do not instantiate
+
+	protected PlayList() {
+		// do not instantiate
 	}
-	
-	public void init(Context parent, String argument, ProgramActionType programActionType) {
-		this.argument = argument;
+
+	public void init(Context parent, String[] arguments, ProgramActionType programActionType) {
+		this.arguments = arguments;
 		this.parent = parent;
+		this.mediaLib = new MediaLibrary(this.parent);
 		this.programActionType = programActionType;
 		this.callSignProvider = new CallSignProvider(this.parent, this);
 	}
-	
-	public static PlayList getInstance()
-	{
-		if(PlayList.playListInstance != null)
-		{
+
+	public static PlayList getInstance() {
+		if (PlayList.playListInstance != null) {
 			PlayList.playListInstance.stop();
 		}
 		PlayList.playListInstance = new PlayList();
@@ -74,12 +72,12 @@ public class PlayList implements OnCompletionListener, OnPreparedListener, OnErr
 	 */
 	public void load() {
 		if (this.programActionType == ProgramActionType.Media || this.programActionType == ProgramActionType.Music) {
-			mediaList = loadMedia(this.argument);
+			mediaList = loadMedia(this.arguments);
 			Utils.toastOnScreen("Found " + mediaList.size() + "media", this.parent);
 			mediaIterator = mediaList.iterator();
 		}
 		if (this.programActionType == ProgramActionType.Stream) {
-			String url = this.argument.isEmpty() ? this.getStreamingUrl() : this.argument;
+			String url = this.arguments == null || this.arguments.length == 0 ? this.getStreamingUrl() : this.arguments[0];
 			this.streamUrl = Uri.parse(url);
 		}
 	}
@@ -160,7 +158,7 @@ public class PlayList implements OnCompletionListener, OnPreparedListener, OnErr
 	 * Stops the media player and disposes it.
 	 */
 	public void stop() {
-		//this.callSignProvider.stop();
+		// this.callSignProvider.stop();
 		if (this.callSignPlayer != null)
 			try {
 				this.callSignPlayer.stop();
@@ -179,12 +177,10 @@ public class PlayList implements OnCompletionListener, OnPreparedListener, OnErr
 			}
 		}
 	}
-	
-	private void fadeOut()
-	{
+
+	private void fadeOut() {
 		float volume = 1.0F;
-		while(volume > 0)
-		{
+		while (volume > 0) {
 			volume = volume - 0.02F;
 			mediaPlayer.setVolume(volume, volume);
 			try {
@@ -245,30 +241,15 @@ public class PlayList implements OnCompletionListener, OnPreparedListener, OnErr
 	 *            The tag to be matched for media to be loaded into the playlist
 	 * @return Array of Media objects matching specified tag
 	 */
-	private HashSet<Media> loadMedia(String tag) {
-		HashSet<Genre> genres = new HashSet<Genre>();
-		HashSet<Artist> artists = new HashSet<Artist>();
-		HashSet<String> tags = new HashSet<String>();
-		
-		String query = "select media.title, media.filelocation,media.wiki, genre.title, genre.id, artist.name, artist.id, artist.wiki, country.title, mediatag.tag from media left outer join mediagenre on media.id = mediagenre.mediaid left outer join genre on mediagenre.genreid = genre.id left outer join mediaartist on media.id = mediaartist.mediaid left outer join artist on mediaartist.artistid = artist.id left outer join country on artist.countryid = country.id join mediatag on media.id = mediatag.mediaid where mediatag.tag = ?";
-		String[] args = new String[] { tag };
-		if (argument.equals("random")) {
-			query = "select media.title, media.filelocation,media.wiki, genre.title, genre.id, artist.name, artist.id, artist.wiki, country.title, mediatag.tag from media left outer join mediagenre on media.id = mediagenre.mediaid left outer join genre on mediagenre.genreid = genre.id left outer join mediaartist on media.id = mediaartist.mediaid left outer join artist on mediaartist.artistid = artist.id left outer join country on artist.countryid = country.id left outer join mediatag on media.id = mediatag.mediaid";
-			args = new String[] {};
-		}
-
-		DBAgent dbagent = new DBAgent(this.parent);
-		String[][] data = dbagent.getData(query, args);
+	private HashSet<Media> loadMedia(String[] tags) {
 		HashSet<Media> media = new HashSet<Media>();
-		for (int i = 0; i < data.length; i++) {
-			genres.add(new Genre(this.parent, data[i][3]));
-			artists.add(new Artist(this.parent, data[i][5], data[i][7], data[i][8]));
-			tags.add(data[i][8]);
-			if (i == 0 || !data[i][0].equals(data[i - 1][0])) {
-				media.add(new Media(this.parent, data[i][1], data[i][0], genres.toArray(new Genre[genres.size()]), tags.toArray(new String[tags.size()]), artists.toArray(new Artist[artists.size()])));
-				artists.clear();
-				genres.clear();
-				tags.clear();
+     	for (String tag : tags) {
+			String query = tag.equals("random") ? "select title from mediatag" : "select title from mediatag where tag = ?";
+			String[] args = new String[] { tag };
+			DBAgent dbagent = new DBAgent(this.parent);
+			String[][] data = dbagent.getData(query, args);
+			for (int i = 0; i < data.length; i++) {
+				media.add(this.mediaLib.getMedia(data[i][0]));
 			}
 		}
 		return media;
@@ -289,7 +270,7 @@ public class PlayList implements OnCompletionListener, OnPreparedListener, OnErr
 	 * 
 	 * @return Array of Media objects loaded in this playlist
 	 */
-	public HashSet<Media> getMedia() {
+	public HashSet<Media> getMdia() {
 		return this.mediaList;
 	}
 
@@ -298,8 +279,8 @@ public class PlayList implements OnCompletionListener, OnPreparedListener, OnErr
 	 * 
 	 * @return String representation of the tag used to construct this playlist
 	 */
-	public String getArgument() {
-		return this.argument;
+	public String[] getArguments() {
+		return this.arguments;
 	}
 
 	void onReceiveCallSign(String Url) {
@@ -330,13 +311,13 @@ public class PlayList implements OnCompletionListener, OnPreparedListener, OnErr
 							callSignPlayer = null;
 						} catch (Exception ex) {
 							Log.e(PlayList.this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(PlayList.onCompletion)" : ex.getMessage());
-							
+
 						}
 					}
 				});
 			}
 		} catch (Exception ex) {
-			// investigate this
+			Log.e(PlayList.this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(PlayList.onReceiveCallSign)" : ex.getMessage());
 		}
 
 	}
@@ -351,15 +332,77 @@ public class PlayList implements OnCompletionListener, OnPreparedListener, OnErr
 		}
 		this.startPlayer();
 	}
-	
+
 	@Override
-	protected void finalize()
-	{
+	protected void finalize() {
 		this.stop();
 		try {
 			super.finalize();
 		} catch (Throwable e) {
 			e.printStackTrace();
+		}
+	}
+
+	class CallSignProvider implements Runnable {
+
+		private final HashSet<Media> callSigns;
+		Iterator<Media> mediaIterator;
+		private boolean isRunning;
+
+		CallSignProvider(Context parent, PlayList playlist) {
+			PlayList.this.parent = parent;
+			this.callSigns = new HashSet<Media>();
+			this.isRunning = false;
+		}
+
+		private void loadCallSigns() {
+			String query = "select title from mediatag where tag = ?";
+			String[] args = new String[] { "callsign" };
+			DBAgent dbagent = new DBAgent(PlayList.this.parent);
+			String[][] data = dbagent.getData(query, args);
+			for (int i = 0; i < data.length; i++) {
+				callSigns.add(PlayList.this.mediaLib.getMedia(data[i][0]));
+			}
+		}
+
+		@Override
+		public void run() {
+			this.isRunning = true;
+			this.loadCallSigns();
+
+			this.mediaIterator = callSigns.iterator();
+			while (this.isRunning) {
+				try {
+					this.playCallSign();
+					Thread.sleep(1200000);// 20 mins
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+
+		}
+
+		void stop() {
+			this.isRunning = false;
+		}
+
+		private void playCallSign() {
+			PlayList.this.onReceiveCallSign("/mnt/extSdCard/callsign/jingle.mp3");
+			/*
+			 * if (mediaIterator.hasNext()) {
+			 * this.playlist.onReceiveCallSign(String
+			 * .format("/mnt/extSdCard/callsign/%s",
+			 * mediaIterator.next().getTitle())); } else { if (callSigns.size()
+			 * > 0) { mediaIterator = callSigns.iterator(); // reset the
+			 * iterator to 0 this.playlist.onReceiveCallSign(String.format(
+			 * "/mnt/extSdCard/callsign/%s", mediaIterator.next().getTitle()));
+			 * } }
+			 */
+		}
+
+		public void start() {
+			new Thread(this).start();
+
 		}
 	}
 

@@ -5,7 +5,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.rootio.radioClient.R;
-import org.rootio.tools.radio.ProgramSlot;
+import org.rootio.tools.media.Program;
 import org.rootio.tools.radio.RadioRunner;
 import org.rootio.tools.utils.Utils;
 
@@ -35,7 +35,6 @@ public class ProgramService extends Service implements ServiceInformationPublish
 		BindingAgent bindingAgent = new BindingAgent(this);
 		return bindingAgent;
 	}
-	
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
@@ -45,7 +44,7 @@ public class ProgramService extends Service implements ServiceInformationPublish
 			runTodaySchedule();
 			this.setupNewDayScheduleListener();
 			this.isRunning = true;
-			this.sendEventBroadcast(); 
+			this.sendEventBroadcast();
 		}
 		return Service.START_STICKY;
 	}
@@ -62,20 +61,15 @@ public class ProgramService extends Service implements ServiceInformationPublish
 		runnerThread.start();
 		this.scheduleNextDayAlarm();
 	}
-	
+
 	@Override
-	public void onTaskRemoved(Intent intent)
-	{
+	public void onTaskRemoved(Intent intent) {
 		super.onTaskRemoved(intent);
-		if(intent != null)	
-		{
-			wasStoppedOnPurpose  = intent.getBooleanExtra("wasStoppedOnPurpose", false);
-			if(wasStoppedOnPurpose)
-			{
+		if (intent != null) {
+			wasStoppedOnPurpose = intent.getBooleanExtra("wasStoppedOnPurpose", false);
+			if (wasStoppedOnPurpose) {
 				this.shutDownService();
-			}
-			else
-			{
+			} else {
 				this.onDestroy();
 			}
 		}
@@ -83,23 +77,19 @@ public class ProgramService extends Service implements ServiceInformationPublish
 
 	@Override
 	public void onDestroy() {
-		if(this.wasStoppedOnPurpose == false)
-		{
+		if (this.wasStoppedOnPurpose == false) {
 			Intent intent = new Intent("org.rootio.services.restartServices");
 			sendBroadcast(intent);
-		}
-		else
-		{
+		} else {
 			this.shutDownService();
 		}
 		super.onDestroy();
 	}
 
-
 	private void shutDownService() {
 		if (radioRunner != null && this.isRunning) {
 			super.onDestroy();
-			radioRunner.stopProgram();
+			radioRunner.stop();
 			this.isRunning = false;
 			try {
 				this.unregisterReceiver(newDayScheduleHandler);
@@ -135,8 +125,8 @@ public class ProgramService extends Service implements ServiceInformationPublish
 	 * @return An ArrayList of ProgramSlot objects each representing a slot on
 	 *         the schedule of the radio
 	 */
-	public ArrayList<ProgramSlot> getProgramSlots() {
-		return radioRunner == null ? new ArrayList<ProgramSlot>() : radioRunner.getProgramSlots();
+	public ArrayList<Program> getPrograms() {
+		return radioRunner == null ? new ArrayList<Program>() : radioRunner.getPrograms();
 	}
 
 	@Override
@@ -150,7 +140,6 @@ public class ProgramService extends Service implements ServiceInformationPublish
 
 		this.pi = PendingIntent.getBroadcast(this, 0, intent, 0);
 		this.am.set(AlarmManager.RTC_WAKEUP, dt.getTime(), this.pi);
-		Utils.toastOnScreen("I scheduled next day for " + dt.toGMTString(), this);
 	}
 
 	private Date getTomorrowBaseDate() {

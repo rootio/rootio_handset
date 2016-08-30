@@ -35,24 +35,24 @@ public class UpgradeMonitor extends BroadcastReceiver {
 	private Intent getIntentToLaunch(Context context, int serviceId) {
 		Intent intent = null;
 		switch (serviceId) {
-			case 1: // telephony service
-				intent = new Intent(context, TelephonyService.class);
-				break;
-			case 2: // SMS service
-				intent = new Intent(context, SMSService.class);
-				break;
-			case 3: // Diagnostic Service
-				intent = new Intent(context, DiagnosticsService.class);
-				break;
-			case 4: // Program Service
-				intent = new Intent(context, ProgramService.class);
-				break;
-			case 5: // Sync Service
-				intent = new Intent(context, SynchronizationService.class);
-				break;
-			case 6: // Discovery Service
-				intent = new Intent(context, DiscoveryService.class);
-				break;
+		case 1: // telephony service
+			intent = new Intent(context, TelephonyService.class);
+			break;
+		case 2: // SMS service
+			intent = new Intent(context, SMSService.class);
+			break;
+		case 3: // Diagnostic Service
+			intent = new Intent(context, DiagnosticsService.class);
+			break;
+		case 4: // Program Service
+			intent = new Intent(context, ProgramService.class);
+			break;
+		case 5: // Sync Service
+			intent = new Intent(context, SynchronizationService.class);
+			break;
+		case 6: // Discovery Service
+			intent = new Intent(context, DiscoveryService.class);
+			break;
 		}
 		return intent;
 	}

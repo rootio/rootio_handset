@@ -29,35 +29,26 @@ import android.widget.TabHost.TabSpec;
 public class LauncherActivity extends TabActivity {
 
 	PendingIntent crashIntent;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		
 
 		Resources ressources = getResources();
 		TabHost tabHost = getTabHost();
 
 		// Radio tab
 		Intent intentRadio = new Intent().setClass(this, RadioActivity.class);
-		TabSpec tabSpecRadio = tabHost.newTabSpec("Radio")
-				.setIndicator("", ressources.getDrawable(R.drawable.radio))
-				.setContent(intentRadio);
+		TabSpec tabSpecRadio = tabHost.newTabSpec("Radio").setIndicator("", ressources.getDrawable(R.drawable.radio)).setContent(intentRadio);
 
 		// Phone tab
 		Intent intentPhone = new Intent().setClass(this, TelephoneLogActivity.class);
-		TabSpec tabSpecCalls = tabHost.newTabSpec("Calls")
-				.setIndicator("", ressources.getDrawable(R.drawable.telephone))
-				.setContent(intentPhone);
+		TabSpec tabSpecCalls = tabHost.newTabSpec("Calls").setIndicator("", ressources.getDrawable(R.drawable.telephone)).setContent(intentPhone);
 
 		// Diagnostics tab
-		Intent intentDiagnostics = new Intent().setClass(this,
-				DiagnosticActivity.class);
-		TabSpec tabSpecDiagnostics = tabHost
-				.newTabSpec("Diagnostics")
-				.setIndicator("", ressources.getDrawable(R.drawable.diagnostic))
-				.setContent(intentDiagnostics);
+		Intent intentDiagnostics = new Intent().setClass(this, DiagnosticActivity.class);
+		TabSpec tabSpecDiagnostics = tabHost.newTabSpec("Diagnostics").setIndicator("", ressources.getDrawable(R.drawable.diagnostic)).setContent(intentDiagnostics);
 
 		tabHost.addTab(tabSpecRadio);
 		tabHost.addTab(tabSpecCalls);
@@ -65,9 +56,9 @@ public class LauncherActivity extends TabActivity {
 
 		// set Radio tab as default (zero based)
 		tabHost.setCurrentTab(0);
-		
+
 		Utils.setContext(this.getBaseContext());
-}
+	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -80,14 +71,13 @@ public class LauncherActivity extends TabActivity {
 	@Override
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
 		Intent intent;
-		
-		switch(item.getItemId())
-		{
+
+		switch (item.getItemId()) {
 		case R.id.station_menu_item:
 			intent = new Intent(this, StationActivity.class);
 			startActivity(intent);
 			return true;
-		case R.id.cloud_menu_item :
+		case R.id.cloud_menu_item:
 			intent = new Intent(this, CloudActivity.class);
 			startActivity(intent);
 			return true;
@@ -100,7 +90,7 @@ public class LauncherActivity extends TabActivity {
 			startActivity(intent);
 			return true;
 		case R.id.quity_menu_item:
-		    this.onStop();
+			this.onStop();
 			this.finish();
 			return true;
 		case R.id.synchronization_menu_item:
@@ -112,9 +102,8 @@ public class LauncherActivity extends TabActivity {
 			this.startActivity(intent);
 			return true;
 		default:
-		return super.onContextItemSelected(item);
+			return super.onContextItemSelected(item);
 		}
 	}
-	
-		
+
 }

@@ -13,24 +13,28 @@ public class EventTime {
 	private int duration;
 	private long programId;
 	private Long id;
-	private Context  parent;
+	private Context parent;
 	private boolean isRepeat;
 
 	/**
 	 * Constructor for the EventTime object
 	 * 
-	 * @param dayOfWeek The day of the week on which this EventTime is scheduled
-	 * @param startTime The Time at which the EventTime is scheduled in format <HH>h<i>
-	 * @param duration The duration that this Eventtime is scheduled to last
+	 * @param dayOfWeek
+	 *            The day of the week on which this EventTime is scheduled
+	 * @param startTime
+	 *            The Time at which the EventTime is scheduled in format
+	 *            <HH>h<i>
+	 * @param duration
+	 *            The duration that this Eventtime is scheduled to last
 	 */
-	public EventTime(Context parent, long programId, Date scheduleDate,  int duration, boolean isRepeat) {
+	public EventTime(Context parent, long programId, Date scheduleDate, int duration, boolean isRepeat) {
 		this.parent = parent;
 		this.isRepeat = isRepeat;
 		this.programId = programId;
 		this.scheduleDate = scheduleDate;
 		this.duration = duration;
 		this.id = Utils.getEventTimeId(this.parent, this.programId, this.scheduleDate, this.duration);
-		if (this.id <= 0 ) {
+		if (this.id <= 0) {
 			this.id = this.persist();
 		}
 	}
@@ -52,7 +56,6 @@ public class EventTime {
 		return this.scheduleDate;
 	}
 
-	
 	/**
 	 * Get the duration of this EventTime in seconds
 	 * 
@@ -61,12 +64,10 @@ public class EventTime {
 	public int getDuration() {
 		return this.duration;
 	}
-	
-	public boolean isRepeat()
-	{
+
+	public boolean isRepeat() {
 		return this.isRepeat;
 	}
-	
 
 	/**
 	 * Save this EventTime object to the Rootio database in case it is not yet

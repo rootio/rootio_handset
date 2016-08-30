@@ -22,7 +22,7 @@ public class EpisodeManager {
 	 * @return The file name of the episode to be played
 	 */
 	String getEpisodeTag() {
-		this.episodeNumber = this.getEpisodeNumber();
+		//this.episodeNumber = this.getEpisodeNumber();
 		return String.format("%s_%s", this.program.getId(), this.episodeNumber);
 	}
 
@@ -31,7 +31,7 @@ public class EpisodeManager {
 	 * 
 	 * @return The serial number for this episode
 	 */
-	private int getEpisodeNumber() {
+	/*private int getEpisodeNumber() {
 		int maxEpisode = this.getMaxEpisode();
 		int scheduledIndex = 0;// this.program.getScheduledIndex();
 		boolean isRepeat = this.program.getEventTimes()[scheduledIndex].isRepeat();
@@ -43,7 +43,7 @@ public class EpisodeManager {
 			return maxEpisode + 1;
 		}
 
-	}
+	}*/
 
 	/**
 	 * Logs the airing of this episode

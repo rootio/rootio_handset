@@ -34,15 +34,12 @@ public class DBAgent {
 	 * @return Database connection to the specified database
 	 */
 	private SQLiteDatabase getDBConnection(String databaseName, CursorFactory factory, int flag) {
-		try
-		{
+		try {
 			return SQLiteDatabase.openDatabase(databaseName, null, flag);
-		}
-		catch(SQLiteException ex)
-		{
-			//db file is corrupt, reinstall db
-			//this.createDatabaseFile();
-			//return SQLiteDatabase.openDatabase(databaseName, null, flag);
+		} catch (SQLiteException ex) {
+			// db file is corrupt, reinstall db
+			// this.createDatabaseFile();
+			// return SQLiteDatabase.openDatabase(databaseName, null, flag);
 		}
 		return null;
 	}
@@ -115,8 +112,7 @@ public class DBAgent {
 			byte[] buffer = new byte[1024000]; // 1 MB
 			instr.read(buffer);
 			destinationFile = new File(this.databaseName);
-			if(destinationFile.exists())
-			{
+			if (destinationFile.exists()) {
 				destinationFile.delete();
 			}
 			if (destinationFile.createNewFile()) {
@@ -127,7 +123,7 @@ public class DBAgent {
 			}
 		} catch (IOException ex) {
 			Log.e(this.context.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(DBAgent.createDatabaseFile)" : ex.getMessage());
-			
+
 		} finally {
 			try {
 				instr.close();
@@ -167,7 +163,6 @@ public class DBAgent {
 			}
 			return data;
 		} catch (Exception ex) {
-			String message = ex.getMessage();
 			Log.e(this.context.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception" : ex.getMessage());
 			return null;
 		} finally {

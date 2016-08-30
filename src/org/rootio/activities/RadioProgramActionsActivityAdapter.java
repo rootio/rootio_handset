@@ -20,12 +20,12 @@ public class RadioProgramActionsActivityAdapter extends BaseAdapter {
 
 	@Override
 	public int getCount() {
-		return this.program.getProgramManager().getProgramActions().size();
+		return this.program.getProgramActions().size();
 	}
 
 	@Override
 	public Object getItem(int index) {
-		return this.program.getProgramManager().getProgramActions().get(index);
+		return this.program.getProgramActions().get(index);
 
 	}
 
@@ -44,11 +44,11 @@ public class RadioProgramActionsActivityAdapter extends BaseAdapter {
 
 		// render the type of program action
 		TextView actionTypeTextView = (TextView) view.findViewById(R.id.station_activity_program_actions_type_tv);
-		actionTypeTextView.setText(this.program.getProgramManager().getProgramActions().get(index).getProgramActionType().toString());
+		actionTypeTextView.setText(this.program.getProgramActions().get(index).toString());
 
 		// render the start time of the program action
 		TextView startTimeTextView = (TextView) view.findViewById(R.id.station_activity_program_actions_start_time_tv);
-		startTimeTextView.setText(String.format("Start time: %s", Utils.getDateString(this.program.getProgramManager().getProgramActions().get(index).getStartTime(), "HH:mm:ss")));
+		startTimeTextView.setText(String.format("Start time: %s", Utils.getDateString(this.program.getProgramActions().get(index).getStartTime(), "HH:mm:ss")));
 		return view;
 	}
 }

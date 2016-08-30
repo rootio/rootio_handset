@@ -45,20 +45,15 @@ public class DiscoveryService extends Service implements ServiceInformationPubli
 		}
 		return Service.START_STICKY;
 	}
-	
+
 	@Override
-	public void onTaskRemoved(Intent intent)
-	{
+	public void onTaskRemoved(Intent intent) {
 		super.onTaskRemoved(intent);
-		if(intent != null)	
-		{
-			wasStoppedOnPurpose  = intent.getBooleanExtra("wasStoppedOnPurpose", false);
-			if(wasStoppedOnPurpose)
-			{
+		if (intent != null) {
+			wasStoppedOnPurpose = intent.getBooleanExtra("wasStoppedOnPurpose", false);
+			if (wasStoppedOnPurpose) {
 				this.shutDownService();
-			}
-			else
-			{
+			} else {
 				this.onDestroy();
 			}
 		}
@@ -66,13 +61,10 @@ public class DiscoveryService extends Service implements ServiceInformationPubli
 
 	@Override
 	public void onDestroy() {
-		if(this.wasStoppedOnPurpose == false)
-		{
+		if (this.wasStoppedOnPurpose == false) {
 			Intent intent = new Intent("org.rootio.services.restartServices");
 			sendBroadcast(intent);
-		}
-		else
-		{
+		} else {
 			this.shutDownService();
 		}
 		super.onDestroy();

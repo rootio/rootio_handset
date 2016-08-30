@@ -104,9 +104,9 @@ public class ServicesActivity extends Activity implements OnCheckedChangeListene
 	@Override
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
 		switch (item.getItemId()) {
-			default: // handles the click of the application icon
-				this.finish();
-				return false;
+		default: // handles the click of the application icon
+			this.finish();
+			return false;
 		}
 	}
 
@@ -210,24 +210,24 @@ public class ServicesActivity extends Activity implements OnCheckedChangeListene
 	public void onCheckedChanged(CompoundButton button, boolean isChecked) {
 		int serviceId = 0;
 		switch (button.getId()) {
-			case R.id.telephony_service_swt:
-				serviceId = 1;
-				break;
-			case R.id.messaging_service_swt:
-				serviceId = 2;
-				break;
-			case R.id.diagnostics_service_swt:
-				serviceId = 3;
-				break;
-			case R.id.program_service_swt:
-				serviceId = 4;
-				break;
-			case R.id.sync_service_swt:
-				serviceId = 5;
-				break;
-			case R.id.discovery_service_swt:
-				serviceId = 6;
-				break;
+		case R.id.telephony_service_swt:
+			serviceId = 1;
+			break;
+		case R.id.messaging_service_swt:
+			serviceId = 2;
+			break;
+		case R.id.diagnostics_service_swt:
+			serviceId = 3;
+			break;
+		case R.id.program_service_swt:
+			serviceId = 4;
+			break;
+		case R.id.sync_service_swt:
+			serviceId = 5;
+			break;
+		case R.id.discovery_service_swt:
+			serviceId = 6;
+			break;
 		}
 
 		if (isChecked) {

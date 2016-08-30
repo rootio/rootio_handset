@@ -9,14 +9,12 @@ import android.widget.AdapterView.OnItemClickListener;
 
 public class SynchronizationLogLongClickListener implements OnItemClickListener {
 
-
 	private ArrayList<SynchronizationRecord> synchronizationRecords;
-	
-	SynchronizationLogLongClickListener(ArrayList<SynchronizationRecord> synchronizationRecords)
-	{
+
+	SynchronizationLogLongClickListener(ArrayList<SynchronizationRecord> synchronizationRecords) {
 		this.synchronizationRecords = synchronizationRecords;
 	}
-	
+
 	@Override
 	public void onItemClick(AdapterView<?> viewgroup, View view, int index, long id) {
 		Intent intent = new Intent(view.getContext(), SynchronizationLogDownloadActivity.class);

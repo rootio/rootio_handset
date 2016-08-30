@@ -32,32 +32,24 @@ public class SynchronizationService extends Service implements ServiceInformatio
 	}
 
 	@Override
-	public void onTaskRemoved(Intent intent)
-	{
+	public void onTaskRemoved(Intent intent) {
 		super.onTaskRemoved(intent);
-		if(intent != null)	
-		{
-			wasStoppedOnPurpose   = intent.getBooleanExtra("wasStoppedOnPurpose", false);
-			if(wasStoppedOnPurpose)
-			{
+		if (intent != null) {
+			wasStoppedOnPurpose = intent.getBooleanExtra("wasStoppedOnPurpose", false);
+			if (wasStoppedOnPurpose) {
 				this.shutDownService();
-			}
-			else
-			{
+			} else {
 				this.onDestroy();
 			}
 		}
 	}
-	
+
 	@Override
 	public void onDestroy() {
-		if(this.wasStoppedOnPurpose == false)
-		{
+		if (this.wasStoppedOnPurpose == false) {
 			Intent intent = new Intent("org.rootio.services.restartServices");
 			sendBroadcast(intent);
-		}
-		else
-		{
+		} else {
 			this.shutDownService();
 		}
 		super.onDestroy();

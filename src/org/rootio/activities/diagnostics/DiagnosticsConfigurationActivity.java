@@ -20,7 +20,7 @@ import android.widget.Switch;
 public class DiagnosticsConfigurationActivity extends Activity implements OnCheckedChangeListener {
 
 	private Switch batteryCtv, gsmCtv, wirelessCtv, gpsCtv, cpuCtv, memoryCtv, storageCtv;
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -44,7 +44,8 @@ public class DiagnosticsConfigurationActivity extends Activity implements OnChec
 	}
 
 	/**
-	 * Sets listeners for the various switches to persist the change of state to the database
+	 * Sets listeners for the various switches to persist the change of state to
+	 * the database
 	 */
 	private void setOnchangeListeners() {
 		batteryCtv.setOnCheckedChangeListener(this);
@@ -71,15 +72,14 @@ public class DiagnosticsConfigurationActivity extends Activity implements OnChec
 			Intent intent = new Intent(this, DiagnosticsConfigurationFrequencyActivity.class);
 			this.startActivity(intent);
 			return true;
-		default: //handles the click of the application icon
+		default: // handles the click of the application icon
 			this.finish();
 			return false;
 		}
 	}
-	
+
 	@Override
-	public void onStart()
-	{
+	public void onStart() {
 		super.onStart();
 		String[][] savedSettings = this.getSavedSettings();
 		this.renderSavedSettings(savedSettings);
@@ -87,50 +87,52 @@ public class DiagnosticsConfigurationActivity extends Activity implements OnChec
 	}
 
 	/**
-	 * Sets the switches to reflect the current status of the diagnostic parameters in the database
+	 * Sets the switches to reflect the current status of the diagnostic
+	 * parameters in the database
+	 * 
 	 * @param savedSettings
 	 */
-	private void renderSavedSettings(String[][] savedSettings)
-	{
-		 HashMap<String, Switch> switches = new HashMap<String, Switch>();
-		 switches.put("1", gsmCtv);
-		 switches.put("2", wirelessCtv);
-		 switches.put("3", gpsCtv);
-		 switches.put("4", cpuCtv);
-		 switches.put("5", memoryCtv);
-		 switches.put("6", storageCtv);
-		 switches.put("7", batteryCtv);
-		 for(int i = 0; i < savedSettings.length; i++)
-		 {
-			 try
-			 {
-				 switches.get(savedSettings[i][0]).setChecked(savedSettings[i][2].equals("1")); 
-			 }
-			 catch(Exception ex)
-			 {
-				 Log.e(this.getString(R.string.app_name), ex == null? "null pointer" :ex.getMessage());
-			 }
-		 }
+	private void renderSavedSettings(String[][] savedSettings) {
+		HashMap<String, Switch> switches = new HashMap<String, Switch>();
+		switches.put("1", gsmCtv);
+		switches.put("2", wirelessCtv);
+		switches.put("3", gpsCtv);
+		switches.put("4", cpuCtv);
+		switches.put("5", memoryCtv);
+		switches.put("6", storageCtv);
+		switches.put("7", batteryCtv);
+		for (int i = 0; i < savedSettings.length; i++) {
+			try {
+				switches.get(savedSettings[i][0]).setChecked(savedSettings[i][2].equals("1"));
+			} catch (Exception ex) {
+				Log.e(this.getString(R.string.app_name), ex == null ? "null pointer" : ex.getMessage());
+			}
+		}
 	}
-	
+
 	/**
-	 * Fetches the diagnostics parameters and their values as persisted in the database
-	 * @return An array of String arrays representing the diagnostics configuration information
+	 * Fetches the diagnostics parameters and their values as persisted in the
+	 * database
+	 * 
+	 * @return An array of String arrays representing the diagnostics
+	 *         configuration information
 	 */
-	private String[][] getSavedSettings()
-	{
-		//TO-DO: Represent this using a class
+	private String[][] getSavedSettings() {
+		// TO-DO: Represent this using a class
 		String tableName = "diagnosticsconfiguration";
-		String[] columns = new String[] {"_id", "title", "enabled"};
+		String[] columns = new String[] { "_id", "title", "enabled" };
 		DBAgent agent = new DBAgent(this);
 		String[][] result = agent.getData(true, tableName, columns, null, null, null, null, null, null);
 		return result;
 	}
-	
+
 	/**
 	 * Updates the value of a parameter in the database
-	 * @param parameter The parameter whose value is being updated
-	 * @param value The value to which the parameter is being set
+	 * 
+	 * @param parameter
+	 *            The parameter whose value is being updated
+	 * @param value
+	 *            The value to which the parameter is being set
 	 * @return number of rows affected by the update
 	 */
 	private int runParameterUpdate(String parameter, boolean value) {
@@ -145,8 +147,7 @@ public class DiagnosticsConfigurationActivity extends Activity implements OnChec
 
 	@Override
 	public void onCheckedChanged(CompoundButton arg0, boolean arg1) {
-		switch(arg0.getId())
-		{
+		switch (arg0.getId()) {
 		case R.id.gsm_signal_ctv:
 			this.runParameterUpdate("gsm", gsmCtv.isChecked());
 			break;
@@ -169,6 +170,6 @@ public class DiagnosticsConfigurationActivity extends Activity implements OnChec
 			this.runParameterUpdate("gps", gpsCtv.isChecked());
 			break;
 		}
-		
+
 	}
 }

@@ -11,7 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 
-public class DiagnosticsService extends Service  implements ServiceInformationPublisher{
+public class DiagnosticsService extends Service implements ServiceInformationPublisher {
 
 	private boolean isRunning;
 	private int serviceId = 3;
@@ -30,8 +30,7 @@ public class DiagnosticsService extends Service  implements ServiceInformationPu
 			Utils.doNotification(this, "RootIO", "Diagnostics service started");
 			long delay = this.getDelay();
 			delay = delay > 0 ? delay : 10000; // 10000 default
-			DiagnosticsRunner diagnosticsRunner = new DiagnosticsRunner(this,
-					delay);
+			DiagnosticsRunner diagnosticsRunner = new DiagnosticsRunner(this, delay);
 			runnerThread = new Thread(diagnosticsRunner);
 			runnerThread.start();
 			this.isRunning = true;
@@ -39,20 +38,15 @@ public class DiagnosticsService extends Service  implements ServiceInformationPu
 		}
 		return Service.START_STICKY;
 	}
-	
+
 	@Override
-	public void onTaskRemoved(Intent intent)
-	{
+	public void onTaskRemoved(Intent intent) {
 		super.onTaskRemoved(intent);
-		if(intent != null)	
-		{
-			wasStoppedOnPurpose  = intent.getBooleanExtra("wasStoppedOnPurpose", false);
-			if(wasStoppedOnPurpose)
-			{
+		if (intent != null) {
+			wasStoppedOnPurpose = intent.getBooleanExtra("wasStoppedOnPurpose", false);
+			if (wasStoppedOnPurpose) {
 				this.shutDownService();
-			}
-			else
-			{
+			} else {
 				this.onDestroy();
 			}
 		}
@@ -60,13 +54,10 @@ public class DiagnosticsService extends Service  implements ServiceInformationPu
 
 	@Override
 	public void onDestroy() {
-		if(this.wasStoppedOnPurpose == false)
-		{
+		if (this.wasStoppedOnPurpose == false) {
 			Intent intent = new Intent("org.rootio.services.restartServices");
 			sendBroadcast(intent);
-		}
-		else
-		{
+		} else {
 			this.shutDownService();
 		}
 		super.onDestroy();
@@ -87,47 +78,46 @@ public class DiagnosticsService extends Service  implements ServiceInformationPu
 
 	/**
 	 * Get the number of seconds for which to sleep between synchronizations
-	 *//*
+	 */
+	/*
+	 * private long getDelay() { String tableName = "frequencyconfiguration";
+	 * String[] columnsToReturn = new String[] { "frequencyunitid", "quantity"
+	 * }; String whereClause = "title = ?"; String[] whereArgs = new String[] {
+	 * "diagnostics" }; DBAgent dbAgent = new DBAgent(this); String[][] results
+	 * = dbAgent.getData(true, tableName, columnsToReturn, whereClause,
+	 * whereArgs, null, null, null, null); return results.length > 0 ?
+	 * this.getMillisToSleep( Utils.parseIntFromString(results[0][0]),
+	 * Utils.parseIntFromString(results[0][1])) : 0; }
+	 */
+
 	private long getDelay() {
-		String tableName = "frequencyconfiguration";
-		String[] columnsToReturn = new String[] { "frequencyunitid", "quantity" };
-		String whereClause = "title = ?";
-		String[] whereArgs = new String[] { "diagnostics" };
-		DBAgent dbAgent = new DBAgent(this);
-		String[][] results = dbAgent.getData(true, tableName, columnsToReturn,
-				whereClause, whereArgs, null, null, null, null);
-		return results.length > 0 ? this.getMillisToSleep(
-				Utils.parseIntFromString(results[0][0]),
-				Utils.parseIntFromString(results[0][1])) : 0;
-	}*/
-	
-	private long getDelay()
-	{
-		try
-		{
-		JSONObject frequencyInformation = Utils.getJSONFromFile(this, this.getAssets().open("frequencies.json"));
-		return this.getMillisToSleep(frequencyInformation.getJSONObject("diagnostic").getString("units"), frequencyInformation.getJSONObject("diagnostic").getInt("interval"));
-		}
-		catch(Exception ex)
-		{
-		return this.getMillisToSleep("minutes",10);
+		try {
+			JSONObject frequencyInformation = Utils.getJSONFromFile(this, this.getAssets().open("frequencies.json"));
+			return this.getMillisToSleep(frequencyInformation.getJSONObject("diagnostic").getString("units"), frequencyInformation.getJSONObject("diagnostic").getInt("interval"));
+		} catch (Exception ex) {
+			return this.getMillisToSleep("minutes", 10);
 		}
 	}
 
 	/**
-	 * Get the time in milliseconds for which to sleep given the unit and quantity
-	 * @param unitId The ID of the units to be used in measuring time
-	 * @param quantity The quantity of units to be used in measuring time
+	 * Get the time in milliseconds for which to sleep given the unit and
+	 * quantity
+	 * 
+	 * @param unitId
+	 *            The ID of the units to be used in measuring time
+	 * @param quantity
+	 *            The quantity of units to be used in measuring time
 	 * @return The amount of time in milliseconds
 	 */
 	private long getMillisToSleep(String units, int quantity) {
-		if(units == "hours")
+		if (units == "hours")
 			return quantity * 3600 * 1000;
-		else if(units == "minutes")
+		else if (units == "minutes")
 			return quantity * 60 * 1000;
-		else if (units == "seconds") 
+		else if (units == "seconds")
 			return quantity * 1000;
-		else return this.getMillisToSleep("minutes",quantity);
+		else
+			return this.getMillisToSleep("minutes", quantity);
 	}
 
 	/**
@@ -145,12 +135,12 @@ public class DiagnosticsService extends Service  implements ServiceInformationPu
 	public int getServiceId() {
 		return this.serviceId;
 	}
-	
+
 	class DiagnosticsRunner implements Runnable {
 		private DiagnosticAgent diagnosticAgent;
 		private Context parentActivity;
 		private long delay;
-		
+
 		public DiagnosticsRunner(Context parentActivity, long delay) {
 			this.parentActivity = parentActivity;
 			this.diagnosticAgent = new DiagnosticAgent(this.parentActivity);
@@ -165,26 +155,25 @@ public class DiagnosticsService extends Service  implements ServiceInformationPu
 				try {
 					Thread.sleep(delay);
 				} catch (InterruptedException ex) {
-					
+
 				}
 			}
 		}
-		
+
 		/**
 		 * Saves the diagnostics gathered to the database
 		 */
-		private void logToDB()
-		{
+		private void logToDB() {
 			String tableName = "diagnostic";
 			ContentValues values = new ContentValues();
 			values.put("batterylevel", diagnosticAgent.getBatteryLevel());
 			values.put("memoryutilization", diagnosticAgent.getMemoryStatus());
 			values.put("storageutilization", diagnosticAgent.getStorageStatus());
-			values.put("CPUutilization",diagnosticAgent.getCPUUtilization());
+			values.put("CPUutilization", diagnosticAgent.getCPUUtilization());
 			values.put("wificonnected", diagnosticAgent.isConnectedToWifi());
 			values.put("gsmconnected", diagnosticAgent.isConnectedToGSM());
 			values.put("gsmstrength", diagnosticAgent.getGSMConnectionStrength());
-			values.put("latitude",diagnosticAgent.getLatitude());
+			values.put("latitude", diagnosticAgent.getLatitude());
 			values.put("longitude", diagnosticAgent.getLongitude());
 			DBAgent dbAgent = new DBAgent(this.parentActivity);
 			dbAgent.saveData(tableName, null, values);

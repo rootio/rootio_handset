@@ -16,17 +16,16 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-public class SynchronizationLogDownloadAdapter extends BaseAdapter{
+public class SynchronizationLogDownloadAdapter extends BaseAdapter {
 
 	private ArrayList<SynchronizationLogDownloadRecord> synchronizationLogDownloadRecords;
 	private Context context;
 
-	SynchronizationLogDownloadAdapter(Context context, int offset, int limit)
-	{
+	SynchronizationLogDownloadAdapter(Context context, int offset, int limit) {
 		this.context = context;
 		this.synchronizationLogDownloadRecords = this.getSynchronizationRecords(offset, limit);
 	}
-	
+
 	@Override
 	public int getCount() {
 		return this.synchronizationLogDownloadRecords.size();
@@ -42,80 +41,77 @@ public class SynchronizationLogDownloadAdapter extends BaseAdapter{
 		return id;
 	}
 
-	
 	@Override
 	public View getView(int index, View view, ViewGroup parent) {
-		if(view == null)
-		{
+		if (view == null) {
 			LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-			view = inflater.inflate(R.layout.synchronization_log_download_row,parent,false);
+			view = inflater.inflate(R.layout.synchronization_log_download_row, parent, false);
 		}
-		
+
 		SynchronizationLogDownloadRecord currentRecord = this.synchronizationLogDownloadRecords.get(index);
-		
-		TextView changeIdTv = (TextView)view.findViewById(R.id.synchronization_log_download_changeid_tv);
+
+		TextView changeIdTv = (TextView) view.findViewById(R.id.synchronization_log_download_changeid_tv);
 		changeIdTv.setText(String.valueOf(currentRecord.getChangeId()));
-		
-		TextView changeDateTv = (TextView)view.findViewById(R.id.synchronization_log_download_changedate_tv);
+
+		TextView changeDateTv = (TextView) view.findViewById(R.id.synchronization_log_download_changedate_tv);
 		changeDateTv.setText(Utils.getDateString(currentRecord.getChangeDate(), "yyyy-MM-dd HH:mm:ss"));
-		
-		//determine the image to render
-		ImageView icon = (ImageView)view.findViewById(R.id.synchronization_log_download_icon_imv);
-		switch(currentRecord.getChangeTypeId())
-		{
+
+		// determine the image to render
+		ImageView icon = (ImageView) view.findViewById(R.id.synchronization_log_download_icon_imv);
+		switch (currentRecord.getChangeTypeId()) {
 		case 1:
-		     icon.setImageDrawable(view.getResources().getDrawable(R.drawable.calendar));
-		     break;
+			icon.setImageDrawable(view.getResources().getDrawable(R.drawable.calendar));
+			break;
 		case 2:
 			icon.setImageDrawable(view.getResources().getDrawable(R.drawable.music));
-		     break;
+			break;
 		}
-		
-		//paint the background
-		LinearLayout linearLayout = (LinearLayout)view.findViewById(R.id.synchronization_log_llt);
+
+		// paint the background
+		LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.synchronization_log_llt);
 		int leftPadding = linearLayout.getPaddingLeft();
 		int topPadding = linearLayout.getPaddingTop();
 		int rightPadding = linearLayout.getPaddingRight();
 		int bottomPadding = linearLayout.getPaddingBottom();
-		
-		switch(currentRecord.getDownloadStatusId())
-		{
-		case 1://pending
+
+		switch (currentRecord.getDownloadStatusId()) {
+		case 1:// pending
 			linearLayout.setBackgroundResource(R.drawable.shadow_background);
 			break;
-		case 2://ongoing
+		case 2:// ongoing
 			linearLayout.setBackgroundResource(R.drawable.yellow_background);
 			break;
-		case 3://done
+		case 3:// done
 			linearLayout.setBackgroundResource(R.drawable.green_background);
 			break;
-		case 4://failed
+		case 4:// failed
 			linearLayout.setBackgroundResource(R.drawable.pink_background);
 			break;
 		}
 		linearLayout.setPadding(leftPadding, topPadding, rightPadding, bottomPadding);
 		return view;
 	}
-	
-	
+
 	/**
 	 * Fetches Synchronization Download records from the database
-	 * @param offset The number of records to skip
-	 * @param limit The number of records to return
-	 * @return ArrayList of SynchronizationLogDownloadRecord objects each representing a record in the database
+	 * 
+	 * @param offset
+	 *            The number of records to skip
+	 * @param limit
+	 *            The number of records to return
+	 * @return ArrayList of SynchronizationLogDownloadRecord objects each
+	 *         representing a record in the database
 	 */
-	private ArrayList<SynchronizationLogDownloadRecord> getSynchronizationRecords(int offset, int limit)
-	{
+	private ArrayList<SynchronizationLogDownloadRecord> getSynchronizationRecords(int offset, int limit) {
 		String tableName = "downloadbacklog";
-		String[] columnsToReturn  = new String[]{"changeid","changetypeid","changedate","downloadstatusid"};
+		String[] columnsToReturn = new String[] { "changeid", "changetypeid", "changedate", "downloadstatusid" };
 		DBAgent agent = new DBAgent(this.context);
 		String[][] results = agent.getData(true, tableName, columnsToReturn, null, null, null, null, null, null);
 		ArrayList<SynchronizationLogDownloadRecord> synchronizationLogDownloadRecords = new ArrayList<SynchronizationLogDownloadRecord>();
-		for(int i = 0; i < results.length; i++)
-		{
-			synchronizationLogDownloadRecords.add(new SynchronizationLogDownloadRecord(results[i][0],results[i][1],results[i][2],results[i][3]));
+		for (int i = 0; i < results.length; i++) {
+			synchronizationLogDownloadRecords.add(new SynchronizationLogDownloadRecord(results[i][0], results[i][1], results[i][2], results[i][3]));
 		}
 		return synchronizationLogDownloadRecords;
-    }
+	}
 
 }

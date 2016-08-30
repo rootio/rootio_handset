@@ -4,6 +4,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.rootio.tools.persistence.DBAgent;
 import org.rootio.tools.utils.PoorManStatistics;
 import org.rootio.tools.utils.Utils;
@@ -16,13 +19,11 @@ public class DiagnosticStatistics {
 	private double[] cpuData, memoryData, storageData, batteryData, gsmData, wifiConnectivityData, latitudeData, longitudeData;
 	private Date[] dateData;
 	private int[] idData;
-	private final Date sinceDate;
 	private int size;
 
-	public DiagnosticStatistics(Context parent, Date sinceDate) {
+	public DiagnosticStatistics(Context parent) {
 		this.parent = parent;
-		this.sinceDate = sinceDate;
-		this.LoadDiagnosticsData(this.sinceDate);
+		this.LoadDiagnosticsData();
 	}
 
 	/**
@@ -34,9 +35,9 @@ public class DiagnosticStatistics {
 	 * @return An array of String arrays each representing a record of
 	 *         diagnostics
 	 */
-	private void LoadDiagnosticsData(Date sinceDate) {
-		String query = "select batterylevel, gsmstrength, wificonnected, storageutilization, memoryutilization, cpuutilization, _id, diagnostictime, latitude, longitude  from diagnostic where diagnostictime > ?";
-		String[] filterArgs = new String[] { Utils.getDateString(sinceDate, "yyyy-MM-dd HH:mm:ss") == null ? Utils.getDateString(this.getTodayBaseDate(), "yyyy-MM-dd HH:mm:ss") : Utils.getDateString(sinceDate, "yyyy-MM-dd HH:mm:ss") };
+	private void LoadDiagnosticsData() {
+		String query = "select batterylevel, gsmstrength, wificonnected, storageutilization, memoryutilization, cpuutilization, _id, diagnostictime, latitude, longitude  from diagnostic ";
+		String[] filterArgs = new String[] { };
 		DBAgent agent = new DBAgent(this.parent);
 		String[][] results = agent.getData(query, filterArgs);
 		idData = new int[results.length];
@@ -277,16 +278,45 @@ public class DiagnosticStatistics {
 	 */
 	public HashMap<String, Object> getRecord(int index) {
 		HashMap<String, Object> record = new HashMap<String, Object>();
-		record.put("GSM Strength", gsmData[index]);
-		record.put("WiFI Connectivity", gsmData[index]);
-		record.put("CPU Utilization", gsmData[index]);
-		record.put("Battery Level", gsmData[index]);
-		record.put("Storage Utilization", gsmData[index]);
-		record.put("Memory Utilization", gsmData[index]);
-		record.put("Latitude", latitudeData[index]);
-		record.put("Longitude", longitudeData[index]);
-		record.put("Record Date", dateData[index]);
-		record.put("ID", idData[index]);
+		record.put("gsm_signal", gsmData[index]);
+		record.put("wifi_connectivity", wifiConnectivityData[index]);
+		record.put("cpu_load", cpuData[index]);
+		record.put("battery_level", batteryData[index]);
+		record.put("storage_usage", storageData[index]);
+		record.put("memory_utilization", memoryData[index]);
+		record.put("gps_lat", latitudeData[index]);
+		record.put("gps_lon", longitudeData[index]);
+		record.put("record_date", dateData[index]);
+		record.put("id", idData[index]);
 		return record;
+	}
+
+	public JSONObject getJSONRecords() {
+		JSONObject parent = new JSONObject();
+		JSONArray analyticData = new JSONArray();
+		try {
+			for (int index = 0; index < idData.length; index++) {
+				JSONObject record = new JSONObject();
+
+				record.put("gsm_signal", gsmData[index]);
+				record.put("wifi_connectivity", wifiConnectivityData[index]);
+				record.put("cpu_load", cpuData[index]);
+				record.put("battery_level", batteryData[index]);
+				record.put("storage_usage", storageData[index]);
+				record.put("memory_utilization", memoryData[index]);
+				record.put("gps_lat", latitudeData[index]);
+				record.put("gps_lon", longitudeData[index]);
+				record.put("record_date", Utils.getDateString(dateData[index], "yyyy-MM-dd HH:mm:ss"));
+				record.put("id", idData[index]);
+				analyticData.put(record);
+
+			}
+			parent.put("analytic_data", analyticData);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return parent;
 	}
 }

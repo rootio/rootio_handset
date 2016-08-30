@@ -2,7 +2,7 @@ package org.rootio.tools.telephony;
 
 public enum CallStatus {
 	Picked, Declined;
-	
+
 	public static CallStatus getCallStatus(String input) {
 		if (input.equals("1")) {
 			return CallStatus.Picked;

@@ -123,19 +123,19 @@ public class ServicesSMSHandler implements MessageProcessor, Notifiable {
 	private Intent getServiceIntent(int serviceId) {
 		Intent intent = null;
 		switch (serviceId) {
-			case 1:
-				intent = new Intent(this.parent, TelephonyService.class);
-				break;
-			case 2: // the SMS service can not be stopped remotely
-				break;
-			case 3:
-				intent = new Intent(this.parent, DiagnosticsService.class);
-				break;
-			case 4:
-				intent = new Intent(this.parent, ProgramService.class);
-				break;
-			case 5: // not yet implemented
-				break;
+		case 1:
+			intent = new Intent(this.parent, TelephonyService.class);
+			break;
+		case 2: // the SMS service can not be stopped remotely
+			break;
+		case 3:
+			intent = new Intent(this.parent, DiagnosticsService.class);
+			break;
+		case 4:
+			intent = new Intent(this.parent, ProgramService.class);
+			break;
+		case 5: // not yet implemented
+			break;
 		}
 		return intent;
 	}

@@ -13,71 +13,62 @@ import android.telephony.SmsManager;
 
 public class DiagnosticsSMSHandler implements MessageProcessor {
 
-	
 	private String[] messageParts;
 	private Context parent;
 	private String from;
 	private DiagnosticAgent diagnosticsAgent;
 	private DiagnosticStatistics diagnosticStatistics;
 	private SynchronizationUtils synchronizationUtils;
-	
-	DiagnosticsSMSHandler(Context parent, String from, String[] messageParts)
-	{
+
+	DiagnosticsSMSHandler(Context parent, String from, String[] messageParts) {
 		this.parent = parent;
 		this.from = from;
 		this.messageParts = messageParts;
 		this.synchronizationUtils = new SynchronizationUtils(this.parent);
 	}
-	
-	private Date getDefaultBaseDate()
-	{
+
+	private Date getDefaultBaseDate() {
 		Date lastUpdateDate = this.synchronizationUtils.getLastUpdateDate(SynchronizationType.Diagnostic);
 		return lastUpdateDate;
 	}
 
 	@Override
 	public boolean ProcessMessage() {
-		
-		//not enough parameters
-		if(this.messageParts.length < 3 && this.messageParts.length > 4)
-		{
+
+		// not enough parameters
+		if (this.messageParts.length < 3 && this.messageParts.length > 4) {
 			return false;
 		}
-		
-		if(messageParts[0].equals("diagnostic"))
-		{
+
+		if (messageParts[0].equals("diagnostic")) {
 			Date baseDate = null;
-			if(messageParts.length == 4) //base date specified
+			if (messageParts.length == 4) // base date specified
 			{
-				baseDate = Utils.getDateFromString(messageParts[2], "yyyy-MM-dd'T'HH:mm:ss"); 
-				if(baseDate == null){
+				baseDate = Utils.getDateFromString(messageParts[2], "yyyy-MM-dd'T'HH:mm:ss");
+				if (baseDate == null) {
 					baseDate = this.getDefaultBaseDate();
 				}
-				
-				this.diagnosticStatistics = new DiagnosticStatistics(this.parent, baseDate);
-				
+
+				//this.diagnosticStatistics = new DiagnosticStatistics(this.parent, baseDate);
+
 				String historicDiagnosticInformation = this.getHistoricDiagnosticInformation();
 				this.respondAsyncStatusRequest(this.from, historicDiagnosticInformation);
-			}
-			else if(messageParts.length == 3)//no base date specified	
+			} else if (messageParts.length == 3)// no base date specified
 			{
 				baseDate = this.getDefaultBaseDate();
 			}
-			
+
 			this.diagnosticsAgent = new DiagnosticAgent(this.parent);
 			String diagnosticInformation = this.getDiagnosticInformation();
 			this.respondAsyncStatusRequest(from, diagnosticInformation);
-			
+
 		}
-		
-		//Gibberish
+
+		// Gibberish
 		return false;
 	}
-	
-	
-	
-	private String getHistoricDiagnosticInformation()
-	{
+
+	private String getHistoricDiagnosticInformation() {
 		StringBuilder diagnosticInformation = new StringBuilder();
 		diagnosticInformation.append(String.format("%s|", this.messageParts[0]));
 		diagnosticInformation.append(String.format("%s|%s|%s|", Math.round(this.diagnosticStatistics.getMinBatteryLevel()), Math.round(this.diagnosticStatistics.getAverageBatteryLevel()), Math.round(this.diagnosticStatistics.getMaxBatteryLevel())));
@@ -91,9 +82,8 @@ public class DiagnosticsSMSHandler implements MessageProcessor {
 		diagnosticInformation.append(String.format("%s", this.messageParts[this.messageParts.length - 1]));
 		return diagnosticInformation.toString();
 	}
-	
-	private String getDiagnosticInformation()
-	{
+
+	private String getDiagnosticInformation() {
 		this.diagnosticsAgent.runDiagnostics();
 		StringBuilder diagnosticInformation = new StringBuilder();
 		diagnosticInformation.append(String.format("%s|", this.messageParts[0]));
@@ -108,21 +98,19 @@ public class DiagnosticsSMSHandler implements MessageProcessor {
 		return diagnosticInformation.toString();
 	}
 
-	String padString(String input, String pad, int length)
-    {
-        StringBuffer buff = new StringBuffer(input);
-        while(buff.length() < length)
-        {
-            buff.insert(0, pad);
-        }
-        return buff.toString();
-    }
-	
+	String padString(String input, String pad, int length) {
+		StringBuffer buff = new StringBuffer(input);
+		while (buff.length() < length) {
+			buff.insert(0, pad);
+		}
+		return buff.toString();
+	}
+
 	@Override
 	public void respondAsyncStatusRequest(String from, String data) {
 		SmsManager smsManager = SmsManager.getDefault();
-		Utils.toastOnScreen(data  + "to" +from, this.parent);
+		Utils.toastOnScreen(data + "to" + from, this.parent);
 		smsManager.sendTextMessage(from, null, data, null, null);
-		
+
 	}
 }

@@ -22,28 +22,27 @@ public class TelephoneLogAdapter extends BaseAdapter {
 
 	private ArrayList<Call> calls;
 	private Context context;
-	
-	public TelephoneLogAdapter(Context context)
-	{
+
+	public TelephoneLogAdapter(Context context) {
 		this.context = context;
 		calls = getCallData();
 	}
-	
+
 	/**
-	 * Fetches call information from the database 
-	 * @return ArrayList of Call objects each representing a record in the database
+	 * Fetches call information from the database
+	 * 
+	 * @return ArrayList of Call objects each representing a record in the
+	 *         database
 	 */
-	private ArrayList<Call> getCallData()
-	{
+	private ArrayList<Call> getCallData() {
 		String tableName = "calllog";
 		DBAgent dbAgent = new DBAgent(this.context);
-		String[] columnsToReturn  = new String[]{"telephonenumber","calltime","calltypeid","callstatusid"};
+		String[] columnsToReturn = new String[] { "telephonenumber", "calltime", "calltypeid", "callstatusid" };
 		String[][] data = dbAgent.getData(true, tableName, columnsToReturn, null, null, null, null, null, null);
 		ArrayList<Call> calls = new ArrayList<Call>();
-		for(int i = 0; i < data.length; i++)
-		{
-			
-				calls.add(new Call(data[i][0],CallType.getCallType(data[i][2]), CallStatus.getCallStatus(data[i][3]), Utils.getDateFromString(data[i][1], "yyyy-MM-dd HH:mm:ss")));
+		for (int i = 0; i < data.length; i++) {
+
+			calls.add(new Call(data[i][0], CallType.getCallType(data[i][2]), CallStatus.getCallStatus(data[i][3]), Utils.getDateFromString(data[i][1], "yyyy-MM-dd HH:mm:ss")));
 		}
 		return calls;
 	}
@@ -56,7 +55,7 @@ public class TelephoneLogAdapter extends BaseAdapter {
 	@Override
 	public Object getItem(int arg0) {
 		return this.calls.get(arg0);
-    }
+	}
 
 	@Override
 	public long getItemId(int arg0) {
@@ -66,37 +65,32 @@ public class TelephoneLogAdapter extends BaseAdapter {
 	@Override
 	public View getView(int index, View view, ViewGroup parent) {
 		Call call = calls.get(index);
-		if(view == null)
-		{
+		if (view == null) {
 			LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 			view = inflater.inflate(R.layout.telephone_log_row, parent, false);
 		}
-		
-		TextView phoneNumberTv = (TextView)view.findViewById(R.id.phone_number_tv);
+
+		TextView phoneNumberTv = (TextView) view.findViewById(R.id.phone_number_tv);
 		phoneNumberTv.setText(call.getTelephoneNumber());
-		
-		TextView callTypeTv = (TextView)view.findViewById(R.id.call_type_tv);
+
+		TextView callTypeTv = (TextView) view.findViewById(R.id.call_type_tv);
 		callTypeTv.setText(call.getCallType().toString());
-		
-		TextView callTimeTv = (TextView)view.findViewById(R.id.call_time_tv);
-		callTimeTv.setText(call.getCallTime() == null? "": Utils.getDateString(call.getCallTime(), "yyyy-MM-dd HH:mm:ss"));
-		
-		TextView callStatusTv = (TextView)view.findViewById(R.id.call_status_tv);
+
+		TextView callTimeTv = (TextView) view.findViewById(R.id.call_time_tv);
+		callTimeTv.setText(call.getCallTime() == null ? "" : Utils.getDateString(call.getCallTime(), "yyyy-MM-dd HH:mm:ss"));
+
+		TextView callStatusTv = (TextView) view.findViewById(R.id.call_status_tv);
 		callStatusTv.setText(call.getCallStatus().toString());
-		
-		//Paint background basing on status
-		LinearLayout background = (LinearLayout)view.findViewById(R.id.telephone_log_llt);
+
+		// Paint background basing on status
+		LinearLayout background = (LinearLayout) view.findViewById(R.id.telephone_log_llt);
 		int leftPadding = background.getPaddingLeft();
 		int topPadding = background.getPaddingTop();
 		int rightPadding = background.getPaddingRight();
 		int bottomPadding = background.getPaddingBottom();
-		background.setBackgroundResource(call.getCallStatus() == CallStatus.Picked ?R.drawable.green_background:R.drawable.pink_background);
+		background.setBackgroundResource(call.getCallStatus() == CallStatus.Picked ? R.drawable.green_background : R.drawable.pink_background);
 		background.setPadding(leftPadding, topPadding, rightPadding, bottomPadding);
 		return view;
 	}
-	
-	
-	
-	
- 
+
 }

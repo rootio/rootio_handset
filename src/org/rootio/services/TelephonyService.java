@@ -50,20 +50,15 @@ public class TelephonyService extends Service implements ServiceInformationPubli
 		return Service.START_STICKY;
 
 	}
-	
+
 	@Override
-	public void onTaskRemoved(Intent intent)
-	{
+	public void onTaskRemoved(Intent intent) {
 		super.onTaskRemoved(intent);
-		if(intent != null)	
-		{
-			wasStoppedOnPurpose  = intent.getBooleanExtra("wasStoppedOnPurpose", false);
-			if(wasStoppedOnPurpose)
-			{
+		if (intent != null) {
+			wasStoppedOnPurpose = intent.getBooleanExtra("wasStoppedOnPurpose", false);
+			if (wasStoppedOnPurpose) {
 				this.shutDownService();
-			}
-			else
-			{
+			} else {
 				this.onDestroy();
 			}
 		}
@@ -71,13 +66,10 @@ public class TelephonyService extends Service implements ServiceInformationPubli
 
 	@Override
 	public void onDestroy() {
-		if(this.wasStoppedOnPurpose == false)
-		{
+		if (this.wasStoppedOnPurpose == false) {
 			Intent intent = new Intent("org.rootio.services.restartServices");
 			sendBroadcast(intent);
-		}
-		else
-		{
+		} else {
 			this.shutDownService();
 		}
 		super.onDestroy();
@@ -149,9 +141,8 @@ public class TelephonyService extends Service implements ServiceInformationPubli
 		}
 
 	}
-	
-	private void setupCallRecording()
-	{
+
+	private void setupCallRecording() {
 		this.callRecorder = new CallRecorder(this);
 		this.callRecorder.startRecording();
 	}
@@ -162,11 +153,11 @@ public class TelephonyService extends Service implements ServiceInformationPubli
 	 * incomingNumber
 	 */
 	public void handleCall(String incomingNumber) {
-		//if (new CallAuthenticator(this).isWhiteListed(incomingNumber)) {
+		// if (new CallAuthenticator(this).isWhiteListed(incomingNumber)) {
 		if (isWhiteListed(incomingNumber)) {
 			this.sendTelephonyEventBroadcast(true);
 			pickCall();
-			//this.setupCallRecording();
+			// this.setupCallRecording();
 			this.logCall(incomingNumber, 1, 1);
 		} else {
 			declineCall();
@@ -254,17 +245,16 @@ public class TelephonyService extends Service implements ServiceInformationPubli
 		public void onCallStateChanged(int state, String incomingNumber) {
 
 			switch (state) {
-				case TelephonyManager.CALL_STATE_RINGING:
-					handleCall(incomingNumber);
-					break;
-				case TelephonyManager.CALL_STATE_IDLE:
-					TelephonyService.this.sendTelephonyEventBroadcast(false);
-					if(TelephonyService.this.callRecorder != null)
-					{
-						TelephonyService.this.callRecorder.stopRecording();
-						TelephonyService.this.callRecorder = null;					
-					}
-					break;
+			case TelephonyManager.CALL_STATE_RINGING:
+				handleCall(incomingNumber);
+				break;
+			case TelephonyManager.CALL_STATE_IDLE:
+				TelephonyService.this.sendTelephonyEventBroadcast(false);
+				if (TelephonyService.this.callRecorder != null) {
+					TelephonyService.this.callRecorder.stopRecording();
+					TelephonyService.this.callRecorder = null;
+				}
+				break;
 			}
 		}
 	}

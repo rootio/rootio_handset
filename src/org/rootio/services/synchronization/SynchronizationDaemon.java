@@ -4,6 +4,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Date;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.rootio.activities.synchronization.SynchronizationConfiguration;
 import org.rootio.radioClient.R;
 import org.rootio.services.SynchronizationService;
@@ -23,46 +25,50 @@ public class SynchronizationDaemon implements Runnable {
 	@Override
 	public void run() {
 		SynchronizationConfiguration syncConfig = new SynchronizationConfiguration(this.parent);
-		ProgramSynchronizer programSynchronizer = new ProgramSynchronizer();
-		EventTimeSynchronizer eventTimeSynchronizer = new EventTimeSynchronizer();
-		StationInformationSynchronizer stationInformationSynchronizer = new StationInformationSynchronizer();
-		DiagnosticsSynchronizer diagnosticsSynchronizer = new DiagnosticsSynchronizer();
+		//StationInformationSynchronizer stationInformationSynchronizer = new StationInformationSynchronizer();
+		
 		while (((SynchronizationService) this.parent).isRunning()) {
-			if(syncConfig.getEnableDataToSync())
-			{
-				//turn on mobileData
+			if (syncConfig.getEnableDataToSync()) {
+				// turn on mobileData
 				this.toggleData(true);
-				this.getSomeSleep(10000);
+				this.getSomeSleep(15000);
+			}
+
+			// do the sync
+			// programSynchronizer.synchronize();
+			// eventTimeSynchronizer.synchronize();
+			// stationInformationSynchronizer.synchronize();
+			this.synchronize(new DiagnosticsHandler(this.parent, this.cloud));
+			this.synchronize(new CallLogHandler(this.parent, this.cloud));
+			this.synchronize(new SMSLogHandler(this.parent, this.cloud));
+			//this.synchronize(new ProgramsHandler(this.parent, this.cloud));
+			this.synchronize(new WhitelistHandler(this.parent, this.cloud));
+
+			if (syncConfig.getEnableDataToSync()) {
+				// turn off mobile data
+				this.toggleData(false);														// seconds
 			}
 			
+			this.getSomeSleep(15000); //(this.frequency * 15000);// frequency is in
 			
-			//do the sync
-			programSynchronizer.synchronize();
-			eventTimeSynchronizer.synchronize();
-			stationInformationSynchronizer.synchronize();
-			diagnosticsSynchronizer.synchronize();
-			
-			if(syncConfig.getEnableDataToSync())
-			{
-			    //turn off mobile data
-			    this.toggleData(false);
-			    this.getSomeSleep(this.frequency * 1000);// frequency is in seconds
-			}
 		}
 	}
 
 	public SynchronizationDaemon(Context parent) {
 		this.parent = parent;
-		this.frequency = this.getFrequency();
+		this.frequency = 10000; // this.getFrequency();
 		this.cloud = new Cloud(this.parent);
 	}
-	
+
 	/**
-	 * Causes the thread on which it is called to sleep for atleast the specified number of milliseconds
-	 * @param milliseconds The number of milliseconds for which the thread is supposed to sleep.
+	 * Causes the thread on which it is called to sleep for atleast the
+	 * specified number of milliseconds
+	 * 
+	 * @param milliseconds
+	 *            The number of milliseconds for which the thread is supposed to
+	 *            sleep.
 	 */
-	private void getSomeSleep(long milliseconds)
-	{
+	private void getSomeSleep(long milliseconds) {
 		try {
 			Thread.sleep(milliseconds);// frequency is in seconds
 		} catch (InterruptedException ex) {
@@ -88,108 +94,52 @@ public class SynchronizationDaemon implements Runnable {
 		if (results.length > 0) {
 			int unit = Utils.parseIntFromString(results[0][1]);
 			switch (unit) {
-				case 1:
-					return Utils.parseIntFromString(results[0][0]) * 3600;
-				case 2:
-					return Utils.parseIntFromString(results[0][0]) * 60;
-				case 3:
-					return Utils.parseIntFromString(results[0][0]);
+			case 1:
+				return Utils.parseIntFromString(results[0][0]) * 3600;
+			case 2:
+				return Utils.parseIntFromString(results[0][0]) * 60;
+			case 3:
+				return Utils.parseIntFromString(results[0][0]);
 			}
 		}
 		return 0;
 	}
-	
+
 	private boolean toggleData(boolean status) {
 		try {
-	    	final ConnectivityManager conman = (ConnectivityManager) this.parent.getSystemService(Context.CONNECTIVITY_SERVICE);
-	        Class conmanClass;
-			conmanClass = Class.forName(conman.getClass().getName());		
-	        final Field iConnectivityManagerField = conmanClass.getDeclaredField("mService");
-	        iConnectivityManagerField.setAccessible(true);
-	        final Object iConnectivityManager = iConnectivityManagerField.get(conman);
-	        final Class iConnectivityManagerClass = Class.forName(iConnectivityManager.getClass().getName());
-	        final Method setMobileDataEnabledMethod = iConnectivityManagerClass.getDeclaredMethod("setMobileDataEnabled", Boolean.TYPE);
-	        setMobileDataEnabledMethod.setAccessible(true);
-	        setMobileDataEnabledMethod.invoke(iConnectivityManager, status);
-	        return true;
-	    	} catch (Exception ex) {
-	    		Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(SynchronizationDaemon.toggleData)" : ex.getMessage());
-				return false;
-			}
-	}
-
-	/**
-	 * This class handles synchronization particularly for programs
-	 * 
-	 * @author Jude Mukundane
-	 * 
-	 */
-	class ProgramSynchronizer {
-		private  ProgramsHandler programsHandler;
-		private final SynchronizationUtils synchronizationUtils;
-
-		ProgramSynchronizer() {
-			this.synchronizationUtils = new SynchronizationUtils(SynchronizationDaemon.this.parent);	
-		}
-
-		/**
-		 * Constructs the URL to check for Program updates
-		 * 
-		 * @return
-		 */
-		private String getSynchronizationURL(int programId) {
-			return String.format("http://%s:%s/%s/%s?api_key=%s", SynchronizationDaemon.this.cloud.getServerAddress(), SynchronizationDaemon.this.cloud.getHTTPPort(), "api/program", programId, SynchronizationDaemon.this.cloud.getServerKey());
-		}
-
-		/**
-		 * Runs the synchronization for programs
-		 */
-		public void synchronize() {
-			this.programsHandler = new ProgramsHandler(SynchronizationDaemon.this.parent, cloud.getServerAddress(), cloud.getHTTPPort(), cloud.getStationId(), cloud.getServerKey(), this.synchronizationUtils.getLastUpdateDate(SynchronizationType.Program));
-			for (Integer programId : this.programsHandler.getProgramIds()) {
-				String synchronizationUrl = this.getSynchronizationURL(programId);
-				String response = Utils.doHTTP(synchronizationUrl);
-				ProgramHandler handler = new ProgramHandler(SynchronizationDaemon.this.parent, response, new SynchronizationUtils(SynchronizationDaemon.this.parent));
-				handler.processProgram();
-			}
+			final ConnectivityManager conman = (ConnectivityManager) this.parent.getSystemService(Context.CONNECTIVITY_SERVICE);
+			Class conmanClass;
+			conmanClass = Class.forName(conman.getClass().getName());
+			final Field iConnectivityManagerField = conmanClass.getDeclaredField("mService");
+			iConnectivityManagerField.setAccessible(true);
+			final Object iConnectivityManager = iConnectivityManagerField.get(conman);
+			final Class iConnectivityManagerClass = Class.forName(iConnectivityManager.getClass().getName());
+			final Method setMobileDataEnabledMethod = iConnectivityManagerClass.getDeclaredMethod("setMobileDataEnabled", Boolean.TYPE);
+			setMobileDataEnabledMethod.setAccessible(true);
+			setMobileDataEnabledMethod.invoke(iConnectivityManager, status);
+			return true;
+		} catch (Exception ex) {
+			Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(SynchronizationDaemon.toggleData)" : ex.getMessage());
+			return false;
 		}
 	}
 
-	class EventTimeSynchronizer {
-
-		EventTimeSynchronizer() {
-			this.synchronizationUtils = new SynchronizationUtils(SynchronizationDaemon.this.parent);
-		}
-
-		private final SynchronizationUtils synchronizationUtils;
-
-		/**
-		 * Constructs the URL to check for EventTime updates
-		 * 
-		 * @return
-		 */
-		private String getSynchronizationURL() {
-			String sincePart = this.getSincePart();
-			System.out.println(String.format("http://%s:%s/%s/%s/schedule?api_key=%s&%s", SynchronizationDaemon.this.cloud.getServerAddress(), SynchronizationDaemon.this.cloud.getHTTPPort(), "api/station", SynchronizationDaemon.this.cloud.getStationId(), SynchronizationDaemon.this.cloud.getServerKey(), sincePart));
-			return String.format("http://%s:%s/%s/%s/schedule?api_key=%s&%s", SynchronizationDaemon.this.cloud.getServerAddress(), SynchronizationDaemon.this.cloud.getHTTPPort(), "api/station", SynchronizationDaemon.this.cloud.getStationId(), SynchronizationDaemon.this.cloud.getServerKey(), sincePart);
-		}
-
-		/**
-		 * Runs the synchronization for programs
-		 */
-		public void synchronize() {
-
-			String synchronizationUrl = this.getSynchronizationURL();
-			String response = Utils.doHTTP(synchronizationUrl);
-			EventTimeHandler handler = new EventTimeHandler(SynchronizationDaemon.this.parent, response, this.synchronizationUtils);
-			handler.processEventTimes();
-		}
-
-		private String getSincePart() {
-			Date dt = this.synchronizationUtils.getLastUpdateDate(SynchronizationType.EventTime);
-			return dt == null ? "all=1" : String.format("updated_since=%s", Utils.getDateString(dt, "yyyy-MM-dd'T'HH:mm:ss"));
+	public void synchronize(SynchronizationHandler handler) {
+		String synchronizationUrl = handler.getSynchronizationURL();
+		String response = Utils.doPostHTTP(synchronizationUrl, handler.getSynchronizationData().toString());
+		Utils.toastOnScreen(response, this.parent);
+		try {
+			JSONObject responseJSON;
+			responseJSON = new JSONObject(response);			
+			handler.processJSONResponse(responseJSON);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
+
+	
+	
 
 	class StationInformationSynchronizer {
 		private final SynchronizationUtils synchronizationUtils;
@@ -214,38 +164,9 @@ public class SynchronizationDaemon implements Runnable {
 		public void synchronize() {
 			String synchronizationUrl = this.getSynchronizationURL();
 			String response = Utils.doHTTP(synchronizationUrl);
-			EventTimeHandler handler = new EventTimeHandler(SynchronizationDaemon.this.parent, response, this.synchronizationUtils);
-			handler.processEventTimes();
+			//EventTimeHandler handler = new EventTimeHandler(SynchronizationDaemon.this.parent, response, this.synchronizationUtils);
+			//handler.processEventTimes();
 		}
 	}
 
-	class DiagnosticsSynchronizer {
-		private final SynchronizationUtils synchronizationUtils;
-
-		DiagnosticsSynchronizer() {
-			this.synchronizationUtils = new SynchronizationUtils(SynchronizationDaemon.this.parent);
-		}
-
-		/**
-		 * Constructs the URL to check for EventTime updates
-		 * 
-		 * @return
-		 */
-		private String getSynchronizationURL() {
-			return String.format("http://%s:%s/%s/%s/diagnostics?api_key=%s", SynchronizationDaemon.this.cloud.getServerAddress(), SynchronizationDaemon.this.cloud.getHTTPPort(), "api/station", SynchronizationDaemon.this.cloud.getStationId(), SynchronizationDaemon.this.cloud.getServerKey());
-		}
-
-		/**
-		 * Runs the synchronization for programs
-		 */
-		public void synchronize() {
-			DiagnosticsHandler handler = new DiagnosticsHandler(SynchronizationDaemon.this.parent, this.synchronizationUtils);
-			for (int i = 0; i < handler.getSize(); i++) {
-				String synchronizationUrl = this.getSynchronizationURL();
-				String response = Utils.doPostHTTP(synchronizationUrl, handler.getSynchronizationData(i));
-				Utils.toastOnScreen(response, SynchronizationDaemon.this.parent);
-				handler.processDiagnosticSynchronizationResponse(response, i);
-			}
-		}
-	}
 }

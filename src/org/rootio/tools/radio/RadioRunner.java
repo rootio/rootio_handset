@@ -1,12 +1,14 @@
 package org.rootio.tools.radio;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 
 import org.rootio.activities.services.TelephonyEventNotifiable;
 import org.rootio.radioClient.R;
 import org.rootio.tools.media.Program;
+import org.rootio.tools.media.ScheduleNotifiable;
 import org.rootio.tools.persistence.DBAgent;
 import org.rootio.tools.utils.Utils;
 
@@ -23,12 +25,12 @@ enum State {
 };
 
 @SuppressLint("SimpleDateFormat")
-public class RadioRunner implements Runnable, TelephonyEventNotifiable {
+public class RadioRunner implements Runnable, TelephonyEventNotifiable, ScheduleNotifiable {
 	private AlarmManager am;
-	private BroadcastHandler br;
+	private ScheduleBroadcastHandler br;
 	private PendingIntent pi;
 	private final Context parent;
-	private final ArrayList<ProgramSlot> programSlots;
+	private ArrayList<Program> programs;
 	private IntentFilter intentFilter;
 	private Integer runningProgramIndex = null;
 	private State state;
@@ -37,7 +39,6 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable {
 	public RadioRunner(Context parent) {
 		this.parent = parent;
 		this.setUpAlarming();
-		this.programSlots = new ArrayList<ProgramSlot>();
 		this.telephonyEventBroadcastReceiver = new TelephonyEventBroadcastReceiver(this);
 		IntentFilter intentFilter = new IntentFilter();
 		intentFilter.addAction("org.rootio.services.telephony.TELEPHONY_EVENT");
@@ -52,13 +53,13 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable {
 		this.am = (AlarmManager) this.parent.getSystemService(Context.ALARM_SERVICE);
 		this.intentFilter = new IntentFilter();
 		this.intentFilter.addAction("org.rootio.RadioRunner");
-		this.br = new BroadcastHandler(this);
+		this.br = new ScheduleBroadcastHandler(this);
 		this.parent.registerReceiver(this.br, this.intentFilter);
 	}
 
 	@Override
 	public void run() {
-		ArrayList<Program> programs = fetchPrograms();
+		this.programs = fetchPrograms();
 		this.schedulePrograms(programs);
 	}
 
@@ -69,13 +70,15 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable {
 	 *            The index of the program to run
 	 */
 	public void runProgram(int index) {
-		this.stopProgram();
+		if (this.runningProgramIndex != null) {
+			this.stopProgram(this.runningProgramIndex);
+		}
 		this.runningProgramIndex = index;
+		Utils.toastOnScreen("got intent...", this.parent);
 		// Check to see that we are not in a phone call before launching program
 		if (this.state != State.PAUSED) {
-			Utils.toastOnScreen("Got request for show "+ this.programSlots.get(this.runningProgramIndex).getProgram().getTitle(), this.parent);
-			this.programSlots.get(this.runningProgramIndex).setRunning();
-			this.programSlots.get(this.runningProgramIndex).getProgram().getProgramManager().runProgram(this.programSlots.get(this.runningProgramIndex).getScheduledIndex());
+			Utils.toastOnScreen("not paused...", this.parent);
+			this.programs.get(index).run();
 			this.state = State.PLAYING;
 		}
 	}
@@ -85,7 +88,7 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable {
 	 */
 	public void pauseProgram() {
 		if (this.runningProgramIndex != null) {
-			this.programSlots.get(this.runningProgramIndex).getProgram().getProgramManager().pause();
+			this.programs.get(this.runningProgramIndex).pause();
 		}
 	}
 
@@ -94,26 +97,27 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable {
 	 */
 	public void resumeProgram() {
 		if (this.runningProgramIndex != null) {
-			this.programSlots.get(this.runningProgramIndex).getProgram().getProgramManager().resume();
+			this.programs.get(this.runningProgramIndex).resume();
 		}
 	}
 
 	/**
 	 * Stops the program that is currently running
 	 */
-	public void stopProgram() {
-		if (this.runningProgramIndex != null) {
-			this.programSlots.get(this.runningProgramIndex).getProgram().getProgramManager().stop();
-			this.programSlots.get(this.runningProgramIndex).setFinishedRunning();
-			if (this.state != State.PAUSED) {
-				this.state = State.STOPPED;
-			}
+	public void stopProgram(int index) {
+		this.runningProgramIndex = index;
+		if(this.programs.get(this.runningProgramIndex) != null)
+		{
+			this.programs.get(this.runningProgramIndex).stop();
+		}
+		// this.programs.get(this.runningProgramIndex).setFinishedRunning();
+		if (this.state != State.PAUSED) {
+			this.state = State.STOPPED;
 		}
 	}
-	
-	public void stop()
-	{
-		this.stopProgram();
+
+	public void stop() {
+		this.stopProgram(this.runningProgramIndex);
 		this.parent.unregisterReceiver(telephonyEventBroadcastReceiver);
 		this.parent.unregisterReceiver(br);
 		try {
@@ -129,8 +133,8 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable {
 	 * @return ArrayList of ProgramSlot objects each representing a scheduled
 	 *         program
 	 */
-	public ArrayList<ProgramSlot> getProgramSlots() {
-		return this.programSlots;
+	public ArrayList<Program> getPrograms() {
+		return this.programs;
 	}
 
 	/**
@@ -139,7 +143,7 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable {
 	 * @return The currently running program
 	 */
 	public Program getRunningProgram() {
-		return this.programSlots.get(this.runningProgramIndex).getProgram();
+		return this.programs.get(this.runningProgramIndex);
 	}
 
 	/**
@@ -151,35 +155,18 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable {
 	private void schedulePrograms(ArrayList<Program> programs) {
 		IntentFilter intentFilter = new IntentFilter();
 		for (int i = 0; i < programs.size(); i++) {
-			EventTime[] eventTimes = programs.get(i).getEventTimes();
-			for (int j = 0; j < eventTimes.length; j++) {
-				// check if it has a slot for today.
-				if (isScheduledToday(eventTimes[j])) {
-
-					this.programSlots.add(new ProgramSlot(programs.get(i), j));
-				}
-			}
-		}
-		// register receiver before scheduling, events maybe thrown immediately
-		// after scheduling
-		for (int i = 0; i < this.programSlots.size(); i++) {
 			intentFilter.addAction("org.rootio.RadioRunner" + String.valueOf(i));
 		}
 		this.parent.registerReceiver(br, intentFilter);
+
 		// Sort the program slots by time at which they will play
-		Collections.sort(this.programSlots);
+		Collections.sort(programs);
+
 		// Schedule the program slots
-		for (int i = 0; i < this.programSlots.size(); i++) {
-			Utils.toastOnScreen("Scheduling " + this.programSlots.get(i).getProgram() + "to start at "+this.programSlots.get(i).getProgram().getEventTimes()[this.programSlots.get(i).getScheduledIndex()].getScheduledDate().toLocaleString() , this.parent);
-			addAlarmEvent(i, this.programSlots.get(i).getProgram().getEventTimes()[this.programSlots.get(i).getScheduledIndex()].getScheduledDate());
+		for (int i = 0; i < programs.size(); i++) {
+			addAlarmEvent(i, programs.get(i).getStartDate());
 		}
 		Utils.toastOnScreen("Am done scheduling em,  ma man", this.parent);
-	}
-
-	private boolean isScheduledToday(EventTime eventTime) {
-		Date dt = new Date();
-		Date eventDate = eventTime.getScheduledDate();
-		return dt.getMonth() == eventDate.getMonth() && dt.getYear() == eventDate.getYear() && dt.getDate() == eventDate.getDate();
 	}
 
 	/**
@@ -209,16 +196,20 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable {
 	 */
 	private ArrayList<Program> fetchPrograms() {
 		DBAgent agent = new DBAgent(this.parent);
-		String query = "select program.id, program.title, program.cloudid, programtypeid , tag from program where program.id in (select programid from eventtime where date(scheduledate) = date(current_timestamp,'localtime'))";
+		String query = "select id, name, start, end, structure from scheduledprogram";// where
+																						// date(start)
+																						// =
+																						// date(current_timestamp,'localtime')";
 		String[] args = new String[] {};
 		String[][] data = agent.getData(query, args);
 		ArrayList<Program> programs = new ArrayList<Program>();
 		for (int i = 0; i < data.length; i++) {
 			Program program;
-			program = new Program(this.parent, Utils.parseLongFromString(data[i][2]), data[i][1], Utils.parseIntFromString(data[i][3]), data[i][4]);
+			Utils.toastOnScreen(data[i][2], this.parent);
+			program = new Program(this.parent, data[i][1], Utils.getDateFromString(data[i][2], "yyyy-MM-dd HH:mm:ss"), Utils.getDateFromString(data[i][3], "yyyy-MM-dd HH:mm:ss"), data[i][4]);
 			programs.add(program);
 		}
-		Utils.toastOnScreen("I fetched em!!", this.parent);
+		Utils.toastOnScreen("I fetched em!!" + programs.size(), this.parent);
 		return programs;
 	}
 
@@ -229,16 +220,20 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable {
 			this.state = State.PAUSED;
 		} else { // notification that the call has ended
 			if (this.state == State.PAUSED) {
-				int state = this.programSlots.get(this.runningProgramIndex).getRunState();
-				if (state == 0) {// The program had not begun, was waiting for
-					// the call to end in order to begin
-					this.programSlots.get(this.runningProgramIndex).setRunning();
-					this.programSlots.get(this.runningProgramIndex).getProgram().getProgramManager().runProgram(this.programSlots.get(this.runningProgramIndex).getScheduledIndex());
-				} else { // The program had begun, it was paused by the call
-					this.resumeProgram();
-					this.state = State.PLAYING;
-				}
+				// The program had begun, it was paused by the call
+				this.resumeProgram();
+				this.state = State.PLAYING;
 			}
 		}
+	}
+
+	@Override
+	public
+	boolean isExpired(int index) {
+		Calendar referenceCalendar = Calendar.getInstance();
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(this.programs.get(index).getStartDate());
+		cal.add(Calendar.MINUTE, this.programs.get(index).getDuration() - 1);
+		return cal.compareTo(referenceCalendar) <= 0;
 	}
 }

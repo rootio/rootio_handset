@@ -6,7 +6,7 @@ import org.rootio.radioClient.R;
 import org.rootio.services.Notifiable;
 import org.rootio.services.ProgramService;
 import org.rootio.services.ServiceConnectionAgent;
-import org.rootio.tools.radio.ProgramSlot;
+import org.rootio.tools.media.Program;
 
 import android.app.Activity;
 import android.content.Context;
@@ -20,7 +20,7 @@ public class RadioProgramActionsActivity extends Activity implements Notifiable 
 
 	private ServiceConnectionAgent programServiceConnection;
 	private ProgramService programService;
-	private ArrayList<ProgramSlot> programSlots;
+	private ArrayList<Program> programSlots;
 	private int serviceId, programIndex;
 
 	@Override
@@ -50,10 +50,10 @@ public class RadioProgramActionsActivity extends Activity implements Notifiable 
 	@Override
 	public void notifyServiceConnection(int serviceId) {
 		programService = (ProgramService) programServiceConnection.getService();
-		programSlots = programService.getProgramSlots();
+		programSlots = programService.getPrograms();
 		ListView stationActivityPlaylistListView = (ListView) this.findViewById(R.id.station_activity_program_actions_lv);
-		stationActivityPlaylistListView.setAdapter(new RadioProgramActionsActivityAdapter(this.programSlots.get(this.programIndex).getProgram()));
-		this.setTitle(this.programSlots.get(this.programIndex).getProgram().getTitle());
+		stationActivityPlaylistListView.setAdapter(new RadioProgramActionsActivityAdapter(this.programSlots.get(this.programIndex)));
+		this.setTitle(this.programSlots.get(this.programIndex).getTitle());
 	}
 
 	@Override
@@ -65,9 +65,9 @@ public class RadioProgramActionsActivity extends Activity implements Notifiable 
 	@Override
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
 		switch (item.getItemId()) {
-			default: // handles the click of the application icon
-				this.finish();
-				return false;
+		default: // handles the click of the application icon
+			this.finish();
+			return false;
 		}
 	}
 

@@ -27,19 +27,19 @@ public class WhiteListSMSHandler implements MessageProcessor {
 		if (messageParts[1].equals("add")) {
 			try {
 				boolean isNumberAdded = this.addNumberToWhitelist(messageParts[2]);
-				this.respondAsyncStatusRequest(from, isNumberAdded?String.format("The number %s was successfully added", messageParts[2]): String.format("The number %s was not added", messageParts[2]));
-                return isNumberAdded;
+				this.respondAsyncStatusRequest(from, isNumberAdded ? String.format("The number %s was successfully added", messageParts[2]) : String.format("The number %s was not added", messageParts[2]));
+				return isNumberAdded;
 			} catch (Exception ex) {
 				return false;
 			}
-		} 
+		}
 
 		// removing a number nfrom wite;list
 		if (messageParts[1].equals("remove")) {
 			try {
 				boolean isNumberRemoved = this.removeNumberFromWhitelist(messageParts[2]);
-				this.respondAsyncStatusRequest(from, isNumberRemoved?String.format("The number %s was successfully removed", messageParts[2]): String.format("The number %s was not added", messageParts[2]));
-                return  isNumberRemoved;
+				this.respondAsyncStatusRequest(from, isNumberRemoved ? String.format("The number %s was successfully removed", messageParts[2]) : String.format("The number %s was not added", messageParts[2]));
+				return isNumberRemoved;
 			} catch (Exception ex) {
 				return false;
 			}

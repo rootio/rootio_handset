@@ -14,66 +14,71 @@ import android.widget.EditText;
 public class AddToBlacklist extends Activity {
 
 	@Override
-	public void onCreate(Bundle savedInstanceState)
-	{
+	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.add_to_blacklist);
 		this.setTitle("Add Number to Blacklist");
 		this.getActionBar().setDisplayHomeAsUpEnabled(true);
 	}
-	
+
 	@Override
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
 		switch (item.getItemId()) {
-		default: //handles the click of the application icon
+		default: // handles the click of the application icon
 			this.finish();
 			return false;
 		}
 	}
-	
+
 	/**
 	 * Handles the click of the Add button
-	 * @param v the view (Add Button) that was clicked
+	 * 
+	 * @param v
+	 *            the view (Add Button) that was clicked
 	 */
-	public void onAddNumber(View v)
-	{
-		EditText editText = (EditText)this.findViewById(R.id.addBlacklistNumberEt);
+	public void onAddNumber(View v) {
+		EditText editText = (EditText) this.findViewById(R.id.addBlacklistNumberEt);
 		String msisdn = editText.getText().toString();
 		long result = this.addBlacklistNumber(msisdn);
 		this.showResult(msisdn, result);
 	}
-	
+
 	/**
 	 * Handles the click of the cancel button effectively finishing the activity
-	 * @param v The View (cancel button) that was clicked
+	 * 
+	 * @param v
+	 *            The View (cancel button) that was clicked
 	 */
-	public void onCancel(View v)
-	{
+	public void onCancel(View v) {
 		this.finish();
 	}
-	
+
 	/**
 	 * Persists a blacklisted number
-	 * @param msisdn The MSISDN to be added to the blacklist
+	 * 
+	 * @param msisdn
+	 *            The MSISDN to be added to the blacklist
 	 * @return ID of the record that was written to the database
 	 */
-	private long addBlacklistNumber(String msisdn)
-	{
+	private long addBlacklistNumber(String msisdn) {
 		String tableName = "blacklist";
 		ContentValues values = new ContentValues();
 		values.put("telephonenumber", msisdn);
 		DBAgent agent = new DBAgent(this);
 		return agent.saveData(tableName, null, values);
 	}
-	
+
 	/**
-	 * Shows the result of the operation of persisting the record to the database
-	 * @param msisdn The MSISDN that was being added to the blacklist
-	 * @param result The number of rows that was affected by the persistence
+	 * Shows the result of the operation of persisting the record to the
+	 * database
+	 * 
+	 * @param msisdn
+	 *            The MSISDN that was being added to the blacklist
+	 * @param result
+	 *            The number of rows that was affected by the persistence
 	 */
-	private void showResult(String msisdn, long result)
-	{
-		Utils.toastOnScreen(result > 0? String.format("The number %s was successfully blacklisted",msisdn) : String.format("Blacklisting the number %s failed. Please check the number format and try again",msisdn), this);
-	    this.finish();
+	private void showResult(String msisdn, long result) {
+		Utils.toastOnScreen(result > 0 ? String.format("The number %s was successfully blacklisted", msisdn) : String.format("Blacklisting the number %s failed. Please check the number format and try again", msisdn), this);
+		this.finish();
 	}
 }

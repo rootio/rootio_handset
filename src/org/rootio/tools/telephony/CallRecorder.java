@@ -24,29 +24,27 @@ public class CallRecorder {
 		String filePath = "/mnt/extSdCard/calls";
 		File dir = new File(filePath);
 		if (!dir.exists()) {
-				dir.mkdir();
+			dir.mkdir();
 		}
 		return String.format("%s/%s.3gp", filePath, datePart);
 	}
 
 	public void startRecording() {
-		/*String fileName = this.getFileName();
-		if (fileName != null) {
-			mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-			//mediaRecorder.setAudioChannels(1); // do mono
-			mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.AMR_WB);
-			mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_WB);
-			mediaRecorder.setOutputFile(fileName);		
-			try {
-				mediaRecorder.prepare();
-			} catch (Exception ex) {
-				Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(CallRecorder.startRecording)" : ex.getMessage());
-			} 
-			mediaRecorder.start();
-		}*/
+		/*
+		 * String fileName = this.getFileName(); if (fileName != null) {
+		 * mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+		 * //mediaRecorder.setAudioChannels(1); // do mono
+		 * mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.AMR_WB);
+		 * mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_WB);
+		 * mediaRecorder.setOutputFile(fileName); try { mediaRecorder.prepare();
+		 * } catch (Exception ex) {
+		 * Log.e(this.parent.getString(R.string.app_name), ex.getMessage() ==
+		 * null ? "Null pointer exception(CallRecorder.startRecording)" :
+		 * ex.getMessage()); } mediaRecorder.start(); }
+		 */
 	}
 
 	public void stopRecording() {
-		//mediaRecorder.stop();
+		// mediaRecorder.stop();
 	}
 }
