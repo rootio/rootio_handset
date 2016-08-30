@@ -6,14 +6,12 @@ import org.rootio.activities.services.ServiceExitInformable;
 import org.rootio.activities.services.ServicesActivity;
 import org.rootio.activities.stationDetails.StationActivity;
 import org.rootio.activities.stationDetails.StationActivityAdapter;
-import org.rootio.activities.synchronization.SynchronizationLogDownloadActivity;
 import org.rootio.activities.telephoneLog.TelephoneLogActivity;
 import org.rootio.radioClient.R;
 import org.rootio.services.Notifiable;
 import org.rootio.services.ProgramService;
 import org.rootio.services.ServiceConnectionAgent;
 import org.rootio.services.ServiceStopNotifiable;
-import org.rootio.services.ServiceStopReceiver;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -30,7 +28,7 @@ public class RadioActivity extends Activity implements Notifiable, ServiceExitIn
 
 	private ServiceConnectionAgent programServiceConnection;
 	private RadioServiceExitBroadcastHandler exitBroadCastHandler;
-	private ServiceStopReceiver serviceStopReceiver;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -117,12 +115,12 @@ public class RadioActivity extends Activity implements Notifiable, ServiceExitIn
 		this.registerReceiver(exitBroadCastHandler, intentFilter);
 	}
 
-	private void setUpServiceStopHandling() {
-		this.serviceStopReceiver = new ServiceStopReceiver(this);
-		IntentFilter intentFilter = new IntentFilter();
-		intentFilter.addAction("org.rootio.services.STOP_EVENT");
-		this.registerReceiver(this.serviceStopReceiver, intentFilter);
-	}
+//	private void setUpServiceStopHandling() {
+//		this.serviceStopReceiver = new ServiceStopReceiver(this);
+//		IntentFilter intentFilter = new IntentFilter();
+//		intentFilter.addAction("org.rootio.services.STOP_EVENT");
+//		this.registerReceiver(this.serviceStopReceiver, intentFilter);
+//	}
 
 	@Override
 	public void disconnectFromRadioService() {

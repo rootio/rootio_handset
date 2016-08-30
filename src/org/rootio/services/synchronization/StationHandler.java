@@ -17,11 +17,11 @@ import android.util.Log;
  * @author Jude Mukundane, M-ITI/IST-UL
  *
  */
-public class WhitelistHandler implements SynchronizationHandler {
+public class StationHandler implements SynchronizationHandler {
 	private Context parent;
 	private Cloud cloud;
 
-	WhitelistHandler(Context parent, Cloud cloud) {
+	StationHandler(Context parent, Cloud cloud) {
 		this.parent = parent;
 		this.cloud = cloud;
 	}
@@ -38,11 +38,11 @@ public class WhitelistHandler implements SynchronizationHandler {
 	public void processJSONResponse(JSONObject synchronizationResponse) {
 		FileOutputStream str = null;
 		try {
-			File whitelistFile = new File(this.parent.getFilesDir().getAbsolutePath() + "/whitelist.json");
+			File whitelistFile = new File(this.parent.getFilesDir().getAbsolutePath() + "/station.json");
 			str = new FileOutputStream(whitelistFile);
 			str.write(synchronizationResponse.toString().getBytes());
 		} catch (Exception e) {
-			Log.e(this.parent.getString(R.string.app_name), e.getMessage() == null ? "Null pointer[WhitelistHandler.processJSONObject]" : e.getMessage());
+			Log.e(this.parent.getString(R.string.app_name), e.getMessage() == null ? "Null pointer[StationInformationHandler.processJSONObject]" : e.getMessage());
 		}
 		finally
 		{
@@ -52,7 +52,7 @@ public class WhitelistHandler implements SynchronizationHandler {
 			}
 			catch(Exception e)
 			{
-				Log.e(this.parent.getString(R.string.app_name), e.getMessage() == null ? "Null pointer[WhitelistHandler.processJSONObject]" : e.getMessage());
+				Log.e(this.parent.getString(R.string.app_name), e.getMessage() == null ? "Null pointer[StationInformationHandler.processJSONObject]" : e.getMessage());
 			}
 		}
 	}

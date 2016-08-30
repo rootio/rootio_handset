@@ -35,14 +35,14 @@
                 android:id="@+id/diagnostic_frequency_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Medium Text"
+                android:text="@string/DiagnosticFrequencyInformation"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <TextView
                 android:id="@+id/textView4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Small Text"
+                android:text="@string/DiagnosticFrequencyConfiguration"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
         </LinearLayout>
@@ -66,14 +66,14 @@
                 android:id="@+id/sync_frequency_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Medium Text"
+                android:text="@string/SyncFrequencyInformation"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <TextView
                 android:id="@+id/textView5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Small Text"
+                android:text="@string/SyncFrequencyConfiguration"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
 </LinearLayout>

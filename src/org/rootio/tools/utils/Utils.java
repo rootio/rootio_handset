@@ -290,9 +290,9 @@ public class Utils {
 	}
 
 	public static JSONObject getJSONFromFile(Context context, String fileName) {
-		File jsonFile = new File(fileName);
-	    FileInputStream input = null;
+		FileInputStream input = null;
 		try {
+			File jsonFile = new File(fileName);
 			input = new FileInputStream(jsonFile);
 			byte[] buffer = new byte[1024];
 			input.read(buffer);

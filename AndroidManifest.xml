@@ -52,7 +52,7 @@
         <activity android:name="org.rootio.activities.telephoneLog.TelephoneLogActivity" />
         <activity android:name="org.rootio.activities.telephoneLog.lists.AddToBlacklist" />
         <activity android:name="org.rootio.activities.telephoneLog.lists.AddToWhitelist" />
-        <activity android:name="org.rootio.activities.diagnostics.DiagnosticsConfigurationActivity" />
+        <activity android:name="org.rootio.activities.diagnostics.FrequencyActivity" />
         <activity android:name="org.rootio.activities.diagnostics.DiagnosticsConfigurationFrequencyActivity" >
         </activity>
         <activity android:name="org.rootio.activities.synchronization.SynchronizationLogActivity" >

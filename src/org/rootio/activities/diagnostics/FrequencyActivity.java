@@ -39,9 +39,6 @@ public class FrequencyActivity extends Activity {
 	}
 
 	private String getAppropriateText(int seconds) {
-		int hrs = seconds / 3600;
-		int mins = (seconds % 3600)/ 60;
-		int secs = ((seconds % 3600)/ 60) % 60;
-		return String.format("After %s hrs, %smins, %s secs", hrs, mins, secs);
+		return String.format("After %s hrs, %smins, %s secs", seconds / 3600, (seconds % 3600)/ 60, (seconds % 3600) % 60);
 	}
 }

@@ -68,9 +68,6 @@ public class SMSSwitch {
 
 			return new SoundSMSHandler(this.parent, from, messageParts);
 		}
-		if (keyword.equals("diagnostic")) {
-			return new DiagnosticsSMSHandler(this.parent, from, messageParts);
-		}
 		if (keyword.equals("whitelist")) {
 			return new WhiteListSMSHandler(this.parent, from, messageParts);
 		}

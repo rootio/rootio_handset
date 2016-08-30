@@ -81,4 +81,8 @@
 <string name="SynchronizationEnableData">Enable Data</string>
 <string name="sync_frequency_label">Synchronization Frequency</string>
 <string name="FrequencyMenuItem">Frequencies</string>
+<string name="DiagnosticFrequencyInformation">No configuration found</string>
+<string name="DiagnosticFrequencyConfiguration">This is the frequency with which the diagnostic service attempts to take note of various performance indicators about the phone\'s status</string>
+<string name="SyncFrequencyInformation">No configuration found</string>
+<string name="SyncFrequencyConfiguration">This is the frequency with which the diagnostic service attempts to contact the cloud server to both upload and download information</string>
 </resources>
