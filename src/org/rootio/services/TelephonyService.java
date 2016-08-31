@@ -2,13 +2,11 @@ package org.rootio.services;
 
 import java.lang.reflect.Method;
 
-import org.rootio.tools.persistence.DBAgent;
 import org.rootio.tools.telephony.CallAuthenticator;
 import org.rootio.tools.telephony.CallRecorder;
 import org.rootio.tools.utils.Utils;
 
 import android.app.Service;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
@@ -142,98 +140,22 @@ public class TelephonyService extends Service implements ServiceInformationPubli
 
 	}
 
-	private void setupCallRecording() {
-		this.callRecorder = new CallRecorder(this);
-		this.callRecorder.startRecording();
-	}
-
 	/**
 	 * Processes a call noticed by the listener. Determines whether or not to
 	 * pick the phone call basing on the calling phone number * @param
 	 * incomingNumber
 	 */
 	public void handleCall(String incomingNumber) {
-		// if (new CallAuthenticator(this).isWhiteListed(incomingNumber)) {
-		if (isWhiteListed(incomingNumber)) {
+		if (new CallAuthenticator(this).isWhiteListed(incomingNumber)) {
 			this.sendTelephonyEventBroadcast(true);
 			pickCall();
-			// this.setupCallRecording();
-			this.logCall(incomingNumber, 1, 1);
+			// this.setupCallRecording(); //not possible on pockets
 		} else {
 			declineCall();
-			this.logCall(incomingNumber, 1, 2);
 		}
 	}
 
-	/**
-	 * Given a number, determines if the number is permitted to call the
-	 * micro-station
-	 * 
-	 * @param phoneNumber
-	 *            the phone number to be checked for existence in the white list
-	 * @return true if the number is in the station white list, false if number
-	 *         is not in station white list
-	 */
-	private boolean isWhiteListed(String phoneNumber) {
-		boolean distinct = true;
-		String tableName = "whitelist";
-		String[] columns = new String[] { "telephonenumber" };
-		String filter = "telephonenumber = ?";
-		String[] selectionArgs = new String[] { phoneNumber };
-		String having = null;
-		String orderBy = null;
-		String limit = null;
-		String groupBy = null;
-		DBAgent agent = new DBAgent(this);
-		String[][] result = agent.getData(distinct, tableName, columns, filter, selectionArgs, groupBy, having, orderBy, limit);
-		return result.length > 0;
-	}
-
-	/**
-	 * Given a number, determines if the number is not permitted to call the
-	 * micro-station. Not yet implemented.
-	 * 
-	 * @param phoneNumber
-	 *            the phone number to be checked for existence in the white list
-	 * @return true if number is in the station black list, false if the number
-	 *         is not in the station black list
-	 */
-	private boolean isBlackListed(String phoneNumber) {
-		boolean distinct = true;
-		String tableName = "blacklist";
-		String[] columns = new String[] { "telephonenumber" };
-		String filter = "where telephonenumber = ?";
-		String[] selectionArgs = new String[] { phoneNumber };
-		String having = null;
-		String orderBy = null;
-		String limit = null;
-		String groupBy = null;
-		DBAgent agent = new DBAgent(this);
-		String[][] result = agent.getData(distinct, tableName, columns, filter, selectionArgs, groupBy, having, orderBy, limit);
-		return result.length > 0;
-	}
-
-	/**
-	 * Log the call event
-	 * 
-	 * @param telephoneNumber
-	 *            The telephone number that made or received the call
-	 * @param calltypeid
-	 *            The type of call (incoming or outgoing)
-	 * @param callstatusid
-	 *            The status of the call whether picked or declined.
-	 */
-	private void logCall(String telephoneNumber, int calltypeid, int callstatusid) {
-		String tableName = "calllog";
-		ContentValues data = new ContentValues();
-		data.put("telephonenumber", telephoneNumber);
-		data.put("calltypeid", calltypeid);
-		data.put("callstatusid", callstatusid);
-		data.put("calltime", Utils.getCurrentDateAsString("yyyy-MM-dd HH:mm:ss"));
-		DBAgent dbagent = new DBAgent(this);
-		dbagent.saveData(tableName, null, data);
-
-	}
+	
 
 	/**
 	 * Class to handle telephony events received by the phone

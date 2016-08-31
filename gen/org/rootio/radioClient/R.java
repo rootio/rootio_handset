@@ -92,8 +92,8 @@ public final class R {
         public static final int blacklist_lv=0x7f0a0003;
         public static final int blacklisted_number_ctv=0x7f0a0004;
         public static final int blacklistmenu_add_number_item=0x7f0a0097;
+        public static final int call_duration_tv=0x7f0a008c;
         public static final int call_log_lv=0x7f0a0085;
-        public static final int call_status_tv=0x7f0a008c;
         public static final int call_time_tv=0x7f0a008a;
         public static final int call_type_tv=0x7f0a008b;
         public static final int cloud_confirm_key_etv=0x7f0a0011;
