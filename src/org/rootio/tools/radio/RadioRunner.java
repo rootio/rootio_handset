@@ -104,13 +104,11 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
 	/**
 	 * Stops the program that is currently running
 	 */
-	public void stopProgram(int index) {
-		this.runningProgramIndex = index;
-		if(this.programs.get(this.runningProgramIndex) != null)
+	public void stopProgram(Integer index) {
+		if(index != null)
 		{
 			this.programs.get(this.runningProgramIndex).stop();
 		}
-		// this.programs.get(this.runningProgramIndex).setFinishedRunning();
 		if (this.state != State.PAUSED) {
 			this.state = State.STOPPED;
 		}

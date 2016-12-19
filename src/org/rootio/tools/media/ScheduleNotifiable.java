@@ -12,7 +12,7 @@ public interface ScheduleNotifiable {
 	
 	void runProgram(int currentIndex);
 
-	void stopProgram(int index);
+	void stopProgram(Integer index);
 
 	boolean isExpired(int index);
 }

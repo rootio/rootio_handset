@@ -182,7 +182,7 @@ public class Program  implements Comparable<Program>, ScheduleNotifiable{
 	}
 
 	@Override
-	public void stopProgram(int index) {
+	public void stopProgram(Integer index) {
 		this.programActions.get(index).stop();
 		}
 

@@ -1,6 +1,7 @@
 package org.rootio.tools.cloud;
 
 import java.net.InetAddress;
+import java.net.Inet6Address;
 
 import org.rootio.tools.persistence.DBAgent;
 import org.rootio.tools.utils.Utils;
@@ -38,7 +39,7 @@ public class Cloud {
 	 * @return String representation of cloud server address
 	 */
 	public String getServerAddress() {
-		return "192.168.10.180"; //this.serverAddress;
+		return this.serverAddress;
 	}
 
 	/**
@@ -92,7 +93,7 @@ public class Cloud {
 	 * @return String representing the station key
 	 */
 	public String getServerKey() {
-		return "HBCDRi7SRP"; //this.serverKey;
+		return this.serverKey;
 	}
 
 	/**
@@ -101,7 +102,7 @@ public class Cloud {
 	 * @return Integer representing the ID of the station on the server
 	 */
 	public int getStationId() {
-		return 10; // this.stationId;
+		return this.stationId;
 	}
 
 	/**
@@ -166,14 +167,14 @@ public class Cloud {
 		 * DBAgent dbAgent = new DBAgent(this.context); String[][] cloudDetails
 		 * = dbAgent.getData(true, tableName, columnsToFetch, null, null, null,
 		 * null, null, null); if (cloudDetails.length > 0) {
-		 */this.IPAddress = Utils.parseInetAddressFromString("192.168.1.136");
-		this.serverAddress = "192.168.1.136";
+		 */this.IPAddress = Utils.parseInetAddressFromString("192.168.1.125");
+		this.serverAddress =  "[2001:690:2100:413:eea8:6bff:fef4:cc4b]";
 		this.HTTPPort = 80;
 		// this.telephoneNumber = cloudDetails[0][4];
 		// this.username = cloudDetails[0][5];
 		// this.password = cloudDetails[0][6];
-		this.stationId = 10;
-		this.serverKey = "HBCDRi7SRP";
+		this.stationId = 1;
+		this.serverKey = "60ywFlG74E";
 		// }
 	}
 

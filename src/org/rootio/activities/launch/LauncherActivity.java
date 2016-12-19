@@ -1,22 +1,19 @@
 package org.rootio.activities.launch;
 
+import java.io.File;
+
 import org.rootio.activities.DiagnosticActivity;
 import org.rootio.activities.RadioActivity;
 import org.rootio.activities.cloud.CloudActivity;
-import org.rootio.activities.diagnostics.DiagnosticsConfigurationActivity;
 import org.rootio.activities.diagnostics.FrequencyActivity;
 import org.rootio.activities.services.ServicesActivity;
 import org.rootio.activities.stationDetails.StationActivity;
-import org.rootio.activities.synchronization.SynchronizationLogDownloadActivity;
 import org.rootio.activities.telephoneLog.TelephoneLogActivity;
 import org.rootio.radioClient.R;
-import org.rootio.services.CrashMonitor;
 import org.rootio.tools.utils.Utils;
 
-import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.TabActivity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -59,6 +56,19 @@ public class LauncherActivity extends TabActivity {
 		tabHost.setCurrentTab(0);
 
 		Utils.setContext(this.getBaseContext());
+	}
+	
+	@Override
+	public void onStart()
+	{
+		super.onStart();
+		if(!new File(this.getFilesDir().getAbsolutePath() + "/station.json").exists())
+		{
+			Intent intent = new Intent(this, SplashScreen.class);
+			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			startActivity(intent);
+			this.finish();
+		}
 	}
 
 	@Override

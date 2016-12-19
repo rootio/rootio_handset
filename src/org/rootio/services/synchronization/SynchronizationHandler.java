@@ -2,7 +2,7 @@ package org.rootio.services.synchronization;
 
 import org.json.JSONObject;
 
-interface SynchronizationHandler {
+public interface SynchronizationHandler {
 
 	/**
 	 * Returns JSON data containing records to be synced to the cloud server

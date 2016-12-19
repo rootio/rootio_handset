@@ -2,6 +2,7 @@ package org.rootio.tools.utils;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -13,10 +14,10 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.rootio.radioClient.R;
 import org.rootio.tools.persistence.DBAgent;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -308,6 +309,33 @@ public class Utils {
 			}
 		}
 
+	}
+	
+	/**
+	 * Breaks down the information in the JSON file for program and schedule information
+	 * 
+	 * @param programDefinition The JSON program definition received from the cloud server
+	 */
+	public 	static void saveJSONToFile(Context context, JSONObject json, String fileName) {
+		FileOutputStream str = null;
+		try {
+			File whitelistFile = new File(fileName);
+			str = new FileOutputStream(whitelistFile);
+			str.write(json.toString().getBytes());
+		} catch (Exception e) {
+			Log.e(context.getString(R.string.app_name), e.getMessage() == null ? "Null pointer[FrequencyHandler.processJSONObject]" : e.getMessage());
+		}
+		finally
+		{
+			try
+			{
+				str.close();
+			}
+			catch(Exception e)
+			{
+				Log.e(context.getString(R.string.app_name), e.getMessage() == null ? "Null pointer[FrequencyHandler.processJSONObject]" : e.getMessage());
+			}
+		}
 	}
 
 	public static String doPostHTTP(String httpUrl, String data) {

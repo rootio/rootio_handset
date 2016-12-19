@@ -1,11 +1,9 @@
 package org.rootio.activities;
 
 import org.rootio.activities.cloud.CloudActivity;
-import org.rootio.activities.diagnostics.DiagnosticsConfigurationActivity;
 import org.rootio.activities.diagnostics.FrequencyActivity;
 import org.rootio.activities.services.ServicesActivity;
 import org.rootio.activities.stationDetails.StationActivity;
-import org.rootio.activities.synchronization.SynchronizationLogDownloadActivity;
 import org.rootio.activities.telephoneLog.TelephoneLogActivity;
 import org.rootio.radioClient.R;
 

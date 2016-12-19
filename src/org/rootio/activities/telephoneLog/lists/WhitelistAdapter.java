@@ -9,7 +9,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.rootio.radioClient.R;
-import org.rootio.tools.utils.Utils;
 
 import android.content.Context;
 import android.util.Log;

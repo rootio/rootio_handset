@@ -1,12 +1,9 @@
 package org.rootio.activities.telephoneLog;
 
 import org.rootio.activities.cloud.CloudActivity;
-import org.rootio.activities.diagnostics.DiagnosticsConfigurationActivity;
 import org.rootio.activities.diagnostics.FrequencyActivity;
 import org.rootio.activities.services.ServicesActivity;
 import org.rootio.activities.stationDetails.StationActivity;
-import org.rootio.activities.synchronization.SynchronizationLogDownloadActivity;
-import org.rootio.activities.telephoneLog.lists.BlackListActivity;
 import org.rootio.activities.telephoneLog.lists.WhitelistActivity;
 import org.rootio.radioClient.R;
 
@@ -14,8 +11,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -65,13 +60,9 @@ public class TelephoneLogActivity extends Activity {
 
 	@Override
 	public boolean onMenuItemSelected(int featureId, MenuItem menuItem) {
+		Intent intent;
 		switch (menuItem.getItemId()) {
-
-		case R.id.black_list_menu_item:
-			Intent intent = new Intent(this, BlackListActivity.class);
-			this.startActivity(intent);
-			return true;
-		case R.id.white_list_menu_item:
+      	case R.id.white_list_menu_item:
 			Intent intent2 = new Intent(this, WhitelistActivity.class);
 			this.startActivity(intent2);
 			return true;

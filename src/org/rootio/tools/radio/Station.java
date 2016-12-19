@@ -4,10 +4,8 @@ import java.net.InetAddress;
 
 import org.json.JSONObject;
 import org.rootio.radioClient.R;
-import org.rootio.tools.persistence.DBAgent;
 import org.rootio.tools.utils.Utils;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.util.Log;
 
@@ -20,9 +18,7 @@ public class Station {
 	private Context parent;
 	private InetAddress multicastIPAddress;
 	private int multicastPort;
-	private int stationId;
-	private String serverKey;
-
+	
 	public Station(Context parent) {
 		this.parent = parent;
 		this.loadStationInfo();
@@ -168,57 +164,15 @@ public class Station {
 		this.multicastPort = port;
 	}
 
-	/**
-	 * Persists station information to the database
-	 */
-	@Deprecated
-	public void persist() {
-		String tableName = "station";
-		ContentValues data = new ContentValues();
-		data.put("location", this.location);
-		data.put("owner", this.owner);
-		data.put("telephonenumber", this.telephoneNumber);
-		data.put("name", this.name);
-		data.put("frequency", this.frequency);
-		data.put("multicastipaddress", this.multicastIPAddress.getHostAddress());
-		data.put("multicastport", this.multicastPort);
-		data.put("stationid", this.stationId);
-		data.put("serverkey", this.serverKey);
-		DBAgent dbAgent = new DBAgent(this.parent);
-		dbAgent.updateRecords(tableName, data, null, null);
-	}
-
-	/**
-	 * Fetches station information from the database
-	 */
-	/*
-	 * @Deprecated private void loadStationInfo() { String tableName =
-	 * "station"; String[] columnsToFetch = new String[] { "location", "owner",
-	 * "telephonenumber", "name", "frequency", "multicastipaddress",
-	 * "multicastport", "stationid", "serverkey" }; DBAgent dbAgent = new
-	 * DBAgent(this.parent); String[][] stationDetails = dbAgent.getData(true,
-	 * tableName, columnsToFetch, null, null, null, null, null, null); if
-	 * (stationDetails.length > 0) { this.location = stationDetails[0][0];
-	 * this.owner = stationDetails[0][1]; this.telephoneNumber =
-	 * stationDetails[0][2]; this.name = stationDetails[0][3];
-	 * this.multicastPort = Utils.parseIntFromString(stationDetails[0][6]);
-	 * this.frequency = Utils.parseFloatFromString(stationDetails[0][4]);
-	 * this.multicastIPAddress =
-	 * Utils.parseInetAddressFromString(stationDetails[0][5]); this.stationId =
-	 * Utils.parseIntFromString(stationDetails[0][7]); this.serverKey =
-	 * stationDetails[0][8]; } }
-	 */
-
 	private void loadStationInfo() {
 		try {
 			JSONObject stationInformation = Utils.getJSONFromFile(this.parent, this.parent.getFilesDir().getAbsolutePath() + "/station.json");
-			this.location = stationInformation.getString("location");
-			// this.owner = stationDetails[0][1];
-			this.telephoneNumber = stationInformation.getString("telephone");
-			this.name = stationInformation.getString("name");
-			this.multicastPort = stationInformation.getInt("multicast_port");
-			this.frequency = stationInformation.getDouble("frequency");
-			this.multicastIPAddress = Utils.parseInetAddressFromString(stationInformation.getString("multicast_IP"));
+			this.location = stationInformation.getJSONObject("station").optString("location");
+			this.telephoneNumber = stationInformation.getJSONObject("station").optString("telephone");
+			this.name = stationInformation.getJSONObject("station").optString("name");
+			this.multicastPort = stationInformation.getJSONObject("station").optInt("multicast_port");
+			this.frequency = stationInformation.getJSONObject("station").optDouble("frequency");
+			this.multicastIPAddress = Utils.parseInetAddressFromString(stationInformation.getJSONObject("station").optString("multicast_IP"));
 		} catch (Exception ex) {
 			Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "NullPointer(Station.LoadStationInfo)" : ex.getMessage());
 		}

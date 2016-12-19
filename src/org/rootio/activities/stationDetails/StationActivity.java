@@ -21,10 +21,7 @@ import android.widget.TextView;
 public class StationActivity extends Activity {
 
 	private Station station;
-	private Cloud cloud;
-	private ProgressDialog progressDialog;
-	private Handler handler;
-
+	
 	@SuppressLint("NewApi")
 	@Override
 	public void onCreate(Bundle savedInstance) {
@@ -38,10 +35,8 @@ public class StationActivity extends Activity {
 	@Override
 	public void onStart() {
 		super.onStart();
-		this.handler = new Handler();
-
+		
 		station = new Station(this);
-		this.cloud = new Cloud(this);
 		renderStationInformation();
 	}
 
@@ -65,65 +60,7 @@ public class StationActivity extends Activity {
 		return true;
 	}
 
-	@Override
-	public boolean onMenuItemSelected(int featureId, MenuItem item) {
-		switch (item.getItemId()) {
-		case R.id.multicast_configuration_menu_item:
-			Intent intent = new Intent(this, MulticastConfigurationActivity.class);
-			this.startActivity(intent);
-			break;
-		case R.id.refresh_station_details_menu_item:
-			this.fetchStationInformation(this.cloud.getServerAddress(), this.cloud.getHTTPPort(), this.cloud.getStationId(), cloud.getServerKey());
-			break;
-		default: // handles the click of the application icon
-			this.finish();
-			break;
-		}
-		return true;
-	}
-
-	/**
-	 * Fetches information about the station from the cloud using the supplied
-	 * cloud parameters
-	 * 
-	 * @param serverAddress
-	 *            The address of the cloud server
-	 * @param HTTPPort
-	 *            The HTTP port of the cloud server
-	 * @param stationId
-	 *            The ID by which this station id identified in the cloud
-	 * @param serverKey
-	 *            The key by which this station is authenticated on the cloud
-	 *            server
-	 */
-	private void fetchStationInformation(final String serverAddress, final int HTTPPort, final int stationId, final String serverKey) {
-		this.progressDialog = new ProgressDialog(this);
-		this.progressDialog.setTitle("Fetching station details");
-		this.progressDialog.show();
-		Thread thread = new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				String URL = String.format("http://%s:%s/api/station/%s?api_key=%s", serverAddress, HTTPPort, stationId, serverKey);
-				String response = Utils.doHTTP(URL);
-				JSONObject stationObject = StationActivity.this.getJSON(response);
-				if (stationObject != null) {
-					StationActivity.this.setStationDetails(stationObject);
-				}
-				StationActivity.this.handler.post(new Runnable() {
-
-					@Override
-					public void run() {
-						StationActivity.this.progressDialog.dismiss();
-						StationActivity.this.renderStationInformation();
-					}
-				});
-			}
-		});
-		thread.start();
-
-	}
-
+	
 	/**
 	 * Gets a JSON object from the supplied String
 	 * 
@@ -140,27 +77,5 @@ public class StationActivity extends Activity {
 		} catch (NullPointerException ex) {
 			return null;
 		}
-	}
-
-	/**
-	 * Get station details from the supplied JSON object
-	 * 
-	 * @param object
-	 *            The JSON object containing station information
-	 */
-	private void setStationDetails(JSONObject object) {
-		try {
-			this.station.setFrequency(object.has("frequency") ? Utils.parseFloatFromString(object.getString("frequency")) : this.station.getFrequency());
-			this.station.setLocation(object.has("location") ? object.getJSONObject("location").getString("addressline1") : this.station.getLocation());
-			this.station.setName(object.has("name") ? object.getString("name") : this.station.getName());
-			JSONObject cloudTelephone = object.has("cloud_phone") ? object.getJSONObject("cloud_phone") : null;
-			this.station.setTelephoneNumber(cloudTelephone != null && cloudTelephone.has("raw_number") ? cloudTelephone.getString("raw_number") : this.station.getTelephoneNumber());
-			this.station.setOwner(object.has("owner_id") ? object.getString("owner_id") : this.station.getOwner());
-			this.station.persist();
-			Utils.toastOnScreen("Station information successfully updated", this);
-		} catch (JSONException ex) {
-			Utils.toastOnScreen("Error encountered trying to refresh station information", this);
-		}
-
 	}
 }

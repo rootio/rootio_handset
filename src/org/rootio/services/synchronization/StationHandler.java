@@ -21,7 +21,7 @@ public class StationHandler implements SynchronizationHandler {
 	private Context parent;
 	private Cloud cloud;
 
-	StationHandler(Context parent, Cloud cloud) {
+	public StationHandler(Context parent, Cloud cloud) {
 		this.parent = parent;
 		this.cloud = cloud;
 	}
@@ -59,7 +59,7 @@ public class StationHandler implements SynchronizationHandler {
 
 	@Override
 	public String getSynchronizationURL() {
-		return String.format("http://%s:%s/%s/%s/whitelist?api_key=%s", this.cloud.getServerAddress(), this.cloud.getHTTPPort(), "api/station", this.cloud.getStationId(), this.cloud.getServerKey());	
+		return String.format("http://%s:%s/%s/%s/information?api_key=%s", this.cloud.getServerAddress(), this.cloud.getHTTPPort(), "api/station", this.cloud.getStationId(), this.cloud.getServerKey());	
 	}
 
 }

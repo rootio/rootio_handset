@@ -1,5 +1,4 @@
 {
-    "server_IP": "demo.rootio.org",
-    "server_port": 80,
-    "server_key" : "HKJHKJHkjhkjh"
+    "server_IP": "[2001:690:2100:413:eea8:6bff:fef4:cc4b]",
+    "server_port": 80
 }

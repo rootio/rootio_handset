@@ -1,6 +1,5 @@
 package org.rootio.activities;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -253,20 +252,6 @@ public class DiagnosticStatistics {
 	 */
 	public int getSize() {
 		return this.size;
-	}
-
-	/**
-	 * Gets the base date since which to consider records for diagnostics
-	 * analysis
-	 * 
-	 * @return Date since which to fetch records for analysis
-	 */
-	private Date getTodayBaseDate() {
-		Date date = Calendar.getInstance().getTime();
-		date.setHours(0);
-		date.setMinutes(0);
-		date.setSeconds(0);
-		return date;
 	}
 
 	/**

@@ -2,6 +2,7 @@ package org.rootio.tools.sms;
 
 import org.rootio.tools.utils.Utils;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.telephony.SmsMessage;
 
@@ -11,7 +12,7 @@ public class SMSSwitch {
 	private String from;
 	private Context parent;
 
-	public SMSSwitch(Context parent, SmsMessage message) {
+	@SuppressLint("DefaultLocale") public SMSSwitch(Context parent, SmsMessage message) {
 		this.parent = parent;
 		this.from = message.getOriginatingAddress();
 		this.messageParts = this.getMessageParts(message.getMessageBody().toLowerCase());
