@@ -3,8 +3,6 @@ package org.rootio.tools.media;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import org.rootio.tools.utils.Utils;
-
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;

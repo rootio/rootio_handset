@@ -11,7 +11,7 @@ import android.util.Log;
 
 public class Station {
 	private String location;
-	private String owner;
+	private String network;
 	private double frequency;
 	private String telephoneNumber;
 	private String name;
@@ -38,8 +38,8 @@ public class Station {
 	 * 
 	 * @return String representation of the name of the owner of this station
 	 */
-	public String getOwner() {
-		return this.owner;
+	public String getNetwork() {
+		return this.network;
 	}
 
 	/**
@@ -91,85 +91,13 @@ public class Station {
 		return this.multicastPort;
 	}
 
-	/**
-	 * Sets the location of the station, that is the street location
-	 * 
-	 * @param location
-	 *            The Street address of the station
-	 */
-	public void setLocation(String location) {
-		this.location = location;
-	}
-
-	/**
-	 * Sets the owner of the Station to which the phone belongs
-	 * 
-	 * @param owner
-	 *            The name of the owner of the station
-	 */
-	public void setOwner(String owner) {
-		this.owner = owner;
-	}
-
-	/**
-	 * Sets the telephone number for this telephone
-	 * 
-	 * @param telephoneNumber
-	 *            The telephone number for this station phone
-	 */
-	public void setTelephoneNumber(String telephoneNumber) {
-		this.telephoneNumber = telephoneNumber;
-	}
-
-	/**
-	 * Sets the name of this station
-	 * 
-	 * @param name
-	 *            The name of this station
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	/**
-	 * Sets the frequency at which the station for this phone is supposed to
-	 * transmit
-	 * 
-	 * @param frequency
-	 *            The frequency at which this station is transmitting
-	 */
-	public void setFrequency(double frequency) {
-		this.frequency = frequency;
-	}
-
-	/**
-	 * Sets the IP address of the multicast group to join for streaming server
-	 * announcements
-	 * 
-	 * @param multicastIPAddress
-	 *            The IP address of the multicast group
-	 */
-	public void setMulticastIPAddress(InetAddress multicastIPAddress) {
-		this.multicastIPAddress = multicastIPAddress;
-	}
-
-	/**
-	 * Sets the port at which to listen for multicast streaming server
-	 * announcements
-	 * 
-	 * @param port
-	 *            The port at which to listen for multicast announcements
-	 */
-	public void setMulticastPort(int port) {
-		this.multicastPort = port;
-	}
-
 	private void loadStationInfo() {
 		try {
 			JSONObject stationInformation = Utils.getJSONFromFile(this.parent, this.parent.getFilesDir().getAbsolutePath() + "/station.json");
-			this.location = stationInformation.getJSONObject("station").optString("location");
+			this.location = String.format("%s (lat/lng: %s,  %s)", stationInformation.getJSONObject("station").optString("location"), stationInformation.getJSONObject("station").optString("latitude"), stationInformation.getJSONObject("station").optString("longitude"));
 			this.telephoneNumber = stationInformation.getJSONObject("station").optString("telephone");
 			this.name = stationInformation.getJSONObject("station").optString("name");
+			this.network = stationInformation.getJSONObject("station").optString("network");
 			this.multicastPort = stationInformation.getJSONObject("station").optInt("multicast_port");
 			this.frequency = stationInformation.getJSONObject("station").optDouble("frequency");
 			this.multicastIPAddress = Utils.parseInetAddressFromString(stationInformation.getJSONObject("station").optString("multicast_IP"));

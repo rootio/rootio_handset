@@ -119,7 +119,7 @@ public class DBAgent {
 				foutstr = new FileOutputStream(destinationFile);
 				foutstr.write(buffer);
 			} else {
-				Utils.toastOnScreen("We cant create file", this.context);
+				Utils.toastOnScreen("Failed to create file", this.context);
 			}
 		} catch (IOException ex) {
 			Log.e(this.context.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(DBAgent.createDatabaseFile)" : ex.getMessage());
@@ -215,7 +215,6 @@ public class DBAgent {
 				for (int j = 0; j < columns.length; j++) {
 					dt.put(columns[j], data[i][j]);
 				}
-				long res = database.insert(tableName, nullColumnHack, dt);
 			}
 			database.setTransactionSuccessful();
 			database.endTransaction();

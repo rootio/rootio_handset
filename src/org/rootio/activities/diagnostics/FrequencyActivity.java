@@ -26,7 +26,7 @@ public class FrequencyActivity extends Activity {
 		try {
 		if (frequencyInformation.has("diagnostics")) {
 			
-				((TextView) this.findViewById(R.id.diagnostic_frequency_tv)).setText(this.getAppropriateText(frequencyInformation.getJSONObject("synchronization").getInt("interval")));
+				((TextView) this.findViewById(R.id.diagnostic_frequency_tv)).setText(this.getAppropriateText(frequencyInformation.getJSONObject("diagnostics").getInt("interval")));
 		}
 		if (frequencyInformation.has("synchronization")) {
 			((TextView) this.findViewById(R.id.sync_frequency_tv)).setText(this.getAppropriateText(frequencyInformation.getJSONObject("synchronization").getInt("interval")));
