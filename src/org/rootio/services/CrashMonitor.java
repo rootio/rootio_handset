@@ -20,7 +20,7 @@ public class CrashMonitor extends BroadcastReceiver {
 		Utils.setContext(context);
 		for (int serviceId : new int[] { 1, 2, 4 }) // only vitals
 		{
-			ServiceState serviceState = new ServiceState(context, serviceId);
+			//ServiceState serviceState = new ServiceState(context, serviceId);
 			// if(serviceState.getServiceState() > 0)//service was started
 			// {
 			Intent intent = this.getIntentToLaunch(context, serviceId);
