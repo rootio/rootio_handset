@@ -101,7 +101,6 @@ public class SynchronizationDaemon implements Runnable {
 	public void synchronize(SynchronizationHandler handler) {
 		String synchronizationUrl = handler.getSynchronizationURL();
 		String response = Utils.doPostHTTP(synchronizationUrl, handler.getSynchronizationData().toString());
-		Utils.toastOnScreen(response, this.parent);
 		try {
 			JSONObject responseJSON;
 			responseJSON = new JSONObject(response);

@@ -26,7 +26,6 @@ public class ScheduleBroadcastHandler extends BroadcastReceiver implements Runna
 	@Override
 	public void onReceive(Context c, Intent i) {
 		Integer possibleIndex = i.getIntExtra("index", 0);
-		Utils.toastOnScreen("Got intent for "+possibleIndex, c);
 		if (possibleIndex == currentIndex) {
 			return; // intents are thrown twice sometimes
 		}

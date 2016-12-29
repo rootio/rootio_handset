@@ -73,7 +73,6 @@ public class PlayList implements OnCompletionListener, OnPreparedListener, OnErr
 	public void load() {
 		if (this.programActionType == ProgramActionType.Media || this.programActionType == ProgramActionType.Music) {
 			mediaList = loadMedia(this.arguments);
-			Utils.toastOnScreen("Found " + mediaList.size() + "media", this.parent);
 			mediaIterator = mediaList.iterator();
 		}
 		if (this.programActionType == ProgramActionType.Stream) {
@@ -101,7 +100,6 @@ public class PlayList implements OnCompletionListener, OnPreparedListener, OnErr
 					currentMedia = mediaIterator.next();
 					try {
 						mediaPlayer = new MediaPlayer();
-						Utils.toastOnScreen("trying to play "+currentMedia.getFileLocation(), this.parent);
 						mediaPlayer.setDataSource(this.parent, Uri.fromFile(new File(currentMedia.getFileLocation())));
 						mediaPlayer.setOnPreparedListener(this);
 						mediaPlayer.setOnCompletionListener(this);
@@ -246,27 +244,21 @@ public class PlayList implements OnCompletionListener, OnPreparedListener, OnErr
 	{
 		HashSet<Media> media = new HashSet<Media>();
      	for (String playlist : playlists) {
-     		//Utils.toastOnScreen("playlist is "+playlist, this.parent);
-			String query = "select title, item, itemtypeid from playlist where title = ?";
+     		String query = "select title, item, itemtypeid from playlist where title = ?";
 			String[] args = new String[] { playlist };
 			DBAgent dbagent = new DBAgent(this.parent);
 			String[][] data = dbagent.getData(query, args);
-			Utils.toastOnScreen("records found are " + data.length, this.parent);
 			for (int i = 0; i < data.length; i++) {
-				//Utils.toastOnScreen("data 2 is" + data[i][2], this.parent);
 				if(data[i][2].equals("1"))//songs
 				{
-					Utils.toastOnScreen("Loading song...", this.parent);
 				media.add(this.mediaLib.getMedia(data[i][0]));
 				}
 				else if(data[i][2].equals("2"))//albums
 				{
-					Utils.toastOnScreen("Loading album...", this.parent);
 					media.addAll(this.mediaLib.getMediaForAlbum(data[i][1]));
 				}
 				else if(data[i][2].equals("3"))//artists
 				{
-					Utils.toastOnScreen("Loading artist...", this.parent);
 					media.addAll(this.mediaLib.getMediaForArtist(data[i][1]));
 				}
 			}

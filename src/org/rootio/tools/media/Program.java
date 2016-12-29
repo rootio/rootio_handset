@@ -6,9 +6,7 @@ import java.util.Date;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 import org.rootio.tools.radio.ScheduleBroadcastHandler;
-import org.rootio.tools.utils.Utils;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -22,7 +20,6 @@ public class Program implements Comparable<Program>, ScheduleNotifiable {
 	private Long id;
 	private Date startDate, endDate;
 	private int duration, playingIndex;
-	private String structure;
 	final Context parent;
 	private ArrayList<ProgramAction> programActions;
 	private final ScheduleBroadcastHandler alertHandler;
@@ -32,7 +29,6 @@ public class Program implements Comparable<Program>, ScheduleNotifiable {
 		this.title = title;
 		this.startDate = start;
 		this.endDate = end;
-		this.structure = structure;
 		this.alertHandler = new ScheduleBroadcastHandler(this);
 		this.loadProgramActions(structure, programTypeId);
 	}
@@ -68,21 +64,17 @@ public class Program implements Comparable<Program>, ScheduleNotifiable {
 		JSONArray programStructure;
 		try {
 			programStructure = new JSONArray(structure);
-           // Utils.toastOnScreen("lng of ar is " + programStructure.length() + "and typ is " +programTypeId, this.parent);
-			// if not a streamed Program, play locally
-			//if (programTypeId == "2") {
-				//Utils.toastOnScreen("found a music one...", this.parent);
+           // if (programTypeId == "2") {
 				String[] playlists = new String[programStructure.length()];
 				for (int i = 0; i < programStructure.length(); i++) {
-					//Utils.toastOnScreen("typ is " +programStructure.getJSONObject(i).getString("type").toLowerCase(), this.parent);
 					 if (programStructure.getJSONObject(i).getString("type").toLowerCase().equals("music"))//redundant, safe
 					 {
 						 //acumulate playlists
 						playlists[i] = programStructure.getJSONObject(i).getString("name");
 					} 
-				//}
-			}
+				}
 				this.programActions.add(new ProgramAction(this.parent, playlists, ProgramActionType.Music));
+			//}				
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -134,7 +126,6 @@ public class Program implements Comparable<Program>, ScheduleNotifiable {
 	}
 
 	private void setupAlertReceiver(ScheduleBroadcastHandler alertHandler, ArrayList<ProgramAction> programActions) {
-		//Utils.toastOnScreen("size of programActions is " +programActions.size(), this.parent);
 		IntentFilter intentFilter = new IntentFilter();
 		AlarmManager am = (AlarmManager) this.parent.getSystemService(Context.ALARM_SERVICE);
 		for (int i = 0; i < programActions.size(); i++) {
@@ -142,8 +133,6 @@ public class Program implements Comparable<Program>, ScheduleNotifiable {
 		}
 		this.parent.registerReceiver(alertHandler, intentFilter);
 		for (int i = 0; i < programActions.size(); i++) {
-			// problem is here
-			Utils.toastOnScreen("scheduling " +i + " for ", this.parent);
 			Intent intent = new Intent("org.rootio.RadioRunner."+this.title + String.valueOf(i));
 			intent.putExtra("index", i);
 			PendingIntent pendingIntent = PendingIntent.getBroadcast(this.parent, 0, intent, 0);
@@ -151,16 +140,7 @@ public class Program implements Comparable<Program>, ScheduleNotifiable {
 		}
 	}
 
-	private long getStartTime(Date programActionDate) {
-		Date baseDate = this.startDate;
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(baseDate);
-		calendar.add(Calendar.HOUR_OF_DAY, programActionDate.getHours());
-		calendar.add(Calendar.MINUTE, programActionDate.getMinutes());
-		calendar.add(Calendar.SECOND, programActionDate.getSeconds());
-		return calendar.getTimeInMillis();
-	}
-
+	
 	@Override
 	public void runProgram(int currentIndex) {
 		this.programActions.get(currentIndex).run();
@@ -176,7 +156,6 @@ public class Program implements Comparable<Program>, ScheduleNotifiable {
 	public boolean isExpired(int index) {
 		Calendar referenceCalendar = Calendar.getInstance();
 		Calendar cal = Calendar.getInstance();
-		//cal.setTime(this.programActions.get(index).getStartTime());
 		cal.add(Calendar.MINUTE, this.programActions.get(index).getDuration() - 1);
 		return this.endDate.compareTo(referenceCalendar.getTime()) <= 0;
 	}

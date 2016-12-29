@@ -40,14 +40,12 @@ public class MediaLibrary {
 	HashSet<Media> getMediaForArtist(String artistTitle)
 	{
 		HashSet<Media> songs = getAudioContent(artistTitle, Audio.Media.ARTIST);
-		Utils.toastOnScreen("Artist" + artistTitle + " has " + songs.size(), this.parent);
 		return songs;
 	}
 
 	HashSet<Media> getMediaForAlbum(String albumTitle)
 	{
 		HashSet<Media> songs = getAudioContent(albumTitle, Audio.Media.ALBUM);
-		Utils.toastOnScreen("Album" + albumTitle + " has " + songs.size(), this.parent);
 		return songs;
 		}
 

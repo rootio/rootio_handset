@@ -53,7 +53,6 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
 		this.intentFilter = new IntentFilter();
 		this.intentFilter.addAction("org.rootio.RadioRunner");
 		this.br = new ScheduleBroadcastHandler(this);
-		//this.parent.registerReceiver(this.br, this.intentFilter);
 	}
 
 	@Override
@@ -75,7 +74,6 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
 		this.runningProgramIndex = index;
 		// Check to see that we are not in a phone call before launching program
 		if (this.state != State.PAUSED) {
-			Utils.toastOnScreen("not paused...", this.parent);
 			this.programs.get(index).run();
 			this.state = State.PLAYING;
 		}
@@ -107,12 +105,11 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
 		{
 			try
 			{
-				//Utils.toastOnScreen("Length of programs is "+this.programs.size(), this.parent);
 			this.programs.get(this.runningProgramIndex).stop();
 			}
-			catch(NullPointerException ex)
+			catch(NullPointerException e)
 			{
-				//log
+				Log.e(this.parent.getString(R.string.app_name), e.getMessage() == null ? "Null pointer exception(RadioRunner.stopProgram)" : e.getMessage());
 			}
 		}
 		if (this.state != State.PAUSED) {
@@ -208,7 +205,6 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
 			program = new Program(this.parent, data[i][1], Utils.getDateFromString(data[i][2], "yyyy-MM-dd HH:mm:ss"), Utils.getDateFromString(data[i][3], "yyyy-MM-dd HH:mm:ss"), data[i][4], data[i][5]);
 			programs.add(program);
 		}
-		//Utils.toastOnScreen("I fetched em!!" + programs.size(), this.parent);
 		return programs;
 	}
 
