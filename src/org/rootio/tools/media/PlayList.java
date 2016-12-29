@@ -20,8 +20,7 @@ import android.util.Log;
 /**
  * Class for the definition of Playlists
  * 
- * @author Jude Mukundane
- * git 
+ * @author Jude Mukundane git
  */
 public class PlayList implements OnCompletionListener, OnPreparedListener, OnErrorListener {
 
@@ -86,7 +85,7 @@ public class PlayList implements OnCompletionListener, OnPreparedListener, OnErr
 	 */
 	public void play() {
 		startPlayer();
-		//this.callSignProvider.start();
+		this.callSignProvider.start();
 	}
 
 	private void startPlayer() {
@@ -157,7 +156,7 @@ public class PlayList implements OnCompletionListener, OnPreparedListener, OnErr
 	 * Stops the media player and disposes it.
 	 */
 	public void stop() {
-		// this.callSignProvider.stop();
+	    this.callSignProvider.stop();
 		if (this.callSignPlayer != null)
 			try {
 				this.callSignPlayer.stop();
@@ -204,7 +203,7 @@ public class PlayList implements OnCompletionListener, OnPreparedListener, OnErr
 				this.callSignProvider.stop();
 			}
 		} catch (Exception ex) {
-			// investiate tis
+			Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(PlayList.pause)" : ex.getMessage());
 		}
 	}
 
@@ -229,7 +228,7 @@ public class PlayList implements OnCompletionListener, OnPreparedListener, OnErr
 			// resume the callSign provider
 			this.callSignProvider.start();
 		} catch (Exception ex) {
-			// investiate tois
+			Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(PlayList.resume)" : ex.getMessage());
 		}
 	}
 
@@ -240,24 +239,25 @@ public class PlayList implements OnCompletionListener, OnPreparedListener, OnErr
 	 *            The tag to be matched for media to be loaded into the playlist
 	 * @return Array of Media objects matching specified tag
 	 */
-	private HashSet<Media> loadMedia(String[] playlists)
-	{
+	private HashSet<Media> loadMedia(String[] playlists) {
 		HashSet<Media> media = new HashSet<Media>();
-     	for (String playlist : playlists) {
-     		String query = "select title, item, itemtypeid from playlist where title = ?";
+		for (String playlist : playlists) {
+			String query = "select title, item, itemtypeid from playlist where title = ?";
 			String[] args = new String[] { playlist };
 			DBAgent dbagent = new DBAgent(this.parent);
 			String[][] data = dbagent.getData(query, args);
 			for (int i = 0; i < data.length; i++) {
-				if(data[i][2].equals("1"))//songs
+				if(playlist.equals("jingle"))
 				{
-				media.add(this.mediaLib.getMedia(data[i][0]));
+					Utils.toastOnScreen(data[i][1], this.parent);
 				}
-				else if(data[i][2].equals("2"))//albums
+				if (data[i][2].equals("1"))// songs
+				{
+					media.add(this.mediaLib.getMedia(data[i][0]));		
+				} else if (data[i][2].equals("2"))// albums
 				{
 					media.addAll(this.mediaLib.getMediaForAlbum(data[i][1]));
-				}
-				else if(data[i][2].equals("3"))//artists
+				} else if (data[i][2].equals("3"))// artists
 				{
 					media.addAll(this.mediaLib.getMediaForArtist(data[i][1]));
 				}
@@ -298,7 +298,7 @@ public class PlayList implements OnCompletionListener, OnPreparedListener, OnErr
 
 		Utils.toastOnScreen("playing " + Url, this.parent);
 		try {
-			if (this.mediaPlayer.isPlaying()) {
+			//if (this.mediaPlayer.isPlaying()) {
 				try {
 					callSignPlayer = MediaPlayer.create(this.parent, Uri.fromFile(new File(Url)));
 					if (callSignPlayer == null) {
@@ -326,11 +326,10 @@ public class PlayList implements OnCompletionListener, OnPreparedListener, OnErr
 						}
 					}
 				});
-			}
+			//}
 		} catch (Exception ex) {
 			Log.e(PlayList.this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(PlayList.onReceiveCallSign)" : ex.getMessage());
 		}
-
 	}
 
 	@Override
@@ -362,24 +361,15 @@ public class PlayList implements OnCompletionListener, OnPreparedListener, OnErr
 
 		CallSignProvider(Context parent, PlayList playlist) {
 			PlayList.this.parent = parent;
-			this.callSigns = new HashSet<Media>();
+			this.callSigns = PlayList.this.loadMedia(new String[] { "jingle" });
 			this.isRunning = false;
 		}
 
-		private void loadCallSigns() {
-			String query = "select title from mediatag where tag = ?";
-			String[] args = new String[] { "callsign" };
-			DBAgent dbagent = new DBAgent(PlayList.this.parent);
-			String[][] data = dbagent.getData(query, args);
-			for (int i = 0; i < data.length; i++) {
-				callSigns.add(PlayList.this.mediaLib.getMedia(data[i][0]));
-			}
-		}
+		
 
 		@Override
 		public void run() {
 			this.isRunning = true;
-			this.loadCallSigns();
 
 			this.mediaIterator = callSigns.iterator();
 			while (this.isRunning) {
@@ -398,17 +388,13 @@ public class PlayList implements OnCompletionListener, OnPreparedListener, OnErr
 		}
 
 		private void playCallSign() {
-			PlayList.this.onReceiveCallSign("/mnt/extSdCard/callsign/jingle.mp3");
-			/*
-			 * if (mediaIterator.hasNext()) {
-			 * this.playlist.onReceiveCallSign(String
-			 * .format("/mnt/extSdCard/callsign/%s",
-			 * mediaIterator.next().getTitle())); } else { if (callSigns.size()
-			 * > 0) { mediaIterator = callSigns.iterator(); // reset the
-			 * iterator to 0 this.playlist.onReceiveCallSign(String.format(
-			 * "/mnt/extSdCard/callsign/%s", mediaIterator.next().getTitle()));
-			 * } }
-			 */
+			if(this.callSigns.size() < 1)
+				return;
+			Utils.toastOnScreen("FOund callsigns " + this.callSigns.size(), PlayList.this.parent);
+			if(!this.mediaIterator.hasNext()) {
+				this.mediaIterator = callSigns.iterator(); // reset the iterator to 0 if at the end
+			}
+			onReceiveCallSign(mediaIterator.next().getFileLocation());
 		}
 
 		public void start() {
