@@ -5,6 +5,7 @@ package org.rootio.services.synchronization;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.rootio.radioClient.R;
 import org.rootio.tools.cloud.Cloud;
 
 import android.content.ContentResolver;
@@ -12,6 +13,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.util.Log;
 
 /**
  * @author Jude Mukundane, M-ITI/IST-UL
@@ -21,7 +23,7 @@ public class MusicListHandler implements SynchronizationHandler {
 
 	private Context parent;
 	private Cloud cloud;
-	
+
 	MusicListHandler(Context parent, Cloud cloud) {
 		this.parent = parent;
 		this.cloud = cloud;
@@ -53,7 +55,6 @@ public class MusicListHandler implements SynchronizationHandler {
 			cur = cr.query(uri, null, selection, null, sortOrder);
 			int count = 0;
 
-			//JSONObject albums = new JSONObject(), songs = new JSONObject(), artists = new JSONObject();
 			if (cur != null) {
 				count = cur.getCount();
 
@@ -63,7 +64,8 @@ public class MusicListHandler implements SynchronizationHandler {
 						song.put("title", cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.TITLE)));
 						song.put("duration", cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.DURATION)));
 
-						if (!music.has(cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ARTIST))));
+						if (!music.has(cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ARTIST))))
+							;
 						music.put(cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ARTIST)), new JSONObject());
 
 						if (!music.getJSONObject(cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ARTIST))).has(cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM)))) {
@@ -73,22 +75,17 @@ public class MusicListHandler implements SynchronizationHandler {
 
 						music.getJSONObject(cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ARTIST))).getJSONObject(cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM))).getJSONArray("songs").put(song);
 
-						// albums.accumulate(cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM)),
-						// song);
-						// artists.accumulate(cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ARTIST)),
-						// albums);
-						// this.music = albums;
 					}
 				}
 			}
-		
+
 		} catch (Exception ex) {
 
 		} finally {
 			try {
 				cur.close();
 			} catch (Exception ex) {
-				// log
+				Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(MusicListHandler.getSongList)" : ex.getMessage());
 			}
 		}
 		return music;

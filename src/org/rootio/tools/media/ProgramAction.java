@@ -10,42 +10,25 @@ import android.content.Context;
 
 public class ProgramAction {
 	private int duration;
-	private Date startTime;
-	private String[] arguments;
+	private String[] playlists;
 	private final ProgramActionType programActionType;
 	private Context parent;
 	private PlayList playlist;
 	private JingleManager jingleManager;
 	
-	public ProgramAction(Context parent, JSONObject structure, ProgramActionType programType) {
+	public ProgramAction(Context parent, String[] playlists, ProgramActionType programType) {
 		this.parent = parent;
-		this.buildProgramStructure(structure);
+		this.playlists = playlists;
 		this.programActionType = programType;
 	}
 
-	private void buildProgramStructure(JSONObject programStructure) {
-		try {
-			this.duration = programStructure.getInt("duration");
-
-			this.startTime = Utils.getDateFromString(programStructure.getString("start_time"), "HH:mm:ss");
-			Utils.toastOnScreen("starttime is "+startTime, this.parent);
-			
-			this.arguments = new String[programStructure.getJSONArray("argument").length()];
-			for (int i = 0; i < programStructure.getJSONArray("argument").length(); i++) {
-				this.arguments[i] = programStructure.getJSONArray("argument").getString(i);
-			}
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-	}
-
-	void run() {
+		void run() {
 		switch (this.programActionType) {
 		case Media:
 		case Music:
 		case Stream:
 			this.playlist = PlayList.getInstance();
-			this.playlist.init(this.parent, this.arguments, this.programActionType);
+			this.playlist.init(this.parent, this.playlists, this.programActionType);
 			this.playlist.load();
 			this.playlist.play();
 			break;
@@ -129,16 +112,8 @@ public class ProgramAction {
 		}
 	}
 
-	public Date getStartTime() {
-		return this.startTime;
-	}
-
 	public int getDuration() {
 		return this.duration;
-	}
-
-	public String[] getArguments() {
-		return this.arguments;
 	}
 
 	public ProgramActionType getProgramType() {

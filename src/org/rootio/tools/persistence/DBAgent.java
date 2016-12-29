@@ -195,6 +195,40 @@ public class DBAgent {
 	}
 
 	/**
+	 * Saves multiple rows to the Database
+	 * 
+	 * @param tableName
+	 *            The name of the table to which to save the data
+	 * @param nullColumnHack
+	 *            The column in which to insert a null in case of an empty row
+	 *            @param columns Array containing names of columns into which data is to be inserted
+	 * @param data
+	 *            Multi dimension array of records being inserted
+	 * @return Whether or not the transaction was successful
+	 */
+	public boolean bulkSaveData(String tableName, String nullColumnHack, String[] columns, String[][] data) {
+		SQLiteDatabase database = this.getDBConnection(this.databaseName, null, SQLiteDatabase.OPEN_READWRITE);
+		try {
+			ContentValues dt = new ContentValues();
+			database.beginTransaction();
+			for (int i = 0; i < data.length; i++) {
+				for (int j = 0; j < columns.length; j++) {
+					dt.put(columns[j], data[i][j]);
+				}
+				long res = database.insert(tableName, nullColumnHack, dt);
+			}
+			database.setTransactionSuccessful();
+			database.endTransaction();
+			return true;
+		} catch (Exception ex) {
+			Log.e(this.context.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(DBAgent.bulkSaveData)" : ex.getMessage());
+			return false;
+		} finally {
+			database.close();
+		}
+	}
+
+	/**
 	 * Deletes records from the database according to the specified criteria
 	 * 
 	 * @param tableName

@@ -83,7 +83,6 @@ public class SMSLogHandler implements SynchronizationHandler {
 
 			for (int i = 0; i < results.length(); i++) {
 				if (results.getJSONObject(i).getBoolean("status")) {
-					//Utils.toastOnScreen("Deleting record with ID" + String.valueOf(results.getJSONObject(i).getLong("id")), this.parent);
 					//this.parent.getContentResolver().delete(uri,  "_id = ? ", new String[] { String.valueOf(results.getJSONObject(i).getLong("id")) });
 				}
 			}

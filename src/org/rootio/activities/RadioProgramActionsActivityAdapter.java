@@ -48,7 +48,7 @@ public class RadioProgramActionsActivityAdapter extends BaseAdapter {
 
 		// render the start time of the program action
 		TextView startTimeTextView = (TextView) view.findViewById(R.id.station_activity_program_actions_start_time_tv);
-		startTimeTextView.setText(String.format("Start time: %s", Utils.getDateString(this.program.getProgramActions().get(index).getStartTime(), "HH:mm:ss")));
+		startTimeTextView.setText(String.format("Start time: %s", Utils.getDateString(this.program.getStartDate(), "HH:mm:ss")));
 		return view;
 	}
 }

@@ -78,7 +78,6 @@ public class CallLogHandler implements SynchronizationHandler {
 
 			for (int i = 0; i < results.length(); i++) {
 				if (results.getJSONObject(i).getBoolean("status")) {
-					//Utils.toastOnScreen("Deleting record with ID" + String.valueOf(results.getJSONObject(i).getLong("id")), this.parent);
 					//this.parent.getContentResolver().delete(uri, CallLog.Calls._ID + " = ? ", new String[] { String.valueOf(results.getJSONObject(i).getLong("id")) });
 				}
 			}

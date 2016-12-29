@@ -87,7 +87,7 @@ public class PlayList implements OnCompletionListener, OnPreparedListener, OnErr
 	 */
 	public void play() {
 		startPlayer();
-		this.callSignProvider.start();
+		//this.callSignProvider.start();
 	}
 
 	private void startPlayer() {
@@ -101,6 +101,7 @@ public class PlayList implements OnCompletionListener, OnPreparedListener, OnErr
 					currentMedia = mediaIterator.next();
 					try {
 						mediaPlayer = new MediaPlayer();
+						Utils.toastOnScreen("trying to play "+currentMedia.getFileLocation(), this.parent);
 						mediaPlayer.setDataSource(this.parent, Uri.fromFile(new File(currentMedia.getFileLocation())));
 						mediaPlayer.setOnPreparedListener(this);
 						mediaPlayer.setOnCompletionListener(this);
@@ -241,15 +242,33 @@ public class PlayList implements OnCompletionListener, OnPreparedListener, OnErr
 	 *            The tag to be matched for media to be loaded into the playlist
 	 * @return Array of Media objects matching specified tag
 	 */
-	private HashSet<Media> loadMedia(String[] tags) {
+	private HashSet<Media> loadMedia(String[] playlists)
+	{
 		HashSet<Media> media = new HashSet<Media>();
-     	for (String tag : tags) {
-			String query = tag.equals("random") ? "select title from mediatag" : "select title from mediatag where tag = ?";
-			String[] args = new String[] { tag };
+     	for (String playlist : playlists) {
+     		//Utils.toastOnScreen("playlist is "+playlist, this.parent);
+			String query = "select title, item, itemtypeid from playlist where title = ?";
+			String[] args = new String[] { playlist };
 			DBAgent dbagent = new DBAgent(this.parent);
 			String[][] data = dbagent.getData(query, args);
+			Utils.toastOnScreen("records found are " + data.length, this.parent);
 			for (int i = 0; i < data.length; i++) {
+				//Utils.toastOnScreen("data 2 is" + data[i][2], this.parent);
+				if(data[i][2].equals("1"))//songs
+				{
+					Utils.toastOnScreen("Loading song...", this.parent);
 				media.add(this.mediaLib.getMedia(data[i][0]));
+				}
+				else if(data[i][2].equals("2"))//albums
+				{
+					Utils.toastOnScreen("Loading album...", this.parent);
+					media.addAll(this.mediaLib.getMediaForAlbum(data[i][1]));
+				}
+				else if(data[i][2].equals("3"))//artists
+				{
+					Utils.toastOnScreen("Loading artist...", this.parent);
+					media.addAll(this.mediaLib.getMediaForArtist(data[i][1]));
+				}
 			}
 		}
 		return media;
@@ -270,7 +289,7 @@ public class PlayList implements OnCompletionListener, OnPreparedListener, OnErr
 	 * 
 	 * @return Array of Media objects loaded in this playlist
 	 */
-	public HashSet<Media> getMdia() {
+	public HashSet<Media> getMedia() {
 		return this.mediaList;
 	}
 

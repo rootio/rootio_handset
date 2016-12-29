@@ -27,12 +27,14 @@ public class SynchronizationDaemon implements Runnable {
 
 			// do the sync
 			this.synchronize(new DiagnosticsHandler(this.parent, this.cloud));
+			this.synchronize(new ProgramsHandler(this.parent, this.cloud));
 			this.synchronize(new CallLogHandler(this.parent, this.cloud));
 			this.synchronize(new SMSLogHandler(this.parent, this.cloud));
 			this.synchronize(new WhitelistHandler(this.parent, this.cloud));
 			this.synchronize(new FrequencyHandler(this.parent, this.cloud));
 			this.synchronize(new StationHandler(this.parent, this.cloud));
 			this.synchronize(new MusicListHandler(this.parent, this.cloud));
+			this.synchronize(new PlaylistHandler(this.parent, this.cloud));
 
 			// turn off mobile data
 			this.toggleData(false);
