@@ -199,10 +199,7 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
 	 */
 	private ArrayList<Program> fetchPrograms() {
 		DBAgent agent = new DBAgent(this.parent);
-		String query = "select id, name, start, end, structure, programtypeid from scheduledprogram";// where
-																						// date(start)
-																						// =
-																						// date(current_timestamp,'localtime')";
+		String query = "select id, name, start, end, structure, programtypeid from scheduledprogram where date(start) = date(current_timestamp,'localtime')";
 		String[] args = new String[] {};
 		String[][] data = agent.getData(query, args);
 		ArrayList<Program> programs = new ArrayList<Program>();
