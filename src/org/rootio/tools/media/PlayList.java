@@ -21,7 +21,7 @@ import android.util.Log;
  * Class for the definition of Playlists
  * 
  * @author Jude Mukundane
- * 
+ * git 
  */
 public class PlayList implements OnCompletionListener, OnPreparedListener, OnErrorListener {
 
