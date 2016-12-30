@@ -4,6 +4,7 @@ import org.rootio.radioClient.R;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.widget.ListView;
 
 public class WhitelistActivity extends Activity {
@@ -34,4 +35,14 @@ public class WhitelistActivity extends Activity {
 		adapter.refresh();
 		adapter.notifyDataSetChanged();
 	}
+	
+	@Override
+	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+		switch (item.getItemId()) {
+		default: // handles the click of the application icon
+			this.finish();
+			return false;
+		}
+	}
+
 }

@@ -6,6 +6,7 @@ import org.rootio.tools.radio.Station;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.widget.TextView;
 
 public class StationActivity extends Activity {
@@ -41,5 +42,14 @@ public class StationActivity extends Activity {
 		((TextView) findViewById(R.id.station_telephone)).setText(station.getTelephoneNumber());
 		((TextView) findViewById(R.id.station_multicast_ip)).setText(station.getMulticastIPAddress() == null ? "" : station.getMulticastIPAddress().getHostAddress());
 		((TextView) findViewById(R.id.station_multicast_port)).setText(String.valueOf(station.getMulticastPort()));
+	}
+	
+	@Override
+	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+		switch (item.getItemId()) {
+		default: // handles the click of the application icon
+			this.finish();
+			return false;
+		}
 	}
 }

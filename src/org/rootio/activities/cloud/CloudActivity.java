@@ -6,6 +6,7 @@ import org.rootio.tools.cloud.Cloud;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.widget.TextView;
 
 public class CloudActivity extends Activity {
@@ -38,6 +39,15 @@ public class CloudActivity extends Activity {
 		((TextView) findViewById(R.id.cloud_httpport_tv)).setText(String.valueOf(cloud.getHTTPPort()));
 		((TextView) findViewById(R.id.cloud_server_key_tv)).setText(cloud.getServerKey());
 		((TextView) findViewById(R.id.cloud_station_id_tv)).setText(String.valueOf(cloud.getStationId()));
+	}
+	
+	@Override
+	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+		switch (item.getItemId()) {
+		default: // handles the click of the application icon
+			this.finish();
+			return false;
+		}
 	}
 
 	

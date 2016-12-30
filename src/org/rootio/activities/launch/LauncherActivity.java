@@ -86,19 +86,19 @@ public class LauncherActivity extends TabActivity {
 		switch (item.getItemId()) {
 		case R.id.station_menu_item:
 			intent = new Intent(this, StationActivity.class);
-			startActivity(intent);
+			this.startActivity(intent);
 			return true;
 		case R.id.cloud_menu_item:
 			intent = new Intent(this, CloudActivity.class);
-			startActivity(intent);
+			this.startActivity(intent);
 			return true;
 		case R.id.telephony_menu_item:
 			intent = new Intent(this, TelephoneLogActivity.class);
-			startActivity(intent);
+			this.startActivity(intent);
 			return true;
 		case R.id.frequency_menu_item:
 			intent = new Intent(this, FrequencyActivity.class);
-			startActivity(intent);
+			this.startActivity(intent);
 			return true;
 		case R.id.quity_menu_item:
 			this.onStop();
