@@ -215,6 +215,8 @@ public class DBAgent {
 				for (int j = 0; j < columns.length; j++) {
 					dt.put(columns[j], data[i][j]);
 				}
+				database.insert(tableName, nullColumnHack, dt); 
+
 			}
 			database.setTransactionSuccessful();
 			database.endTransaction();

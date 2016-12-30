@@ -3,6 +3,10 @@
  */
 package org.rootio.services.synchronization;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.rootio.radioClient.R;
@@ -31,7 +35,24 @@ public class MusicListHandler implements SynchronizationHandler {
 
 	@Override
 	public JSONObject getSynchronizationData() {
-		return this.getSongList();
+		JSONObject snglist = this.getSongList();
+		this.writeToFile(snglist.toString());
+		return snglist;
+		// return this.getSongList();
+	}
+
+	private void writeToFile(String data) {
+		File music_json = new File("/mnt/extSdCard/Music/music.json");
+		FileWriter fwr;
+		try {
+			fwr = new FileWriter(music_json);
+			fwr.write(data);
+			fwr.flush();
+			fwr.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -64,9 +85,9 @@ public class MusicListHandler implements SynchronizationHandler {
 						song.put("title", cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.TITLE)));
 						song.put("duration", cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.DURATION)));
 
-						if (!music.has(cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ARTIST))))
-							;
-						music.put(cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ARTIST)), new JSONObject());
+						if (!music.has(cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ARTIST)))) {
+							music.put(cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ARTIST)), new JSONObject());
+						}
 
 						if (!music.getJSONObject(cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ARTIST))).has(cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM)))) {
 							music.getJSONObject(cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ARTIST))).put(cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM)), new JSONObject());
@@ -80,7 +101,7 @@ public class MusicListHandler implements SynchronizationHandler {
 			}
 
 		} catch (Exception ex) {
-
+			Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(MusicListHandler.getSongList)" : ex.getMessage());
 		} finally {
 			try {
 				cur.close();
