@@ -33,7 +33,7 @@ public class TelephoneLogActivity extends Activity implements OnRefreshListener 
 	{
 		super.onCreate(savedInstance);
 		this.setContentView(R.layout.telephone_log);
-		this.swipeContainer = (SwipeRefreshLayout)this.findViewById(R.id.swipe_container);
+		this.swipeContainer = (android.support.v4.widget.SwipeRefreshLayout)this.findViewById(R.id.swipe_container);
 		telephoneLogView = (ListView)this.findViewById(R.id.call_log_lv);
 		telephoneLogAdapter = new TelephoneLogAdapter(this);
 		telephoneLogView.setAdapter(telephoneLogAdapter);
