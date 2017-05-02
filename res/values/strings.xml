@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Rootio</string>
+    <string name="app_name">RootIO</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
     <string name="StationDetailsItem">Station Details</string>
@@ -51,7 +51,7 @@
     <string name="MulticastPortLable">Port:</string>
     <string name="MulticastNoteTitle">Please Note:</string>
     <string name="MulticastNoteMessage">
-        <![CDATA[
+<![CDATA[
         When Setting a multicast please consider the following factors:
         <br/>1) Multicast addresses range from <b>224.0.0.0</b> to <b>239.255.255.255</b>
         <br/>2) Please be a dear and don\'t use any of the addresses listed <a href="http://en.wikipedia.org/wiki/Multicast_address">here</a>
@@ -59,8 +59,8 @@
         ]]>
     </string>
     <string name="DiagnosticsConfigurationNoteTitle">Please note:</string>
-<string name="DiagnosticsConfigurationNoteMessage">
-        <![CDATA[
+    <string name="DiagnosticsConfigurationNoteMessage">
+<![CDATA[
         When Setting the diagnostic frequency please consider the following factors:
         <br/>1) A very low frequency could lead to faster battery and storage depletion
         <br/>2) A very low frequency leads to higher internet usage
@@ -68,14 +68,25 @@
         <br/>4) Unless you have a reason not to, please use the default 5 minutes
         ]]>
     </string>
-<string name="SynchronizationFrequencyNoteTitle">Please Note:</string>
-<string name="SynchronizationConfigurationNoteMessage">
-        <![CDATA[
+    <string name="SynchronizationFrequencyNoteTitle">Please Note:</string>
+    <string name="SynchronizationConfigurationNoteMessage">
+<![CDATA[
         When Setting the synchronization frequency please consider the following factors:
         <br/>1) A very low frequency could lead to faster battery and storage depletion
         <br/>2) A very low frequency leads to higher internet usage
-        <br/>3) A very low value could lead to delay in getting critical station information
+        <br/>3) A very high value could lead to delay in getting critical station information
         <br/>4) Unless you have a reason not to, please use the default 1 hour
         ]]>
     </string>
+    <string name="SynchronizationEnableData">Enable Data</string>
+    <string name="sync_frequency_label">Synchronization Frequency</string>
+    <string name="FrequencyMenuItem">Frequencies</string>
+    <string name="DiagnosticFrequencyInformation">No configuration found</string>
+    <string name="DiagnosticFrequencyConfiguration">This is the frequency with which the diagnostic service attempts to take note of various performance indicators about the phone\'s status</string>
+    <string name="SyncFrequencyInfo">No configuration found</string>
+    <string name="SyncFrequencyConfiguration">This is the frequency with which the diagnostic service attempts to contact the cloud server to both upload and download information</string>
+    <string name="StationID">Station ID:</string>
+    <string name="StationKey">Station Key:</string>
+    <string name="ConnectButton">Connect</string>
+
 </resources>

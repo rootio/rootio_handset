@@ -1,0 +1,12 @@
+{
+  "diagnostics" :
+     { 
+         "interval" : 50, 
+         "unit" : "minutes
+     }, 
+  "synchronization" :
+     { 
+         "interval" : 50, 
+         "unit" : "minutes
+     }
+}

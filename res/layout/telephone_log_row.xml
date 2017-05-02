@@ -65,7 +65,7 @@
                 </TextView>
 
                 <TextView
-                    android:id="@+id/call_status_tv"
+                    android:id="@+id/call_duration_tv"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="5dp"

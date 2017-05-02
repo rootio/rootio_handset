@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.rootio.radioClient"
+    android:versionCode="3"
+    android:versionName="1.4" >
+
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.READ_CALL_LOG"/>
+    <uses-permission android:name="android.permission.WRITE_CALL_LOG"/>
+    <uses-permission android:name="android.permission.READ_LOGS"/>
+    <uses-permission android:name="android.permission.READ_CONTACTS"/>
+    <uses-permission android:name="android.permission.WRITE_CONTACTS"/>
+    <uses-permission android:name="android.permission.WRITE_SMS"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.READ_SMS" >
+    </uses-permission>
+    <uses-permission android:name="android.permission.RECEIVE_SMS" >
+    </uses-permission>
+    <uses-permission android:name="android.permission.STORAGE"/>
+    <uses-permission android:name="android.permission.SEND_SMS" >
+    </uses-permission>
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <uses-sdk
+        android:minSdkVersion="14"
+        android:targetSdkVersion="17" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <activity android:name="org.rootio.activities.RadioActivity" />
+        <activity android:name="org.rootio.activities.PhoneActivity" />
+        <activity android:name="org.rootio.activities.DiagnosticActivity" />
+        <activity android:name="org.rootio.activities.RadioPlaylistActivity" />
+        <activity android:name=".PhoneActivity" />
+        <activity android:name="org.rootio.activities.stationDetails.StationActivity" />
+        <activity android:name="org.rootio.activities.stationDetails.MulticastConfigurationActivity" />
+        <activity android:name="org.rootio.activities.cloud.CloudActivity" />
+        <activity android:name="org.rootio.activities.cloud.CloudConfigurationActivity" />
+        <activity android:name="org.rootio.activities.telephoneLog.lists.BlackListActivity" />
+        <activity android:name="org.rootio.activities.telephoneLog.lists.WhitelistActivity" />
+        <activity android:name="org.rootio.activities.telephoneLog.TelephoneLogActivity" />
+        <activity android:name="org.rootio.activities.telephoneLog.lists.AddToBlacklist" />
+        <activity android:name="org.rootio.activities.telephoneLog.lists.AddToWhitelist" />
+        <activity android:name="org.rootio.activities.diagnostics.FrequencyActivity" />
+        <activity android:name="org.rootio.activities.diagnostics.DiagnosticsConfigurationFrequencyActivity" >
+        </activity>
+        <activity android:name="org.rootio.activities.synchronization.SynchronizationLogActivity" >
+        </activity>
+        <activity android:name="org.rootio.activities.synchronization.SynchronizationLogDownloadActivity" >
+        </activity>
+        <activity android:name="org.rootio.activities.synchronization.SynchronizationConfigurationFrequencyActivity" >
+        </activity>
+        <activity android:name="org.rootio.activities.services.ServicesActivity" >
+        </activity>
+        <activity android:name="org.rootio.activities.services.ServicesActionDialog" />
+        <activity android:name="org.rootio.activities.launch.SplashScreen" />
+        <activity
+            android:name="org.rootio.activities.launch.LauncherActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <service android:name="org.rootio.services.TelephonyService" ></service>
+        <service android:name="org.rootio.services.DiagnosticsService" ></service>
+        <service android:name="org.rootio.services.SMSService" ></service>
+        <service android:name="org.rootio.services.ProgramService" ></service>
+        <service android:name="org.rootio.services.DiscoveryService" ></service>
+        <service android:name="org.rootio.services.SynchronizationService" ></service>
+        <service android:name="org.rootio.services.SampleService" ></service>
+
+        <receiver android:name="org.rootio.services.BootMonitor" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" >
+                </action>
+            </intent-filter>
+        </receiver>
+        <receiver android:name="org.rootio.services.CrashMonitor" >
+            <intent-filter>
+                <action android:name="org.rootio.services.restartServices" >
+                </action>
+            </intent-filter>
+        </receiver>
+    </application>
+
+</manifest>

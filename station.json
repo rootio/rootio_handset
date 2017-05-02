@@ -1,0 +1,11 @@
+{
+  station: 
+  {
+      "name": "ABC FM",
+      "frequency": 103.8,
+      "location": "Jinja, Karooli",
+      "telephone": "+351964236527"
+      "multicast_IP": "239.255.1.2,
+      "multicast_port": 1234
+  }
+}

@@ -1,16 +1,18 @@
 package org.rootio.activities.launch;
 
+import java.io.File;
+
 import org.rootio.activities.DiagnosticActivity;
 import org.rootio.activities.RadioActivity;
 import org.rootio.activities.cloud.CloudActivity;
-import org.rootio.activities.diagnostics.DiagnosticsConfigurationActivity;
+import org.rootio.activities.diagnostics.FrequencyActivity;
 import org.rootio.activities.services.ServicesActivity;
 import org.rootio.activities.stationDetails.StationActivity;
-import org.rootio.activities.synchronization.SynchronizationLogDownloadActivity;
 import org.rootio.activities.telephoneLog.TelephoneLogActivity;
 import org.rootio.radioClient.R;
 import org.rootio.tools.utils.Utils;
 
+import android.app.PendingIntent;
 import android.app.TabActivity;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -24,7 +26,8 @@ import android.widget.TabHost.TabSpec;
 @SuppressWarnings("deprecation")
 public class LauncherActivity extends TabActivity {
 
-	
+	PendingIntent crashIntent;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -35,23 +38,15 @@ public class LauncherActivity extends TabActivity {
 
 		// Radio tab
 		Intent intentRadio = new Intent().setClass(this, RadioActivity.class);
-		TabSpec tabSpecRadio = tabHost.newTabSpec("Radio")
-				.setIndicator("", ressources.getDrawable(R.drawable.radio))
-				.setContent(intentRadio);
+		TabSpec tabSpecRadio = tabHost.newTabSpec("Radio").setIndicator("", ressources.getDrawable(R.drawable.radio)).setContent(intentRadio);
 
 		// Phone tab
 		Intent intentPhone = new Intent().setClass(this, TelephoneLogActivity.class);
-		TabSpec tabSpecCalls = tabHost.newTabSpec("Calls")
-				.setIndicator("", ressources.getDrawable(R.drawable.telephone))
-				.setContent(intentPhone);
+		TabSpec tabSpecCalls = tabHost.newTabSpec("Calls").setIndicator("", ressources.getDrawable(R.drawable.telephone)).setContent(intentPhone);
 
 		// Diagnostics tab
-		Intent intentDiagnostics = new Intent().setClass(this,
-				DiagnosticActivity.class);
-		TabSpec tabSpecDiagnostics = tabHost
-				.newTabSpec("Diagnostics")
-				.setIndicator("", ressources.getDrawable(R.drawable.diagnostic))
-				.setContent(intentDiagnostics);
+		Intent intentDiagnostics = new Intent().setClass(this, DiagnosticActivity.class);
+		TabSpec tabSpecDiagnostics = tabHost.newTabSpec("Diagnostics").setIndicator("", ressources.getDrawable(R.drawable.diagnostic)).setContent(intentDiagnostics);
 
 		tabHost.addTab(tabSpecRadio);
 		tabHost.addTab(tabSpecCalls);
@@ -59,9 +54,22 @@ public class LauncherActivity extends TabActivity {
 
 		// set Radio tab as default (zero based)
 		tabHost.setCurrentTab(0);
-		
+
 		Utils.setContext(this.getBaseContext());
-}
+	}
+	
+	@Override
+	public void onStart()
+	{
+		super.onStart();
+		if(!new File(this.getFilesDir().getAbsolutePath() + "/station.json").exists())
+		{
+			Intent intent = new Intent(this, SplashScreen.class);
+			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			startActivity(intent);
+			this.finish();
+		}
+	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -74,39 +82,35 @@ public class LauncherActivity extends TabActivity {
 	@Override
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
 		Intent intent;
-		
-		switch(item.getItemId())
-		{
+
+		switch (item.getItemId()) {
 		case R.id.station_menu_item:
 			intent = new Intent(this, StationActivity.class);
-			startActivity(intent);
+			this.startActivity(intent);
 			return true;
-		case R.id.cloud_menu_item :
+		case R.id.cloud_menu_item:
 			intent = new Intent(this, CloudActivity.class);
-			startActivity(intent);
+			this.startActivity(intent);
 			return true;
 		case R.id.telephony_menu_item:
 			intent = new Intent(this, TelephoneLogActivity.class);
-			startActivity(intent);
+			this.startActivity(intent);
 			return true;
-		case R.id.diagnostics_menu_item:
-			intent = new Intent(this, DiagnosticsConfigurationActivity.class);
-			startActivity(intent);
+		case R.id.frequency_menu_item:
+			intent = new Intent(this, FrequencyActivity.class);
+			this.startActivity(intent);
 			return true;
 		case R.id.quity_menu_item:
-		    this.onStop();
+			this.onStop();
 			this.finish();
-			return true;
-		case R.id.synchronization_menu_item:
-			intent = new Intent(this, SynchronizationLogDownloadActivity.class);
-			this.startActivity(intent);
 			return true;
 		case R.id.services_menu_item:
 			intent = new Intent(this, ServicesActivity.class);
 			this.startActivity(intent);
 			return true;
 		default:
-		return super.onContextItemSelected(item);
+			return super.onContextItemSelected(item);
 		}
 	}
+
 }

@@ -3,7 +3,9 @@ package org.rootio.tools.diagnostics;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
-import android.annotation.SuppressLint;
+import org.rootio.radioClient.R;
+import org.rootio.tools.utils.Utils;
+
 import android.app.ActivityManager;
 import android.app.ActivityManager.MemoryInfo;
 import android.content.Context;
@@ -18,6 +20,7 @@ import android.os.Environment;
 import android.os.StatFs;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 
 public class DiagnosticAgent {
 
@@ -31,25 +34,19 @@ public class DiagnosticAgent {
 	private double longitude;
 	private double storageStatus;
 	private String telecomOperatorName;
-	private ConnectivityManager connectivityManager;
-	private Context parentActivity;
-	private SignalStrengthListener signalStrengthListener;
-	private ActivityManager activityManager;
-	private LocationManager locationManager;
+	private final ConnectivityManager connectivityManager;
+	private final Context parentActivity;
+	private final SignalStrengthListener signalStrengthListener;
+	private final ActivityManager activityManager;
+	private final LocationManager locationManager;
 
 	public DiagnosticAgent(Context parentActivity) {
 		this.parentActivity = parentActivity;
-		connectivityManager = (ConnectivityManager) parentActivity
-				.getSystemService(Context.CONNECTIVITY_SERVICE);
+		connectivityManager = (ConnectivityManager) parentActivity.getSystemService(Context.CONNECTIVITY_SERVICE);
 		signalStrengthListener = new SignalStrengthListener();
-		((TelephonyManager) this.parentActivity
-				.getSystemService(Context.TELEPHONY_SERVICE)).listen(
-				signalStrengthListener,
-				PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
-		activityManager = (ActivityManager) parentActivity
-				.getSystemService(Context.ACTIVITY_SERVICE);
-		locationManager = (LocationManager) parentActivity
-				.getSystemService(Context.LOCATION_SERVICE);
+		((TelephonyManager) this.parentActivity.getSystemService(Context.TELEPHONY_SERVICE)).listen(signalStrengthListener, PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
+		activityManager = (ActivityManager) parentActivity.getSystemService(Context.ACTIVITY_SERVICE);
+		locationManager = (LocationManager) parentActivity.getSystemService(Context.LOCATION_SERVICE);
 	}
 
 	/**
@@ -67,11 +64,11 @@ public class DiagnosticAgent {
 	}
 
 	/**
-	 * Loads the name of the telecom operator to which the phone is currently latched
+	 * Loads the name of the telecom operator to which the phone is currently
+	 * latched
 	 */
 	private void loadTelecomOperatorName() {
-		TelephonyManager telephonyManager = (TelephonyManager) this.parentActivity
-				.getSystemService(Context.TELEPHONY_SERVICE);
+		TelephonyManager telephonyManager = (TelephonyManager) this.parentActivity.getSystemService(Context.TELEPHONY_SERVICE);
 		this.telecomOperatorName = telephonyManager.getSimOperatorName();
 	}
 
@@ -79,8 +76,7 @@ public class DiagnosticAgent {
 	 * Loads the wiFI connectivity status
 	 */
 	private void loadIsConnectedToWifi() {
-		NetworkInfo wifiInfo = connectivityManager
-				.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+		NetworkInfo wifiInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
 		this.isConnectedToWifi = wifiInfo.isConnected();
 	}
 
@@ -88,8 +84,7 @@ public class DiagnosticAgent {
 	 * Loads the battery level of the phone
 	 */
 	private void loadBatteryLevel() {
-		Intent batteryIntent = this.parentActivity.registerReceiver(null,
-				new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+		Intent batteryIntent = this.parentActivity.registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
 		int level = batteryIntent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
 		int scale = batteryIntent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
 
@@ -105,33 +100,57 @@ public class DiagnosticAgent {
 	 * Loads the GSM connectivity status
 	 */
 	private void loadIsConnectedToGSM() {
-		NetworkInfo gsmInfo = connectivityManager
-				.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+		NetworkInfo gsmInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
 		this.isConnectedToGSM = gsmInfo.isConnected();
 	}
 
 	/**
 	 * This class is a listener for changes in phone GSM signal strength
+	 * 
 	 * @author Jude Mukundane
-	 *
+	 * 
 	 */
 	private class SignalStrengthListener extends PhoneStateListener {
 		@Override
-		public void onSignalStrengthsChanged(
-				android.telephony.SignalStrength signalStrength) {
+		public void onSignalStrengthsChanged(android.telephony.SignalStrength signalStrength) {
 			GSMConnectionStrength = signalStrength.getGsmSignalStrength();
 			super.onSignalStrengthsChanged(signalStrength);
 		}
 	}
 
-	@SuppressLint("NewApi")
 	/**
 	 * Loads the percentage memory utilization of the phone
 	 */
 	private void loadMemoryStatus() {
-		MemoryInfo outInfo = new MemoryInfo();
-		activityManager.getMemoryInfo(outInfo);
-		this.memoryStatus = (100 * outInfo.availMem) / outInfo.totalMem;
+		try {
+			MemoryInfo memInfo = new MemoryInfo();
+			activityManager.getMemoryInfo(memInfo);
+			this.memoryStatus = (100 * memInfo.availMem) / this.getTotalMemory(); // memInfo.totalMem;
+																					// doesnt
+																					// work
+																					// before
+																					// jellybean
+		} catch (Exception ex) {
+			Log.e(parentActivity.getString(R.string.app_name), ex.getMessage() == null ? "NullPointer(DiagnosticAgent.getTotalMemory)" : ex.getMessage());
+		}
+	}
+
+	private long getTotalMemory() {
+		RandomAccessFile memInfo = null;
+		String load = null;
+		try {
+			memInfo = new RandomAccessFile("/proc/meminfo", "r");
+			load = memInfo.readLine().split("\\s+")[1];
+		} catch (Exception ex) {
+			Log.e(parentActivity.getString(R.string.app_name), ex.getMessage() == null ? "NullPointer(DiagnosticAgent.getTotalMemory)" : ex.getMessage());
+		} finally {
+			try {
+				memInfo.close();
+			} catch (Exception ex) {
+				Log.e(parentActivity.getString(R.string.app_name), ex.getMessage() == null ? "NullPointer(DiagnosticAgent.getTotalMemory)" : ex.getMessage());
+			}
+		}
+		return Utils.parseLongFromString(load) * 1024;
 	}
 
 	/**
@@ -145,9 +164,7 @@ public class DiagnosticAgent {
 			String[] toks = load.split(" ");
 
 			long idle1 = Long.parseLong(toks[5]);
-			long cpu1 = Long.parseLong(toks[2]) + Long.parseLong(toks[3])
-					+ Long.parseLong(toks[4]) + Long.parseLong(toks[6])
-					+ Long.parseLong(toks[7]) + Long.parseLong(toks[8]);
+			long cpu1 = Long.parseLong(toks[2]) + Long.parseLong(toks[3]) + Long.parseLong(toks[4]) + Long.parseLong(toks[6]) + Long.parseLong(toks[7]) + Long.parseLong(toks[8]);
 
 			try {
 				Thread.sleep(360);
@@ -161,12 +178,9 @@ public class DiagnosticAgent {
 			toks = load.split(" ");
 
 			long idle2 = Long.parseLong(toks[5]);
-			long cpu2 = Long.parseLong(toks[2]) + Long.parseLong(toks[3])
-					+ Long.parseLong(toks[4]) + Long.parseLong(toks[6])
-					+ Long.parseLong(toks[7]) + Long.parseLong(toks[8]);
+			long cpu2 = Long.parseLong(toks[2]) + Long.parseLong(toks[3]) + Long.parseLong(toks[4]) + Long.parseLong(toks[6]) + Long.parseLong(toks[7]) + Long.parseLong(toks[8]);
 
-			this.CPUUtilization = (float) (cpu2 - cpu1)
-					/ ((cpu2 + idle2) - (cpu1 + idle1));
+			this.CPUUtilization = (float) (cpu2 - cpu1) / ((cpu2 + idle2) - (cpu1 + idle1));
 
 		} catch (IOException ex) {
 			ex.printStackTrace();
@@ -180,8 +194,7 @@ public class DiagnosticAgent {
 	 */
 	private void loadLatitudeLongitude() {
 		Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-		if(location != null)
-		{
+		if (location != null) {
 			this.latitude = location.getLatitude();
 			this.longitude = location.getLongitude();
 		}
@@ -191,27 +204,28 @@ public class DiagnosticAgent {
 	 * Loads the percentage Utilization of the phone storage
 	 */
 	private void loadStorageUtilization() {
-		try
-		{
-		   StatFs statFs = new StatFs(Environment.getExternalStorageDirectory().getAbsolutePath());
-		   this.storageStatus = 100 - ((statFs.getAvailableBlocks() * 100) / statFs.getBlockCount());
-		}
-		catch(Exception ex)
-		{
+		try {
+			StatFs statFs = new StatFs(Environment.getExternalStorageDirectory().getAbsolutePath());
+			this.storageStatus = 100 - ((statFs.getAvailableBlocks() * 100) / statFs.getBlockCount());
+		} catch (Exception ex) {
 			this.storageStatus = 0;
 		}
 	}
 
 	/**
 	 * Gets the name of the telecom operator to which the phone is latched
+	 * 
 	 * @return Name of the telecom operator
 	 */
 	public String getTelecomOperatorName() {
 		return this.telecomOperatorName;
 	}
 
-	/**Gets whether or not the phone is connected to WiFI
-	 * @return Boolean indicating connectivity. True: Connected, False: Not connected
+	/**
+	 * Gets whether or not the phone is connected to WiFI
+	 * 
+	 * @return Boolean indicating connectivity. True: Connected, False: Not
+	 *         connected
 	 */
 	public boolean isConnectedToWifi() {
 		return this.isConnectedToWifi;
@@ -219,7 +233,9 @@ public class DiagnosticAgent {
 
 	/**
 	 * Gets whether or not the phone is latched onto a GSM network
-	 * @return Boolean indicating GSM connection strength. True: Connected, False: Not connected
+	 * 
+	 * @return Boolean indicating GSM connection strength. True: Connected,
+	 *         False: Not connected
 	 */
 	public boolean isConnectedToGSM() {
 		return this.isConnectedToGSM;
@@ -227,6 +243,7 @@ public class DiagnosticAgent {
 
 	/**
 	 * Gets the signal strength of the GSM network
+	 * 
 	 * @return GSM strength in decibels
 	 */
 	public int getGSMConnectionStrength() {
@@ -235,6 +252,7 @@ public class DiagnosticAgent {
 
 	/**
 	 * Gets memory utilization
+	 * 
 	 * @return Percentage memory Utilization
 	 */
 	public float getMemoryStatus() {
@@ -243,6 +261,7 @@ public class DiagnosticAgent {
 
 	/**
 	 * Gets the storage status of the phone
+	 * 
 	 * @return Percentage storage Utilization
 	 */
 	public double getStorageStatus() {
@@ -251,6 +270,7 @@ public class DiagnosticAgent {
 
 	/**
 	 * Gets the CPU utilization of the phone
+	 * 
 	 * @return Percentage CPU Utilization of the phone
 	 */
 	public float getCPUUtilization() {
@@ -259,6 +279,7 @@ public class DiagnosticAgent {
 
 	/**
 	 * Gets the battery level of the phone
+	 * 
 	 * @return Percentage battery utilization of the phone
 	 */
 	public float getBatteryLevel() {
@@ -267,6 +288,7 @@ public class DiagnosticAgent {
 
 	/**
 	 * Gets the latitude of the GPS position of the phone
+	 * 
 	 * @return Latitude of the phone
 	 */
 	public double getLatitude() {
@@ -275,6 +297,7 @@ public class DiagnosticAgent {
 
 	/**
 	 * Gets the longitude of the GPS position of the phone
+	 * 
 	 * @return Longitude of the phone
 	 */
 	public double getLongitude() {
