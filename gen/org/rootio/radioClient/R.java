@@ -48,33 +48,34 @@ public final class R {
         public static final int green_phone=0x7f02000e;
         public static final int gsm=0x7f02000f;
         public static final int ic_launcher=0x7f020010;
-        public static final int icon_diagnostic_config=0x7f020011;
-        public static final int icon_phone=0x7f020012;
-        public static final int icon_phone_config=0x7f020013;
-        public static final int icon_radio_config=0x7f020014;
-        public static final int information=0x7f020015;
-        public static final int location=0x7f020016;
-        public static final int memory=0x7f020017;
-        public static final int message=0x7f020018;
-        public static final int min=0x7f020019;
-        public static final int multicast=0x7f02001a;
-        public static final int music=0x7f02001b;
-        public static final int peak=0x7f02001c;
-        public static final int phone=0x7f02001d;
-        public static final int pie_chart=0x7f02001e;
-        public static final int pink_background=0x7f02001f;
-        public static final int play=0x7f020020;
-        public static final int processor=0x7f020021;
-        public static final int questionmark=0x7f020022;
-        public static final int radio=0x7f020023;
-        public static final int shadow_background=0x7f020024;
-        public static final int stop=0x7f020025;
-        public static final int storage=0x7f020026;
-        public static final int synchronize=0x7f020027;
-        public static final int telephone=0x7f020028;
-        public static final int white_bg=0x7f020029;
-        public static final int wireless=0x7f02002a;
-        public static final int yellow_background=0x7f02002b;
+        public static final int icon=0x7f020011;
+        public static final int icon_diagnostic_config=0x7f020012;
+        public static final int icon_phone=0x7f020013;
+        public static final int icon_phone_config=0x7f020014;
+        public static final int icon_radio_config=0x7f020015;
+        public static final int information=0x7f020016;
+        public static final int location=0x7f020017;
+        public static final int memory=0x7f020018;
+        public static final int message=0x7f020019;
+        public static final int min=0x7f02001a;
+        public static final int multicast=0x7f02001b;
+        public static final int music=0x7f02001c;
+        public static final int peak=0x7f02001d;
+        public static final int phone=0x7f02001e;
+        public static final int pie_chart=0x7f02001f;
+        public static final int pink_background=0x7f020020;
+        public static final int play=0x7f020021;
+        public static final int processor=0x7f020022;
+        public static final int questionmark=0x7f020023;
+        public static final int radio=0x7f020024;
+        public static final int shadow_background=0x7f020025;
+        public static final int stop=0x7f020026;
+        public static final int storage=0x7f020027;
+        public static final int synchronize=0x7f020028;
+        public static final int telephone=0x7f020029;
+        public static final int white_bg=0x7f02002a;
+        public static final int wireless=0x7f02002b;
+        public static final int yellow_background=0x7f02002c;
     }
     public static final class id {
         public static final int TextView01=0x7f0a0024;
@@ -326,5 +327,6 @@ public final class R {
  All customizations that are NOT specific to a particular API-level can go here. 
          */
         public static final int AppTheme=0x7f080001;
+        public static final int Custom=0x7f080002;
     }
 }

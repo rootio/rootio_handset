@@ -47,7 +47,6 @@ public class SMSLogHandler implements SynchronizationHandler {
 		JSONArray sms = new JSONArray();
 		String[] columns = new String[] { "_id", "address", "body", "date", "type" };
 		String filter = "_id > ?";
-		Utils.toastOnScreen("max SMS id is " + this.getMaxId(), this.parent);
 		String[] args = new String[] { String.valueOf(this.getMaxId())};
 		try {
 			Cursor cur = cr.query(uri, columns, filter, args, "_id ASC");
