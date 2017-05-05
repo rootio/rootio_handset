@@ -40,45 +40,14 @@ public class SplashScreen extends Activity {
 
 	private void checkCloudFileExists() {
 		if (!new File(this.getFilesDir().getAbsolutePath() + "/cloud.json").exists()) {
-			this.createCloudFile();
+			for(String fileName : new String[] {"cloud.json","frequencies.json","rootio.sqlite","sync_ids.json","whitelist.json"})
+			{
+				this.copyDataFile(fileName);
+			}	
 		}
-
 	}
 
-	private void createCloudFile() {
-		InputStream instr = null;
-		FileOutputStream foutstr = null;
-		File destinationFile = null;
-		try {
-			instr = this.getAssets().open("cloud.json");
-
-			byte[] buffer = new byte[1024000]; // 1 MB
-			instr.read(buffer);
-			destinationFile = new File(this.getFilesDir().getAbsolutePath() + "/cloud.json");
-			if (destinationFile.createNewFile()) {
-				foutstr = new FileOutputStream(destinationFile);
-				foutstr.write(buffer);
-			} else {
-				Utils.toastOnScreen("We cant create file", this);
-			}
-		} catch (IOException ex) {
-			Log.e(this.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(DBAgent.createDatabaseFile)" : ex.getMessage());
-
-		} finally {
-			try {
-				instr.close();
-			} catch (Exception ex) {
-				Log.e(this.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(DBAgent.createDatabaseFile)" : ex.getMessage());
-			}
-
-			try {
-				foutstr.close();
-			} catch (Exception ex) {
-				Log.e(this.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(DBAgent.createDatabaseFile)" : ex.getMessage());
-			}
-		}
-
-	}
+	
 
 	public void onConnectClick(View view) {
 		
@@ -88,7 +57,7 @@ public class SplashScreen extends Activity {
 			String serverAddress = ((EditText) this.findViewById(R.id.serverAddressEt)).getText().toString();
 			int serverPort = Integer.parseInt(((EditText) this.findViewById(R.id.serverPortEt)).getText().toString());
 			this.saveCloudInformation(stationId, stationKey, serverAddress, serverPort);
-			this.synchronize(new StationHandler(this, new Cloud(this, serverAddress, stationId, stationKey)));
+			this.synchronize(new StationHandler(this, new Cloud(this, serverAddress, serverPort, stationId, stationKey)));
 			Intent intent = new Intent(this, LauncherActivity.class);
 			this.startActivity(intent);
 			this.finish();
@@ -117,6 +86,44 @@ public class SplashScreen extends Activity {
 			throw e;
 		} catch (Exception e) {
 			throw e;
+		}
+	}
+	
+	private void copyDataFile(String fileName)
+	{
+		InputStream instr = null;
+		FileOutputStream foutstr = null;
+		File destinationFile = null;
+		try {
+			instr = this.getAssets().open(fileName);
+
+			byte[] buffer = new byte[1024000]; // 1 MB
+			instr.read(buffer);
+			destinationFile = new File(this.getFilesDir().getAbsolutePath() + "/" + fileName);
+			if (destinationFile.exists()) {
+				destinationFile.delete();
+			}
+			if (destinationFile.createNewFile()) {
+				foutstr = new FileOutputStream(destinationFile);
+				foutstr.write(buffer);
+			} else {
+				Utils.toastOnScreen("Failed to create file" + fileName, this);
+			}
+		} catch (IOException ex) {
+			Log.e(this.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(SplashScreen.copyDataFile)" : ex.getMessage());
+
+		} finally {
+			try {
+				instr.close();
+			} catch (Exception ex) {
+				Log.e(this.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(SplashScreen.copyDataFile)" : ex.getMessage());
+			}
+
+			try {
+				foutstr.close();
+			} catch (Exception ex) {
+				Log.e(this.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(SplashScreen.copyDataFile)" : ex.getMessage());
+			}
 		}
 	}
 

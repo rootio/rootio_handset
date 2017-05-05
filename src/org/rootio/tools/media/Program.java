@@ -7,7 +7,6 @@ import java.util.Date;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.rootio.tools.radio.ScheduleBroadcastHandler;
-import org.rootio.tools.utils.Utils;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;

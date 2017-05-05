@@ -1,14 +1,11 @@
 package org.rootio.tools.cloud;
 
 import java.net.InetAddress;
-import java.net.Inet6Address;
 
 import org.json.JSONObject;
 import org.rootio.radioClient.R;
-import org.rootio.tools.persistence.DBAgent;
 import org.rootio.tools.utils.Utils;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.util.Log;
 
@@ -35,8 +32,9 @@ public class Cloud {
 		this.loadCloudInfo();
 	}
 	
-	public Cloud(Context context, String serverAddress, int stationId, String serverKey) {
+	public Cloud(Context context, String serverAddress, int HTTPPort, int stationId, String serverKey) {
 		this.parent = context;
+		this.HTTPPort = HTTPPort;
 		this.serverAddress = serverAddress;
 		this.stationId = stationId;
 		this.serverKey = serverKey;
@@ -67,7 +65,7 @@ public class Cloud {
 	 * @return Integer representing the HTTP port of the cloud server
 	 */
 	public int getHTTPPort() {
-		return 80; // this.HTTPPort;
+		return this.HTTPPort;
 	}
 
 	/**
