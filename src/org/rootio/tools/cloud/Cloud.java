@@ -3,11 +3,14 @@ package org.rootio.tools.cloud;
 import java.net.InetAddress;
 import java.net.Inet6Address;
 
+import org.json.JSONObject;
+import org.rootio.radioClient.R;
 import org.rootio.tools.persistence.DBAgent;
 import org.rootio.tools.utils.Utils;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.util.Log;
 
 /**
  * This class is the representation of the cloud server
@@ -25,11 +28,18 @@ public class Cloud {
 	private String serverKey;
 	private int stationId;
 
-	private Context context;
+	private Context parent;
 
 	public Cloud(Context context) {
-		this.context = context;
+		this.parent = context;
 		this.loadCloudInfo();
+	}
+	
+	public Cloud(Context context, String serverAddress, int stationId, String serverKey) {
+		this.parent = context;
+		this.serverAddress = serverAddress;
+		this.stationId = stationId;
+		this.serverKey = serverKey;
 	}
 
 	/**
@@ -154,28 +164,17 @@ public class Cloud {
 	public void setStationId(int stationId) {
 		this.stationId = stationId;
 	}
-
-	/**
-	 * Fetches the configuration of the cloud server as it is stored in the
-	 * database
-	 */
+	
 	private void loadCloudInfo() {
-		/*
-		 * String tableName = "cloud"; String[] columnsToFetch = new String[] {
-		 * "ipaddress", "httpport", "ftpport", "rawtcpport",
-		 * "telephonenumber","username","password","serverkey", "stationid" };
-		 * DBAgent dbAgent = new DBAgent(this.context); String[][] cloudDetails
-		 * = dbAgent.getData(true, tableName, columnsToFetch, null, null, null,
-		 * null, null, null); if (cloudDetails.length > 0) {
-		 */this.IPAddress = Utils.parseInetAddressFromString("192.168.1.125");
-		this.serverAddress =  "[2001:690:2100:413:eea8:6bff:fef4:cc4b]";
-		this.HTTPPort = 80;
-		// this.telephoneNumber = cloudDetails[0][4];
-		// this.username = cloudDetails[0][5];
-		// this.password = cloudDetails[0][6];
-		this.stationId = 1;
-		this.serverKey = "60ywFlG74E";
-		// }
+		try {
+			JSONObject cloudInformation = Utils.getJSONFromFile(this.parent, this.parent.getFilesDir().getAbsolutePath() + "/cloud.json");
+			this.serverAddress = cloudInformation.optString("server_IP");
+			this.HTTPPort = cloudInformation.optInt("server_port");
+			this.stationId = cloudInformation.optInt("station_id");
+			this.serverKey = cloudInformation.optString("station_key");
+			
+		} catch (Exception ex) {
+			Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "NullPointer(Station.LoadStationInfo)" : ex.getMessage());
+		}
 	}
-
 }

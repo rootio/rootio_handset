@@ -18,7 +18,7 @@ public class Station {
 	private Context parent;
 	private InetAddress multicastIPAddress;
 	private int multicastPort;
-	
+
 	public Station(Context parent) {
 		this.parent = parent;
 		this.loadStationInfo();
@@ -94,7 +94,9 @@ public class Station {
 	private void loadStationInfo() {
 		try {
 			JSONObject stationInformation = Utils.getJSONFromFile(this.parent, this.parent.getFilesDir().getAbsolutePath() + "/station.json");
-			this.location = String.format("%s (lat/lng: %s,  %s)", stationInformation.getJSONObject("station").getJSONObject("location").optString("name"), stationInformation.getJSONObject("station").getJSONObject("location").optString("latitude"), stationInformation.getJSONObject("station").getJSONObject("location").optString("longitude"));
+			if (stationInformation.getJSONObject("station").has("location")) {
+				this.location = String.format("%s (lat/lng: %s,  %s)", stationInformation.getJSONObject("station").getJSONObject("location").optString("name"), stationInformation.getJSONObject("station").getJSONObject("location").optString("latitude"), stationInformation.getJSONObject("station").getJSONObject("location").optString("longitude"));
+			}
 			this.telephoneNumber = stationInformation.getJSONObject("station").optString("telephone");
 			this.name = stationInformation.getJSONObject("station").optString("name");
 			this.network = stationInformation.getJSONObject("station").optString("network");

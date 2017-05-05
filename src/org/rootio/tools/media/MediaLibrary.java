@@ -3,6 +3,8 @@ package org.rootio.tools.media;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import org.rootio.tools.utils.Utils;
+
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
@@ -29,9 +31,18 @@ public class MediaLibrary {
 		while (cursor.moveToNext()) {
 			this.mediaCatalog.put(cursor.getString(0), new Media(cursor.getString(0), cursor.getString(1), cursor.getLong(2), cursor.getString(3)));
 		}
+		cursor.close();
 	}
 
 	Media getMedia(String title) {
+		if(this.mediaCatalog.get(title) == null)
+		{
+			Utils.toastOnScreen("is null for "+title, this.parent);
+			for(String k : mediaCatalog.keySet())
+			{
+				Utils.toastOnScreen(k, this.parent);
+			}
+		}
 		return this.mediaCatalog.get(title);
 	}
 	

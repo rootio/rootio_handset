@@ -7,6 +7,7 @@ import java.util.Date;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.rootio.tools.radio.ScheduleBroadcastHandler;
+import org.rootio.tools.utils.Utils;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -144,8 +145,7 @@ public class Program implements Comparable<Program>, ScheduleNotifiable {
 	@Override
 	public void runProgram(int currentIndex) {
 		this.programActions.get(currentIndex).run();
-
-	}
+    }
 
 	@Override
 	public void stopProgram(Integer index) {

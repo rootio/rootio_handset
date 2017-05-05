@@ -71,6 +71,7 @@ public class PlayList implements OnCompletionListener, OnPreparedListener, OnErr
 	 */
 	public void load() {
 		if (this.programActionType == ProgramActionType.Media || this.programActionType == ProgramActionType.Music) {
+			
 			mediaList = loadMedia(this.arguments);
 			mediaIterator = mediaList.iterator();
 		}
@@ -249,11 +250,11 @@ public class PlayList implements OnCompletionListener, OnPreparedListener, OnErr
 			for (int i = 0; i < data.length; i++) {
 				if(playlist.equals("jingle"))
 				{
-					Utils.toastOnScreen(data[i][1], this.parent);
+					Utils.toastOnScreen(data[i][2], this.parent);
 				}
 				if (data[i][2].equals("1"))// songs
 				{
-					media.add(this.mediaLib.getMedia(data[i][0]));		
+					media.add(this.mediaLib.getMedia(data[i][1]));		
 				} else if (data[i][2].equals("2"))// albums
 				{
 					media.addAll(this.mediaLib.getMediaForAlbum(data[i][1]));
@@ -263,6 +264,7 @@ public class PlayList implements OnCompletionListener, OnPreparedListener, OnErr
 				}
 			}
 		}
+		
 		return media;
 	}
 

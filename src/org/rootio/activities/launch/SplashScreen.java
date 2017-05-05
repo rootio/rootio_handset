@@ -81,27 +81,37 @@ public class SplashScreen extends Activity {
 	}
 
 	public void onConnectClick(View view) {
-		String stationId = ((EditText) this.findViewById(R.id.stationIdEt)).getText().toString();
-		String stationKey = ((EditText) this.findViewById(R.id.stationKeyEt)).getText().toString();
+		
 		try {
-			this.saveCloudInformation(stationId, stationKey);
-			this.synchronize(new StationHandler(this, new Cloud(this)));
+			int stationId = Integer.parseInt(((EditText) this.findViewById(R.id.stationIdEt)).getText().toString());
+			String stationKey = ((EditText) this.findViewById(R.id.stationKeyEt)).getText().toString();
+			String serverAddress = ((EditText) this.findViewById(R.id.serverAddressEt)).getText().toString();
+			int serverPort = Integer.parseInt(((EditText) this.findViewById(R.id.serverPortEt)).getText().toString());
+			this.saveCloudInformation(stationId, stationKey, serverAddress, serverPort);
+			this.synchronize(new StationHandler(this, new Cloud(this, serverAddress, stationId, stationKey)));
 			Intent intent = new Intent(this, LauncherActivity.class);
 			this.startActivity(intent);
 			this.finish();
 		} catch (JSONException e) {
 			Utils.warnOnScreen(this, "Station information not saved, please try again");
-		} catch (Exception e) {
+		}  catch (NumberFormatException e)
+		{
+			Utils.warnOnScreen(this, "Station ID and Port number should be Integers");
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 			Utils.warnOnScreen(this, "Error encountered connecting to station. Please verify credentials and Internet connectivity");
 		}
+		
 	}
 
-	private void saveCloudInformation(String stationId, String stationKey) throws Exception {
+	private void saveCloudInformation(int stationId, String stationKey, String serverAddress, int serverPort) throws Exception {
 		JSONObject cloudInformation = Utils.getJSONFromFile(this, this.getFilesDir().getAbsolutePath() + "/cloud.json");
 		try {
 			cloudInformation.put("station_id", stationId);
 			cloudInformation.put("station_key", stationKey);
+			cloudInformation.put("server_IP", serverAddress);
+			cloudInformation.put("server_port", serverPort);
 			Utils.saveJSONToFile(this, cloudInformation, this.getFilesDir().getAbsolutePath() + "/cloud.json");
 		} catch (JSONException e) {
 			throw e;

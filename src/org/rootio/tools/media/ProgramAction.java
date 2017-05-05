@@ -1,11 +1,5 @@
 package org.rootio.tools.media;
 
-import java.util.Date;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.rootio.tools.utils.Utils;
-
 import android.content.Context;
 
 public class ProgramAction {
