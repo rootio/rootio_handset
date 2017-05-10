@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import org.rootio.radioClient.R;
+import org.rootio.handset.R;
 import org.rootio.tools.persistence.DBAgent;
 import org.rootio.tools.utils.Utils;
 
@@ -298,7 +298,6 @@ public class PlayList implements OnCompletionListener, OnPreparedListener, OnErr
 
 	void onReceiveCallSign(String Url) {
 
-		Utils.toastOnScreen("playing " + Url, this.parent);
 		try {
 			//if (this.mediaPlayer.isPlaying()) {
 				try {
@@ -392,7 +391,6 @@ public class PlayList implements OnCompletionListener, OnPreparedListener, OnErr
 		private void playCallSign() {
 			if(this.callSigns.size() < 1)
 				return;
-			Utils.toastOnScreen("FOund callsigns " + this.callSigns.size(), PlayList.this.parent);
 			if(!this.mediaIterator.hasNext()) {
 				this.mediaIterator = callSigns.iterator(); // reset the iterator to 0 if at the end
 			}

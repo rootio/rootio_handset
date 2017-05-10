@@ -2,7 +2,7 @@ package org.rootio.tools.telephony;
 
 import java.io.File;
 
-import org.rootio.radioClient.R;
+import org.rootio.handset.R;
 import org.rootio.tools.utils.Utils;
 
 import android.content.Context;

@@ -3,7 +3,7 @@ package org.rootio.tools.diagnostics;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
-import org.rootio.radioClient.R;
+import org.rootio.handset.R;
 import org.rootio.tools.utils.Utils;
 
 import android.app.ActivityManager;

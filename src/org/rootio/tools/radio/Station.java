@@ -3,7 +3,7 @@ package org.rootio.tools.radio;
 import java.net.InetAddress;
 
 import org.json.JSONObject;
-import org.rootio.radioClient.R;
+import org.rootio.handset.R;
 import org.rootio.tools.utils.Utils;
 
 import android.content.Context;

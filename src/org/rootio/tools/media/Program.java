@@ -64,8 +64,7 @@ public class Program implements Comparable<Program>, ScheduleNotifiable {
 		JSONArray programStructure;
 		try {
 			programStructure = new JSONArray(structure);
-           // if (programTypeId == "2") {
-				String[] playlists = new String[programStructure.length()];
+          	String[] playlists = new String[programStructure.length()];
 				for (int i = 0; i < programStructure.length(); i++) {
 					 if (programStructure.getJSONObject(i).getString("type").toLowerCase().equals("music"))//redundant, safe
 					 {
@@ -73,8 +72,8 @@ public class Program implements Comparable<Program>, ScheduleNotifiable {
 						playlists[i] = programStructure.getJSONObject(i).getString("name");
 					} 
 				}
-				this.programActions.add(new ProgramAction(this.parent, playlists, ProgramActionType.Music));
-			//}				
+				
+			this.programActions.add(new ProgramAction(this.parent, playlists, ProgramActionType.Music));
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

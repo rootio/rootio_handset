@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.rootio.radioClient"
-    android:versionCode="3"
-    android:versionName="1.4" >
+    package="org.rootio.handset"
+    android:versionCode="4"
+    android:versionName="2.0" >
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -42,7 +42,7 @@
         <activity android:name="org.rootio.activities.PhoneActivity" />
         <activity android:name="org.rootio.activities.DiagnosticActivity" />
         <activity android:name="org.rootio.activities.RadioPlaylistActivity" />
-        <activity android:name=".PhoneActivity" />
+        <activity android:name="org.rootio.radioClient.PhoneActivity" />
         <activity android:name="org.rootio.activities.stationDetails.StationActivity" />
         <activity android:name="org.rootio.activities.stationDetails.MulticastConfigurationActivity" />
         <activity android:name="org.rootio.activities.cloud.CloudActivity" />

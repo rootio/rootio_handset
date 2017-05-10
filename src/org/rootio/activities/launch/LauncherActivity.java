@@ -9,7 +9,7 @@ import org.rootio.activities.diagnostics.FrequencyActivity;
 import org.rootio.activities.services.ServicesActivity;
 import org.rootio.activities.stationDetails.StationActivity;
 import org.rootio.activities.telephoneLog.TelephoneLogActivity;
-import org.rootio.radioClient.R;
+import org.rootio.handset.R;
 import org.rootio.tools.utils.Utils;
 
 import android.app.PendingIntent;

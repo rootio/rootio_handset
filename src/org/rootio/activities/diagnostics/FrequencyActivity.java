@@ -2,7 +2,7 @@ package org.rootio.activities.diagnostics;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.rootio.radioClient.R;
+import org.rootio.handset.R;
 import org.rootio.tools.utils.Utils;
 
 import android.app.Activity;

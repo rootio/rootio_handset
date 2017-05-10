@@ -3,7 +3,7 @@ package org.rootio.tools.sms;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import org.rootio.radioClient.R;
+import org.rootio.handset.R;
 import org.rootio.tools.diagnostics.DiagnosticAgent;
 
 import android.content.Context;

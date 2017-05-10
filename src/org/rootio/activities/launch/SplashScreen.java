@@ -10,7 +10,7 @@ import java.io.InputStream;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.rootio.radioClient.R;
+import org.rootio.handset.R;
 import org.rootio.services.synchronization.StationHandler;
 import org.rootio.services.synchronization.SynchronizationHandler;
 import org.rootio.tools.cloud.Cloud;
@@ -62,7 +62,7 @@ public class SplashScreen extends Activity {
 			this.startActivity(intent);
 			this.finish();
 		} catch (JSONException e) {
-			Utils.warnOnScreen(this, "Station information not saved, please try again");
+			Utils.warnOnScreen(this, "Station information was not saved, please try again");
 		}  catch (NumberFormatException e)
 		{
 			Utils.warnOnScreen(this, "Station ID and Port number should be Integers");

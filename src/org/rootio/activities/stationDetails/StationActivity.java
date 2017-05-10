@@ -1,6 +1,6 @@
 package org.rootio.activities.stationDetails;
 
-import org.rootio.radioClient.R;
+import org.rootio.handset.R;
 import org.rootio.tools.radio.Station;
 
 import android.annotation.SuppressLint;

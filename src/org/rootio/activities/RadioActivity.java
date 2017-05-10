@@ -7,7 +7,7 @@ import org.rootio.activities.services.ServicesActivity;
 import org.rootio.activities.stationDetails.StationActivity;
 import org.rootio.activities.stationDetails.StationActivityAdapter;
 import org.rootio.activities.telephoneLog.TelephoneLogActivity;
-import org.rootio.radioClient.R;
+import org.rootio.handset.R;
 import org.rootio.services.Notifiable;
 import org.rootio.services.ProgramService;
 import org.rootio.services.ServiceConnectionAgent;

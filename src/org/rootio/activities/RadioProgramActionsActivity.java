@@ -2,7 +2,7 @@ package org.rootio.activities;
 
 import java.util.ArrayList;
 
-import org.rootio.radioClient.R;
+import org.rootio.handset.R;
 import org.rootio.services.Notifiable;
 import org.rootio.services.ProgramService;
 import org.rootio.services.ServiceConnectionAgent;

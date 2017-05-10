@@ -1,6 +1,6 @@
 package org.rootio.services;
 
-import org.rootio.radioClient.R;
+import org.rootio.handset.R;
 import org.rootio.tools.sms.MessageProcessor;
 import org.rootio.tools.sms.SMSSwitch;
 import org.rootio.tools.utils.Utils;

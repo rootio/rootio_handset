@@ -9,7 +9,7 @@ import java.io.IOException;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.rootio.radioClient.R;
+import org.rootio.handset.R;
 import org.rootio.tools.cloud.Cloud;
 
 import android.content.ContentResolver;

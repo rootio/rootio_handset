@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.Date;
 
 import org.rootio.activities.services.TelephonyEventNotifiable;
-import org.rootio.radioClient.R;
+import org.rootio.handset.R;
 import org.rootio.tools.media.Program;
 import org.rootio.tools.media.ScheduleNotifiable;
 import org.rootio.tools.persistence.DBAgent;

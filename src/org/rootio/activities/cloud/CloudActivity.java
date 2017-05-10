@@ -1,6 +1,6 @@
 package org.rootio.activities.cloud;
 
-import org.rootio.radioClient.R;
+import org.rootio.handset.R;
 import org.rootio.tools.cloud.Cloud;
 
 import android.annotation.SuppressLint;

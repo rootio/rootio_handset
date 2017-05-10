@@ -1,6 +1,6 @@
 package org.rootio.activities;
 
-import org.rootio.radioClient.R;
+import org.rootio.handset.R;
 import org.rootio.tools.media.Program;
 import org.rootio.tools.utils.Utils;
 

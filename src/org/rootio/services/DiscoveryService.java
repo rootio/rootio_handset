@@ -8,7 +8,7 @@ import java.net.UnknownHostException;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.rootio.radioClient.R;
+import org.rootio.handset.R;
 import org.rootio.tools.persistence.DBAgent;
 import org.rootio.tools.utils.Utils;
 

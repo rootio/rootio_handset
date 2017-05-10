@@ -1,6 +1,6 @@
 package org.rootio.activities.telephoneLog.lists;
 
-import org.rootio.radioClient.R;
+import org.rootio.handset.R;
 
 import android.app.Activity;
 import android.os.Bundle;

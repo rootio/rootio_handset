@@ -3,7 +3,7 @@ package org.rootio.activities.services;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import org.rootio.radioClient.R;
+import org.rootio.handset.R;
 import org.rootio.services.DiagnosticsService;
 import org.rootio.services.DiscoveryService;
 import org.rootio.services.Notifiable;

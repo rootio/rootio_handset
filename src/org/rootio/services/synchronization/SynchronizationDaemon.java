@@ -4,7 +4,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import org.json.JSONObject;
-import org.rootio.radioClient.R;
+import org.rootio.handset.R;
 import org.rootio.services.SynchronizationService;
 import org.rootio.tools.cloud.Cloud;
 import org.rootio.tools.utils.Utils;

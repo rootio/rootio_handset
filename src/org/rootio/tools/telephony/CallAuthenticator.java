@@ -6,7 +6,7 @@ import java.io.IOException;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.rootio.radioClient.R;
+import org.rootio.handset.R;
 
 import android.content.Context;
 import android.util.Log;

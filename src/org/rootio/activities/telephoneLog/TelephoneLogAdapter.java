@@ -3,7 +3,7 @@ package org.rootio.activities.telephoneLog;
 import java.util.ArrayList;
 import java.util.Date;
 
-import org.rootio.radioClient.R;
+import org.rootio.handset.R;
 import org.rootio.tools.utils.Utils;
 
 import android.annotation.SuppressLint;

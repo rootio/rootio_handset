@@ -15,7 +15,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.json.JSONObject;
-import org.rootio.radioClient.R;
+import org.rootio.handset.R;
 import org.rootio.tools.persistence.DBAgent;
 
 import android.annotation.SuppressLint;
