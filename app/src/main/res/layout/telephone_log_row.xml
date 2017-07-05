@@ -1,3 +1,4 @@
+<<<<<<< HEAD:app/src/main/res/layout/telephone_log_row.xml
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
@@ -76,4 +77,84 @@
         </TableLayout>
     </LinearLayout>
 
+=======
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <LinearLayout
+        android:id="@+id/telephone_log_llt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/activity_horizontal_margin"
+        android:background="@drawable/shadow_background"
+        android:orientation="horizontal"
+        android:padding="@dimen/activity_horizontal_margin" >
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:src="@drawable/telephone" />
+
+        <TableLayout
+            android:layout_width="fill_parent"
+            android:layout_height="50dp" >
+
+            <TableRow
+                android:id="@+id/tableRow1"
+                android:layout_width="match_parent"
+                android:layout_height="30dp" >
+
+                <TextView
+                    android:id="@+id/phone_number_tv"
+                    android:layout_span="3"
+                    android:layout_weight="100"
+                    android:padding="0dp"
+                    android:text="256718451574"
+                    android:textSize="28dp" >
+                </TextView>
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/tableRow2"
+                android:layout_width="match_parent"
+                android:layout_height="20dp" >
+
+                <TextView
+                    android:id="@+id/call_time_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:text="sample"
+                    android:textSize="10sp" >
+                </TextView>
+
+                <TextView
+                    android:id="@+id/call_type_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:text="sample"
+                    android:textSize="10sp" >
+                </TextView>
+
+                <TextView
+                    android:id="@+id/call_duration_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="5dp"
+                    android:text="sample"
+                    android:textSize="10sp" >
+                </TextView>
+            </TableRow>
+        </TableLayout>
+    </LinearLayout>
+
+>>>>>>> 89afe53294c2450f5d22d95d0c758218a27b93c9:res/layout/telephone_log_row.xml
 </LinearLayout>
