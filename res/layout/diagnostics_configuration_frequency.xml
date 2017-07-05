@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/beige_bg"
+    android:orientation="vertical" >
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" >
+
+</LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/activity_horizontal_margin"
+            android:background="@drawable/shadow_background"
+            android:orientation="horizontal"
+            android:padding="@dimen/activity_horizontal_margin" >
+        
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:text="@string/DiagnosticsFrequencyLabel"
+            android:textSize="@dimen/SmallerContentText"
+            android:textStyle="bold" >
+
+        </TextView>
+
+        <EditText
+            android:id="@+id/diagnostic_frequency_configuration_etv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:inputType="number" />
+
+        <Spinner
+            android:id="@+id/diagnostic_frequency_configuration_spn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:prompt="@string/DiagnosticsConfigurationFrequencyUnit" >
+
+        </Spinner>
+</LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:layout_marginTop="@dimen/activity_horizontal_margin"
+            android:background="@drawable/shadow_background"
+            android:orientation="vertical"
+            android:padding="@dimen/Smaller" >
+
+            <TextView
+                android:id="@+id/textView1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/DiagnosticsConfigurationNoteTitle"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/diagnostic_frequency_configuration_note_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/DiagnosticsConfigurationNoteMessage" />
+
+        </LinearLayout>
+
+        
+    </LinearLayout>
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_weight="0"
+        android:background="#ffD8D8D8"
+        android:gravity="center_horizontal"
+        android:padding="@dimen/ButtonPanelPadding" >
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onSave"
+            android:text="@string/SaveButtonText" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onCancel"
+            android:text="@string/CancelButtonText" />
+    </LinearLayout>
+
+</LinearLayout>

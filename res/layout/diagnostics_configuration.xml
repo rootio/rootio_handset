@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/beige_bg"
+    android:orientation="vertical" >
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="1dp"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_weight="1"
+        android:scrollbarAlwaysDrawVerticalTrack="false"
+        android:scrollbars="none|vertical" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="?android:attr/listDivider"
+            android:orientation="vertical"
+            android:showDividers="end" >
+
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/activity_horizontal_margin"
+                android:background="@drawable/shadow_background"
+                android:padding="@dimen/activity_horizontal_margin" >
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical" >
+
+                    <ImageView
+                        
+                        android:src="@drawable/battery"
+                         />
+
+                    <Switch
+                        android:id="@+id/battery_level_ctv"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:clickable="true"
+                        android:gravity="center_vertical"
+                        android:includeFontPadding="false"
+                        android:marqueeRepeatLimit="marquee_forever"
+                        android:maxLines="@integer/SwitchMaxLines"
+                        android:onClick="onCheck"
+                        android:paddingLeft="@dimen/Smaller"
+                        android:text="@string/BatteryConfigurationLabel"
+                        android:textOff="O"
+                        android:textOn="I"
+                        android:textSize="@dimen/ListingText"
+                        android:textStyle="normal" />
+
+                </TableRow>
+            </TableLayout>
+
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/activity_horizontal_margin"
+                android:background="@drawable/shadow_background"
+                android:padding="@dimen/activity_horizontal_margin" >
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_vertical"
+                    android:gravity="center_vertical" >
+
+                    <ImageView
+                        
+                        android:src="@drawable/gsm"
+                         />
+
+                    <Switch
+                        android:id="@+id/gsm_signal_ctv"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:clickable="true"
+                        android:gravity="center_vertical"
+                        android:longClickable="true"
+                        android:onClick="onCheck"
+                        android:paddingLeft="@dimen/Smaller"
+                        android:text="@string/GSMSignalLabel"
+                        android:textOff="O"
+                        android:textOn="I"
+                        android:textSize="@dimen/ListingText"
+                        android:textStyle="normal" />
+
+                </TableRow>
+            </TableLayout>
+            
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/activity_horizontal_margin"
+                android:background="@drawable/shadow_background"
+                android:padding="@dimen/activity_horizontal_margin" >
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_vertical"
+                    android:gravity="center_vertical" >
+
+                    <ImageView
+                       
+                        android:src="@drawable/wireless"
+                         />
+
+                    <Switch
+                        android:id="@+id/wireless_signal_ctv"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:clickable="true"
+                        android:gravity="center_vertical"
+                        android:longClickable="true"
+                        android:onClick="onCheck"
+                        android:paddingLeft="@dimen/Smaller"
+                        android:text="@string/WirelessSignal"
+                        android:textOff="O"
+                        android:textOn="I"
+                        android:textSize="@dimen/ListingText"
+                        android:textStyle="normal" />
+
+                </TableRow>
+            </TableLayout>
+            
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/activity_horizontal_margin"
+                android:background="@drawable/shadow_background"
+                android:padding="@dimen/activity_horizontal_margin" >
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_vertical"
+                    android:gravity="center_vertical" >
+
+                    <ImageView
+                       
+                        android:src="@drawable/storage"
+                        />
+
+                    <Switch
+                        android:id="@+id/storage_ctv"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:clickable="true"
+                        android:gravity="center_vertical"
+                        android:longClickable="true"
+                        android:onClick="onCheck"
+                        android:paddingLeft="@dimen/Smaller"
+                        android:text="@string/StorageLevelLabel"
+                        android:textOff="O"
+                        android:textOn="I"
+                        android:textSize="@dimen/ListingText"
+                        android:textStyle="normal" />
+
+                </TableRow>
+            </TableLayout>
+            
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/activity_horizontal_margin"
+                android:background="@drawable/shadow_background"
+                android:padding="@dimen/activity_horizontal_margin" >
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_vertical"
+                    android:gravity="center_vertical" >
+
+                    <ImageView android:src="@drawable/memory" />
+
+                    <Switch
+                        android:id="@+id/memory_usage_ctv"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:clickable="true"
+                        android:gravity="center_vertical"
+                        android:longClickable="true"
+                        android:onClick="onCheck"
+                        android:paddingLeft="@dimen/Smaller"
+                        android:text="@string/MemoryUtilizationLabel"
+                        android:textOff="O"
+                        android:textOn="I"
+                        android:textSize="@dimen/ListingText"
+                        android:textStyle="normal" />
+
+                </TableRow>
+            </TableLayout>
+            
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/activity_horizontal_margin"
+                android:background="@drawable/shadow_background"
+                android:padding="@dimen/activity_horizontal_margin" >
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_vertical"
+                    android:gravity="center_vertical" >
+
+                    <ImageView
+                        android:src="@drawable/location"
+                         />
+
+                    <Switch
+                        android:id="@+id/gps_location_ctv"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:clickable="true"
+                        android:gravity="center_vertical"
+                        android:longClickable="true"
+                        android:onClick="onCheck"
+                        android:paddingLeft="@dimen/Smaller"
+                        android:text="@string/GPSLocationLabel"
+                        android:textOff="O"
+                        android:textOn="I"
+                        android:textSize="@dimen/ListingText"
+                        android:textStyle="normal" />
+
+                </TableRow>
+            </TableLayout>
+            
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/activity_horizontal_margin"
+                android:background="@drawable/shadow_background"
+                android:padding="@dimen/activity_horizontal_margin" >
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_vertical"
+                    android:gravity="center_vertical" >
+
+                    <ImageView
+                        android:src="@drawable/processor" />
+
+                    <Switch
+                        android:id="@+id/cpu_usage_ctv"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:clickable="true"
+                        android:gravity="center_vertical"
+                        android:longClickable="true"
+                        android:onClick="onCheck"
+                        android:paddingLeft="@dimen/Smaller"
+                        android:text="@string/ProcessorConfigurationLabel"
+                        android:textOff="O"
+                        android:textOn="I"
+                        android:textSize="@dimen/ListingText" />
+
+                </TableRow>
+            </TableLayout>
+
+            </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

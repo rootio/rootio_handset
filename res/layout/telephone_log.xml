@@ -1,0 +1,17 @@
+<android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/swipe_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <ListView
+        android:id="@+id/call_log_lv"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@drawable/beige_bg"
+        android:divider="@null"
+        android:dividerHeight="0dp"
+        android:paddingBottom="1dp"
+        android:showDividers="none" >
+    </ListView>
+
+</android.support.v4.widget.SwipeRefreshLayout>

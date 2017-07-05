@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Rootio</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="StationDetailsItem">Station Details</string>
+    <string name="CloudDetailsItem">Cloud Details</string>
+    <string name="TelephonyDetailsItem">Telephony Details</string>
+    <string name="QuitItem">Quit</string>
+    <string name="BlackListMenuItem">Blacklist</string>
+    <string name="WhiteListMenuItem">Whitelist</string>
+    <string name="RemoveNumberFromList">Remove</string>
+    <string name="UncheckAll">Uncheck all</string>
+    <string name="AddToBlackListLabel">"Number: "</string>
+    <string name="OkButtonText">OK</string>
+    <string name="CancelButtonText">Cancel</string>
+    <string name="AddToWhiteListLabel">Number:</string>
+    <string name="ButtonPanelBGColor">#ffD8D8D8</string>
+    <string name="BatteryConfigurationLabel">Battery Level</string>
+    <string name="GSMSignalLabel">GSM Signal</string>
+    <string name="WirelessSignal">WiFI Signal</string>
+    <string name="StorageLevelLabel">Storage</string>
+    <string name="MemoryUtilizationLabel">Memory</string>
+    <string name="GPSLocationLabel">GPS</string>
+    <string name="DiagnosticsMenuItem">Diagnostics</string>
+    <string name="ProcessorConfigurationLabel">CPU Usage</string>
+    <string name="SaveButtonText">Save</string>
+    <string name="DiagnosticsFrequencyLabel">Frequency:</string>
+    <string name="DiagnosticsConfigureFrequencyItem">Configure Frequency</string>
+    <string name="DiagnosticsConfigurationFrequencyUnit">Unit</string>
+    <string name="SynchronizationLogHttpLabel">HTTP:</string>
+    <string name="SynchronizationLogChangesLabel">Changes:</string>
+    <string name="SynchronizationMenuItem">Synchronization</string>
+    <string name="SynchronizationLogDownloadChangeDate">Change date:</string>
+    <string name="SynchronizationLogDownloadStatusLabel">Status:</string>
+    <string name="SynchronizationTimespanLabel">Sync in particular hours</string>
+    <string name="SynchronizationConfigureFrequencyStartTimeLabel">Start Time:</string>
+    <string name="SynchronizationConfigureFrequencyEndTimeLabel">End Time:</string>
+    <string name="SynchronizationConfigureFrequencyItem">Configure Frequency</string>
+    <string name="TelephonyServiceTitle">Telephony</string>
+    <string name="SMSServiceTitle">Messaging</string>
+    <string name="DiagnosticsServiceTitle">Diagnostics</string>
+    <string name="ProgramServiceTitle">Program</string>
+    <string name="SynchronizationServiceTitle">Sync</string>
+    <string name="StartServiceLabel">Start Service</string>
+    <string name="StopServiceLabel">Stop Service</string>
+    <string name="RestartServiceLabel">Restart Service</string>
+    <string name="DiscoveryServiceTitle">Discovery</string>
+    <string name="MulticastIPAddressLable">IP Address:</string>
+    <string name="MulticastPortLable">Port:</string>
+    <string name="MulticastNoteTitle">Please Note:</string>
+    <string name="MulticastNoteMessage">
+        <![CDATA[
+        When Setting a multicast please consider the following factors:
+        <br/>1) Multicast addresses range from <b>224.0.0.0</b> to <b>239.255.255.255</b>
+        <br/>2) Please be a dear and don\'t use any of the addresses listed <a href="http://en.wikipedia.org/wiki/Multicast_address">here</a>
+        <br/>3) Unless you have a reason not to, please use the default 239.255.1.2
+        ]]>
+    </string>
+    <string name="DiagnosticsConfigurationNoteTitle">Please note:</string>
+<string name="DiagnosticsConfigurationNoteMessage">
+        <![CDATA[
+        When Setting the diagnostic frequency please consider the following factors:
+        <br/>1) A very low frequency could lead to faster battery and storage depletion
+        <br/>2) A very low frequency leads to higher internet usage
+        <br/>3) A very high value could lead to misleading analysis of station performance
+        <br/>4) Unless you have a reason not to, please use the default 5 minutes
+        ]]>
+    </string>
+<string name="SynchronizationFrequencyNoteTitle">Please Note:</string>
+<string name="SynchronizationConfigurationNoteMessage">
+        <![CDATA[
+        When Setting the synchronization frequency please consider the following factors:
+        <br/>1) A very low frequency could lead to faster battery and storage depletion
+        <br/>2) A very low frequency leads to higher internet usage
+        <br/>3) A very low value could lead to delay in getting critical station information
+        <br/>4) Unless you have a reason not to, please use the default 1 hour
+        ]]>
+    </string>
+</resources>
