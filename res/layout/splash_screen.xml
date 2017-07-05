@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:background="@drawable/antenna_faded"
+    android:gravity="center|center_vertical"
+    android:orientation="vertical" >
+
+ <LinearLayout
+     android:layout_width="match_parent"
+     android:layout_height="match_parent"
+     android:layout_marginBottom="@dimen/activity_horizontal_margin"
+     android:layout_marginLeft="@dimen/activity_vertical_margin"
+     android:layout_marginRight="@dimen/activity_vertical_margin"
+     android:layout_marginTop="@dimen/activity_vertical_margin"
+     android:layout_weight="100"
+     android:background="#88FFFFFF"
+     android:orientation="vertical" >
+
+     <LinearLayout
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:layout_gravity="center_vertical|center_horizontal"
+         android:layout_marginTop="@dimen/activity_vertical_margin"
+         android:gravity="center_horizontal" >
+
+         <TextView
+             android:id="@+id/TextView01"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:layout_marginRight="@dimen/ButtonPanelPadding"
+             android:layout_weight="60"
+             android:gravity="right"
+             android:text="@string/StationKey"
+             android:textAlignment="textEnd"
+             android:textAppearance="?android:attr/textAppearanceMedium" />
+
+         <EditText
+             android:id="@+id/stationKeyEt"
+             android:layout_width="fill_parent"
+             android:layout_height="wrap_content"
+             android:layout_weight="40"
+             android:ems="10"
+             android:inputType="textPassword" />
+
+     </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/activity_vertical_margin" >
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/ButtonPanelPadding"
+            android:layout_weight="60"
+            android:gravity="right"
+            android:text="@string/StationID"
+            android:textAlignment="inherit"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <EditText
+            android:id="@+id/stationIdEt"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="40"
+            android:ems="10" >
+
+            <requestFocus />
+        </EditText>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/activity_vertical_margin" >
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/ButtonPanelPadding"
+            android:layout_weight="60"
+            android:gravity="right"
+            android:text="Server Name:"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <EditText
+            android:id="@+id/serverAddressEt"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="40"
+            android:ems="10" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:layout_marginTop="@dimen/activity_vertical_margin" >
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/ButtonPanelPadding"
+            android:layout_weight="60"
+            android:gravity="right"
+            android:text="Port No.:"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <EditText
+            android:id="@+id/serverPortEt"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="40"
+            android:ems="10"
+            android:inputType="numberDecimal" />
+
+    </LinearLayout>
+   
+    </LinearLayout>
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom|center_horizontal"
+    android:background="#ffD8D8D8"
+    android:gravity="bottom|center_horizontal" >
+
+        <Button
+            android:id="@+id/button1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:onClick="onConnectClick"
+            android:text="@string/ConnectButton" />
+
+    </LinearLayout>
+</LinearLayout>
