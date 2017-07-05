@@ -1,9 +1,0 @@
-Decorator for services with serviceID and running info
-# Please enter the commit message for your changes. Lines starting
-# with '#' will be ignored, and an empty message aborts the commit.
-# On branch master
-# Changes to be committed:
-#   (use "git reset HEAD <file>..." to unstage)
-#
-#	new file:   src/org/rootio/services/ServiceInformationPublisher.java
-#
