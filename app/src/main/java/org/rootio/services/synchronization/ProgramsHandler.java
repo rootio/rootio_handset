@@ -12,6 +12,7 @@ import org.rootio.tools.utils.Utils;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 
 public class ProgramsHandler implements SynchronizationHandler {
 
@@ -29,6 +30,7 @@ public class ProgramsHandler implements SynchronizationHandler {
 
 	@Override
 	public void processJSONResponse(JSONObject synchronizationResponse) {
+		boolean hasChanges = false;
 		JSONArray results;
 		try {
 			results = synchronizationResponse.getJSONArray("scheduled_programs");
@@ -36,12 +38,21 @@ public class ProgramsHandler implements SynchronizationHandler {
 			for (int i = 0; i < results.length(); i++) {
 				this.deleteRecord(results.getJSONObject(i).getLong("scheduled_program_id"));
 				if (!results.getJSONObject(i).getBoolean("deleted")) {
+					hasChanges = true;
 					this.saveRecord(results.getJSONObject(i).getInt("scheduled_program_id"), results.getJSONObject(i).getString("name"), Utils.getDateFromString(results.getJSONObject(i).getString("start"), "yyyy-MM-dd'T'HH:mm:ss"), Utils.getDateFromString(results.getJSONObject(i).getString("end"), "yyyy-MM-dd'T'HH:mm:ss"), results.getJSONObject(i).getString("structure"), Utils.getDateFromString(results.getJSONObject(i).getString("updated_at"),"yyyy-MM-dd'T'HH:mm:ss"), results.getJSONObject(i).getString("program_type_id"));
 				}
+			}
+			if(hasChanges) { //TODO: Throw this only when changes affect schedule of the day
+				this.announceScheduleChange();
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}		
+	}
+
+	private void announceScheduleChange() {
+		Intent intent = new Intent("org.rootio.services.synchronization.SCHEDULE_CHANGE_EVENT");
+		this.parent.sendBroadcast(intent);
 	}
 
 	@Override
@@ -56,7 +67,10 @@ public class ProgramsHandler implements SynchronizationHandler {
 		{
 			return String.format("start=%sT00:00:00",Utils.getDateString(Calendar.getInstance().getTime(), "yyyy-MM-dd"));
 		}
-		return String.format("updated_since=%s",Utils.getDateString(Utils.getDateFromString(result[0][0], "yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd'T'HH:mm:ss"));
+		Calendar cal = Calendar.getInstance();
+        cal.setTime(Utils.getDateFromString(result[0][0], "yyyy-MM-dd HH:mm:ss"));
+        cal.add(Calendar.SECOND, 1); //Add 1 second, server side compares using greater or equal
+		return String.format("updated_since=%s",Utils.getDateString(cal.getTime(), "yyyy-MM-dd'T'HH:mm:ss"));
 	}
 	
 	private long saveRecord(int id, String name, Date start, Date end, String structure, Date updatedAt, String programTypeId)

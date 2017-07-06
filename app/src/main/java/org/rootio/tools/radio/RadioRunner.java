@@ -8,6 +8,7 @@ import java.util.Date;
 import org.rootio.activities.services.TelephonyEventNotifiable;
 import org.rootio.handset.R;
 import org.rootio.tools.media.Program;
+import org.rootio.tools.media.ScheduleChangeNotifiable;
 import org.rootio.tools.media.ScheduleNotifiable;
 import org.rootio.tools.persistence.DBAgent;
 import org.rootio.tools.utils.Utils;
@@ -25,20 +26,33 @@ enum State {
 };
 
 @SuppressLint("SimpleDateFormat")
-public class RadioRunner implements Runnable, TelephonyEventNotifiable, ScheduleNotifiable {
+public class RadioRunner implements Runnable, TelephonyEventNotifiable, ScheduleNotifiable, ScheduleChangeNotifiable {
 	private AlarmManager am;
 	private ScheduleBroadcastHandler br;
-	private PendingIntent pi;
+	private ArrayList<PendingIntent> pis;
 	private final Context parent;
 	private ArrayList<Program> programs;
 	private IntentFilter intentFilter;
 	private Integer runningProgramIndex = null;
 	private State state;
-	private final TelephonyEventBroadcastReceiver telephonyEventBroadcastReceiver;
+	private TelephonyEventBroadcastReceiver telephonyEventBroadcastReceiver;
+	private ScheduleChangeBroadcastHandler scheduleChangeNotificactionReceiver;
 
 	public RadioRunner(Context parent) {
 		this.parent = parent;
 		this.setUpAlarming();
+		listenForTelephonyEvents();
+		this.listenForScheduleChangeNotifications();
+	}
+
+	private void listenForTelephonyEvents() {
+		this.scheduleChangeNotificactionReceiver = new ScheduleChangeBroadcastHandler(this);
+		IntentFilter intentFilter = new IntentFilter();
+		intentFilter.addAction("org.rootio.services.synchronization.SCHEDULE_CHANGE_EVENT");
+		this.parent.registerReceiver(scheduleChangeNotificactionReceiver, intentFilter);
+	}
+
+	private void listenForScheduleChangeNotifications() {
 		this.telephonyEventBroadcastReceiver = new TelephonyEventBroadcastReceiver(this);
 		IntentFilter intentFilter = new IntentFilter();
 		intentFilter.addAction("org.rootio.services.telephony.TELEPHONY_EVENT");
@@ -57,6 +71,10 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
 
 	@Override
 	public void run() {
+		initialiseSchedule();
+	}
+
+	private void initialiseSchedule() {
 		this.programs = fetchPrograms();
 		this.schedulePrograms(programs);
 	}
@@ -155,6 +173,7 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
 	 */
 	private void schedulePrograms(ArrayList<Program> programs) {
 		IntentFilter intentFilter = new IntentFilter();
+		this.pis = new ArrayList<PendingIntent>();
 		for (int i = 0; i < programs.size(); i++) {
 			intentFilter.addAction("org.rootio.RadioRunner" + String.valueOf(i));
 		}
@@ -182,11 +201,24 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
 		try {
 			Intent intent = new Intent("org.rootio.RadioRunner" + String.valueOf(index));
 			intent.putExtra("index", index);
-			this.pi = PendingIntent.getBroadcast(parent, 0, intent, 0);
-			this.am.set(AlarmManager.RTC_WAKEUP, startTime.getTime(), this.pi);
+			PendingIntent pi = PendingIntent.getBroadcast(parent, 0, intent, 0);
+			this.am.set(AlarmManager.RTC_WAKEUP, startTime.getTime(), pi);
+			this.pis.add(pi);
 		} catch (Exception ex) {
 			Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(RadioRunner.addAlarmEvent)" : ex.getMessage());
 		}
+	}
+
+	/**
+	 * This clears all scheduled events
+	 */
+	private void resetSchedule()
+	{
+		for(PendingIntent pi : this.pis)
+		{
+			this.am.cancel(pi);
+		}
+		this.pis = new ArrayList<PendingIntent>();
 	}
 
 	/**
@@ -227,5 +259,11 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
 	boolean isExpired(int index) {
 		Calendar referenceCalendar = Calendar.getInstance();
 		return this.programs.get(index).getEndDate().compareTo(referenceCalendar.getTime()) <= 0;
+	}
+
+	@Override
+	public void notifyScheduleChange() {
+		this.resetSchedule();
+		this.initialiseSchedule();
 	}
 }
