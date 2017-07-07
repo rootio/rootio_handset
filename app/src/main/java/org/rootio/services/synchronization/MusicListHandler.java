@@ -11,6 +11,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.rootio.handset.R;
 import org.rootio.tools.cloud.Cloud;
+import org.rootio.tools.utils.Utils;
 
 import android.content.ContentResolver;
 import android.content.Context;
@@ -67,6 +68,7 @@ public class MusicListHandler implements SynchronizationHandler {
 
 	private JSONObject getSongList() {
 		JSONObject music = new JSONObject();
+		String artist, album, title;
 		Cursor cur = null;
 		try {
 			ContentResolver cr = this.parent.getContentResolver();
@@ -78,23 +80,31 @@ public class MusicListHandler implements SynchronizationHandler {
 
 			if (cur != null) {
 				count = cur.getCount();
+				Utils.toastOnScreen("found songs " + count, this.parent);
 
 				if (count > 0) {
 					while (cur.moveToNext()) {
 						JSONObject song = new JSONObject();
-						song.put("title", cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.TITLE)));
+
+
+						song.put("title", cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.TITLE)).replace("\u2019", "'").replace("\u2018","'"));
 						song.put("duration", cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.DURATION)));
 
-						if (!music.has(cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ARTIST)))) {
-							music.put(cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ARTIST)), new JSONObject());
+						artist = cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ARTIST)) == null ? "unknown" : cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ARTIST));
+						artist = artist.replace("\u2019", "'").replace("\u2018","'");
+						if (!music.has(artist)) {
+							music.put(artist, new JSONObject());
 						}
 
-						if (!music.getJSONObject(cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ARTIST))).has(cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM)))) {
-							music.getJSONObject(cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ARTIST))).put(cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM)), new JSONObject());
-							music.getJSONObject(cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ARTIST))).getJSONObject(cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM))).put("songs", new JSONArray());
+						album = cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM)) == null? "unknown" : cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM));
+						album = album.replace("\u2019", "'").replace("\u2018","'");
+
+						if (!music.getJSONObject(artist).has(album)) {
+							music.getJSONObject(artist).put(album, new JSONObject());
+							music.getJSONObject(artist).getJSONObject(album).put("songs", new JSONArray());
 						}
 
-						music.getJSONObject(cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ARTIST))).getJSONObject(cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ALBUM))).getJSONArray("songs").put(song);
+						music.getJSONObject(artist).getJSONObject(album).getJSONArray("songs").put(song);
 
 					}
 				}
