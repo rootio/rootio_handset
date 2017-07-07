@@ -376,7 +376,7 @@ public class PlayList implements OnCompletionListener, OnPreparedListener, OnErr
 			while (this.isRunning) {
 				try {
 					this.playCallSign();
-					Thread.sleep(120000);// 20 mins
+					Thread.sleep(1200000);// 20 mins
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
