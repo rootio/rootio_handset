@@ -80,7 +80,6 @@ public class MusicListHandler implements SynchronizationHandler {
 
 			if (cur != null) {
 				count = cur.getCount();
-				Utils.toastOnScreen("found songs " + count, this.parent);
 
 				if (count > 0) {
 					while (cur.moveToNext()) {

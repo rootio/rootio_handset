@@ -45,7 +45,7 @@ public class CallLogHandler implements SynchronizationHandler {
 		String[] args = new String[] { String.valueOf(this.getMaxId())};
 		try {
 			Cursor cur = cr.query(uri, columns, filter, args, sortOrder);
-            if (cur != null && cur.getCount() > 0) {
+			if (cur != null && cur.getCount() > 0) {
 				while (cur.moveToNext()) {
 					JSONObject callRecord = new JSONObject();
 					callRecord.put("call_uuid", cur.getLong(0));
@@ -77,13 +77,13 @@ public class CallLogHandler implements SynchronizationHandler {
 	@Override
 	public void processJSONResponse(JSONObject synchronizationResponse) {
 		JSONArray results;
-		long maxCallId = 0;
+		long maxCallId = this.getMaxId();
 		try {
 			results = synchronizationResponse.getJSONArray("results");
 
 			for (int i = 0; i < results.length(); i++) {
 				if (results.getJSONObject(i).getBoolean("status")) {
-					maxCallId = results.getJSONObject(i).getLong("id");
+					maxCallId = Math.max(results.getJSONObject(i).getLong("id"), maxCallId);
 					//this.parent.getContentResolver().delete(uri, CallLog.Calls._ID + " = ? ", new String[] { String.valueOf(results.getJSONObject(i).getLong("id")) });
 				}
 			}

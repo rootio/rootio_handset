@@ -82,17 +82,17 @@ public class SMSLogHandler implements SynchronizationHandler {
 	@Override
 	public void processJSONResponse(JSONObject synchronizationResponse) {
 		JSONArray results;
-		long maxSmsId = 0;
+		long maxSmsId = getMaxId();
 		try {
 			results = synchronizationResponse.getJSONArray("results");
 
 			for (int i = 0; i < results.length(); i++) {
 				if (results.getJSONObject(i).getBoolean("status")) {
-					maxSmsId = results.getJSONObject(i).getLong("id");
+					maxSmsId = Math.max(results.getJSONObject(i).getLong("id"), maxSmsId);
 					//this.parent.getContentResolver().delete(uri,  "_id = ? ", new String[] { String.valueOf(results.getJSONObject(i).getLong("id")) });
 				}
 			}
-			this.logLastId(maxSmsId);//This is unsafe. if some messages are unsynced, they are skipped
+			this.logLastId(maxSmsId);//This is unsafe. if some messages are unsynced, they are skipped for good
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
