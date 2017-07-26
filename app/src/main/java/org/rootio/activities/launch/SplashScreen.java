@@ -59,6 +59,7 @@ public class SplashScreen extends Activity {
 			this.saveCloudInformation(stationId, stationKey, serverAddress, serverPort);
 			this.synchronize(new StationHandler(this, new Cloud(this, serverAddress, serverPort, stationId, stationKey)));
 			Intent intent = new Intent(this, LauncherActivity.class);
+			intent.putExtra("isFirstTimeLaunch", true);
 			this.startActivity(intent);
 			this.finish();
 		} catch (JSONException e) {

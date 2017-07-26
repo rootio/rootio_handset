@@ -146,7 +146,7 @@ public class TelephonyService extends Service implements ServiceInformationPubli
 	 * incomingNumber
 	 */
 	public void handleCall(String incomingNumber) {
-		if (!new CallAuthenticator(this).isWhiteListed(incomingNumber)) {
+		if (new CallAuthenticator(this).isWhiteListed(incomingNumber)) {
 			this.sendTelephonyEventBroadcast(true);
 			pickCall();
 			// this.setupCallRecording(); //not possible on pockets

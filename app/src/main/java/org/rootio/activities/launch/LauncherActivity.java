@@ -10,6 +10,10 @@ import org.rootio.activities.services.ServicesActivity;
 import org.rootio.activities.stationDetails.StationActivity;
 import org.rootio.activities.telephoneLog.TelephoneLogActivity;
 import org.rootio.handset.R;
+import org.rootio.services.DiagnosticsService;
+import org.rootio.services.ProgramService;
+import org.rootio.services.SynchronizationService;
+import org.rootio.services.TelephonyService;
 import org.rootio.tools.utils.Utils;
 
 import android.app.PendingIntent;
@@ -68,6 +72,13 @@ public class LauncherActivity extends TabActivity {
 			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			startActivity(intent);
 			this.finish();
+		}
+		else if(this.getIntent().getBooleanExtra("isFirstTimeLaunch", false))
+		{
+			for (Intent intent : new Intent[] {new Intent(this, TelephonyService.class), new Intent(this, DiagnosticsService.class), new Intent(this, ProgramService.class), new Intent(this, SynchronizationService.class)})
+			{
+				this.startService(intent);
+			}
 		}
 	}
 
