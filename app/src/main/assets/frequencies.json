@@ -2,11 +2,11 @@
   "diagnostics" :
      { 
          "interval" : 50, 
-         "unit" : "minutes
+         "unit" : "minutes"
      }, 
   "synchronization" :
      { 
          "interval" : 50, 
-         "unit" : "minutes
+         "unit" : "minutes"
      }
 }

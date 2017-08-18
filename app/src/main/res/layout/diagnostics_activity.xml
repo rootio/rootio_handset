@@ -47,7 +47,6 @@
                 android:textSize="@dimen/DiagnosticTextSize" />
 
             <ImageView
-                android:id="@+id/imageView7"
                 android:layout_width="16dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
@@ -63,7 +62,6 @@
                 android:textSize="@dimen/DiagnosticTextSize" />
 
             <ImageView
-                android:id="@+id/imageView7"
                 android:layout_width="16dp"
                 android:layout_height="16dp"
                 android:layout_gravity="center_vertical"
@@ -102,7 +100,6 @@
             android:layout_marginLeft="@dimen/activity_horizontal_margin" >
 
             <ImageView
-                android:id="@+id/imageView7"
                 android:layout_width="16dp"
                 android:layout_height="16dp"
                 android:layout_gravity="center_vertical"
@@ -118,7 +115,6 @@
                 android:textSize="@dimen/DiagnosticTextSize" />
 
             <ImageView
-                android:id="@+id/imageView7"
                 android:layout_width="16dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
@@ -134,7 +130,6 @@
                 android:textSize="@dimen/DiagnosticTextSize" />
 
             <ImageView
-                android:id="@+id/imageView7"
                 android:layout_width="16dp"
                 android:layout_height="16dp"
                 android:layout_gravity="center_vertical"
@@ -173,7 +168,6 @@
             android:layout_marginLeft="@dimen/activity_horizontal_margin" >
 
             <ImageView
-                android:id="@+id/imageView7"
                 android:layout_width="16dp"
                 android:layout_height="16dp"
                 android:layout_gravity="center_vertical"
@@ -214,7 +208,6 @@
             android:layout_marginLeft="@dimen/activity_horizontal_margin" >
 
             <ImageView
-                android:id="@+id/imageView7"
                 android:layout_width="16dp"
                 android:layout_height="16dp"
                 android:layout_gravity="center_vertical"
@@ -230,7 +223,6 @@
                 android:textSize="@dimen/DiagnosticTextSize" />
 
             <ImageView
-                android:id="@+id/imageView7"
                 android:layout_width="16dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
@@ -246,7 +238,6 @@
                 android:textSize="@dimen/DiagnosticTextSize" />
 
             <ImageView
-                android:id="@+id/imageView7"
                 android:layout_width="16dp"
                 android:layout_height="16dp"
                 android:layout_gravity="center_vertical"
@@ -285,7 +276,6 @@
             android:layout_marginLeft="@dimen/activity_horizontal_margin" >
 
             <ImageView
-                android:id="@+id/imageView7"
                 android:layout_width="16dp"
                 android:layout_height="16dp"
                 android:layout_gravity="center_vertical"
@@ -301,7 +291,6 @@
                 android:textSize="@dimen/DiagnosticTextSize" />
 
             <ImageView
-                android:id="@+id/imageView7"
                 android:layout_width="16dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
@@ -317,7 +306,6 @@
                 android:textSize="@dimen/DiagnosticTextSize" />
 
             <ImageView
-                android:id="@+id/imageView7"
                 android:layout_width="16dp"
                 android:layout_height="16dp"
                 android:layout_gravity="center_vertical"
@@ -356,7 +344,6 @@
             android:layout_marginLeft="@dimen/activity_horizontal_margin" >
 
             <ImageView
-                android:id="@+id/imageView7"
                 android:layout_width="16dp"
                 android:layout_height="16dp"
                 android:layout_gravity="center_vertical"
@@ -372,7 +359,6 @@
                 android:textSize="@dimen/DiagnosticTextSize" />
 
             <ImageView
-                android:id="@+id/imageView7"
                 android:layout_width="16dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
@@ -388,8 +374,7 @@
                 android:textSize="@dimen/DiagnosticTextSize" />
 
             <ImageView
-                android:id="@+id/imageView7"
-                android:layout_width="16dp"
+                 android:layout_width="16dp"
                 android:layout_height="16dp"
                 android:layout_gravity="center_vertical"
                 android:src="@drawable/min" />
