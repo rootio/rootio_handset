@@ -58,10 +58,6 @@ public class SplashScreen extends Activity {
 			int serverPort = Integer.parseInt(((EditText) this.findViewById(R.id.serverPortEt)).getText().toString());
 			this.saveCloudInformation(stationId, stationKey, serverAddress, serverPort);
 			this.synchronize(new StationHandler(this, new Cloud(this, serverAddress, serverPort, stationId, stationKey)));
-			Intent intent = new Intent(this, LauncherActivity.class);
-			intent.putExtra("isFirstTimeLaunch", true);
-			this.startActivity(intent);
-			this.finish();
 		} catch (JSONException e) {
 			Utils.warnOnScreen(this, "Station information was not saved, please try again");
 		}  catch (NumberFormatException e)
@@ -72,9 +68,15 @@ public class SplashScreen extends Activity {
 			e.printStackTrace();
 			Utils.warnOnScreen(this, "Error encountered connecting to station. Please verify credentials and Internet connectivity");
 		}
-		
 	}
 
+	private void notifySynced()
+	{
+		Intent intent = new Intent(this, LauncherActivity.class);
+		intent.putExtra("isFirstTimeLaunch", true);
+		this.startActivity(intent);
+		this.finish();
+	}
 	private void saveCloudInformation(int stationId, String stationKey, String serverAddress, int serverPort) throws Exception {
 		JSONObject cloudInformation = Utils.getJSONFromFile(this, this.getFilesDir().getAbsolutePath() + "/cloud.json");
 		try {
@@ -138,11 +140,14 @@ public class SplashScreen extends Activity {
 			public void run() {
 				String synchronizationUrl = handler.getSynchronizationURL();
 				String response = Utils.doPostHTTP(synchronizationUrl, handler.getSynchronizationData().toString());
-				Utils.toastOnScreen(response, SplashScreen.this);
 				try {
+					SplashScreen.this.progressDialog.dismiss();
 					JSONObject responseJSON = new JSONObject(response);
 					handler.processJSONResponse(responseJSON);
+					Utils.toastOnScreen("Successfully connected to cloud server!", SplashScreen.this);
+					SplashScreen.this.notifySynced();
 				} catch (Exception ex) {
+					Utils.toastOnScreen("Error! Please check your internet connection and try Again", SplashScreen.this);
 					Log.e(SplashScreen.this.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(SynchronizationDaemon.synchronize)" : ex.getMessage());
 				}
 			}
