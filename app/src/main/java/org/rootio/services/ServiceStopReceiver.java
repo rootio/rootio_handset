@@ -6,16 +6,16 @@ import android.content.Intent;
 
 public class ServiceStopReceiver extends BroadcastReceiver {
 
-	ServiceStopNotifiable connectedActivity;
+    ServiceStopNotifiable connectedActivity;
 
-	public ServiceStopReceiver(ServiceStopNotifiable connectedActivity) {
-		this.connectedActivity = connectedActivity;
-	}
+    public ServiceStopReceiver(ServiceStopNotifiable connectedActivity) {
+        this.connectedActivity = connectedActivity;
+    }
 
-	@Override
-	public void onReceive(Context context, Intent intent) {
-		this.connectedActivity.notifyServiceStop(intent.getIntExtra("serviceId", 0));
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        this.connectedActivity.notifyServiceStop(intent.getIntExtra("serviceId", 0));
 
-	}
+    }
 
 }

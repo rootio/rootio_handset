@@ -13,51 +13,51 @@ import android.util.Log;
 
 public class CallAuthenticator {
 
-	private Context parent;
-	private JSONObject whiteList;
+    private Context parent;
+    private JSONObject whiteList;
 
-	public CallAuthenticator(Context parent) {
-		this.parent = parent;
-		this.whiteList = this.loadWhiteList();
-	}
+    public CallAuthenticator(Context parent) {
+        this.parent = parent;
+        this.whiteList = this.loadWhiteList();
+    }
 
-	private JSONObject loadWhiteList() {
-		FileInputStream instr = null;
-		try {
-			File whitelistFile = new File(this.parent.getFilesDir().getAbsolutePath() + "whitelist.json");
-			
-			instr = new FileInputStream(whitelistFile);
-			byte[] buffer = new byte[1024];
-			instr.read(buffer);
-			return new JSONObject(new String(buffer));
-		} catch (IOException ex) {
-			Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "NullPointerException(CallAuthenticator.loadWhitelist)" : ex.getMessage());
-		} catch (JSONException ex) {
-			Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "NullPointerException(CallAuthenticator.loadWhitelist)" : ex.getMessage());
-		} finally {
-			try {
-				instr.close();
-			} catch (Exception ex) {
-				Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "NullPointerException(CallAuthenticator.loadWhitelist)" : ex.getMessage());
-			}
-		}
-		return null;
-	}
+    private JSONObject loadWhiteList() {
+        FileInputStream instr = null;
+        try {
+            File whitelistFile = new File(this.parent.getFilesDir().getAbsolutePath() + "whitelist.json");
 
-	public boolean isWhiteListed(String phoneNumber) {
-		try {
-			String sanitizedPhoneNumber = this.sanitizePhoneNumber(phoneNumber);
-			return this.whiteList.getJSONArray("whitelist").toString().contains(sanitizedPhoneNumber); // potentially
-																										// problematic
-		} catch (JSONException ex) {
-			Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "NullPointerException(CallAuthenticator.isWhiteListed)" : ex.getMessage());
-		} catch (NullPointerException ex) {
-			Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "NullPointerException(CallAuthenticator.isWhiteListed)" : ex.getMessage());
-		}
-		return false;
-	}
+            instr = new FileInputStream(whitelistFile);
+            byte[] buffer = new byte[1024];
+            instr.read(buffer);
+            return new JSONObject(new String(buffer));
+        } catch (IOException ex) {
+            Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "NullPointerException(CallAuthenticator.loadWhitelist)" : ex.getMessage());
+        } catch (JSONException ex) {
+            Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "NullPointerException(CallAuthenticator.loadWhitelist)" : ex.getMessage());
+        } finally {
+            try {
+                instr.close();
+            } catch (Exception ex) {
+                Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "NullPointerException(CallAuthenticator.loadWhitelist)" : ex.getMessage());
+            }
+        }
+        return null;
+    }
 
-	private String sanitizePhoneNumber(String phoneNumber) {
-		return phoneNumber.trim();
-	}
+    public boolean isWhiteListed(String phoneNumber) {
+        try {
+            String sanitizedPhoneNumber = this.sanitizePhoneNumber(phoneNumber);
+            return this.whiteList.getJSONArray("whitelist").toString().contains(sanitizedPhoneNumber); // potentially
+            // problematic
+        } catch (JSONException ex) {
+            Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "NullPointerException(CallAuthenticator.isWhiteListed)" : ex.getMessage());
+        } catch (NullPointerException ex) {
+            Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "NullPointerException(CallAuthenticator.isWhiteListed)" : ex.getMessage());
+        }
+        return false;
+    }
+
+    private String sanitizePhoneNumber(String phoneNumber) {
+        return phoneNumber.trim();
+    }
 }

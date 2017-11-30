@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.rootio.services.synchronization;
 
@@ -11,33 +11,32 @@ import android.content.Context;
 
 /**
  * @author Jude Mukundane, M-ITI/IST-UL
- *
  */
 public class StationHandler implements SynchronizationHandler {
-	private Context parent;
-	private Cloud cloud;
+    private Context parent;
+    private Cloud cloud;
 
-	public StationHandler(Context parent, Cloud cloud) {
-		this.parent = parent;
-		this.cloud = cloud;
-	}
+    public StationHandler(Context parent, Cloud cloud) {
+        this.parent = parent;
+        this.cloud = cloud;
+    }
 
-	public JSONObject getSynchronizationData() {
-		return new JSONObject();
-	}
+    public JSONObject getSynchronizationData() {
+        return new JSONObject();
+    }
 
-	/**
-	 * Breaks down the information in the JSON file for program and schedule information
-	 * 
-	 * @param programDefinition The JSON program definition received from the cloud server
-	 */
-	public void processJSONResponse(JSONObject synchronizationResponse) {
-		Utils.saveJSONToFile(this.parent, synchronizationResponse, this.parent.getFilesDir().getAbsolutePath() + "/station.json");
-	}
+    /**
+     * Breaks down the information in the JSON file for program and schedule information
+     *
+     * @param programDefinition The JSON program definition received from the cloud server
+     */
+    public void processJSONResponse(JSONObject synchronizationResponse) {
+        Utils.saveJSONToFile(this.parent, synchronizationResponse, this.parent.getFilesDir().getAbsolutePath() + "/station.json");
+    }
 
-	@Override
-	public String getSynchronizationURL() {
-		return String.format("http://%s:%s/%s/%s/information?api_key=%s", this.cloud.getServerAddress(), this.cloud.getHTTPPort(), "api/station", this.cloud.getStationId(), this.cloud.getServerKey());	
-	}
+    @Override
+    public String getSynchronizationURL() {
+        return String.format("http://%s:%s/%s/%s/information?api_key=%s", this.cloud.getServerAddress(), this.cloud.getHTTPPort(), "api/station", this.cloud.getStationId(), this.cloud.getServerKey());
+    }
 
 }

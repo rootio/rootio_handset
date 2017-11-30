@@ -5,5 +5,5 @@ package org.rootio.tools.media;
  */
 
 public interface ScheduleChangeNotifiable {
-     void notifyScheduleChange();
+    void notifyScheduleChange();
 }
