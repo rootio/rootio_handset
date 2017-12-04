@@ -10,14 +10,18 @@ import org.rootio.activities.services.ServicesActivity;
 import org.rootio.activities.stationDetails.StationActivity;
 import org.rootio.activities.telephoneLog.TelephoneLogActivity;
 import org.rootio.handset.R;
+import org.rootio.services.DefaultErrorHandler;
 import org.rootio.services.DiagnosticsService;
+import org.rootio.services.DiscoveryService;
 import org.rootio.services.ProgramService;
+import org.rootio.services.SMSService;
 import org.rootio.services.SynchronizationService;
 import org.rootio.services.TelephonyService;
 import org.rootio.tools.utils.Utils;
 
 import android.app.PendingIntent;
 import android.app.TabActivity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -35,6 +39,9 @@ public class LauncherActivity extends TabActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        DefaultErrorHandler deh = new DefaultErrorHandler();
+
         setContentView(R.layout.activity_main);
 
         Resources ressources = getResources();
@@ -60,6 +67,9 @@ public class LauncherActivity extends TabActivity {
         tabHost.setCurrentTab(0);
 
         Utils.setContext(this.getBaseContext());
+
+        //in the event that this is relaunched on app crash
+        this.startServices();
     }
 
     @Override
@@ -117,6 +127,52 @@ public class LauncherActivity extends TabActivity {
             default:
                 return super.onContextItemSelected(item);
         }
+    }
+
+    public void startServices() {
+        for (int serviceId : new int[]{1, 2, 3, 4,5}) // only vitals
+        {
+            //ServiceState serviceState = new ServiceState(context, serviceId);
+            // if(serviceState.getServiceState() > 0)//service was started
+            // {
+            Intent intent = this.getIntentToLaunch(this, serviceId);
+            this.startService(intent);
+            // }
+        }
+
+    }
+
+    /**
+     * Gets the intent to be used to launch the service with the specified
+     * serviceId
+     *
+     * @param context   The context to be used in creating the intent
+     * @param serviceId The ID of the service for which to create the intent
+     * @return
+     */
+    private Intent getIntentToLaunch(Context context, int serviceId) {
+        Intent intent = null;
+        switch (serviceId) {
+            case 1: // telephony service
+                intent = new Intent(context, TelephonyService.class);
+                break;
+            case 2: // SMS service
+                intent = new Intent(context, SMSService.class);
+                break;
+            case 3: // Diagnostic Service
+                intent = new Intent(context, DiagnosticsService.class);
+                break;
+            case 4: // Program Service
+                intent = new Intent(context, ProgramService.class);
+                break;
+            case 5: // Sync Service
+                intent = new Intent(context, SynchronizationService.class);
+                break;
+            case 6: // Discovery Service
+                intent = new Intent(context, DiscoveryService.class);
+                break;
+        }
+        return intent;
     }
 
 }
