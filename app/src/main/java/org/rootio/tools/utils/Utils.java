@@ -28,7 +28,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.os.Handler;
-import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -125,19 +124,19 @@ public class Utils {
     @SuppressLint("NewApi")
     public static void doNotification(ContextWrapper contextWrapper, String title, String content, int icon, boolean autoCancel, PendingIntent contentIntent, NotificationAction[] notificationActions) {
 
-        android.support.v4.app.NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(contextWrapper);
-        notificationBuilder = notificationBuilder.setContentTitle(title);
-        notificationBuilder = notificationBuilder.setContentText(content);
-        notificationBuilder = notificationBuilder.setContentIntent(contentIntent);
-        notificationBuilder.setSmallIcon(icon);
-        notificationBuilder = notificationBuilder.setAutoCancel(autoCancel);
-
-        for (int i = 0; notificationActions != null && i < notificationActions.length && i < 2; i++) {
-            notificationBuilder = notificationBuilder.addAction(notificationActions[i].getIconId(), notificationActions[i].getTitle(), notificationActions[i].getPendingIntent());
-        }
-        Notification notification = notificationBuilder.build();
-        NotificationManager notificationManager = (NotificationManager) contextWrapper.getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify(1, notification);
+//        android.support.v4.app.NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(contextWrapper);
+//        notificationBuilder = notificationBuilder.setContentTitle(title);
+//        notificationBuilder = notificationBuilder.setContentText(content);
+//        notificationBuilder = notificationBuilder.setContentIntent(contentIntent);
+//        notificationBuilder.setSmallIcon(icon);
+//        notificationBuilder = notificationBuilder.setAutoCancel(autoCancel);
+//
+//        for (int i = 0; notificationActions != null && i < notificationActions.length && i < 2; i++) {
+//            notificationBuilder = notificationBuilder.addAction(notificationActions[i].getIconId(), notificationActions[i].getTitle(), notificationActions[i].getPendingIntent());
+//        }
+//        Notification notification = notificationBuilder.build();
+//        NotificationManager notificationManager = (NotificationManager) contextWrapper.getSystemService(Context.NOTIFICATION_SERVICE);
+//        notificationManager.notify(1, notification);
     }
 
     public static void handle(Runnable runnable) {

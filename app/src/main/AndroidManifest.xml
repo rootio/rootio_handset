@@ -35,17 +35,17 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
-        android:label="@string/app_name"
-        android:theme="@style/AppBaseTheme" android:logo="@drawable/ic_launcher">
+        android:label="@string/app_name">
+        <!--android:icon="@drawable/ic_launcher"-->
+        <!--android:theme="@style/AppBaseTheme" android:logo="@drawable/ic_launcher"-->
         <activity android:name="org.rootio.activities.RadioActivity" />
         <activity android:name="org.rootio.activities.DiagnosticActivity" />
         <activity android:name="org.rootio.activities.stationDetails.StationActivity" />
-         <activity android:name="org.rootio.activities.cloud.CloudActivity" />
+        <activity android:name="org.rootio.activities.cloud.CloudActivity" />
         <activity android:name="org.rootio.activities.telephoneLog.lists.WhitelistActivity" />
         <activity android:name="org.rootio.activities.telephoneLog.TelephoneLogActivity" />
         <activity android:name="org.rootio.activities.diagnostics.FrequencyActivity" />
-       <activity android:name="org.rootio.activities.services.ServicesActivity" >
+        <activity android:name="org.rootio.activities.services.ServicesActivity" >
         </activity>
         <activity android:name="org.rootio.activities.launch.SplashScreen" />
         <activity

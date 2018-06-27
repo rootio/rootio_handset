@@ -72,7 +72,7 @@ public class EventTime {
      *
      * @return Long id of the row saved in the Rootio database
      */
-    @org.jetbrains.annotations.NotNull
+//    @org.jetbrains.annotations.NotNull
     private Long persist() {
         String tableName = "eventtime";
         ContentValues data = new ContentValues();
