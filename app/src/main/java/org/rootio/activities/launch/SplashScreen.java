@@ -51,11 +51,10 @@ public class SplashScreen extends Activity {
 
         try {
             int stationId = Integer.parseInt(((EditText) this.findViewById(R.id.stationIdEt)).getText().toString());
-            String stationKey = ((EditText) this.findViewById(R.id.stationKeyEt)).getText().toString();
             String serverAddress = ((EditText) this.findViewById(R.id.serverAddressEt)).getText().toString();
             int serverPort = Integer.parseInt(((EditText) this.findViewById(R.id.serverPortEt)).getText().toString());
-            this.saveCloudInformation(stationId, stationKey, serverAddress, serverPort);
-            this.synchronize(new StationHandler(this, new Cloud(this, serverAddress, serverPort, stationId, stationKey)));
+            this.saveCloudInformation(stationId, serverAddress, serverPort);
+            this.synchronize(new StationHandler(this, new Cloud(this, serverAddress, serverPort, stationId)));
         } catch (JSONException e) {
             Utils.warnOnScreen(this, "Station information was not saved, please try again");
         } catch (NumberFormatException e) {
@@ -73,11 +72,10 @@ public class SplashScreen extends Activity {
         this.finish();
     }
 
-    private void saveCloudInformation(int stationId, String stationKey, String serverAddress, int serverPort) throws Exception {
+    private void saveCloudInformation(int stationId, String serverAddress, int serverPort) throws Exception {
         JSONObject cloudInformation = Utils.getJSONFromFile(this, this.getFilesDir().getAbsolutePath() + "/cloud.json");
         try {
             cloudInformation.put("station_id", stationId);
-            cloudInformation.put("station_key", stationKey);
             cloudInformation.put("server_IP", serverAddress);
             cloudInformation.put("server_port", serverPort);
             Utils.saveJSONToFile(this, cloudInformation, this.getFilesDir().getAbsolutePath() + "/cloud.json");
