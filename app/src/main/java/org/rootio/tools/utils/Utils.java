@@ -37,47 +37,16 @@ import android.widget.Toast;
 public class Utils {
 
     private static Handler handler = new Handler();
-    public static View currentView;
-    public static boolean isLoaded = false;
-
-    public static void setCurrentView(View view) {
-        Utils.currentView = view;
-    }
 
     public static void setContext(Context context) {
     }
 
-    public static Long getCountryId(String countryName) {
-        return 1l;
-    }
-
-    public static Long getGenreId(String genreName) {
-        return 1l;
-    }
-
-    public static Long getMediaId(String mediaTitle) {
-        return 1l;
-    }
 
     public static Long getEventTimeId(Context parent, long programId, Date scheduleDate, int duration) {
         String tableName = "eventtime";
         String[] columns = new String[]{"id"};
         String whereClause = "programid = ? and duration = ? and scheduledate = ?";
         String[] whereArgs = new String[]{String.valueOf(programId), String.valueOf(duration), Utils.getDateString(scheduleDate, "yyyy-MM-dd HH:mm:ss")};
-        DBAgent dbAgent = new DBAgent(parent);
-        String[][] results = dbAgent.getData(true, tableName, columns, whereClause, whereArgs, null, null, null, null);
-        return results.length > 0 ? Long.parseLong(results[0][0]) : 0l;
-    }
-
-    public static Long getTimeSpanId(String name, Date StartDate, Date EndDate) {
-        return 1l;
-    }
-
-    public static Long getProgramId(Context parent, String title, long cloudId) {
-        String tableName = "program";
-        String[] columns = new String[]{"id"};
-        String whereClause = "title = ? and cloudid = ?";
-        String[] whereArgs = new String[]{title, String.valueOf(cloudId)};
         DBAgent dbAgent = new DBAgent(parent);
         String[][] results = dbAgent.getData(true, tableName, columns, whereClause, whereArgs, null, null, null, null);
         return results.length > 0 ? Long.parseLong(results[0][0]) : 0l;
@@ -98,13 +67,6 @@ public class Utils {
         new AlertDialog.Builder(triggerActivity).setIcon(R.drawable.attention).setTitle("Warning").setMessage(message).setNeutralButton("Close", null).show();
     }
 
-    public static void askOnScreen(String question) {
-
-    }
-
-    public static void informOnScreen(Activity triggerActivity, String message) {
-        new AlertDialog.Builder(triggerActivity).setIcon(R.drawable.information).setTitle("Info").setMessage(message).setNeutralButton("Close", null).show();
-    }
 
     public static void doNotification(ContextWrapper contextWrapper, String title, String content, int icon) {
         Utils.doNotification(contextWrapper, title, content, icon, true, null);
@@ -114,9 +76,6 @@ public class Utils {
         Utils.doNotification(contextWrapper, title, content, R.drawable.ic_launcher);
     }
 
-    public static void doNotification(ContextWrapper contextWrapper, String title, String content, int icon, boolean autoCancel) {
-        Utils.doNotification(contextWrapper, title, content, icon, autoCancel, null);
-    }
 
     public static void doNotification(ContextWrapper contextWrapper, String title, String content, int icon, boolean autoCancel, PendingIntent contentIntent) {
         Utils.doNotification(contextWrapper, title, content, icon, autoCancel, contentIntent, null);
@@ -144,82 +103,6 @@ public class Utils {
         Utils.handler.post(runnable);
     }
 
-    public static String doHTTP(String httpUrl) {
-        URL url;
-        try {
-            url = new URL(httpUrl);
-            HttpURLConnection httpUrlConnection = (HttpURLConnection) url.openConnection();
-            httpUrlConnection.setRequestMethod("GET");
-            // httpUrlConnection.setDoOutput(true);
-            httpUrlConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-            httpUrlConnection.connect();
-            InputStream instr = httpUrlConnection.getInputStream();
-            StringBuilder response = new StringBuilder();
-            while (true) {
-                int tmp = instr.read();
-                if (tmp < 0) {
-                    break;
-                }
-                response.append((char) tmp);
-            }
-            return response.toString();
-        } catch (MalformedURLException e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-            return null;
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    public static String doPostHTTP(String httpUrl, ContentValues data) {
-        URL url;
-        try {
-            url = new URL(httpUrl);
-            StringBuilder parameters = new StringBuilder();
-            for (String key : data.keySet()) {
-                parameters.append(String.format("%s=%s&", key, data.get(key)));
-            }
-            HttpURLConnection httpUrlConnection = (HttpURLConnection) url.openConnection();
-            httpUrlConnection.setRequestMethod("POST");
-            httpUrlConnection.setDoOutput(true);
-            httpUrlConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-            httpUrlConnection.connect();
-            OutputStream outstr = httpUrlConnection.getOutputStream();
-            outstr.write(parameters.toString().getBytes());
-            outstr.flush();
-            InputStream instr = httpUrlConnection.getInputStream();
-            StringBuilder response = new StringBuilder();
-            while (true) {
-                int tmp = instr.read();
-                if (tmp < 0) {
-                    break;
-                }
-                response.append((char) tmp);
-            }
-            return response.toString();
-        } catch (MalformedURLException e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-            return null;
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    public static boolean validateNumber(String input) {
-        try {
-            @SuppressWarnings("unused")
-            int i = Integer.parseInt(input);
-            return true;
-        } catch (NumberFormatException ex) {
-            return false;
-        }
-    }
 
     public static String getCurrentDateAsString(String format) {
         SimpleDateFormat sdf = new SimpleDateFormat(format);
@@ -268,14 +151,6 @@ public class Utils {
     public static double parseDoubleFromString(String input) {
         try {
             return Double.parseDouble(input);
-        } catch (Exception ex) {
-            return 0;
-        }
-    }
-
-    public static float parseFloatFromString(String input) {
-        try {
-            return Float.parseFloat(input);
         } catch (Exception ex) {
             return 0;
         }
@@ -362,5 +237,14 @@ public class Utils {
             e.printStackTrace();
             return null;
         }
+    }
+
+    /**
+     * Check to see if this phone is connected to a station in the cloud. This is done by looking for config files that are created when a station is connected
+     * @return True if connected, false if not connected
+     */
+    public static boolean isConnectedToStation(Context context)
+    {
+        return new File(context.getFilesDir().getAbsolutePath() + "/station.json").exists();
     }
 }

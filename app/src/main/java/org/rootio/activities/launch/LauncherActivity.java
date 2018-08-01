@@ -34,30 +34,27 @@ import android.widget.TabHost.TabSpec;
 @SuppressWarnings("deprecation")
 public class LauncherActivity extends TabActivity {
 
-    PendingIntent crashIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        DefaultErrorHandler deh = new DefaultErrorHandler();
-
         setContentView(R.layout.activity_main);
 
-        Resources ressources = getResources();
+        Resources resources = getResources();
         TabHost tabHost = getTabHost();
 
         // Radio tab
         Intent intentRadio = new Intent().setClass(this, RadioActivity.class);
-        TabSpec tabSpecRadio = tabHost.newTabSpec("Radio").setIndicator("", ressources.getDrawable(R.drawable.radio)).setContent(intentRadio);
+        TabSpec tabSpecRadio = tabHost.newTabSpec("Radio").setIndicator("", resources.getDrawable(R.drawable.radio)).setContent(intentRadio);
 
         // Phone tab
         Intent intentPhone = new Intent().setClass(this, TelephoneLogActivity.class);
-        TabSpec tabSpecCalls = tabHost.newTabSpec("Calls").setIndicator("", ressources.getDrawable(R.drawable.telephone)).setContent(intentPhone);
+        TabSpec tabSpecCalls = tabHost.newTabSpec("Calls").setIndicator("", resources.getDrawable(R.drawable.telephone)).setContent(intentPhone);
 
         // Diagnostics tab
         Intent intentDiagnostics = new Intent().setClass(this, DiagnosticActivity.class);
-        TabSpec tabSpecDiagnostics = tabHost.newTabSpec("Diagnostics").setIndicator("", ressources.getDrawable(R.drawable.diagnostic)).setContent(intentDiagnostics);
+        TabSpec tabSpecDiagnostics = tabHost.newTabSpec("Diagnostics").setIndicator("", resources.getDrawable(R.drawable.diagnostic)).setContent(intentDiagnostics);
 
         tabHost.addTab(tabSpecRadio);
         tabHost.addTab(tabSpecCalls);
@@ -69,13 +66,16 @@ public class LauncherActivity extends TabActivity {
         Utils.setContext(this.getBaseContext());
 
         //in the event that this is relaunched on app crash
-        this.startServices();
+        if(Utils.isConnectedToStation(this))
+        {
+            this.startServices();
+        }
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        if (!new File(this.getFilesDir().getAbsolutePath() + "/station.json").exists()) {
+        if (!Utils.isConnectedToStation(this)) {
             Intent intent = new Intent(this, SplashScreen.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);

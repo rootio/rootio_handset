@@ -117,7 +117,7 @@ public class PlayList implements OnCompletionListener, OnPreparedListener{
     private void startPlayer() {
 
         AudioManager audioManager = (AudioManager) this.parent.getSystemService(Context.AUDIO_SERVICE);
-        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC) - 2, AudioManager.FLAG_SHOW_UI);
+        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC) - (BuildConfig.DEBUG ? 7 : 2), AudioManager.FLAG_SHOW_UI);
 
         //First streams, then audio
         try {

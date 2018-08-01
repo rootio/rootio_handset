@@ -7,11 +7,16 @@ import org.rootio.tools.telephony.CallAuthenticator;
 import org.rootio.tools.telephony.CallRecorder;
 import org.rootio.tools.utils.Utils;
 
+import android.Manifest;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.media.AudioManager;
+import android.os.Build;
 import android.os.IBinder;
+import android.support.v4.app.ActivityCompat;
+import android.telecom.TelecomManager;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.view.KeyEvent;
@@ -23,6 +28,7 @@ public class TelephonyService extends Service implements ServiceInformationPubli
     private boolean isRunning;
     private final int serviceId = 1;
     private TelephonyManager telephonyManager;
+    private TelecomManager telecomManager;
     private PhoneCallListener listener;
     private boolean wasStoppedOnPurpose = true;
     private CallRecorder callRecorder;
@@ -87,6 +93,7 @@ public class TelephonyService extends Service implements ServiceInformationPubli
      * Listens for Telephony activity coming into the phone
      */
     private void waitForCalls() {
+        this.telecomManager = (TelecomManager) this.getSystemService(Context.TELECOM_SERVICE);
         this.telephonyManager = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
         listener = new PhoneCallListener();
         telephonyManager.listen(listener, PhoneStateListener.LISTEN_CALL_STATE);
@@ -96,51 +103,73 @@ public class TelephonyService extends Service implements ServiceInformationPubli
      * Answers an incoming call
      */
     private void pickCall() {
-        if(BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG) {
             Utils.toastOnScreen("call ringing...", this);
         }
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Runtime.getRuntime().exec("input event " + KeyEvent.KEYCODE_HEADSETHOOK);
-                }
-                catch(Exception ex)
-                {
-                    ex.printStackTrace();
-                }
+        if (Build.VERSION.SDK_INT >= 26) //Oreo onwards
+        {
+            try {
+                Thread.sleep(500); //Otherwise the call proceeds to the system ringer. Tested on Samsung A6+
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-        }).start();
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ANSWER_PHONE_CALLS) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
+            this.telecomManager.acceptRingingCall();
+        }
+        else { //hail mary. This works only for Kitkat and below
 
-        Intent buttonUp = new Intent(Intent.ACTION_MEDIA_BUTTON);
-        Intent buttonDown = new Intent(Intent.ACTION_MEDIA_BUTTON);
-        buttonDown.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_HEADSETHOOK));
-        buttonUp.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_HEADSETHOOK));
-        try {
-            this.sendOrderedBroadcast(buttonDown, "android.permission.CALL_PRIVILEGED");
-            this.sendOrderedBroadcast(buttonUp, "android.permission.CALL_PRIVILEGED");
-        } catch (Exception e) {
-            e.printStackTrace();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Runtime.getRuntime().exec("input event " + KeyEvent.KEYCODE_HEADSETHOOK);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            }).start();
+
+            Intent buttonUp = new Intent(Intent.ACTION_MEDIA_BUTTON);
+            Intent buttonDown = new Intent(Intent.ACTION_MEDIA_BUTTON);
+            buttonDown.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_HEADSETHOOK));
+            buttonUp.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_HEADSETHOOK));
+            try {
+                this.sendOrderedBroadcast(buttonDown, "android.permission.CALL_PRIVILEGED");
+                this.sendOrderedBroadcast(buttonUp, "android.permission.CALL_PRIVILEGED");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            Intent headSetUnPluggedintent = new Intent(Intent.ACTION_HEADSET_PLUG);
+            headSetUnPluggedintent.addFlags(Intent.FLAG_RECEIVER_REGISTERED_ONLY);
+            headSetUnPluggedintent.putExtra("state", 1); // 0 = unplugged 1 =
+            // Headset with
+            // microphone 2 =
+            // Headset without
+            // microphone
+            headSetUnPluggedintent.putExtra("name", "Headset");
+            try {
+                this.sendOrderedBroadcast(headSetUnPluggedintent, null);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
-        Intent headSetUnPluggedintent = new Intent(Intent.ACTION_HEADSET_PLUG);
-        headSetUnPluggedintent.addFlags(Intent.FLAG_RECEIVER_REGISTERED_ONLY);
-        headSetUnPluggedintent.putExtra("state", 1); // 0 = unplugged 1 =
-        // Headset with
-        // microphone 2 =
-        // Headset without
-        // microphone
-        headSetUnPluggedintent.putExtra("name", "Headset");
 
         // adjust the volume
         AudioManager audioManager = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
         audioManager.setStreamVolume(AudioManager.STREAM_VOICE_CALL, audioManager.getStreamMaxVolume(AudioManager.STREAM_VOICE_CALL), AudioManager.FLAG_SHOW_UI);
 
-        try {
-            this.sendOrderedBroadcast(headSetUnPluggedintent, null);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
     }
 
     /**
@@ -188,6 +217,11 @@ public class TelephonyService extends Service implements ServiceInformationPubli
 
             switch (state) {
                 case TelephonyManager.CALL_STATE_RINGING:
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                     handleCall(incomingNumber);
                     break;
                 case TelephonyManager.CALL_STATE_IDLE:
