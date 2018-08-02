@@ -2,364 +2,365 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/beige_bg" >
+    android:background="@drawable/beige_bg">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical" >
+        android:orientation="vertical">
 
-    <LinearLayout
-        android:id="@+id/telephony_service_lt"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top"
-        android:layout_margin="@dimen/activity_horizontal_margin"
-        android:background="@drawable/shadow_background"
-        android:longClickable="true"
-        android:orientation="horizontal"
-        android:paddingBottom="@dimen/Smaller"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
-        android:paddingTop="@dimen/Smaller" >
-
-        <ImageView
-            android:layout_width="32dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:src="@drawable/telephone" />
-
-        <TableLayout
+        <LinearLayout
+            android:id="@+id/telephony_service_lt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/Smaller" >
+            android:layout_gravity="top"
+            android:layout_margin="@dimen/activity_horizontal_margin"
+            android:background="@drawable/shadow_background"
+            android:longClickable="true"
+            android:orientation="horizontal"
+            android:paddingBottom="@dimen/Smaller"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:paddingTop="@dimen/Smaller">
 
-            <TableRow
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/telephone" />
+
+            <TableLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" >
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/Smaller">
 
-                <Switch
-                    android:id="@+id/telephony_service_swt"
+                <TableRow
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/TelephonyServiceTitle"
-                    android:textOff="O"
-                    android:textOn="I"
-                    android:textSize="@dimen/ListingText" />
+                    android:layout_height="wrap_content">
 
-            </TableRow>
+                    <Switch
+                        android:id="@+id/telephony_service_swt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/TelephonyServiceTitle"
+                        android:textOff="O"
+                        android:textOn="I"
+                        android:textSize="@dimen/ListingText" />
 
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" >
+                </TableRow>
 
-                <TextView
-                    android:id="@+id/telephony_service_tv"
+                <TableRow
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="last started at 2013-09-09 12:34:45" >
+                    android:layout_height="match_parent">
 
-                </TextView>
-            </TableRow>
-        </TableLayout>
-    </LinearLayout>
+                    <TextView
+                        android:id="@+id/telephony_service_tv"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="last started at 2013-09-09 12:34:45">
 
-<LinearLayout
-    android:id="@+id/sms_service_lt"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_gravity="top"
-    android:layout_marginBottom="@dimen/activity_horizontal_margin"
-    android:layout_marginLeft="@dimen/activity_horizontal_margin"
-    android:layout_marginRight="@dimen/activity_horizontal_margin"
-    android:background="@drawable/shadow_background"
-    android:longClickable="true"
-    android:orientation="horizontal"
-    android:paddingBottom="@dimen/Smaller"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/Smaller" >
+                    </TextView>
+                </TableRow>
+            </TableLayout>
+        </LinearLayout>
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:src="@drawable/message" />
-
-        <TableLayout
+        <LinearLayout
+            android:id="@+id/sms_service_lt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/Smaller" >
+            android:layout_gravity="top"
+            android:layout_marginBottom="@dimen/activity_horizontal_margin"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:background="@drawable/shadow_background"
+            android:longClickable="true"
+            android:orientation="horizontal"
+            android:paddingBottom="@dimen/Smaller"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:paddingTop="@dimen/Smaller">
 
-            <TableRow
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/message" />
+
+            <TableLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" >
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/Smaller">
 
-                <Switch
-                    android:id="@+id/messaging_service_swt"
+                <TableRow
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/SMSServiceTitle"
-                    android:textOff="O"
-                    android:textOn="I"
-                    android:textSize="@dimen/ListingText" >
+                    android:layout_height="wrap_content">
 
-                </Switch>
-            </TableRow>
+                    <Switch
+                        android:id="@+id/messaging_service_swt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/SMSServiceTitle"
+                        android:textOff="O"
+                        android:textOn="I"
+                        android:textSize="@dimen/ListingText">
 
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" >
+                    </Switch>
+                </TableRow>
 
-                <TextView
-                    android:id="@+id/messaging_service_tv"
+                <TableRow
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="last started at 2013-09-09 12:34:45" >
+                    android:layout_height="match_parent">
 
-                </TextView>
-            </TableRow>
-        </TableLayout>
-    </LinearLayout>
+                    <TextView
+                        android:id="@+id/messaging_service_tv"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="last started at 2013-09-09 12:34:45">
 
-<LinearLayout
-    android:id="@+id/diagnostic_service_lt"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_gravity="top"
-    android:layout_marginBottom="@dimen/activity_horizontal_margin"
-    android:layout_marginLeft="@dimen/activity_horizontal_margin"
-    android:layout_marginRight="@dimen/activity_horizontal_margin"
-    android:background="@drawable/shadow_background"
-    android:longClickable="true"
-    android:orientation="horizontal"
-    android:paddingBottom="@dimen/Smaller"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/Smaller" >
+                    </TextView>
+                </TableRow>
+            </TableLayout>
+        </LinearLayout>
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:src="@drawable/diagnostic" />
-
-        <TableLayout
+        <LinearLayout
+            android:id="@+id/diagnostic_service_lt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/Smaller" >
+            android:layout_gravity="top"
+            android:layout_marginBottom="@dimen/activity_horizontal_margin"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:background="@drawable/shadow_background"
+            android:longClickable="true"
+            android:orientation="horizontal"
+            android:paddingBottom="@dimen/Smaller"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:paddingTop="@dimen/Smaller">
 
-            <TableRow
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/diagnostic" />
+
+            <TableLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" >
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/Smaller">
 
-                <Switch
-                    android:id="@+id/diagnostics_service_swt"
+                <TableRow
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/DiagnosticsServiceTitle"
-                    android:textOff="O"
-                    android:textOn="I"
-                    android:textSize="@dimen/ListingText" >
+                    android:layout_height="wrap_content">
 
-                </Switch>
-            </TableRow>
+                    <Switch
+                        android:id="@+id/diagnostics_service_swt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/DiagnosticsServiceTitle"
+                        android:textOff="O"
+                        android:textOn="I"
+                        android:textSize="@dimen/ListingText">
 
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" >
+                    </Switch>
+                </TableRow>
 
-                <TextView
-                    android:id="@+id/diagnostics_service_tv"
+                <TableRow
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="last started at 2013-09-09 12:34:45" >
+                    android:layout_height="match_parent">
 
-                </TextView>
-            </TableRow>
-        </TableLayout>
-    </LinearLayout>
+                    <TextView
+                        android:id="@+id/diagnostics_service_tv"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="last started at 2013-09-09 12:34:45">
 
-<LinearLayout
-    android:id="@+id/program_service_lt"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_gravity="top"
-    android:layout_marginBottom="@dimen/activity_horizontal_margin"
-    android:layout_marginLeft="@dimen/activity_horizontal_margin"
-    android:layout_marginRight="@dimen/activity_horizontal_margin"
-    android:background="@drawable/shadow_background"
-    android:longClickable="true"
-    android:orientation="horizontal"
-    android:paddingBottom="@dimen/Smaller"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/Smaller" >
+                    </TextView>
+                </TableRow>
+            </TableLayout>
+        </LinearLayout>
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:src="@drawable/calendar" />
-
-        <TableLayout
+        <LinearLayout
+            android:id="@+id/program_service_lt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/Smaller" >
+            android:layout_gravity="top"
+            android:layout_marginBottom="@dimen/activity_horizontal_margin"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:background="@drawable/shadow_background"
+            android:longClickable="true"
+            android:orientation="horizontal"
+            android:paddingBottom="@dimen/Smaller"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:paddingTop="@dimen/Smaller">
 
-            <TableRow
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/calendar" />
+
+            <TableLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" >
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/Smaller">
 
-                <Switch
-                    android:id="@+id/program_service_swt"
+                <TableRow
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/ProgramServiceTitle"
-                    android:textOff="O"
-                    android:textOn="I"
-                    android:textSize="@dimen/ListingText" >
+                    android:layout_height="wrap_content">
 
-                </Switch>
-            </TableRow>
+                    <Switch
+                        android:id="@+id/program_service_swt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/ProgramServiceTitle"
+                        android:textOff="O"
+                        android:textOn="I"
+                        android:textSize="@dimen/ListingText">
 
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" >
+                    </Switch>
+                </TableRow>
 
-                <TextView
-                    android:id="@+id/program_service_tv"
+                <TableRow
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="last started at 2013-09-09 12:34:45" >
+                    android:layout_height="match_parent">
 
-                </TextView>
-            </TableRow>
-        </TableLayout>
-    </LinearLayout>
+                    <TextView
+                        android:id="@+id/program_service_tv"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="last started at 2013-09-09 12:34:45">
 
-<LinearLayout
-    android:id="@+id/sync_service_lt"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_gravity="top"
-    android:layout_marginBottom="@dimen/activity_horizontal_margin"
-    android:layout_marginLeft="@dimen/activity_horizontal_margin"
-    android:layout_marginRight="@dimen/activity_horizontal_margin"
-    android:background="@drawable/shadow_background"
-    android:longClickable="true"
-    android:orientation="horizontal"
-    android:paddingBottom="@dimen/Smaller"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/Smaller" >
+                    </TextView>
+                </TableRow>
+            </TableLayout>
+        </LinearLayout>
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:src="@drawable/synchronize" />
-
-        <TableLayout
+        <LinearLayout
+            android:id="@+id/sync_service_lt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/Smaller" >
+            android:layout_gravity="top"
+            android:layout_marginBottom="@dimen/activity_horizontal_margin"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:background="@drawable/shadow_background"
+            android:longClickable="true"
+            android:orientation="horizontal"
+            android:paddingBottom="@dimen/Smaller"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:paddingTop="@dimen/Smaller">
 
-            <TableRow
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/synchronize" />
+
+            <TableLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" >
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/Smaller">
 
-                <Switch
-                    android:id="@+id/sync_service_swt"
+                <TableRow
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:scrollHorizontally="false"
-                    android:text="@string/SynchronizationServiceTitle"
-                    android:textOff="O"
-                    android:textOn="I"
-                    android:textSize="@dimen/ListingText" >
+                    android:layout_height="wrap_content">
 
-                </Switch>
-            </TableRow>
+                    <Switch
+                        android:id="@+id/sync_service_swt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:scrollHorizontally="false"
+                        android:text="@string/SynchronizationServiceTitle"
+                        android:textOff="O"
+                        android:textOn="I"
+                        android:textSize="@dimen/ListingText">
 
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" >
+                    </Switch>
+                </TableRow>
 
-                <TextView
-                    android:id="@+id/sync_service_tv"
+                <TableRow
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="last started at 2013-09-09 12:34:45" >
+                    android:layout_height="match_parent">
 
-                </TextView>
-            </TableRow>
-        </TableLayout>
-    </LinearLayout>
+                    <TextView
+                        android:id="@+id/sync_service_tv"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="last started at 2013-09-09 12:34:45">
 
-<LinearLayout
-    android:id="@+id/discovery_service_lt"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_gravity="top"
-    android:layout_marginBottom="@dimen/activity_horizontal_margin"
-    android:layout_marginLeft="@dimen/activity_horizontal_margin"
-    android:layout_marginRight="@dimen/activity_horizontal_margin"
-    android:background="@drawable/shadow_background"
-    android:longClickable="true"
-    android:orientation="horizontal"
-    android:paddingBottom="@dimen/Smaller"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/Smaller" >
+                    </TextView>
+                </TableRow>
+            </TableLayout>
+        </LinearLayout>
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:src="@drawable/multicast" />
-
-        <TableLayout
+        <LinearLayout
+            android:id="@+id/sip_service_lt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/Smaller" >
+            android:layout_gravity="top"
+            android:layout_marginBottom="@dimen/activity_horizontal_margin"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:background="@drawable/shadow_background"
+            android:longClickable="true"
+            android:orientation="horizontal"
+            android:paddingBottom="@dimen/Smaller"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:paddingTop="@dimen/Smaller">
 
-            <TableRow
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/sip_phone" />
+
+            <TableLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" >
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/Smaller">
 
-                <Switch
-                    android:id="@+id/discovery_service_swt"
+                <TableRow
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/DiscoveryServiceTitle"
-                    android:textOff="O"
-                    android:textOn="I"
-                    android:textSize="@dimen/ListingText" >
+                    android:layout_height="wrap_content">
 
-                </Switch>
-            </TableRow>
+                    <Switch
+                        android:id="@+id/sip_service_swt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/SipServiceTitle"
+                        android:textOff="O"
+                        android:textOn="I"
+                        android:textSize="@dimen/ListingText">
 
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" >
+                    </Switch>
+                </TableRow>
 
-                <TextView
-                    android:id="@+id/discovery_service_tv"
+                <TableRow
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="last started at 2013-09-09 12:34:45" >
+                    android:layout_height="match_parent">
 
-                </TextView>
-            </TableRow>
-        </TableLayout>
+                    <TextView
+                        android:id="@+id/sip_service_tv"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="last started at 2013-09-09 12:34:45">
+
+                    </TextView>
+                </TableRow>
+            </TableLayout>
+        </LinearLayout>
+
+
     </LinearLayout>
-
-</LinearLayout>
 </ScrollView>

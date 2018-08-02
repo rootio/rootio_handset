@@ -88,4 +88,5 @@
     <string name="StationID">Station ID:</string>
     <string name="StationKey">Station Key:</string>
     <string name="ConnectButton">Connect</string>
+    <string name="SipServiceTitle">SIP</string>
 </resources>
