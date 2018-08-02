@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <string name="app_name">RootIO</string>
+    <string name="action_settings">Definições</string>
+    <string name="hello_world">Olá Mundo!</string>
+    <string name="StationDetailsItem">Detalhes Estação</string>
+    <string name="CloudDetailsItem">Detalhes Cloud</string>
+    <string name="TelephonyDetailsItem">Telephony Details</string>
+    <string name="QuitItem">Sair</string>
+    <string name="BlackListMenuItem">Lista Negra</string>
+    <string name="WhiteListMenuItem">Lista Branca</string>
+    <string name="RemoveNumberFromList">Remove</string>
+    <string name="UncheckAll">Deselecionar Todos</string>
+    <string name="AddToBlackListLabel">"Numero: "</string>
+    <string name="OkButtonText">OK</string>
+    <string name="CancelButtonText">Cancelar</string>
+    <string name="AddToWhiteListLabel">Numero:</string>
+    <string name="ButtonPanelBGColor">#ffD8D8D8</string>
+    <string name="BatteryConfigurationLabel">Nivel de Bateria</string>
+    <string name="GSMSignalLabel">Sinal GSM </string>
+    <string name="WirelessSignal">Sinal WiFI </string>
+    <string name="StorageLevelLabel">Armazenamento</string>
+    <string name="MemoryUtilizationLabel">Memoria</string>
+    <string name="GPSLocationLabel">GPS</string>
+    <string name="DiagnosticsMenuItem">Diagnosticos</string>
+    <string name="ProcessorConfigurationLabel">Utilização CPU</string>
+    <string name="SaveButtonText">Gravar</string>
+    <string name="DiagnosticsFrequencyLabel">Frequencia:</string>
+    <string name="DiagnosticsConfigureFrequencyItem">Configurar Frequencia</string>
+    <string name="DiagnosticsConfigurationFrequencyUnit">Unidade</string>
+    <string name="SynchronizationLogHttpLabel">HTTP:</string>
+    <string name="SynchronizationLogChangesLabel">Mudanças:</string>
+    <string name="SynchronizationMenuItem">Sincronização</string>
+    <string name="SynchronizationLogDownloadChangeDate">Mudar data:</string>
+    <string name="SynchronizationLogDownloadStatusLabel">Estado:</string>
+    <string name="SynchronizationTimespanLabel">Sincronizar com as Horas</string>
+    <string name="SynchronizationConfigureFrequencyStartTimeLabel">Tempo Inicial :</string>
+    <string name="SynchronizationConfigureFrequencyEndTimeLabel">Tempo Final:</string>
+    <string name="SynchronizationConfigureFrequencyItem">Configurar Frequencia</string>
+    <string name="TelephonyServiceTitle">Telefonia</string>
+    <string name="SMSServiceTitle">Mensagens</string>
+    <string name="DiagnosticsServiceTitle">Diagnosticos</string>
+    <string name="ProgramServiceTitle">Programa</string>
+    <string name="SynchronizationServiceTitle">Sincronização</string>
+    <string name="StartServiceLabel">Iniciar Serviço</string>
+    <string name="StopServiceLabel">Parar Serviço</string>
+    <string name="RestartServiceLabel">Reiniciar Serviço</string>
+    <string name="DiscoveryServiceTitle">Discovery</string>
+    <string name="MulticastIPAddressLable">Endereço IP:</string>
+    <string name="MulticastPortLable">Port:</string>
+    <string name="MulticastNoteTitle">Atenção:</string>
+    <string name="CloudIAddress">Endereço da Cloud IP:</string>
+    <string name="ServerKey">Chave do Servidor:</string>
+    <string name="ServerName">Nome do Servidor:</string>
+    <string name="Duration">Duração:</string>
+    <string name="StartTime">Tempo de Inicio:</string>
+    <string name="StationFrequency">Frequência da Estação:</string>
+    <string name="StationName">Nome da Estação:</string>
+
+    <string name="MulticastNoteMessage">
+
+<![CDATA[
+       Ao definir um multicast, considere os seguintes fatores:
+         <br/> 1) Os endereços multicast variam entre <b> 224.0.0.0 </ b> e <b> 239.255.255.255 </ b>
+         <br/> 2) Por favor, seja querido e não use nenhum dos endereços listados <a href="http://en.wikipedia.org/wiki/Multicast_address"> aqui </a>
+         <br/> 3) A menos que você tenha uma razão, por favor use o padrão 239.255.1.2
+         ]]>
+    </string>
+    <string name="DiagnosticsConfigurationNoteTitle">Atenção:</string>
+    <string name="DiagnosticsConfigurationNoteMessage">
+<![CDATA[
+        Ao definir a frequência de sincronização, considere os seguintes fatores:
+         <br/> 1) Uma frequência muito baixa pode levar a um esgotamento mais rápido da bateria e do armazenamento
+         <br/> 2) Uma frequência muito baixa leva a um maior uso da internet
+         <br/> 3) Um valor muito alto pode levar a uma má análise do desempenho da estação
+         <br/> 4) A menos que você tenha uma razão, por favor utilize o padrão de 5 minutos
+         ]]>
+    </string>
+    <string name="SynchronizationFrequencyNoteTitle">Atenção:</string>
+    <string name="SynchronizationConfigurationNoteMessage">
+<![CDATA[
+        Ao definir a frequência de diagnóstico, considere os seguintes fatores:
+         <br/> 1) Uma frequência muito baixa pode levar a um esgotamento mais rápido da bateria e do armazenamento
+         <br/> 2) Uma frequência muito baixa leva a um maior uso da internet
+         <br/> 3) Um valor muito alto pode levar a uma má análise do desempenho da estação
+         <br/> 4) A menos que você tenha uma razão, por favor utilize o padrão de 1 hora
+         ]]>
+    </string>
+    <string name="SynchronizationEnableData">Ativar dados</string>
+    <string name="sync_frequency_label">Frequência de Sincronização</string>
+    <string name="FrequencyMenuItem">Frequências</string>
+    <string name="DiagnosticFrequencyInformation">Configuração não encontrada</string>
+    <string name="DiagnosticFrequencyConfiguration">Esta é a frequência na qual o serviço de diagnóstico tenta anotar vários indicadores de desempenho sobre o estado do telefone.</string>
+    <string name="SyncFrequencyInfo">Configuração não encontrada</string>
+    <string name="SyncFrequencyConfiguration">Essa é a frequência na qual o serviço de diagnóstico tenta entrar em contato com o servidor fazer o upload e o download de informações</string>
+    <string name="StationID">ID da Estação:</string>
+    <string name="StationKey">ID da Chave:</string>
+    <string name="ConnectButton">Conectar</string>
+    <string name="HTTPPort">HTTP Port:</string>
+    <string name="Network">Rede:</string>
+    <string name="StationLocation">Localização da Estação:</string>
+    <string name="Telephone">Telemóvel:</string>
+    <string name="MulticastIP">Multicast IP:</string>
+    <string name="MulticastPort">Multicast Port:</string>
+
+</resources>
