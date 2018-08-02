@@ -41,7 +41,7 @@
 
             <TableRow>
 
-                <TextView android:text="Start Time:" />
+                <TextView android:text="@string/StartTime" />
 
                 <TextView
                     android:id="@+id/program_starttime_tv"
@@ -49,7 +49,7 @@
 
                 <TextView
                     android:layout_marginLeft="@dimen/Smaller"
-                    android:text="Duration:" />
+                    android:text="@string/Duration" />
 
                 <TextView
                     android:id="@+id/program_duration_tv"
