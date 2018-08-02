@@ -133,6 +133,11 @@ public class DiagnosticsService extends Service implements ServiceInformationPub
         return this.serviceId;
     }
 
+    @Override
+    public void sendEventBroadcast() {
+
+    }
+
     class DiagnosticsRunner implements Runnable {
         private DiagnosticAgent diagnosticAgent;
         private Context parentActivity;

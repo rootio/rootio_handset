@@ -243,7 +243,8 @@ public class TelephonyService extends Service implements ServiceInformationPubli
     /**
      * Sends out broadcasts informing listeners of change in service state
      */
-    private void sendEventBroadcast() {
+    @Override
+    public void sendEventBroadcast() {
         Intent intent = new Intent();
         intent.putExtra("serviceId", this.serviceId);
         intent.putExtra("isRunning", this.isRunning);

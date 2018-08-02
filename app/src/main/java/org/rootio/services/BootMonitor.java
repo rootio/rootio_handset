@@ -56,8 +56,8 @@ public class BootMonitor extends BroadcastReceiver {
             case 5: // Sync Service
                 intent = new Intent(context, SynchronizationService.class);
                 break;
-            case 6: // Discovery Service
-                intent = new Intent(context, DiscoveryService.class);
+            case 6: // SIP Service
+                intent = new Intent(context, SipService.class);
                 break;
         }
         return intent;

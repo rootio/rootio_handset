@@ -1,25 +1,5 @@
 package org.rootio.activities.launch;
 
-import java.io.File;
-
-import org.rootio.activities.DiagnosticActivity;
-import org.rootio.activities.RadioActivity;
-import org.rootio.activities.cloud.CloudActivity;
-import org.rootio.activities.diagnostics.FrequencyActivity;
-import org.rootio.activities.services.ServicesActivity;
-import org.rootio.activities.stationDetails.StationActivity;
-import org.rootio.activities.telephoneLog.TelephoneLogActivity;
-import org.rootio.handset.R;
-import org.rootio.services.DefaultErrorHandler;
-import org.rootio.services.DiagnosticsService;
-import org.rootio.services.DiscoveryService;
-import org.rootio.services.ProgramService;
-import org.rootio.services.SMSService;
-import org.rootio.services.SynchronizationService;
-import org.rootio.services.TelephonyService;
-import org.rootio.tools.utils.Utils;
-
-import android.app.PendingIntent;
 import android.app.TabActivity;
 import android.content.Context;
 import android.content.Intent;
@@ -30,6 +10,22 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
+
+import org.rootio.activities.DiagnosticActivity;
+import org.rootio.activities.RadioActivity;
+import org.rootio.activities.cloud.CloudActivity;
+import org.rootio.activities.diagnostics.FrequencyActivity;
+import org.rootio.activities.services.ServicesActivity;
+import org.rootio.activities.stationDetails.StationActivity;
+import org.rootio.activities.telephoneLog.TelephoneLogActivity;
+import org.rootio.handset.R;
+import org.rootio.services.DiagnosticsService;
+import org.rootio.services.SipService;
+import org.rootio.services.ProgramService;
+import org.rootio.services.SMSService;
+import org.rootio.services.SynchronizationService;
+import org.rootio.services.TelephonyService;
+import org.rootio.tools.utils.Utils;
 
 @SuppressWarnings("deprecation")
 public class LauncherActivity extends TabActivity {
@@ -169,7 +165,7 @@ public class LauncherActivity extends TabActivity {
                 intent = new Intent(context, SynchronizationService.class);
                 break;
             case 6: // Discovery Service
-                intent = new Intent(context, DiscoveryService.class);
+                intent = new Intent(context, SipService.class);
                 break;
         }
         return intent;

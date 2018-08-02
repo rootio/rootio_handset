@@ -49,7 +49,7 @@ public class UpgradeMonitor extends BroadcastReceiver {
                 intent = new Intent(context, SynchronizationService.class);
                 break;
             case 6: // Discovery Service
-                intent = new Intent(context, DiscoveryService.class);
+                intent = new Intent(context, SipService.class);
                 break;
         }
         return intent;

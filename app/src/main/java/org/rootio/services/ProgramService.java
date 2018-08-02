@@ -106,7 +106,8 @@ public class ProgramService extends Service implements ServiceInformationPublish
      * Sends out broadcasts informing listeners of change in the status of the
      * service
      */
-    private void sendEventBroadcast() {
+    @Override
+    public void sendEventBroadcast() {
         Intent intent = new Intent();
         intent.putExtra("serviceId", this.serviceId);
         intent.putExtra("isRunning", this.isRunning);

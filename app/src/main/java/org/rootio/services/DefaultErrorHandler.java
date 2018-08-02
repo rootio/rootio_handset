@@ -24,9 +24,7 @@ public class DefaultErrorHandler extends Application {
 //if only we knew where this is coming from. For now we will restart all services
                                                           try {
                                                               startServices();
-                                                          }
-                                                          catch (Exception e)
-                                                          {
+                                                          } catch (Exception e) {
                                                               Log.e(DefaultErrorHandler.this.getString(R.string.app_name), e.getMessage() == null ? "Null pointer[DefaultErrorHandler]" : e.getMessage());
                                                           }
                                                       }
@@ -71,8 +69,8 @@ public class DefaultErrorHandler extends Application {
                                                               case 5: // Sync Service
                                                                   intent = new Intent(context, SynchronizationService.class);
                                                                   break;
-                                                              case 6: // Discovery Service
-                                                                  intent = new Intent(context, DiscoveryService.class);
+                                                              case 6: // SIP Service
+                                                                  intent = new Intent(context, SipService.class);
                                                                   break;
                                                           }
                                                           return intent;
