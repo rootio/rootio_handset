@@ -12,7 +12,7 @@
     <string name="WhiteListMenuItem">Whitelist</string>
     <string name="RemoveNumberFromList">Remove</string>
     <string name="UncheckAll">Uncheck all</string>
-    <string name="AddToBlackListLabel">"Number: "</string>
+    <string name="AddToBlackListLabel">"Number:</string>
     <string name="OkButtonText">OK</string>
     <string name="CancelButtonText">Cancel</string>
     <string name="AddToWhiteListLabel">Number:</string>
@@ -50,6 +50,13 @@
     <string name="MulticastIPAddressLable">IP Address:</string>
     <string name="MulticastPortLable">Port:</string>
     <string name="MulticastNoteTitle">Please Note:</string>
+    <string name="CloudIAddress">Cloud IP Address:</string>
+    <string name="ServerKey">Server Key:</string>
+    <string name="ServerName">Server Name:</string>
+    <string name="Duration">Duration:</string>
+    <string name="StartTime">Start Time:</string>
+    <string name="StationFrequency">Station Frequency:</string>
+    <string name="StationName">Station Name:</string>
     <string name="MulticastNoteMessage">
 <![CDATA[
         When Setting a multicast please consider the following factors:
@@ -88,4 +95,10 @@
     <string name="StationID">Station ID:</string>
     <string name="StationKey">Station Key:</string>
     <string name="ConnectButton">Connect</string>
+    <string name="HTTPPort">HTTP Port:</string>
+    <string name="Network">Network:</string>
+    <string name="StationLocation">Station Location:</string>
+    <string name="Telephone">Telephone:</string>
+    <string name="MulticastIP">Multicast IP:</string>
+    <string name="MulticastPort">Multicast Port:</string>
 </resources>

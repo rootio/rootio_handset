@@ -12,18 +12,18 @@
     <string name="WhiteListMenuItem">Lista Branca</string>
     <string name="RemoveNumberFromList">Remove</string>
     <string name="UncheckAll">Deselecionar Todos</string>
-    <string name="AddToBlackListLabel">"Numero: "</string>
+    <string name="AddToBlackListLabel">"Número:</string>
     <string name="OkButtonText">OK</string>
     <string name="CancelButtonText">Cancelar</string>
-    <string name="AddToWhiteListLabel">Numero:</string>
+    <string name="AddToWhiteListLabel">Número:</string>
     <string name="ButtonPanelBGColor">#ffD8D8D8</string>
-    <string name="BatteryConfigurationLabel">Nivel de Bateria</string>
+    <string name="BatteryConfigurationLabel">Nível de Bateria</string>
     <string name="GSMSignalLabel">Sinal GSM </string>
     <string name="WirelessSignal">Sinal WiFI </string>
     <string name="StorageLevelLabel">Armazenamento</string>
-    <string name="MemoryUtilizationLabel">Memoria</string>
+    <string name="MemoryUtilizationLabel">Memória</string>
     <string name="GPSLocationLabel">GPS</string>
-    <string name="DiagnosticsMenuItem">Diagnosticos</string>
+    <string name="DiagnosticsMenuItem">Diagnósticos</string>
     <string name="ProcessorConfigurationLabel">Utilização CPU</string>
     <string name="SaveButtonText">Gravar</string>
     <string name="DiagnosticsFrequencyLabel">Frequencia:</string>
@@ -40,7 +40,7 @@
     <string name="SynchronizationConfigureFrequencyItem">Configurar Frequencia</string>
     <string name="TelephonyServiceTitle">Telefonia</string>
     <string name="SMSServiceTitle">Mensagens</string>
-    <string name="DiagnosticsServiceTitle">Diagnosticos</string>
+    <string name="DiagnosticsServiceTitle">Diagnósticos</string>
     <string name="ProgramServiceTitle">Programa</string>
     <string name="SynchronizationServiceTitle">Sincronização</string>
     <string name="StartServiceLabel">Iniciar Serviço</string>
@@ -54,7 +54,7 @@
     <string name="ServerKey">Chave do Servidor:</string>
     <string name="ServerName">Nome do Servidor:</string>
     <string name="Duration">Duração:</string>
-    <string name="StartTime">Tempo de Inicio:</string>
+    <string name="StartTime">Tempo de Início:</string>
     <string name="StationFrequency">Frequência da Estação:</string>
     <string name="StationName">Nome da Estação:</string>
 
