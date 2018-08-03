@@ -7,6 +7,7 @@ import org.json.JSONObject;
 import org.rootio.tools.cloud.Cloud;
 import org.rootio.tools.utils.Utils;
 
+import android.content.ContentValues;
 import android.content.Context;
 
 /**
@@ -31,7 +32,11 @@ public class StationHandler implements SynchronizationHandler {
      * @param programDefinition The JSON program definition received from the cloud server
      */
     public void processJSONResponse(JSONObject synchronizationResponse) {
-        Utils.saveJSONToFile(this.parent, synchronizationResponse, this.parent.getFilesDir().getAbsolutePath() + "/station.json");
+        //Lazy approach: save all JSON to prefs in one field, get it out and parse it later :-D
+        ContentValues values  = new ContentValues();
+        values.put("station_information", synchronizationResponse.toString());
+        Utils.savePreferences(values, this.parent);
+        //Utils.saveJSONToFile(this.parent, synchronizationResponse, this.parent.getFilesDir().getAbsolutePath() + "/station.json");
     }
 
     @Override

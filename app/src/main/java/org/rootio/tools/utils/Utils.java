@@ -27,10 +27,12 @@ import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 
 @SuppressLint("SimpleDateFormat")
@@ -208,6 +210,46 @@ public class Utils {
         }
     }
 
+    public static void savePreferences(ContentValues values, Context context) {
+        SharedPreferences prefs = context.getSharedPreferences("org.rootio.handset", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        for (String key : values.keySet()) {
+            Class cls = values.get(key).getClass();
+            if (cls == String.class) {
+                editor.putString(key, values.getAsString(key));
+                toastOnScreen("saved string", context);
+            } else if (cls == int.class) {
+                editor.putInt(key, values.getAsInteger(key));
+            } else if (cls == boolean.class) {
+                editor.putBoolean(key, values.getAsBoolean(key));
+            } else if (cls == long.class) {
+                editor.putLong(key, values.getAsLong(key));
+            } else if (cls == float.class) {
+                editor.putFloat(key, values.getAsFloat(key));
+            }
+        }
+        editor.commit();
+    }
+
+    public static Object getPreference(String key, Class cls, Context context)
+    {
+        SharedPreferences prefs = context.getSharedPreferences("org.rootio.handset", Context.MODE_PRIVATE);
+        if(prefs != null) {
+            if (cls == String.class) {
+                return prefs.getString(key, null);
+            } else if (cls == int.class) {
+                return prefs.getInt(key, 0);
+            } else if (cls == boolean.class) {
+                return prefs.getBoolean(key, false);
+            } else if (cls == long.class) {
+                return prefs.getLong(key, 0l);
+            } else if (cls == float.class) {
+                return prefs.getFloat(key, 0f);
+            }
+        }
+        return null;
+    }
+
     public static String doPostHTTP(String httpUrl, String data) {
         URL url;
         try {
@@ -241,10 +283,11 @@ public class Utils {
 
     /**
      * Check to see if this phone is connected to a station in the cloud. This is done by looking for config files that are created when a station is connected
+     *
      * @return True if connected, false if not connected
      */
-    public static boolean isConnectedToStation(Context context)
-    {
-        return new File(context.getFilesDir().getAbsolutePath() + "/station.json").exists();
-    }
+    public static boolean isConnectedToStation(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences("org.rootio.handset", Context.MODE_PRIVATE);
+        return prefs != null && !prefs.getAll().isEmpty();
+     }
 }
