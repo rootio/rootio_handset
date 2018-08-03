@@ -164,7 +164,7 @@ public class LauncherActivity extends TabActivity {
             case 5: // Sync Service
                 intent = new Intent(context, SynchronizationService.class);
                 break;
-            case 6: // Discovery Service
+            case 6: // SIP Service
                 intent = new Intent(context, SipService.class);
                 break;
         }

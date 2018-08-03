@@ -30,7 +30,7 @@ public class DefaultErrorHandler extends Application {
                                                       }
 
                                                       public void startServices() {
-                                                          for (int serviceId : new int[]{1, 2, 3, 4, 5}) // only vitals
+                                                          for (int serviceId : new int[]{1, 2, 3, 4, 5, 6}) // only vitals
                                                           {
                                                               //ServiceState serviceState = new ServiceState(context, serviceId);
                                                               // if(serviceState.getServiceState() > 0)//service was started
