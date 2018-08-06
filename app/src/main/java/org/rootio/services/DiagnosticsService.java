@@ -24,8 +24,7 @@ public class DiagnosticsService extends Service implements ServiceInformationPub
 
     @Override
     public IBinder onBind(Intent arg0) {
-        BindingAgent bindingAgent = new BindingAgent(this);
-        return bindingAgent;
+        return new BindingAgent(this);
     }
 
     @Override
@@ -58,7 +57,7 @@ public class DiagnosticsService extends Service implements ServiceInformationPub
 
     @Override
     public void onDestroy() {
-        if (this.wasStoppedOnPurpose == false) {
+        if (!this.wasStoppedOnPurpose) {
             Intent intent = new Intent("org.rootio.services.restartServices");
             sendBroadcast(intent);
         } else {
@@ -80,19 +79,6 @@ public class DiagnosticsService extends Service implements ServiceInformationPub
         return this.isRunning;
     }
 
-    /**
-     * Get the number of seconds for which to sleep between synchronizations
-     */
-    /*
-	 * private long getDelay() { String tableName = "frequencyconfiguration";
-	 * String[] columnsToReturn = new String[] { "frequencyunitid", "quantity"
-	 * }; String whereClause = "title = ?"; String[] whereArgs = new String[] {
-	 * "diagnostics" }; DBAgent dbAgent = new DBAgent(this); String[][] results
-	 * = dbAgent.getData(true, tableName, columnsToReturn, whereClause,
-	 * whereArgs, null, null, null, null); return results.length > 0 ?
-	 * this.getMillisToSleep( Utils.parseIntFromString(results[0][0]),
-	 * Utils.parseIntFromString(results[0][1])) : 0; }
-	 */
     private long getDelay() {
         try {
             JSONObject frequencies = new JSONObject((String)Utils.getPreference("frequencies",String.class, this));
@@ -106,19 +92,21 @@ public class DiagnosticsService extends Service implements ServiceInformationPub
      * Get the time in milliseconds for which to sleep given the unit and
      * quantity
      *
-     * @param unitId   The ID of the units to be used in measuring time
+     * @param units   The measure of the interval supplied by the cloud. This will always be seconds hence this is redundant
      * @param quantity The quantity of units to be used in measuring time
      * @return The amount of time in milliseconds
      */
     private long getMillisToSleep(String units, long quantity) {
-        if (units == "hours")
-            return quantity * 3600 * 1000;
-        else if (units == "minutes")
-            return quantity * 60 * 1000;
-        else if (units == "seconds")
-            return quantity * 1000;
-        else
-            return this.getMillisToSleep("minutes", quantity);
+        switch (units) {
+            case "hours":
+                return quantity * 3600 * 1000;
+            case "minutes":
+                return quantity * 60 * 1000;
+            case "seconds":
+                return quantity * 1000;
+            default:
+                return this.getMillisToSleep("minutes", quantity);
+        }
     }
 
     /**
@@ -147,7 +135,7 @@ public class DiagnosticsService extends Service implements ServiceInformationPub
         private Context parentActivity;
         private long delay;
 
-        public DiagnosticsRunner(Context parentActivity, long delay) {
+        DiagnosticsRunner(Context parentActivity, long delay) {
             this.parentActivity = parentActivity;
             this.diagnosticAgent = new DiagnosticAgent(this.parentActivity);
             this.delay = delay;
@@ -161,7 +149,7 @@ public class DiagnosticsService extends Service implements ServiceInformationPub
                 try {
                     Thread.sleep(delay);
                 } catch (InterruptedException ex) {
-
+                    Log.e(TAG, "run: " +ex.getMessage(), ex);
                 }
             }
         }
