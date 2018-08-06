@@ -217,8 +217,7 @@ public class Utils {
             Class cls = values.get(key).getClass();
             if (cls == String.class) {
                 editor.putString(key, values.getAsString(key));
-                toastOnScreen("saved string", context);
-            } else if (cls == int.class) {
+            } else if (cls == Integer.class) {
                 editor.putInt(key, values.getAsInteger(key));
             } else if (cls == boolean.class) {
                 editor.putBoolean(key, values.getAsBoolean(key));
