@@ -1,6 +1,7 @@
 package org.rootio.services;
 
 import org.json.JSONObject;
+import org.rootio.handset.R;
 import org.rootio.tools.diagnostics.DiagnosticAgent;
 import org.rootio.tools.persistence.DBAgent;
 import org.rootio.tools.utils.Utils;
@@ -10,6 +11,9 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
+import android.util.Log;
+
+import static android.content.ContentValues.TAG;
 
 public class DiagnosticsService extends Service implements ServiceInformationPublisher {
 
@@ -29,7 +33,7 @@ public class DiagnosticsService extends Service implements ServiceInformationPub
         if (!this.isRunning) {
             Utils.doNotification(this, "RootIO", "Diagnostics service started");
             long delay = this.getDelay();
-            delay = delay > 0 ? delay : 10000; // 10000 default
+            delay = delay > 0 ? this.getMillisToSleep("seconds", delay) : 10000; // 10000 default
             DiagnosticsRunner diagnosticsRunner = new DiagnosticsRunner(this, delay);
             runnerThread = new Thread(diagnosticsRunner);
             runnerThread.start();
@@ -91,10 +95,10 @@ public class DiagnosticsService extends Service implements ServiceInformationPub
 	 */
     private long getDelay() {
         try {
-            JSONObject frequencyInformation = Utils.getJSONFromFile(this, this.getFilesDir().getAbsolutePath() + "/frequency.json");
-            return this.getMillisToSleep(frequencyInformation.getJSONObject("diagnostic").getString("units"), frequencyInformation.getJSONObject("diagnostic").getInt("interval"));
+            JSONObject frequencies = new JSONObject((String)Utils.getPreference("frequencies",String.class, this));
+            return frequencies.getJSONObject("diagnostics").getInt("interval");
         } catch (Exception ex) {
-            return this.getMillisToSleep("minutes", 10);
+            return 180; // default to 3 mins
         }
     }
 
@@ -106,7 +110,7 @@ public class DiagnosticsService extends Service implements ServiceInformationPub
      * @param quantity The quantity of units to be used in measuring time
      * @return The amount of time in milliseconds
      */
-    private long getMillisToSleep(String units, int quantity) {
+    private long getMillisToSleep(String units, long quantity) {
         if (units == "hours")
             return quantity * 3600 * 1000;
         else if (units == "minutes")
