@@ -219,11 +219,11 @@ public class Utils {
                 editor.putString(key, values.getAsString(key));
             } else if (cls == Integer.class) {
                 editor.putInt(key, values.getAsInteger(key));
-            } else if (cls == boolean.class) {
+            } else if (cls == Boolean.class) {
                 editor.putBoolean(key, values.getAsBoolean(key));
-            } else if (cls == long.class) {
+            } else if (cls == Long.class) {
                 editor.putLong(key, values.getAsLong(key));
-            } else if (cls == float.class) {
+            } else if (cls == Float.class) {
                 editor.putFloat(key, values.getAsFloat(key));
             }
         }

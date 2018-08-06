@@ -102,7 +102,7 @@ public class SMSLogHandler implements SynchronizationHandler {
     }
 
     private long getMaxId() {
-        return (long)Utils.getPreference("sms_id", Long.class, this.parent);
+        return (long)Utils.getPreference("sms_id", long.class, this.parent);
     }
 
     @Override

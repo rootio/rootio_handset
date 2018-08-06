@@ -98,7 +98,7 @@ public class CallLogHandler implements SynchronizationHandler {
     }
 
     private long getMaxId() {
-        return (long)Utils.getPreference("call_id", Long.class, this.parent);
+        return (long)Utils.getPreference("call_id", long.class, this.parent);
     }
 
     @Override
