@@ -10,6 +10,7 @@ import org.rootio.tools.cloud.Cloud;
 import org.rootio.tools.utils.Utils;
 
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
@@ -91,23 +92,13 @@ public class CallLogHandler implements SynchronizationHandler {
     }
 
     private void logLastId(long id) {
-        JSONObject syncIds = Utils.getJSONFromFile(this.parent, this.parent.getFilesDir().getAbsolutePath() + "/sync_ids.json");
-        try {
-            syncIds.put("call_id", id);
-            Utils.saveJSONToFile(this.parent, syncIds, this.parent.getFilesDir().getAbsolutePath() + "/sync_ids.json");
-        } catch (JSONException ex) {
-            Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "NullPointer(SMSLogHandler.logLastId)" : ex.getMessage());
-        }
+        ContentValues values = new ContentValues();
+        values.put("call_id", id);
+        Utils.savePreferences(values, this.parent);
     }
 
     private long getMaxId() {
-        JSONObject syncIds = Utils.getJSONFromFile(this.parent, this.parent.getFilesDir().getAbsolutePath() + "/sync_ids.json");
-        try {
-            return syncIds.getLong("call_id");
-        } catch (JSONException ex) {
-            Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "NullPointer(SMSLogHandler.logLastId)" : ex.getMessage());
-            return 0;
-        }
+        return (long)Utils.getPreference("call_id", Long.class, this.parent);
     }
 
     @Override
