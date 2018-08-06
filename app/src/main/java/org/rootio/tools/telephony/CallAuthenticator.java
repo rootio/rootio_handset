@@ -7,6 +7,7 @@ import java.io.IOException;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.rootio.handset.R;
+import org.rootio.tools.utils.Utils;
 
 import android.content.Context;
 import android.util.Log;
@@ -18,31 +19,13 @@ public class CallAuthenticator {
 
     public CallAuthenticator(Context parent) {
         this.parent = parent;
-        this.whiteList = this.loadWhiteList();
-    }
-
-    private JSONObject loadWhiteList() {
-        FileInputStream instr = null;
         try {
-            File whitelistFile = new File(this.parent.getFilesDir().getAbsolutePath() + "whitelist.json");
-
-            instr = new FileInputStream(whitelistFile);
-            byte[] buffer = new byte[1024];
-            instr.read(buffer);
-            return new JSONObject(new String(buffer));
-        } catch (IOException ex) {
-            Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "NullPointerException(CallAuthenticator.loadWhitelist)" : ex.getMessage());
-        } catch (JSONException ex) {
-            Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "NullPointerException(CallAuthenticator.loadWhitelist)" : ex.getMessage());
-        } finally {
-            try {
-                instr.close();
-            } catch (Exception ex) {
-                Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "NullPointerException(CallAuthenticator.loadWhitelist)" : ex.getMessage());
-            }
+            this.whiteList = new JSONObject((String) Utils.getPreference("whitelist", String.class, this.parent));
+        } catch (Exception e) {
+            Log.e(this.parent.getString(R.string.app_name), e.getMessage() == null ? "NullPointerException(CallAuthenticator())" : e.getMessage());
         }
-        return null;
     }
+
 
     public boolean isWhiteListed(String phoneNumber) {
         try {

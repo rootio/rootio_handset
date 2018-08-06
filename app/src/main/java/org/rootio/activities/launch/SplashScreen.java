@@ -41,7 +41,7 @@ public class SplashScreen extends Activity {
 
     private void checkCloudFileExists() {
         if (!new File(this.getFilesDir().getAbsolutePath() + "/cloud.json").exists()) {
-            for (String fileName : new String[]{"cloud.json", "frequencies.json", "rootio.sqlite", "sync_ids.json", "whitelist.json"}) {
+            for (String fileName : new String[]{"rootio.sqlite", "sync_ids.json"}) {
                 this.copyDataFile(fileName);
             }
         }
