@@ -70,12 +70,12 @@ public class SynchronizationDaemon implements Runnable {
      * @return Number of seconds representing synchronization interval
      */
     private int getFrequency() {
-        JSONObject frequencies = Utils.getJSONFromFile(this.parent, this.parent.getFilesDir().getAbsolutePath() + "/frequency.json");
         try {
-            return frequencies.getJSONObject("synchronization").getInt("interval");
+        JSONObject frequencies = new JSONObject((String)Utils.getPreference("frequencies",String.class, this.parent));
+                return frequencies.getJSONObject("synchronization").getInt("interval");
         } catch (Exception ex) {
             Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(SynchronizationDaemon.toggleData)" : ex.getMessage());
-            return 3600; // default to one hour
+            return 180; // default to 3 mins
         }
     }
 

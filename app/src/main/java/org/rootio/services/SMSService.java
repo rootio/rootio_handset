@@ -97,7 +97,8 @@ public class SMSService extends Service implements IncomingSMSNotifiable, Servic
      * Sends out broadcasts to listeners informing them of service status
      * changes
      */
-    private void sendEventBroadcast() {
+    @Override
+    public void sendEventBroadcast() {
         Intent intent = new Intent();
         intent.putExtra("serviceId", this.serviceId);
         intent.putExtra("isRunning", this.isRunning);

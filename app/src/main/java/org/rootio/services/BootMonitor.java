@@ -17,12 +17,14 @@ public class BootMonitor extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent arg1) {
         Utils.setContext(context);
-        for (int serviceId : new int[]{1, 2, 3, 4, 5, 6}) {
-            ServiceState serviceState = new ServiceState(context, serviceId);
-            if (serviceState.getServiceState() > 0)// service was started
-            {
-                Intent intent = this.getIntentToLaunch(context, serviceId);
-                context.startService(intent);
+        if(Utils.isConnectedToStation(context)) {
+            for (int serviceId : new int[]{1, 2, 3, 4, 5, 6}) {
+                ServiceState serviceState = new ServiceState(context, serviceId);
+                if (serviceState.getServiceState() > 0)// service was started
+                {
+                    Intent intent = this.getIntentToLaunch(context, serviceId);
+                    context.startService(intent);
+                }
             }
         }
 
@@ -54,8 +56,8 @@ public class BootMonitor extends BroadcastReceiver {
             case 5: // Sync Service
                 intent = new Intent(context, SynchronizationService.class);
                 break;
-            case 6: // Discovery Service
-                intent = new Intent(context, DiscoveryService.class);
+            case 6: // SIP Service
+                intent = new Intent(context, SipService.class);
                 break;
         }
         return intent;

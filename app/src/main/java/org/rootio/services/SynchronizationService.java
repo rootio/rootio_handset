@@ -66,7 +66,7 @@ public class SynchronizationService extends Service implements ServiceInformatio
     /**
      * Sends out broadcasts informing listeners of changes in service status
      */
-    private void sendEventBroadcast() {
+    public void sendEventBroadcast() {
         Intent intent = new Intent();
         intent.putExtra("serviceId", this.serviceId);
         intent.putExtra("isRunning", this.isRunning);

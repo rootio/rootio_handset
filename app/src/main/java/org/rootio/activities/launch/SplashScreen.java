@@ -19,6 +19,7 @@ import org.rootio.tools.utils.Utils;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -40,7 +41,7 @@ public class SplashScreen extends Activity {
 
     private void checkCloudFileExists() {
         if (!new File(this.getFilesDir().getAbsolutePath() + "/cloud.json").exists()) {
-            for (String fileName : new String[]{"cloud.json", "frequencies.json", "rootio.sqlite", "sync_ids.json", "whitelist.json"}) {
+            for (String fileName : new String[]{"rootio.sqlite"}) {
                 this.copyDataFile(fileName);
             }
         }
@@ -51,13 +52,11 @@ public class SplashScreen extends Activity {
 
         try {
             int stationId = Integer.parseInt(((EditText) this.findViewById(R.id.stationIdEt)).getText().toString());
+            String stationKey = ((EditText) this.findViewById(R.id.stationKeyEt)).getText().toString();
             String serverAddress = ((EditText) this.findViewById(R.id.serverAddressEt)).getText().toString();
             int serverPort = Integer.parseInt(((EditText) this.findViewById(R.id.serverPortEt)).getText().toString());
-            this.saveCloudInformation(stationId, serverAddress, serverPort);
-            this.synchronize(new StationHandler(this, new Cloud(this, serverAddress, serverPort, stationId)));
-        } catch (JSONException e) {
-            Utils.warnOnScreen(this, "Station information was not saved, please try again");
-        } catch (NumberFormatException e) {
+           this.synchronize(new StationHandler(this, new Cloud(this, serverAddress, serverPort, stationId, stationKey)));
+        }  catch (NumberFormatException e) {
             Utils.warnOnScreen(this, "Station ID and Port number should be Integers");
         } catch (Exception e) {
             e.printStackTrace();
@@ -66,21 +65,34 @@ public class SplashScreen extends Activity {
     }
 
     private void notifySynced() {
+        //only save station deets if they are valid and allow a sync
+        int stationId = Integer.parseInt(((EditText) this.findViewById(R.id.stationIdEt)).getText().toString());
+        String stationKey = ((EditText) this.findViewById(R.id.stationKeyEt)).getText().toString();
+        String serverAddress = ((EditText) this.findViewById(R.id.serverAddressEt)).getText().toString();
+        int serverPort = Integer.parseInt(((EditText) this.findViewById(R.id.serverPortEt)).getText().toString());
+        try {
+            this.saveCloudInformation(stationId, stationKey, serverAddress, serverPort);
+        }
+        catch (Exception e) {
+            Utils.warnOnScreen(this, "Station information was not saved due to an error, please try again");
+            return;
+        }
+
+        //move on to the next screen
         Intent intent = new Intent(this, LauncherActivity.class);
         intent.putExtra("isFirstTimeLaunch", true);
         this.startActivity(intent);
         this.finish();
     }
 
-    private void saveCloudInformation(int stationId, String serverAddress, int serverPort) throws Exception {
-        JSONObject cloudInformation = Utils.getJSONFromFile(this, this.getFilesDir().getAbsolutePath() + "/cloud.json");
+    private void saveCloudInformation(int stationId, String stationKey, String serverAddress, int serverPort) throws Exception {
         try {
+            ContentValues cloudInformation = new ContentValues();
             cloudInformation.put("station_id", stationId);
+            cloudInformation.put("station_key", stationKey);
             cloudInformation.put("server_IP", serverAddress);
             cloudInformation.put("server_port", serverPort);
-            Utils.saveJSONToFile(this, cloudInformation, this.getFilesDir().getAbsolutePath() + "/cloud.json");
-        } catch (JSONException e) {
-            throw e;
+            Utils.savePreferences(cloudInformation, this);
         } catch (Exception e) {
             throw e;
         }

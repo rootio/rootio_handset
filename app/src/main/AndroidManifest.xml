@@ -4,6 +4,7 @@
     android:versionCode="7"
     android:versionName="DIGging Madeira" >
 
+    <uses-permission android:name="android.permission.ANSWER_PHONE_CALLS" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -29,9 +30,28 @@
     </uses-permission>
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
-    <uses-sdk
-        android:minSdkVersion="14"
-        android:targetSdkVersion="17" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.USE_SIP" />
+    <uses-permission android:name="android.permission.CONFIGURE_SIP" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <uses-feature
+        android:name="android.software.sip"
+        android:required="true" />
+    <uses-feature
+        android:name="android.software.sip.voip"
+        android:required="true" />
+    <uses-feature
+        android:name="android.hardware.wifi"
+        android:required="true" />
+    <uses-feature
+        android:name="android.hardware.microphone"
+        android:required="true" />
+
 
     <application
         android:allowBackup="true"
@@ -62,8 +82,8 @@
         <service android:name="org.rootio.services.DiagnosticsService" ></service>
         <service android:name="org.rootio.services.SMSService" ></service>
         <service android:name="org.rootio.services.ProgramService" ></service>
-        <service android:name="org.rootio.services.DiscoveryService" ></service>
         <service android:name="org.rootio.services.SynchronizationService" ></service>
+        <service android:name="org.rootio.services.SipService" />
 
         <receiver android:name="org.rootio.services.BootMonitor" >
             <intent-filter>

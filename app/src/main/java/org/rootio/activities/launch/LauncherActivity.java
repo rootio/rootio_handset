@@ -1,25 +1,5 @@
 package org.rootio.activities.launch;
 
-import java.io.File;
-
-import org.rootio.activities.DiagnosticActivity;
-import org.rootio.activities.RadioActivity;
-import org.rootio.activities.cloud.CloudActivity;
-import org.rootio.activities.diagnostics.FrequencyActivity;
-import org.rootio.activities.services.ServicesActivity;
-import org.rootio.activities.stationDetails.StationActivity;
-import org.rootio.activities.telephoneLog.TelephoneLogActivity;
-import org.rootio.handset.R;
-import org.rootio.services.DefaultErrorHandler;
-import org.rootio.services.DiagnosticsService;
-import org.rootio.services.DiscoveryService;
-import org.rootio.services.ProgramService;
-import org.rootio.services.SMSService;
-import org.rootio.services.SynchronizationService;
-import org.rootio.services.TelephonyService;
-import org.rootio.tools.utils.Utils;
-
-import android.app.PendingIntent;
 import android.app.TabActivity;
 import android.content.Context;
 import android.content.Intent;
@@ -31,33 +11,46 @@ import android.view.MenuItem;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
 
+import org.rootio.activities.DiagnosticActivity;
+import org.rootio.activities.RadioActivity;
+import org.rootio.activities.cloud.CloudActivity;
+import org.rootio.activities.diagnostics.FrequencyActivity;
+import org.rootio.activities.services.ServicesActivity;
+import org.rootio.activities.stationDetails.StationActivity;
+import org.rootio.activities.telephoneLog.TelephoneLogActivity;
+import org.rootio.handset.R;
+import org.rootio.services.DiagnosticsService;
+import org.rootio.services.SipService;
+import org.rootio.services.ProgramService;
+import org.rootio.services.SMSService;
+import org.rootio.services.SynchronizationService;
+import org.rootio.services.TelephonyService;
+import org.rootio.tools.utils.Utils;
+
 @SuppressWarnings("deprecation")
 public class LauncherActivity extends TabActivity {
 
-    PendingIntent crashIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        DefaultErrorHandler deh = new DefaultErrorHandler();
-
         setContentView(R.layout.activity_main);
 
-        Resources ressources = getResources();
+        Resources resources = getResources();
         TabHost tabHost = getTabHost();
 
         // Radio tab
         Intent intentRadio = new Intent().setClass(this, RadioActivity.class);
-        TabSpec tabSpecRadio = tabHost.newTabSpec("Radio").setIndicator("", ressources.getDrawable(R.drawable.radio)).setContent(intentRadio);
+        TabSpec tabSpecRadio = tabHost.newTabSpec("Radio").setIndicator("", resources.getDrawable(R.drawable.radio)).setContent(intentRadio);
 
         // Phone tab
         Intent intentPhone = new Intent().setClass(this, TelephoneLogActivity.class);
-        TabSpec tabSpecCalls = tabHost.newTabSpec("Calls").setIndicator("", ressources.getDrawable(R.drawable.telephone)).setContent(intentPhone);
+        TabSpec tabSpecCalls = tabHost.newTabSpec("Calls").setIndicator("", resources.getDrawable(R.drawable.telephone)).setContent(intentPhone);
 
         // Diagnostics tab
         Intent intentDiagnostics = new Intent().setClass(this, DiagnosticActivity.class);
-        TabSpec tabSpecDiagnostics = tabHost.newTabSpec("Diagnostics").setIndicator("", ressources.getDrawable(R.drawable.diagnostic)).setContent(intentDiagnostics);
+        TabSpec tabSpecDiagnostics = tabHost.newTabSpec("Diagnostics").setIndicator("", resources.getDrawable(R.drawable.diagnostic)).setContent(intentDiagnostics);
 
         tabHost.addTab(tabSpecRadio);
         tabHost.addTab(tabSpecCalls);
@@ -69,13 +62,16 @@ public class LauncherActivity extends TabActivity {
         Utils.setContext(this.getBaseContext());
 
         //in the event that this is relaunched on app crash
-        this.startServices();
+        if(Utils.isConnectedToStation(this))
+        {
+            this.startServices();
+        }
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        if (!new File(this.getFilesDir().getAbsolutePath() + "/station.json").exists()) {
+        if (!Utils.isConnectedToStation(this)) {
             Intent intent = new Intent(this, SplashScreen.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
@@ -168,8 +164,8 @@ public class LauncherActivity extends TabActivity {
             case 5: // Sync Service
                 intent = new Intent(context, SynchronizationService.class);
                 break;
-            case 6: // Discovery Service
-                intent = new Intent(context, DiscoveryService.class);
+            case 6: // SIP Service
+                intent = new Intent(context, SipService.class);
                 break;
         }
         return intent;

@@ -50,7 +50,7 @@
     <string name="MulticastIPAddressLable">Endereço IP:</string>
     <string name="MulticastPortLable">Port:</string>
     <string name="MulticastNoteTitle">Atenção:</string>
-    <string name="CloudIAddress">Endereço da Cloud IP:</string>
+    <string name="CloudIPAddress">Endereço da Cloud IP:</string>
     <string name="ServerKey">Chave do Servidor:</string>
     <string name="ServerName">Nome do Servidor:</string>
     <string name="Duration">Duração:</string>
@@ -103,5 +103,6 @@
     <string name="Telephone">Telemóvel:</string>
     <string name="MulticastIP">Multicast IP:</string>
     <string name="MulticastPort">Multicast Port:</string>
+    <string name="SipServiceTitle">SIP:</string>
 
 </resources>

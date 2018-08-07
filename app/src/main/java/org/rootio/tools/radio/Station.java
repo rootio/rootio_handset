@@ -93,7 +93,8 @@ public class Station {
 
     private void loadStationInfo() {
         try {
-            JSONObject stationInformation = Utils.getJSONFromFile(this.parent, this.parent.getFilesDir().getAbsolutePath() + "/station.json");
+
+            JSONObject stationInformation = new JSONObject((String)Utils.getPreference("station_information", String.class, this.parent));
             if (stationInformation.getJSONObject("station").has("location")) {
                 this.location = String.format("%s (lat/lng: %s,  %s)", stationInformation.getJSONObject("station").getJSONObject("location").optString("name"), stationInformation.getJSONObject("station").getJSONObject("location").optString("latitude"), stationInformation.getJSONObject("station").getJSONObject("location").optString("longitude"));
             }

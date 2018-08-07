@@ -159,11 +159,10 @@ public class Cloud {
 
     private void loadCloudInfo() {
         try {
-            JSONObject cloudInformation = Utils.getJSONFromFile(this.parent, this.parent.getFilesDir().getAbsolutePath() + "/cloud.json");
-            this.serverAddress = cloudInformation.optString("server_IP");
-            this.HTTPPort = cloudInformation.optInt("server_port");
-            this.stationId = cloudInformation.optInt("station_id");
-            this.serverKey = cloudInformation.optString("station_key");
+            this.serverAddress = (String)Utils.getPreference("server_IP", String.class, this.parent);
+            this.HTTPPort = (int)Utils.getPreference("server_port", int.class, this.parent);
+            this.stationId = (int)Utils.getPreference("station_id", int.class, this.parent);
+            this.serverKey = (String)Utils.getPreference("station_key", String.class, this.parent);
 
         } catch (Exception ex) {
             Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "NullPointer(Station.LoadStationInfo)" : ex.getMessage());

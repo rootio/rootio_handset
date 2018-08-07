@@ -7,7 +7,10 @@ import org.rootio.tools.utils.Utils;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TextView;
+
+import static android.content.ContentValues.TAG;
 
 public class FrequencyActivity extends Activity {
 
@@ -22,18 +25,17 @@ public class FrequencyActivity extends Activity {
 
 
     private void loadFrequencies() {
-        JSONObject frequencyInformation = Utils.getJSONFromFile(this, this.getFilesDir().getAbsolutePath() + "/frequency.json");
         try {
-            if (frequencyInformation.has("diagnostics")) {
+        JSONObject frequencyInformation = new JSONObject((String)Utils.getPreference("frequencies", String.class, this));
+         if (frequencyInformation.has("diagnostics")) {
 
                 ((TextView) this.findViewById(R.id.diagnostic_frequency_tv)).setText(this.getAppropriateText(frequencyInformation.getJSONObject("diagnostics").getInt("interval")));
             }
             if (frequencyInformation.has("synchronization")) {
                 ((TextView) this.findViewById(R.id.sync_frequency_tv)).setText(this.getAppropriateText(frequencyInformation.getJSONObject("synchronization").getInt("interval")));
             }
-        } catch (JSONException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (Exception e) {
+            Log.e(TAG, "loadFrequencies: " + e.getMessage(),e);
         }
 
     }

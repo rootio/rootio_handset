@@ -50,7 +50,7 @@
     <string name="MulticastIPAddressLable">IP Adresa:</string>
     <string name="MulticastPortLable">Port:</string>
     <string name="MulticastNoteTitle">Atenţie:</string>
-    <string name="CloudIAddress">Cloud IP Adresa:</string>
+    <string name="CloudIPAddress">Cloud IP Adresa:</string>
     <string name="ServerKey">Server Cheie:</string>
     <string name="ServerName">Server Nume:</string>
     <string name="Duration">Durată:</string>
@@ -101,4 +101,5 @@
     <string name="Telephone">Telefon:</string>
     <string name="MulticastIP">Multicast IP:</string>
     <string name="MulticastPort">Multicast Port:</string>
+    <string name="SipServiceTitle">SIP:</string>
 </resources>
