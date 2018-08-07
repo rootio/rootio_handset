@@ -35,7 +35,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="6dp"
-                    android:text="Station Name:"
+                    android:text="@string/StationName"
                     android:textSize="@dimen/SmallerContentText"
                     android:textStyle="bold" >
                 </TextView>
@@ -71,7 +71,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="6dp"
-                    android:text="Network:"
+                    android:text="@string/Network"
                     android:textSize="@dimen/SmallerContentText"
                     android:textStyle="bold" />
 
@@ -106,7 +106,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="6dp"
-                    android:text="Station Frequency:"
+                    android:text="@string/StationFrequency"
                     android:textSize="@dimen/SmallerContentText"
                     android:textStyle="bold" >
                 </TextView>
@@ -142,7 +142,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="6dp"
-                    android:text="Station Location:"
+                    android:text="@string/StationLocation"
                     android:textSize="@dimen/SmallerContentText"
                     android:textStyle="bold" >
                 </TextView>
@@ -178,7 +178,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="6dp"
-                    android:text="Telephone:"
+                    android:text="@string/Telephone"
                     android:textSize="@dimen/SmallerContentText"
                     android:textStyle="bold" />
 
@@ -212,7 +212,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="6dp"
-                    android:text="Multicast IP:"
+                    android:text="@string/MulticastIP"
                     android:textSize="@dimen/SmallerContentText"
                     android:textStyle="bold" />
 
@@ -246,7 +246,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="6dp"
-                    android:text="Multicast Port:"
+                    android:text="@string/MulticastPort"
                     android:textSize="@dimen/SmallerContentText"
                     android:textStyle="bold" />
 

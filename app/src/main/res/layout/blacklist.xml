@@ -14,8 +14,6 @@
     android:divider="@null"
     android:paddingBottom="1dp" >
 
-"
-
 </ListView>
 
 <LinearLayout

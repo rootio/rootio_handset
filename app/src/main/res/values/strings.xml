@@ -88,5 +88,18 @@
     <string name="StationID">Station ID:</string>
     <string name="StationKey">Station Key:</string>
     <string name="ConnectButton">Connect</string>
-    <string name="SipServiceTitle">SIP</string>
+    <string name="SipServiceTitle">SIP:</string>
+    <string name="HTTPPort">HTTP Port:</string>
+    <string name="StationName">Station Name:</string>
+    <string name="Network">Network:</string>
+    <string name="StationLocation">Station Location:</string>
+    <string name="Telephone">Telephone:</string>
+    <string name="MulticastIP">MulticastIP:</string>
+    <string name="MulticastPort">MulticastPort:</string>
+    <string name="StationFrequency">Station Frequency:</string>
+    <string name="StartTime">Start Time:</string>
+    <string name="Duration">Duration:</string>
+    <string name="ServerName">Server Name:</string>
+    <string name="ServerKey">Server Key:</string>
+    <string name="CloudIPAddress">Cloud IP Address</string>
 </resources>

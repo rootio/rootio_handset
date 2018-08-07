@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">RootIO</string>
+    <string name="action_settings">Setări</string>
+    <string name="hello_world">Salut Lume!</string>
+    <string name="StationDetailsItem">Detalii stație</string>
+    <string name="CloudDetailsItem">Cloud Detalii</string>
+    <string name="TelephonyDetailsItem">Detalii de telefonie</string>
+    <string name="QuitItem">Ieșire</string>
+    <string name="BlackListMenuItem">Lista neagră</string>
+    <string name="WhiteListMenuItem">Lista albă</string>
+    <string name="RemoveNumberFromList">Elimina</string>
+    <string name="UncheckAll">Debifați toate</string>
+    <string name="AddToBlackListLabel">"Număr: "</string>
+    <string name="OkButtonText">OK</string>
+    <string name="CancelButtonText">Anulare</string>
+    <string name="AddToWhiteListLabel">Număr:</string>
+    <string name="ButtonPanelBGColor">#ffD8D8D8</string>
+    <string name="BatteryConfigurationLabel">Nivelul Bateriei</string>
+    <string name="GSMSignalLabel">GSM Semnal</string>
+    <string name="WirelessSignal">WiFI Semnal</string>
+    <string name="StorageLevelLabel">Depozitare</string>
+    <string name="MemoryUtilizationLabel">Memorie</string>
+    <string name="GPSLocationLabel">GPS</string>
+    <string name="DiagnosticsMenuItem">Diagnostice</string>
+    <string name="ProcessorConfigurationLabel">CPU Folosire</string>
+    <string name="SaveButtonText">Salvați</string>
+    <string name="DiagnosticsFrequencyLabel">Frecvență:</string>
+    <string name="DiagnosticsConfigureFrequencyItem">Configurați Frecvența</string>
+    <string name="DiagnosticsConfigurationFrequencyUnit">Unitate</string>
+    <string name="SynchronizationLogHttpLabel">HTTP:</string>
+    <string name="SynchronizationLogChangesLabel">Schimbări:</string>
+    <string name="SynchronizationMenuItem">Sincronizare</string>
+    <string name="SynchronizationLogDownloadChangeDate">Schimba data:</string>
+    <string name="SynchronizationLogDownloadStatusLabel">Condiţie:</string>
+    <string name="SynchronizationTimespanLabel">Sincronizați cu orele</string>
+    <string name="SynchronizationConfigureFrequencyStartTimeLabel">Timpul de începere:</string>
+    <string name="SynchronizationConfigureFrequencyEndTimeLabel">Tempul de terminare:</string>
+    <string name="SynchronizationConfigureFrequencyItem">Configurați frecvența</string>
+    <string name="TelephonyServiceTitle">Telefonie</string>
+    <string name="SMSServiceTitle">Mesagerie</string>
+    <string name="DiagnosticsServiceTitle">Diagnostice</string>
+    <string name="ProgramServiceTitle">Program</string>
+    <string name="SynchronizationServiceTitle">Sincronizare</string>
+    <string name="StartServiceLabel">Porniți Serviciul</string>
+    <string name="StopServiceLabel">Opriți Serviciul</string>
+    <string name="RestartServiceLabel">Reporniți Serviciul</string>
+    <string name="DiscoveryServiceTitle">Descoperire</string>
+    <string name="MulticastIPAddressLable">IP Adresa:</string>
+    <string name="MulticastPortLable">Port:</string>
+    <string name="MulticastNoteTitle">Atenţie:</string>
+    <string name="CloudIPAddress">Cloud IP Adresa:</string>
+    <string name="ServerKey">Server Cheie:</string>
+    <string name="ServerName">Server Nume:</string>
+    <string name="Duration">Durată:</string>
+    <string name="StartTime">Timpul de începere:</string>
+    <string name="StationFrequency">Frecvența Stației:</string>
+    <string name="StationName">Numele Statiei:</string >
+    <string name="MulticastNoteMessage">
+<![CDATA[
+        Când setați o sesiune multicast, luați în considerare următorii factori:
+        <br/>1) Adresele de adrese multicast variază de la <b>224.0.0.0</b> la <b>239.255.255.255</b>
+        <br/>2) Fiți dragi și nu folosiți niciuna dintre adresele listate <a href="http://en.wikipedia.org/wiki/Multicast_address">aici</a>
+        <br/>3) Cu excepția cazului în care aveți un motiv să nu utilizați acest lucru, vă rugăm să utilizați implicit 239.255.1.2
+        ]]>
+    </string>
+    <string name="DiagnosticsConfigurationNoteTitle">Atenţie:</string>
+    <string name="DiagnosticsConfigurationNoteMessage">
+<![CDATA[
+        Când setați frecvența de diagnosticare, luați în considerare următorii factori:
+        <br/>1) O frecvență foarte scăzută ar putea duce la o descărcare mai rapidă a bateriilor și a depozitării
+        <br/>2) O frecvență foarte scăzută duce la o utilizare mai mare a internetului
+        <br/>3) O valoare foarte mare ar putea duce la o analiză înșelătoare a performanțelor stației
+        <br/>4) Cu excepția cazului în care aveți un motiv să nu faceți asta, vă rugăm să utilizați 5 minute implicit
+        ]]>
+    </string>
+    <string name="SynchronizationFrequencyNoteTitle">Atenţie:</string>
+    <string name="SynchronizationConfigurationNoteMessage">
+<![CDATA[
+        Când setați frecvența de sincronizare, luați în considerare următorii factori:
+        <br/>1) O frecvență foarte scăzută ar putea duce la o descărcare mai rapidă a bateriilor și a depozitării
+        <br/>2) O frecvență foarte scăzută duce la o utilizare mai mare a internetului
+        <br/>3) O valoare foarte mare ar putea duce la o analiză înșelătoare a performanțelor stației
+        <br/>4) Cu excepția cazului în care aveți un motiv să nu o utilizați, vă rugăm să utilizați ora implicită
+        ]]>
+    </string>
+    <string name="SynchronizationEnableData">Activați Datele</string>
+    <string name="sync_frequency_label">Frecvența Sincronizării</string>
+    <string name="FrequencyMenuItem">Frecvenţe</string>
+    <string name="DiagnosticFrequencyInformation">Nu sa găsit nici o configurație</string>
+    <string name="DiagnosticFrequencyConfiguration">Aceasta este frecvența cu care serviciul de diagnosticare încearcă să ia în considerare diferiți indicatori de performanță privind starea telefonului</string>
+    <string name="SyncFrequencyInfo">Nu sa găsit nici o configurație</string>
+    <string name="SyncFrequencyConfiguration">Aceasta este frecvența cu care serviciul de diagnosticare încearcă să contacteze serverul cloud pentru a încărca și descărca informații</string>
+    <string name="StationID">Statie ID:</string>
+    <string name="StationKey">Statie Key:</string>
+    <string name="ConnectButton">Conectați</string>
+    <string name="HTTPPort">HTTP Port:</string>
+    <string name="Network">Reţea:</string>
+    <string name="StationLocation">Locația Stației:</string>
+    <string name="Telephone">Telefon:</string>
+    <string name="MulticastIP">Multicast IP:</string>
+    <string name="MulticastPort">Multicast Port:</string>
+    <string name="SipServiceTitle">SIP:</string>
+</resources>

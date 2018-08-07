@@ -31,7 +31,7 @@ public class Cloud {
         this.loadCloudInfo();
     }
 
-    public Cloud(Context context, String serverAddress, int HTTPPort, int stationId, String serverKey) {
+    public Cloud(Context context, String serverAddress, int HTTPPort, int stationId) {
         this.parent = context;
         this.HTTPPort = HTTPPort;
         this.serverAddress = serverAddress;
