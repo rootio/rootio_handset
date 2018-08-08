@@ -104,6 +104,6 @@
     <string name="MulticastIP">Multicast IP:</string>
     <string name="MulticastPort">Multicast Port:</string>
     <string name="SipServiceTitle">SIP:</string>
-    <string name="SipServiceTitle">SIP:</string>
+
 
 </resources>
