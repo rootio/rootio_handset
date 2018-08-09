@@ -18,9 +18,6 @@ public class Cloud {
     private InetAddress IPAddress;
     private String serverAddress;
     private int HTTPPort;
-    private String username;
-    private String password;
-    private String telephoneNumber;
     private String serverKey;
     private int stationId;
 
@@ -31,7 +28,7 @@ public class Cloud {
         this.loadCloudInfo();
     }
 
-    public Cloud(Context context, String serverAddress, int HTTPPort, int stationId) {
+    public Cloud(Context context, String serverAddress, int HTTPPort, int stationId, String serverKey) {
         this.parent = context;
         this.HTTPPort = HTTPPort;
         this.serverAddress = serverAddress;
@@ -67,34 +64,7 @@ public class Cloud {
         return this.HTTPPort;
     }
 
-    /**
-     * Gets the Telephone number for the cloud server
-     *
-     * @return String representing telephone number of the cloud server
-     */
-    public String getTelephoneNumber() {
-        return this.telephoneNumber;
-    }
-
-    /**
-     * Gets the username that is used to authenticate to the cloud server
-     *
-     * @return String representing the username
-     */
-    public String getUsername() {
-        return this.username;
-    }
-
-    /**
-     * Gets the password that is used to authenticate to the cloud server
-     *
-     * @return String representation of the password
-     */
-    public String getPassword() {
-        return this.password;
-    }
-
-    /**
+     /**
      * Gets the key that is used to authenticate on the cloud server
      *
      * @return String representing the station key

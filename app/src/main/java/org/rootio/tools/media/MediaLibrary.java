@@ -24,7 +24,7 @@ public class MediaLibrary {
     }
 
     private void loadMedia() {
-        this.mediaCatalog = new HashMap<String, Media>();
+        this.mediaCatalog = new HashMap<>();
         ContentResolver cr = this.parent.getContentResolver();
         Uri mediaURI = Audio.Media.EXTERNAL_CONTENT_URI;
         String filter = Audio.Media.IS_MUSIC + "!= 0";
@@ -42,13 +42,13 @@ public class MediaLibrary {
 
     HashSet<Media> getMediaForArtist(String artistTitle) {
         HashSet<Media> songs = getAudioContent(artistTitle, Audio.Media.ARTIST);
-        if( BuildConfig.DEBUG) Utils.toastOnScreen("Found " + songs.size() +" songs for artist " + artistTitle, this.parent);
+        //if( BuildConfig.DEBUG) Utils.toastOnScreen("Found " + songs.size() +" songs for artist " + artistTitle, this.parent);
         return songs;
     }
 
     HashSet<Media> getMediaForAlbum(String albumTitle) {
         HashSet<Media> songs = getAudioContent(albumTitle, Audio.Media.ALBUM);
-        if( BuildConfig.DEBUG) Utils.toastOnScreen("Found " + songs.size() +" songs for artist " + albumTitle, this.parent);
+        //if( BuildConfig.DEBUG) Utils.toastOnScreen("Found " + songs.size() +" songs for artist " + albumTitle, this.parent);
         return songs;
     }
 
