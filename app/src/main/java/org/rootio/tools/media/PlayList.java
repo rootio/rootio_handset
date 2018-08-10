@@ -21,7 +21,6 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import org.rootio.handset.BuildConfig;
 import org.rootio.handset.R;
 import org.rootio.tools.persistence.DBAgent;
-import org.rootio.tools.utils.Utils;
 
 import java.io.File;
 import java.util.ArrayList;

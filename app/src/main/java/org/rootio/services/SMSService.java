@@ -43,26 +43,9 @@ public class SMSService extends Service implements IncomingSMSNotifiable, Servic
     }
 
     @Override
-    public void onTaskRemoved(Intent intent) {
-        super.onTaskRemoved(intent);
-        if (intent != null) {
-            wasStoppedOnPurpose = intent.getBooleanExtra("wasStoppedOnPurpose", false);
-            if (wasStoppedOnPurpose) {
-                this.shutDownService();
-            } else {
-                this.onDestroy();
-            }
-        }
-    }
-
-    @Override
     public void onDestroy() {
-        if (this.wasStoppedOnPurpose == false) {
-            Intent intent = new Intent("org.rootio.services.restartServices");
-            sendBroadcast(intent);
-        } else {
-            this.shutDownService();
-        }
+        this.stopForeground(true);
+        this.shutDownService();
         super.onDestroy();
     }
 

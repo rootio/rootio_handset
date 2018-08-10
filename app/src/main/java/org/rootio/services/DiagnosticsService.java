@@ -20,7 +20,6 @@ public class DiagnosticsService extends Service implements ServiceInformationPub
     private boolean isRunning;
     private int serviceId = 3;
     private Thread runnerThread;
-    private boolean wasStoppedOnPurpose = true;
 
     @Override
     public IBinder onBind(Intent arg0) {
@@ -37,41 +36,21 @@ public class DiagnosticsService extends Service implements ServiceInformationPub
             runnerThread = new Thread(diagnosticsRunner);
             runnerThread.start();
             this.isRunning = true;
-            this.sendEventBroadCast();
         }
+        this.startForeground(this.serviceId, Utils.getNotification(this, "RootIO", "Diagnostics service is running", R.drawable.icon, false, null, null));
+
         return Service.START_STICKY;
     }
 
     @Override
-    public void onTaskRemoved(Intent intent) {
-        super.onTaskRemoved(intent);
-        if (intent != null) {
-            wasStoppedOnPurpose = intent.getBooleanExtra("wasStoppedOnPurpose", false);
-            if (wasStoppedOnPurpose) {
-                this.shutDownService();
-            } else {
-                this.onDestroy();
-            }
-        }
-    }
-
-    @Override
     public void onDestroy() {
-        if (!this.wasStoppedOnPurpose) {
-            Intent intent = new Intent("org.rootio.services.restartServices");
-            sendBroadcast(intent);
-        } else {
-            this.shutDownService();
-        }
+        this.stopForeground(true);
+        this.shutDownService();
         super.onDestroy();
     }
 
     private void shutDownService() {
-        if (runnerThread != null) {
-            super.onDestroy();
-            this.isRunning = false;
-            this.sendEventBroadCast();
-        }
+                 this.isRunning = false;
     }
 
     @Override
@@ -109,16 +88,7 @@ public class DiagnosticsService extends Service implements ServiceInformationPub
         }
     }
 
-    /**
-     * Announces change in service status to listening broadcast receivers
-     */
-    private void sendEventBroadCast() {
-        Intent intent = new Intent();
-        intent.putExtra("serviceId", this.serviceId);
-        intent.putExtra("isRunning", this.isRunning);
-        intent.setAction("org.rootio.services.diagnostic.EVENT");
-        this.sendBroadcast(intent);
-    }
+
 
     @Override
     public int getServiceId() {
@@ -127,7 +97,11 @@ public class DiagnosticsService extends Service implements ServiceInformationPub
 
     @Override
     public void sendEventBroadcast() {
-
+        Intent intent = new Intent();
+        intent.putExtra("serviceId", this.serviceId);
+        intent.putExtra("isRunning", this.isRunning);
+        intent.setAction("org.rootio.services.diagnostics.EVENT");
+        this.sendBroadcast(intent);
     }
 
     class DiagnosticsRunner implements Runnable {

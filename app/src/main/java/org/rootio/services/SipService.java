@@ -18,6 +18,7 @@ import android.os.IBinder;
 import android.telecom.Call;
 import android.util.Log;
 
+import org.rootio.handset.R;
 import org.rootio.services.SIP.CallState;
 import org.rootio.services.SIP.RegistrationState;
 import org.rootio.tools.utils.Utils;
@@ -37,7 +38,6 @@ public class SipService extends Service implements ServiceInformationPublisher {
     private String username, password, domain;
     private SharedPreferences prefs;
     private boolean isRunning;
-    private boolean wasStoppedOnPurpose;
     private CallListener callListener;
     private RegistrationListener registrationListener;
 
@@ -58,20 +58,8 @@ public class SipService extends Service implements ServiceInformationPublisher {
             Utils.doNotification(this, "RootIO", "SIP Service Started");
             this.sendEventBroadcast();
         }
+        this.startForeground(this.serviceId, Utils.getNotification(this, "RootIO", "SIP service is running", R.drawable.icon, false, null, null));
         return Service.START_STICKY;
-    }
-
-    @Override
-    public void onTaskRemoved(Intent intent) {
-        super.onTaskRemoved(intent);
-        if (intent != null) {
-            wasStoppedOnPurpose = intent.getBooleanExtra("wasStoppedOnPurpose", false);
-            if (wasStoppedOnPurpose) {
-                this.shutDownService();
-            } else {
-                this.onDestroy();
-            }
-        }
     }
 
     @Override
@@ -82,12 +70,8 @@ public class SipService extends Service implements ServiceInformationPublisher {
 
     @Override
     public void onDestroy() {
-        if (this.wasStoppedOnPurpose == false) {
-            Intent intent = new Intent("org.rootio.services.restartServices");
-            sendBroadcast(intent);
-        } else {
-            this.shutDownService();
-        }
+        this.stopForeground(true);
+        this.shutDownService();
         super.onDestroy();
     }
 
@@ -163,12 +147,9 @@ public class SipService extends Service implements ServiceInformationPublisher {
      */
     private void handleCall() {
         //check the whitelist
-        if(true)
-        {
+        if (true) {
             this.answer();
-        }
-        else
-        {
+        } else {
             this.hangup();
         }
     }
@@ -204,15 +185,13 @@ public class SipService extends Service implements ServiceInformationPublisher {
         public void onReceive(Context context, Intent intent) {
             try {
                 //take calls only if not in other call
-                if(SipService.this.callState == CallState.INCALL)
-                {
+                if (SipService.this.callState == CallState.INCALL) {
                     SipService.this.sipManager.takeAudioCall(intent, null).endCall();
-                }
-                else {
+                } else {
                     SipService.this.sipCall = SipService.this.sipManager.takeAudioCall(intent, SipService.this.callListener);
                     SipService.this.handleCall();
                 }
-                } catch (SipException e) {
+            } catch (SipException e) {
                 e.printStackTrace();
 
             }
@@ -246,7 +225,7 @@ public class SipService extends Service implements ServiceInformationPublisher {
 
         @Override
         public void onCallEstablished(SipAudioCall call) {
-            Utils.toastOnScreen("Established",SipService.this);
+            Utils.toastOnScreen("Established", SipService.this);
             SipService.this.sipCall = call;
             SipService.this.sipCall.startAudio();
             SipService.this.callState = CallState.IDLE.INCALL;
@@ -315,7 +294,7 @@ public class SipService extends Service implements ServiceInformationPublisher {
         }
     }
 
-     @Override
+    @Override
     public int getServiceId() {
         return this.serviceId;
     }

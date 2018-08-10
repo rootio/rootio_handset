@@ -3,6 +3,7 @@ package org.rootio.services;
 import java.lang.reflect.Method;
 
 import org.rootio.handset.BuildConfig;
+import org.rootio.handset.R;
 import org.rootio.tools.telephony.CallAuthenticator;
 import org.rootio.tools.telephony.CallRecorder;
 import org.rootio.tools.utils.Utils;
@@ -30,7 +31,6 @@ public class TelephonyService extends Service implements ServiceInformationPubli
     private TelephonyManager telephonyManager;
     private TelecomManager telecomManager;
     private PhoneCallListener listener;
-    private boolean wasStoppedOnPurpose = true;
     private CallRecorder callRecorder;
 
     @Override
@@ -52,31 +52,15 @@ public class TelephonyService extends Service implements ServiceInformationPubli
             this.isRunning = true;
             this.sendEventBroadcast();
         }
+        this.startForeground(this.serviceId, Utils.getNotification(this, "RootIO", "Telephony service is running", R.drawable.icon, false, null, null));
         return Service.START_STICKY;
 
     }
 
     @Override
-    public void onTaskRemoved(Intent intent) {
-        super.onTaskRemoved(intent);
-        if (intent != null) {
-            wasStoppedOnPurpose = intent.getBooleanExtra("wasStoppedOnPurpose", false);
-            if (wasStoppedOnPurpose) {
-                this.shutDownService();
-            } else {
-                this.onDestroy();
-            }
-        }
-    }
-
-    @Override
     public void onDestroy() {
-        if (this.wasStoppedOnPurpose == false) {
-            Intent intent = new Intent("org.rootio.services.restartServices");
-            sendBroadcast(intent);
-        } else {
-            this.shutDownService();
-        }
+        this.stopForeground(true);
+        this.shutDownService();
         super.onDestroy();
     }
 
@@ -124,8 +108,7 @@ public class TelephonyService extends Service implements ServiceInformationPubli
                 return;
             }
             this.telecomManager.acceptRingingCall();
-        }
-        else { //hail mary. This works only for Kitkat and below
+        } else { //hail mary. This works only for Kitkat and below
 
             new Thread(new Runnable() {
                 @Override
@@ -196,7 +179,7 @@ public class TelephonyService extends Service implements ServiceInformationPubli
      * incomingNumber
      */
     public void handleCall(String incomingNumber) {
-        if (true ||   new CallAuthenticator(this).isWhiteListed(incomingNumber)) {
+        if (true || new CallAuthenticator(this).isWhiteListed(incomingNumber)) {
             this.sendTelephonyEventBroadcast(true);
             pickCall();
             // this.setupCallRecording(); //not possible on pockets
@@ -268,7 +251,6 @@ public class TelephonyService extends Service implements ServiceInformationPubli
 
     @Override
     public int getServiceId() {
-        // TODO Auto-generated method stub
-        return 0;
+        return this.serviceId;
     }
 }

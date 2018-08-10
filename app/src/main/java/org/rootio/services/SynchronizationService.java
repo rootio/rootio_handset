@@ -1,5 +1,6 @@
 package org.rootio.services;
 
+import org.rootio.handset.R;
 import org.rootio.services.synchronization.SynchronizationDaemon;
 import org.rootio.tools.utils.Utils;
 
@@ -11,7 +12,6 @@ public class SynchronizationService extends Service implements ServiceInformatio
 
     private final int serviceId = 5;
     private boolean isRunning;
-    private boolean wasStoppedOnPurpose = true;
 
     @Override
     public IBinder onBind(Intent arg0) {
@@ -28,30 +28,14 @@ public class SynchronizationService extends Service implements ServiceInformatio
             this.sendEventBroadcast();
             Utils.doNotification(this, "RootIO", "Synchronization Service Started");
         }
+        this.startForeground(this.serviceId, Utils.getNotification(this, "RootIO", "Synchronization service is running", R.drawable.icon, false, null, null));
         return Service.START_STICKY;
     }
 
     @Override
-    public void onTaskRemoved(Intent intent) {
-        super.onTaskRemoved(intent);
-        if (intent != null) {
-            wasStoppedOnPurpose = intent.getBooleanExtra("wasStoppedOnPurpose", false);
-            if (wasStoppedOnPurpose) {
-                this.shutDownService();
-            } else {
-                this.onDestroy();
-            }
-        }
-    }
-
-    @Override
     public void onDestroy() {
-        if (this.wasStoppedOnPurpose == false) {
-            Intent intent = new Intent("org.rootio.services.restartServices");
-            sendBroadcast(intent);
-        } else {
-            this.shutDownService();
-        }
+        this.stopForeground(true);
+        this.shutDownService();
         super.onDestroy();
     }
 
