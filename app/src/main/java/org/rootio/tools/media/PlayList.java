@@ -21,6 +21,7 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import org.rootio.handset.BuildConfig;
 import org.rootio.handset.R;
 import org.rootio.tools.persistence.DBAgent;
+import org.rootio.tools.utils.Utils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -207,7 +208,7 @@ public class PlayList implements Player.EventListener {
      */
     public void pause() {
         try {
-            if (mediaPlayer.getPlaybackState() == Player.STATE_READY) {
+             if (mediaPlayer.getPlaybackState() == Player.STATE_READY) {
                 this.mediaPosition = this.mediaPlayer.getCurrentPosition();
                 mediaPlayer.stop(true); //advised that media players should never be reused, even in pause/play scenarios
                 mediaPlayer.release();
@@ -227,7 +228,6 @@ public class PlayList implements Player.EventListener {
     public void resume() {
         try {
             this.playMedia(Uri.fromFile(new File(this.currentMedia.getFileLocation())), this.mediaPosition);
-            mediaPlayer = ExoPlayerFactory.newSimpleInstance(this.parent, new DefaultTrackSelector());
 
             // resume the callSign provider
             this.callSignProvider.start();

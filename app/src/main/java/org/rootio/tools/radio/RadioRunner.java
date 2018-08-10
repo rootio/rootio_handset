@@ -133,7 +133,7 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
     public void stop() {
         this.stopProgram(this.runningProgramIndex);
 
-        this.finalize();
+        //this.finalize();
 
     }
 

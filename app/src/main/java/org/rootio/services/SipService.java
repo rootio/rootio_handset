@@ -36,7 +36,6 @@ public class SipService extends Service implements ServiceInformationPublisher {
     private CallState callState = CallState.IDLE;
     private RegistrationState registrationState = RegistrationState.UNREGISTERED;
     private String username, password, domain;
-    private SharedPreferences prefs;
     private boolean isRunning;
     private CallListener callListener;
     private RegistrationListener registrationListener;
@@ -44,7 +43,6 @@ public class SipService extends Service implements ServiceInformationPublisher {
 
     @Override
     public void onCreate() {
-        this.prefs = this.getSharedPreferences("org.rootio.handset", Context.MODE_PRIVATE);
         this.callListener = new CallListener();
         this.registrationListener = new RegistrationListener();
     }
@@ -79,11 +77,9 @@ public class SipService extends Service implements ServiceInformationPublisher {
      * Load SIP configuration information from the stored credentials
      */
     private void loadConfig() {
-        if (this.prefs != null) {
-            this.domain = prefs.getString("org.rootio.sipjunior.domain", "");
-            this.username = prefs.getString("org.rootio.sipjunior.username", "");
-            this.password = prefs.getString("org.rootio.sipjunior.password", "");
-        }
+        this.domain = (String)Utils.getPreference("sip_domain", String.class, this);
+            this.username = (String)Utils.getPreference("sip_username", String.class, this);
+            this.password = (String)Utils.getPreference("sip_password", String.class, this);
     }
 
     /**
@@ -154,6 +150,19 @@ public class SipService extends Service implements ServiceInformationPublisher {
         }
     }
 
+    /**
+     * Sends out broadcasts informing listeners of changes in status of the
+     * Telephone
+     *
+     * @param isInCall Boolean indicating whether the Telephone is in a call or not.
+     *                 True: in call, False: Not in call
+     */
+    private void sendTelephonyEventBroadcast(boolean isInCall) {
+        Intent intent = new Intent();
+        intent.putExtra("Incall", isInCall);
+        intent.setAction("org.rootio.services.telephony.TELEPHONY_EVENT");
+        this.sendBroadcast(intent);
+    }
 
     /**
      * Terminate a SIP call that has been taken over by this service
@@ -171,12 +180,15 @@ public class SipService extends Service implements ServiceInformationPublisher {
      */
     public void answer() {
         try {
+
             this.sipCall.answerCall(30);
             this.sipCall.startAudio();
         } catch (SipException e) {
             e.printStackTrace();
         }
     }
+
+
 
     class CallReceiver extends BroadcastReceiver {
 
@@ -188,6 +200,7 @@ public class SipService extends Service implements ServiceInformationPublisher {
                 if (SipService.this.callState == CallState.INCALL) {
                     SipService.this.sipManager.takeAudioCall(intent, null).endCall();
                 } else {
+                    Utils.toastOnScreen("Incoming call....", SipService.this);
                     SipService.this.sipCall = SipService.this.sipManager.takeAudioCall(intent, SipService.this.callListener);
                     SipService.this.handleCall();
                 }
@@ -217,7 +230,8 @@ public class SipService extends Service implements ServiceInformationPublisher {
         public void onCallEnded(SipAudioCall call) {
             try {
                 SipService.this.sipCall = null;
-
+                SipService.this.sendTelephonyEventBroadcast(false);
+                SipService.this.callState = CallState.IDLE;
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -225,16 +239,15 @@ public class SipService extends Service implements ServiceInformationPublisher {
 
         @Override
         public void onCallEstablished(SipAudioCall call) {
-            Utils.toastOnScreen("Established", SipService.this);
-            SipService.this.sipCall = call;
-            SipService.this.sipCall.startAudio();
-            SipService.this.callState = CallState.IDLE.INCALL;
+            SipService.this.sendTelephonyEventBroadcast(true);
+            SipService.this.callState = CallState.INCALL;
+
+
         }
 
         @Override
         public void onRinging(SipAudioCall call, SipProfile caller) {
             try {
-                Utils.toastOnScreen("Ringing...", SipService.this);
                 SipService.this.sipCall = call;
                 SipService.this.sipCall.answerCall(30);
                 SipService.this.callState = CallState.RINGING;
