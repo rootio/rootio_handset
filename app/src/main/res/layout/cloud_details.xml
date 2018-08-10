@@ -97,42 +97,6 @@
             android:padding="@dimen/activity_horizontal_margin" >
 
             <TextView
-                android:id="@+id/cloud_server_key_lb"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="6dp"
-                android:text="@string/ServerKey"
-                android:textSize="@dimen/SmallerContentText"
-                android:textStyle="bold" >
-            </TextView>
-
-            <TextView
-                android:id="@+id/cloud_server_key_tv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="6dp"
-                android:textSize="15sp" >
-            </TextView>
-        </LinearLayout>
-
-<ImageView
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginLeft="@dimen/activity_horizontal_margin"
-    android:layout_marginRight="@dimen/activity_horizontal_margin"
-    android:scaleType="fitXY"
-    android:src="?android:attr/listDivider" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/activity_horizontal_margin"
-            android:layout_marginRight="@dimen/activity_horizontal_margin"
-            android:layout_marginTop="@dimen/activity_horizontal_margin"
-            android:background="@drawable/shadow_background"
-            android:padding="@dimen/activity_horizontal_margin" >
-
-            <TextView
                 android:id="@+id/cloud_station_id_lb"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

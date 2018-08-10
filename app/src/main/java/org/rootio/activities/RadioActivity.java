@@ -78,7 +78,7 @@ public class RadioActivity extends Activity implements Notifiable, ServiceExitIn
                 intent = new Intent(this, FrequencyActivity.class);
                 startActivity(intent);
                 return true;
-            case R.id.quity_menu_item:
+            case R.id.quit_menu_item:
                 this.onStop();
                 this.finish();
                 return true;

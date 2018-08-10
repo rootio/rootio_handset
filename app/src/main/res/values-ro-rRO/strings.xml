@@ -102,4 +102,6 @@
     <string name="MulticastIP">Multicast IP:</string>
     <string name="MulticastPort">Multicast Port:</string>
     <string name="SipServiceTitle">SIP:</string>
+    <string name="Services">Service</string>
+    <string name="StationChange">"Schimbați stația "</string>
 </resources>

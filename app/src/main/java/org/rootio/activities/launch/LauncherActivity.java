@@ -1,8 +1,10 @@
 package org.rootio.activities.launch;
 
 import android.app.TabActivity;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.Menu;
@@ -112,13 +114,19 @@ public class LauncherActivity extends TabActivity {
                 intent = new Intent(this, FrequencyActivity.class);
                 this.startActivity(intent);
                 return true;
-            case R.id.quity_menu_item:
+            case R.id.quit_menu_item:
                 this.onStop();
                 this.finish();
                 return true;
             case R.id.services_menu_item:
                 intent = new Intent(this, ServicesActivity.class);
                 this.startActivity(intent);
+                return true;
+            case R.id.stationChange_menu_item:
+                SharedPreferences sp = getSharedPreferences("org.rootio.handset",0);
+                SharedPreferences.Editor editor = sp.edit();
+                editor.clear();
+                editor.commit();
                 return true;
             default:
                 return super.onContextItemSelected(item);

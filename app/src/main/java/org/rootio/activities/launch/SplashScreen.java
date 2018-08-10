@@ -55,7 +55,7 @@ public class SplashScreen extends Activity {
             String stationKey = ((EditText) this.findViewById(R.id.stationKeyEt)).getText().toString();
             String serverAddress = ((EditText) this.findViewById(R.id.serverAddressEt)).getText().toString();
             int serverPort = Integer.parseInt(((EditText) this.findViewById(R.id.serverPortEt)).getText().toString());
-           this.synchronize(new StationHandler(this, new Cloud(this, serverAddress, serverPort, stationId, stationKey)));
+           this.synchronize(new StationHandler(this, new Cloud(this, serverAddress, serverPort, stationId)));
         }  catch (NumberFormatException e) {
             Utils.warnOnScreen(this, "Station ID and Port number should be Integers");
         } catch (Exception e) {
@@ -71,7 +71,7 @@ public class SplashScreen extends Activity {
         String serverAddress = ((EditText) this.findViewById(R.id.serverAddressEt)).getText().toString();
         int serverPort = Integer.parseInt(((EditText) this.findViewById(R.id.serverPortEt)).getText().toString());
         try {
-            this.saveCloudInformation(stationId, stationKey, serverAddress, serverPort);
+            this.saveCloudInformation(stationId,stationKey, serverAddress, serverPort);
         }
         catch (Exception e) {
             Utils.warnOnScreen(this, "Station information was not saved due to an error, please try again");
