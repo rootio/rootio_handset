@@ -35,7 +35,7 @@ public class Program implements Comparable<Program>, ScheduleNotifiable {
     public void stop() {
         try {
             this.programActions.get(this.playingIndex).stop();
-            // unregister listeners, finalize()
+            this.parent.unregisterReceiver(this.alertHandler);
         } catch (Exception ex) {
 
         }
@@ -59,12 +59,12 @@ public class Program implements Comparable<Program>, ScheduleNotifiable {
             for (int i = 0; i < programStructure.length(); i++) {
                 if (programStructure.getJSONObject(i).getString("type").toLowerCase().equals("music"))//redundant, safe
                 {
-                    //acumulate playlists
+                    //accumulate playlists
                     playlists.add(programStructure.getJSONObject(i).getString("name"));
                 }
                 if (programStructure.getJSONObject(i).getString("type").toLowerCase().equals("stream"))//redundant, safe
                 {
-                    //acumulate playlists
+                    //accumulate playlists
                     streams.add(programStructure.getJSONObject(i).getString("stream_url"));
                 }
             }
@@ -132,7 +132,7 @@ public class Program implements Comparable<Program>, ScheduleNotifiable {
     @Override
     public void stopProgram(Integer index) {
         this.programActions.get(index).stop();
-        this.parent.unregisterReceiver(this.alertHandler);
+
     }
 
     @Override

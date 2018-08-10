@@ -28,7 +28,6 @@ public class ProgramService extends Service implements ServiceInformationPublish
     private NewDayScheduleHandler newDayScheduleHandler;
     private PendingIntent pi;
     private AlarmManager am;
-    private boolean wasStoppedOnPurpose = true;
 
     @Override
     public IBinder onBind(Intent arg0) {
@@ -46,6 +45,7 @@ public class ProgramService extends Service implements ServiceInformationPublish
             this.isRunning = true;
             this.sendEventBroadcast();
         }
+        this.startForeground(this.serviceId, Utils.getNotification(this, "RootIO", "Program service is running", R.drawable.icon, false, null, null));
         return Service.START_STICKY;
     }
 
@@ -63,32 +63,14 @@ public class ProgramService extends Service implements ServiceInformationPublish
     }
 
     @Override
-    public void onTaskRemoved(Intent intent) {
-        super.onTaskRemoved(intent);
-        if (intent != null) {
-            wasStoppedOnPurpose = intent.getBooleanExtra("wasStoppedOnPurpose", false);
-            if (wasStoppedOnPurpose) {
-                this.shutDownService();
-            } else {
-                this.onDestroy();
-            }
-        }
-    }
-
-    @Override
     public void onDestroy() {
-        if (this.wasStoppedOnPurpose == false) {
-            Intent intent = new Intent("org.rootio.services.restartServices");
-            sendBroadcast(intent);
-        } else {
+            this.stopForeground(true);
             this.shutDownService();
-        }
-        super.onDestroy();
+            super.onDestroy();
     }
 
     private void shutDownService() {
         if (radioRunner != null && this.isRunning) {
-            super.onDestroy();
             radioRunner.stop();
             this.isRunning = false;
             try {

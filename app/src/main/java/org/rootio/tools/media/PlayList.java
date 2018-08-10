@@ -1,6 +1,5 @@
 package org.rootio.tools.media;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.media.AudioManager;
 import android.net.Uri;
@@ -397,6 +396,7 @@ public class PlayList implements Player.EventListener {
 
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+        Utils.toastOnScreen("player state changed", PlayList.this.parent);
         switch (playbackState) {
             case Player.STATE_READY:
                 try {
@@ -412,13 +412,15 @@ public class PlayList implements Player.EventListener {
                 break;
             case Player.STATE_ENDED: //a song has ended
                 if (this.isShuttingDown) {
+                    Utils.toastOnScreen("THis was planned :-(",PlayList.this.parent);
                     return;
                 }
                 try {
+                    Utils.toastOnScreen("Not on purpose!", PlayList.this.parent);
                     mediaPlayer.release();
                 } catch (Exception ex) {
                 }
-                this.load();
+                //this.load();
                 this.startPlayer();
                 break;
         }
@@ -436,7 +438,7 @@ public class PlayList implements Player.EventListener {
 
     @Override
     public void onPlayerError(ExoPlaybackException error) {
-
+Utils.toastOnScreen("There was an error", PlayList.this.parent);
     }
 
     @Override

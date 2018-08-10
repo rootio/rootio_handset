@@ -118,7 +118,7 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
      * Stops the program that is currently running
      */
     public void stopProgram(Integer index) {
-        if (index != null) {
+         if (index != null) {
             try {
                 this.programs.get(this.runningProgramIndex).stop();
             } catch (NullPointerException e) {
@@ -139,13 +139,17 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
 
     public void finalize() {
         try {
-            this.parent.unregisterReceiver(telephonyEventBroadcastReceiver);
-            this.parent.unregisterReceiver(br);
-            this.parent.unregisterReceiver(scheduleChangeNotificationReceiver);
+            unregisterReceivers();
             super.finalize();
         } catch (Throwable e) {
             Log.e(this.parent.getString(R.string.app_name), e.getMessage() == null ? "Null pointer exception(RadioRunner.finalize)" : e.getMessage());
         }
+    }
+
+    private void unregisterReceivers() {
+        this.parent.unregisterReceiver(telephonyEventBroadcastReceiver);
+        this.parent.unregisterReceiver(br);
+        this.parent.unregisterReceiver(scheduleChangeNotificationReceiver);
     }
 
     /**

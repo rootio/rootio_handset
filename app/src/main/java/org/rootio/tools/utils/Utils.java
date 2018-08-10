@@ -86,6 +86,12 @@ public class Utils {
     @SuppressLint("NewApi")
     public static void doNotification(ContextWrapper contextWrapper, String title, String content, int icon, boolean autoCancel, PendingIntent contentIntent, NotificationAction[] notificationActions) {
 
+        Notification notification = getNotification(contextWrapper, title, content, icon, autoCancel, contentIntent, notificationActions);
+        NotificationManager notificationManager = (NotificationManager) contextWrapper.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(1, notification);
+    }
+
+    public static Notification getNotification(ContextWrapper contextWrapper, String title, String content, int icon, boolean autoCancel, PendingIntent contentIntent, NotificationAction[] notificationActions) {
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(contextWrapper);
         notificationBuilder = notificationBuilder.setContentTitle(title);
         notificationBuilder = notificationBuilder.setContentText(content);
@@ -96,9 +102,7 @@ public class Utils {
         for (int i = 0; notificationActions != null && i < notificationActions.length && i < 2; i++) {
             notificationBuilder = notificationBuilder.addAction(notificationActions[i].getIconId(), notificationActions[i].getTitle(), notificationActions[i].getPendingIntent());
         }
-        Notification notification = notificationBuilder.build();
-        NotificationManager notificationManager = (NotificationManager) contextWrapper.getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify(1, notification);
+        return notificationBuilder.build();
     }
 
     public static void handle(Runnable runnable) {
