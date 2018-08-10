@@ -17,26 +17,19 @@ import android.content.IntentFilter;
 public class Program implements Comparable<Program>, ScheduleNotifiable {
 
     private String title;
-    private Long id;
     private Date startDate, endDate;
-    private int duration, playingIndex;
+    private int playingIndex;
     final Context parent;
     private ArrayList<ProgramAction> programActions;
     private final ScheduleBroadcastHandler alertHandler;
 
-    public Program(Context parent, String title, Date start, Date end, String structure, String programTypeId) {
+    public Program(Context parent, String title, Date start, Date end, String structure) {
         this.parent = parent;
         this.title = title;
         this.startDate = start;
         this.endDate = end;
         this.alertHandler = new ScheduleBroadcastHandler(this);
-        this.loadProgramActions(structure, programTypeId);
-    }
-
-    public void runProgramAction(int index) {
-        this.programActions.get(this.playingIndex).stop();
-        this.playingIndex = index;
-        this.programActions.get(index).run();
+        this.loadProgramActions(structure);
     }
 
     public void stop() {
@@ -56,8 +49,8 @@ public class Program implements Comparable<Program>, ScheduleNotifiable {
         this.programActions.get(this.playingIndex).resume();
     }
 
-    private void loadProgramActions(String structure, String programTypeId) {
-        this.programActions = new ArrayList<ProgramAction>();
+    private void loadProgramActions(String structure) {
+        this.programActions = new ArrayList<>();
         JSONArray programStructure;
         try {
             programStructure = new JSONArray(structure);
@@ -92,17 +85,9 @@ public class Program implements Comparable<Program>, ScheduleNotifiable {
         return this.title;
     }
 
-    /**
-     * Gets the ID for this program
-     *
-     * @return long representation of the ID of this program
-     */
-    public long getId() {
-        return this.id;
-    }
 
     public void run() {
-        this.setupAlertReceiver(alertHandler, programActions);
+        this.setupAlertReceiver(programActions);
     }
 
     public ArrayList<ProgramAction> getProgramActions() {
@@ -123,11 +108,7 @@ public class Program implements Comparable<Program>, ScheduleNotifiable {
         return 0;
     }
 
-    public int getDuration() {
-        return this.duration;
-    }
-
-    private void setupAlertReceiver(ScheduleBroadcastHandler alertHandler, ArrayList<ProgramAction> programActions) {
+    private void setupAlertReceiver(ArrayList<ProgramAction> programActions) {
         IntentFilter intentFilter = new IntentFilter();
         AlarmManager am = (AlarmManager) this.parent.getSystemService(Context.ALARM_SERVICE);
         for (int i = 0; i < programActions.size(); i++) {
@@ -151,6 +132,7 @@ public class Program implements Comparable<Program>, ScheduleNotifiable {
     @Override
     public void stopProgram(Integer index) {
         this.programActions.get(index).stop();
+        this.parent.unregisterReceiver(this.alertHandler);
     }
 
     @Override
@@ -159,6 +141,12 @@ public class Program implements Comparable<Program>, ScheduleNotifiable {
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.MINUTE, this.programActions.get(index).getDuration() - 1);
         return this.endDate.compareTo(referenceCalendar.getTime()) <= 0;
+    }
+
+    @Override
+    public void finalize()
+    {
+        this.parent.unregisterReceiver(this.alertHandler);
     }
 
 }

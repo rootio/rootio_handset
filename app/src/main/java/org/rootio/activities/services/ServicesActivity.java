@@ -44,10 +44,6 @@ public class ServicesActivity extends Activity implements OnCheckedChangeListene
         this.setContentView(R.layout.services);
         this.setTitle("Services");
         this.getActionBar().setDisplayHomeAsUpEnabled(true);
-        this.setupBroadcastHandling();
-        this.setUpServiceStopHandling();
-        this.setupServiceComponents();
-        this.getServiceConnections();
     }
 
     /**
@@ -88,7 +84,10 @@ public class ServicesActivity extends Activity implements OnCheckedChangeListene
     @Override
     public void onStart() {
         super.onStart();
-
+        this.setupBroadcastHandling();
+        this.setUpServiceStopHandling();
+        this.setupServiceComponents();
+        this.bindServiceConnections();
     }
 
     @Override
@@ -96,6 +95,8 @@ public class ServicesActivity extends Activity implements OnCheckedChangeListene
         super.onStop();
         try {
             this.unregisterReceiver(broadCastIntentHandler);
+            this.unregisterReceiver(serviceStopReceiver);
+            this.unbindServiceConnections();
         } catch (Exception ex) {
 
         }
@@ -123,9 +124,18 @@ public class ServicesActivity extends Activity implements OnCheckedChangeListene
     /**
      * Bind to the various services to be able to communicate with them
      */
-    private void getServiceConnections() {
+    private void bindServiceConnections() {
         for (Entry<Integer, ServiceComponents> serviceComponent : this.serviceComponents.entrySet()) {
             this.bindServiceConnection(serviceComponent.getKey());
+        }
+    }
+
+    /**
+     * Bind to the various services to be able to communicate with them
+     */
+    private void unbindServiceConnections() {
+        for (Entry<Integer, ServiceComponents> serviceComponent : this.serviceComponents.entrySet()) {
+            this.unbindServiceConnection(serviceComponent.getKey());
         }
     }
 
@@ -157,6 +167,7 @@ public class ServicesActivity extends Activity implements OnCheckedChangeListene
         this.unbindServiceConnection(serviceId);
         this.stopService(serviceIntent);
         this.serviceComponents.get(serviceId).getServiceState().setServiceState(0);
+
     }
 
     /**

@@ -36,7 +36,7 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
     private Integer runningProgramIndex = null;
     private State state;
     private TelephonyEventBroadcastReceiver telephonyEventBroadcastReceiver;
-    private ScheduleChangeBroadcastHandler scheduleChangeNotificactionReceiver;
+    private ScheduleChangeBroadcastHandler scheduleChangeNotificationReceiver;
 
     public RadioRunner(Context parent) {
         this.parent = parent;
@@ -46,10 +46,10 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
     }
 
     private void listenForTelephonyEvents() {
-        this.scheduleChangeNotificactionReceiver = new ScheduleChangeBroadcastHandler(this);
+        this.scheduleChangeNotificationReceiver = new ScheduleChangeBroadcastHandler(this);
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction("org.rootio.services.synchronization.SCHEDULE_CHANGE_EVENT");
-        this.parent.registerReceiver(scheduleChangeNotificactionReceiver, intentFilter);
+        this.parent.registerReceiver(scheduleChangeNotificationReceiver, intentFilter);
     }
 
     private void listenForScheduleChangeNotifications() {
@@ -141,6 +141,7 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
         try {
             this.parent.unregisterReceiver(telephonyEventBroadcastReceiver);
             this.parent.unregisterReceiver(br);
+            this.parent.unregisterReceiver(scheduleChangeNotificationReceiver);
             super.finalize();
         } catch (Throwable e) {
             Log.e(this.parent.getString(R.string.app_name), e.getMessage() == null ? "Null pointer exception(RadioRunner.finalize)" : e.getMessage());
@@ -214,7 +215,7 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
         for (PendingIntent pi : this.pis) {
             this.am.cancel(pi);
         }
-        this.pis = new ArrayList<PendingIntent>();
+        this.pis = new ArrayList<>();
     }
 
     /**
@@ -230,7 +231,7 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
         ArrayList<Program> programs = new ArrayList<Program>();
         for (int i = 0; i < data.length; i++) {
             Program program;
-            program = new Program(this.parent, data[i][1], Utils.getDateFromString(data[i][2], "yyyy-MM-dd HH:mm:ss"), Utils.getDateFromString(data[i][3], "yyyy-MM-dd HH:mm:ss"), data[i][4], data[i][5]);
+            program = new Program(this.parent, data[i][1], Utils.getDateFromString(data[i][2], "yyyy-MM-dd HH:mm:ss"), Utils.getDateFromString(data[i][3], "yyyy-MM-dd HH:mm:ss"), data[i][4]);
             programs.add(program);
         }
         return programs;

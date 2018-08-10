@@ -10,7 +10,6 @@ public class ProgramAction {
     private ProgramActionType programActionType;
     private Context parent;
     private PlayList playlist;
-    private JingleManager jingleManager;
 
     public ProgramAction(Context parent, ArrayList<String> playlists, ArrayList<String> streams, ProgramActionType programType) {
         this.parent = parent;
@@ -29,8 +28,6 @@ public class ProgramAction {
                 this.playlist.play();
                 break;
             case Jingle:
-                this.jingleManager = new JingleManager(this.parent, null);
-                this.jingleManager.playJingle();
                 break;
             case Outcall:
                 break;
@@ -46,8 +43,7 @@ public class ProgramAction {
                 this.playlist.resume();
                 break;
             case Jingle:
-                this.jingleManager.play();
-                break;
+                 break;
             case Outcall:
                 break;
             default:
@@ -62,7 +58,6 @@ public class ProgramAction {
                 this.playlist.play();
                 break;
             case Jingle:
-                this.jingleManager.play();
                 break;
             case Outcall:
                 break;
@@ -78,7 +73,6 @@ public class ProgramAction {
                 this.playlist.pause();
                 break;
             case Jingle:
-                this.jingleManager.pause();
                 break;
             case Outcall:
                 this.playlist.pause();
@@ -95,7 +89,6 @@ public class ProgramAction {
                 this.playlist.stop();
                 break;
             case Jingle:
-                this.jingleManager.stop();
                 break;
             case Outcall:
                 break;
@@ -107,29 +100,4 @@ public class ProgramAction {
     public int getDuration() {
         return this.duration;
     }
-
-    public ProgramActionType getProgramType() {
-        return this.programActionType;
-    }
-
-    public PlayList getPlayList() {
-        return this.getPlaylist();
-    }
-
-    public PlayList getPlaylist() {
-        return playlist;
-    }
-
-    public void setPlaylist(PlayList playlist) {
-        this.playlist = playlist;
-    }
-
-    public JingleManager getJingleManager() {
-        return jingleManager;
-    }
-
-    public void setJingleManager(JingleManager jingleManager) {
-        this.jingleManager = jingleManager;
-    }
-
 }
