@@ -2,8 +2,6 @@ package org.rootio.tools.media;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.util.Log;
@@ -50,7 +48,6 @@ public class PlayList implements Player.EventListener {
     private long mediaPosition;
     private static PlayList playListInstance;
     private MediaLibrary mediaLib;
-    private BroadcastReceiver playListener;
     private boolean isShuttingDown;
 
 
@@ -63,7 +60,6 @@ public class PlayList implements Player.EventListener {
         this.playlists = playlists;
         this.streams = streams;
         this.parent = parent;
-        this.setUpPlayListener();
         this.mediaLib = new MediaLibrary(this.parent);
         this.programActionType = programActionType;
         this.callSignProvider = new CallSignProvider();
@@ -77,28 +73,7 @@ public class PlayList implements Player.EventListener {
         return playListInstance;
     }
 
-    private void setUpPlayListener() {
-        this.playListener = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                if (PlayList.this.isShuttingDown) {
-                    return;
-                }
-                try {
-                    mediaPlayer.release();
-                } catch (Exception ex) {
-                }
-                PlayList.this.load();
-                PlayList.this.startPlayer();
-            }
-        };
-        IntentFilter fltr = new IntentFilter();
-        fltr.addAction("org.rootio.media.playChange");
-        this.parent.registerReceiver(this.playListener, fltr);
-    }
-
-
-    /**
+     /**
      * Load media for this playlist from the database
      */
     public void load() {
@@ -486,7 +461,6 @@ public class PlayList implements Player.EventListener {
         private boolean isRunning;
 
         CallSignProvider() {
-            //PlayList.this.parent = parent;
             ArrayList jingles = new ArrayList<String>();
             jingles.add("jingle");
             this.callSigns = PlayList.this.loadMedia(jingles);

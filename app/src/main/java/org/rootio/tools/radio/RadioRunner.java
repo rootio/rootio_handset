@@ -132,12 +132,18 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
 
     public void stop() {
         this.stopProgram(this.runningProgramIndex);
-        this.parent.unregisterReceiver(telephonyEventBroadcastReceiver);
-        this.parent.unregisterReceiver(br);
+
+        this.finalize();
+
+    }
+
+    public void finalize() {
         try {
-            this.finalize();
+            this.parent.unregisterReceiver(telephonyEventBroadcastReceiver);
+            this.parent.unregisterReceiver(br);
+            super.finalize();
         } catch (Throwable e) {
-            Log.e(this.parent.getString(R.string.app_name), e.getMessage() == null ? "Null pointer exception(RadioRunner.stop)" : e.getMessage());
+            Log.e(this.parent.getString(R.string.app_name), e.getMessage() == null ? "Null pointer exception(RadioRunner.finalize)" : e.getMessage());
         }
     }
 
