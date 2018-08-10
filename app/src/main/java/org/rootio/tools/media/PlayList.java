@@ -77,9 +77,6 @@ public class PlayList implements Player.EventListener {
      */
     public void load() {
         mediaList = loadMedia(this.playlists);
-        if (BuildConfig.DEBUG) {
-            Utils.toastOnScreen("Playlist has " + mediaList.size() + " songs in it", this.parent);
-        }
         mediaIterator = mediaList.iterator();
         streamIterator = streams.iterator();
     }
@@ -113,7 +110,6 @@ public class PlayList implements Player.EventListener {
                 currentMedia = mediaIterator.next();
                 try {
 
-                    Utils.toastOnScreen("Playing " + Uri.fromFile(new File(currentMedia.getFileLocation())), this.parent);
                     playMedia(Uri.fromFile(new File(currentMedia.getFileLocation())));
 
                 } catch (NullPointerException ex) {
@@ -121,8 +117,7 @@ public class PlayList implements Player.EventListener {
                     this.startPlayer();
                 }
             } else {
-                if (BuildConfig.DEBUG) Utils.toastOnScreen("nothing on the iterator", this.parent);
-                if (mediaList.size() > 0) // reload playlist if only there were songs in it
+                 if (mediaList.size() > 0) // reload playlist if only there were songs in it
                 // were some songs in it
                 {
                     this.load();
@@ -243,21 +238,14 @@ public class PlayList implements Player.EventListener {
         }
     }
 
-    /**
-     * Loads media with the specified tag into the playlist
-     *
-     * @param tag The tag to be matched for media to be loaded into the playlist
-     * @return Array of Media objects matching specified tag
-     */
+
     private HashSet<Media> loadMedia(ArrayList<String> playlists) {
         HashSet<Media> media = new HashSet<>();
         for (String playlist : playlists) {
-            Utils.toastOnScreen(playlist, this.parent);
-            String query = "select title, item, itemtypeid from playlist where title = ?";
+             String query = "select title, item, itemtypeid from playlist where title = ?";
             String[] args = new String[]{playlist};
             DBAgent dbagent = new DBAgent(this.parent);
             String[][] data = dbagent.getData(query, args);
-            Utils.toastOnScreen(String.valueOf(data.length), this.parent);
             for (int i = 0; i < data.length; i++) {
 
                 if (playlist.equals("jingle")) {
@@ -396,7 +384,6 @@ public class PlayList implements Player.EventListener {
 
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-        Utils.toastOnScreen("player state changed", PlayList.this.parent);
         switch (playbackState) {
             case Player.STATE_READY:
                 try {
@@ -412,12 +399,10 @@ public class PlayList implements Player.EventListener {
                 break;
             case Player.STATE_ENDED: //a song has ended
                 if (this.isShuttingDown) {
-                    Utils.toastOnScreen("THis was planned :-(",PlayList.this.parent);
                     return;
                 }
                 try {
-                    Utils.toastOnScreen("Not on purpose!", PlayList.this.parent);
-                    mediaPlayer.release();
+                     mediaPlayer.release();
                 } catch (Exception ex) {
                 }
                 //this.load();
@@ -438,7 +423,6 @@ public class PlayList implements Player.EventListener {
 
     @Override
     public void onPlayerError(ExoPlaybackException error) {
-Utils.toastOnScreen("There was an error", PlayList.this.parent);
     }
 
     @Override

@@ -192,28 +192,6 @@ public class Utils {
 
     }
 
-    /**
-     * Breaks down the information in the JSON file for program and schedule information
-     *
-     * @param programDefinition The JSON program definition received from the cloud server
-     */
-    public static void saveJSONToFile(Context context, JSONObject json, String fileName) {
-        FileOutputStream str = null;
-        try {
-            File whitelistFile = new File(fileName);
-            str = new FileOutputStream(whitelistFile);
-            str.write(json.toString().getBytes());
-        } catch (Exception e) {
-            Log.e(context.getString(R.string.app_name), e.getMessage() == null ? "Null pointer[FrequencyHandler.processJSONObject]" : e.getMessage());
-        } finally {
-            try {
-                str.close();
-            } catch (Exception e) {
-                Log.e(context.getString(R.string.app_name), e.getMessage() == null ? "Null pointer[FrequencyHandler.processJSONObject]" : e.getMessage());
-            }
-        }
-    }
-
     public static void savePreferences(ContentValues values, Context context) {
         SharedPreferences prefs = context.getSharedPreferences("org.rootio.handset", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
