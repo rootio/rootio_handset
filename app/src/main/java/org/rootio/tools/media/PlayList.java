@@ -227,7 +227,7 @@ public class PlayList implements Player.EventListener {
     public void resume() {
         try {
             this.playMedia(Uri.fromFile(new File(this.currentMedia.getFileLocation())), this.mediaPosition);
-            mediaPlayer = ExoPlayerFactory.newSimpleInstance(this.parent, new DefaultTrackSelector());
+            //mediaPlayer = ExoPlayerFactory.newSimpleInstance(this.parent, new DefaultTrackSelector());
 
             // resume the callSign provider
             this.callSignProvider.start();

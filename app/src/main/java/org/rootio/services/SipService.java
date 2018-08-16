@@ -1,21 +1,18 @@
+
 package org.rootio.services;
 
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.net.sip.SipAudioCall;
 import android.net.sip.SipException;
 import android.net.sip.SipManager;
 import android.net.sip.SipProfile;
 import android.net.sip.SipRegistrationListener;
-import android.os.Binder;
 import android.os.IBinder;
-import android.telecom.Call;
 import android.util.Log;
 
 import org.rootio.handset.R;
@@ -36,15 +33,14 @@ public class SipService extends Service implements ServiceInformationPublisher {
     private CallState callState = CallState.IDLE;
     private RegistrationState registrationState = RegistrationState.UNREGISTERED;
     private String username, password, domain;
-    private SharedPreferences prefs;
     private boolean isRunning;
     private CallListener callListener;
     private RegistrationListener registrationListener;
+    private CallReceiver callReceiver;
 
 
     @Override
     public void onCreate() {
-        this.prefs = this.getSharedPreferences("org.rootio.handset", Context.MODE_PRIVATE);
         this.callListener = new CallListener();
         this.registrationListener = new RegistrationListener();
     }
@@ -79,11 +75,9 @@ public class SipService extends Service implements ServiceInformationPublisher {
      * Load SIP configuration information from the stored credentials
      */
     private void loadConfig() {
-        if (this.prefs != null) {
-            this.domain = prefs.getString("org.rootio.sipjunior.domain", "");
-            this.username = prefs.getString("org.rootio.sipjunior.username", "");
-            this.password = prefs.getString("org.rootio.sipjunior.password", "");
-        }
+        this.domain = "89.109.64.165"; //(String) Utils.getPreference("sip_domain", String.class, this);
+        this.username = "1001"; //(String) Utils.getPreference("sip_username", String.class, this);
+        this.password = "th1s_1s_passw0rd"; // (String) Utils.getPreference("sip_password", String.class, this);
     }
 
     /**
@@ -92,8 +86,8 @@ public class SipService extends Service implements ServiceInformationPublisher {
     private void listenForIncomingCalls() {
         IntentFilter filter = new IntentFilter();
         filter.addAction("org.rootio.handset.SIP.INCOMING_CALL");
-        CallReceiver receiver = new CallReceiver();
-        this.registerReceiver(receiver, filter);
+        callReceiver = new CallReceiver();
+        this.registerReceiver(callReceiver, filter);
     }
 
     /**
@@ -154,6 +148,19 @@ public class SipService extends Service implements ServiceInformationPublisher {
         }
     }
 
+    /**
+     * Sends out broadcasts informing listeners of changes in status of the
+     * Telephone
+     *
+     * @param isInCall Boolean indicating whether the Telephone is in a call or not.
+     *                 True: in call, False: Not in call
+     */
+    private void sendTelephonyEventBroadcast(boolean isInCall) {
+        Intent intent = new Intent();
+        intent.putExtra("Incall", isInCall);
+        intent.setAction("org.rootio.services.telephony.TELEPHONY_EVENT");
+        this.sendBroadcast(intent);
+    }
 
     /**
      * Terminate a SIP call that has been taken over by this service
@@ -171,12 +178,14 @@ public class SipService extends Service implements ServiceInformationPublisher {
      */
     public void answer() {
         try {
+
             this.sipCall.answerCall(30);
             this.sipCall.startAudio();
         } catch (SipException e) {
             e.printStackTrace();
         }
     }
+
 
     class CallReceiver extends BroadcastReceiver {
 
@@ -188,6 +197,7 @@ public class SipService extends Service implements ServiceInformationPublisher {
                 if (SipService.this.callState == CallState.INCALL) {
                     SipService.this.sipManager.takeAudioCall(intent, null).endCall();
                 } else {
+                    Utils.toastOnScreen("Incoming call....", SipService.this);
                     SipService.this.sipCall = SipService.this.sipManager.takeAudioCall(intent, SipService.this.callListener);
                     SipService.this.handleCall();
                 }
@@ -217,7 +227,8 @@ public class SipService extends Service implements ServiceInformationPublisher {
         public void onCallEnded(SipAudioCall call) {
             try {
                 SipService.this.sipCall = null;
-
+                SipService.this.sendTelephonyEventBroadcast(false);
+                SipService.this.callState = CallState.IDLE;
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -225,16 +236,15 @@ public class SipService extends Service implements ServiceInformationPublisher {
 
         @Override
         public void onCallEstablished(SipAudioCall call) {
-            Utils.toastOnScreen("Established", SipService.this);
-            SipService.this.sipCall = call;
-            SipService.this.sipCall.startAudio();
-            SipService.this.callState = CallState.IDLE.INCALL;
+            SipService.this.sendTelephonyEventBroadcast(true);
+            SipService.this.callState = CallState.INCALL;
+
+
         }
 
         @Override
         public void onRinging(SipAudioCall call, SipProfile caller) {
             try {
-                Utils.toastOnScreen("Ringing...", SipService.this);
                 SipService.this.sipCall = call;
                 SipService.this.sipCall.answerCall(30);
                 SipService.this.callState = CallState.RINGING;
@@ -289,6 +299,7 @@ public class SipService extends Service implements ServiceInformationPublisher {
         if (this.isRunning) {
             this.isRunning = false;
             this.deregister();
+            this.unregisterReceiver(callReceiver);
             Utils.doNotification(this, "RootIO", "SIP Service Stopped");
             this.sendEventBroadcast();
         }

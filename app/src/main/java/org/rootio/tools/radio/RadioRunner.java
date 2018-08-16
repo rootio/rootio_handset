@@ -40,19 +40,21 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
 
     public RadioRunner(Context parent) {
         this.parent = parent;
+        this.programs = fetchPrograms();
         this.setUpAlarming();
-        listenForTelephonyEvents();
+        this.listenForTelephonyEvents();
         this.listenForScheduleChangeNotifications();
+
     }
 
-    private void listenForTelephonyEvents() {
+    private void listenForScheduleChangeNotifications() {
         this.scheduleChangeNotificationReceiver = new ScheduleChangeBroadcastHandler(this);
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction("org.rootio.services.synchronization.SCHEDULE_CHANGE_EVENT");
         this.parent.registerReceiver(scheduleChangeNotificationReceiver, intentFilter);
     }
 
-    private void listenForScheduleChangeNotifications() {
+    private void listenForTelephonyEvents()  {
         this.telephonyEventBroadcastReceiver = new TelephonyEventBroadcastReceiver(this);
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction("org.rootio.services.telephony.TELEPHONY_EVENT");
@@ -75,7 +77,7 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
     }
 
     private void initialiseSchedule() {
-        this.programs = fetchPrograms();
+
         this.schedulePrograms(programs);
     }
 
@@ -84,8 +86,8 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
      *
      * @param index The index of the program to run
      */
-    public void runProgram(int index) {
-        if (this.runningProgramIndex != null) {
+    public synchronized void runProgram(int index) {
+        if (this.runningProgramIndex != null && !this.isExpired(this.runningProgramIndex)) {
             this.stopProgram(this.runningProgramIndex);
         }
         this.runningProgramIndex = index;
@@ -178,7 +180,7 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
      */
     private void schedulePrograms(ArrayList<Program> programs) {
         IntentFilter intentFilter = new IntentFilter();
-        this.pis = new ArrayList<PendingIntent>();
+        this.pis = new ArrayList<>();
         for (int i = 0; i < programs.size(); i++) {
             intentFilter.addAction("org.rootio.RadioRunner" + String.valueOf(i));
         }
@@ -189,7 +191,10 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
 
         // Schedule the program slots
         for (int i = 0; i < programs.size(); i++) {
-            addAlarmEvent(i, programs.get(i).getStartDate());
+            if(programs.get(i).isLocal()) { // no point scheduling non local progs
+                if(i == 0 || (i > 0 && programs.get(i).getStartDate() != programs.get(i-1).getStartDate())) //do not double schedule at same time.
+                addAlarmEvent(i, programs.get(i).getStartDate());
+            }
         }
     }
 

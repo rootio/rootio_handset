@@ -21,6 +21,7 @@ public class Program implements Comparable<Program>, ScheduleNotifiable {
     private int playingIndex;
     final Context parent;
     private ArrayList<ProgramAction> programActions;
+    private boolean isLocal;
     private final ScheduleBroadcastHandler alertHandler;
 
     public Program(Context parent, String title, Date start, Date end, String structure) {
@@ -61,11 +62,13 @@ public class Program implements Comparable<Program>, ScheduleNotifiable {
                 {
                     //accumulate playlists
                     playlists.add(programStructure.getJSONObject(i).getString("name"));
+                    this.isLocal = true;
                 }
                 if (programStructure.getJSONObject(i).getString("type").toLowerCase().equals("stream"))//redundant, safe
                 {
                     //accumulate playlists
                     streams.add(programStructure.getJSONObject(i).getString("stream_url"));
+                    this.isLocal = true;
                 }
             }
 
@@ -100,6 +103,11 @@ public class Program implements Comparable<Program>, ScheduleNotifiable {
 
     public Date getEndDate() {
         return this.endDate;
+    }
+
+    public boolean isLocal()
+    {
+        return this.isLocal;
     }
 
     @Override

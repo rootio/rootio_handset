@@ -135,18 +135,9 @@ public class RadioActivity extends Activity implements Notifiable, ServiceExitIn
     public void notifyServiceConnection(int serviceId) {
         ProgramService programService = (ProgramService) programServiceConnection.getService();
         StationActivityAdapter stationActivityAdapter = new StationActivityAdapter(programService.getPrograms());
-        ListView stationActivityList = (ListView) this.findViewById(R.id.station_activity_lv);
+        ListView stationActivityList = this.findViewById(R.id.station_activity_lv);
         stationActivityList.setAdapter(stationActivityAdapter);
-        //TODO: Fix this to show list of playing stuff on click
-        /*stationActivityList.setOnItemClickListener(new OnItemClickListener() {
 
-            @Override
-            public void onItemClick(AdapterView<?> arg0, View arg1, int index, long arg3) {
-                Intent intent = new Intent(RadioActivity.this, RadioProgramActionsActivity.class);
-                intent.putExtra("index", index);
-                RadioActivity.this.startActivity(intent);
-            }
-        });*/
     }
 
     @Override
