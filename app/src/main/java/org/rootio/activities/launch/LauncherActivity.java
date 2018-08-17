@@ -1,15 +1,22 @@
 package org.rootio.activities.launch;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.TabActivity;
 import android.content.ContentValues;
 import android.content.Context;
+import android.support.v4.app.DialogFragment;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
 
@@ -96,7 +103,6 @@ public class LauncherActivity extends TabActivity {
     @Override
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
         Intent intent;
-
         switch (item.getItemId()) {
             case R.id.station_menu_item:
                 intent = new Intent(this, StationActivity.class);
@@ -122,11 +128,12 @@ public class LauncherActivity extends TabActivity {
                 intent = new Intent(this, ServicesActivity.class);
                 this.startActivity(intent);
                 return true;
-            case R.id.stationChange_menu_item:
-                SharedPreferences sp = getSharedPreferences("org.rootio.handset",0);
-                SharedPreferences.Editor editor = sp.edit();
+            case R.id.station_change_menu_item:
+                SharedPreferences prefs = getSharedPreferences("org.rootio.handset", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = prefs.edit();
                 editor.clear();
-                editor.commit();
+                editor.apply();
+                finish();
                 return true;
             default:
                 return super.onContextItemSelected(item);

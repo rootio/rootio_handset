@@ -104,5 +104,6 @@
     <string name="CloudIPAddress">Cloud IP Address</string>
     <string name="Services">Services</string>
     <string name="StationChange">Change Station</string>
+    <string name="Attention">Attention!</string>
 
 </resources>
