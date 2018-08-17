@@ -1,24 +1,19 @@
 package org.rootio.activities.launch;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.TabActivity;
-import android.content.ContentValues;
 import android.content.Context;
-import android.support.v4.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
+import android.text.Html;
 
 import org.rootio.activities.DiagnosticActivity;
 import org.rootio.activities.RadioActivity;
@@ -129,11 +124,28 @@ public class LauncherActivity extends TabActivity {
                 this.startActivity(intent);
                 return true;
             case R.id.station_change_menu_item:
-                SharedPreferences prefs = getSharedPreferences("org.rootio.handset", Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = prefs.edit();
-                editor.clear();
-                editor.apply();
-                finish();
+                AlertDialog.Builder alert = new AlertDialog.Builder(LauncherActivity.this);
+                alert.setView(R.layout.activity_main);
+                alert.setTitle(R.string.Warning);
+                alert.setMessage(Html.fromHtml(getString(R.string.AlertMessage) + "\n <i>" + getText(R.string.RestartWarning) + "</i>"));
+                alert.setPositiveButton(R.string.OkButtonText,new DialogInterface.OnClickListener(){
+                    @Override
+                    public void onClick(DialogInterface dialog,int id){
+                        SharedPreferences prefs = getSharedPreferences("org.rootio.handset", Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = prefs.edit();
+                        editor.clear();
+                        editor.apply();
+                        finish();
+                        }
+                });
+                alert.setNegativeButton(R.string.CancelButtonText,new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                        }
+                });
+                alert.create();
+                alert.show();
                 return true;
             default:
                 return super.onContextItemSelected(item);

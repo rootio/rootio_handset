@@ -104,4 +104,9 @@
     <string name="SipServiceTitle">SIP:</string>
     <string name="Services">Service</string>
     <string name="StationChange">"Schimbați stația "</string>
+    <string name="Warning">Avertizare!</string>
+    <string name="AlertMessage">"Sunteți sigur că doriți să continuați? "</string>
+    <string name="RestartWarning">"Va trebui să reporniți aplicația "</string>
+    <string name="SyncFrequency">"Frecvența sincronizării "</string>
+    <string name="DiagnosticsFrequency">"Frecvența diagnosticării "</string>
 </resources>

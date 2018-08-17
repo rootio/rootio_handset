@@ -104,6 +104,9 @@
     <string name="CloudIPAddress">Cloud IP Address</string>
     <string name="Services">Services</string>
     <string name="StationChange">Change Station</string>
-    <string name="Attention">Attention!</string>
-
+    <string name="Warning">Warning!</string>
+    <string name="AlertMessage">Are you sure you want to proceed? </string>
+    <string name="RestartWarning"><i>The application will require a restart</i></string>
+    <string name="DiagnosticsFrequency">DiagnosticsFrequency</string>
+    <string name="SyncFrequency">Sync Frequency</string>
 </resources>
