@@ -1,18 +1,21 @@
-
 package org.rootio.services;
 
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.net.sip.SipAudioCall;
 import android.net.sip.SipException;
 import android.net.sip.SipManager;
 import android.net.sip.SipProfile;
 import android.net.sip.SipRegistrationListener;
+import android.os.Binder;
 import android.os.IBinder;
+import android.telecom.Call;
 import android.util.Log;
 
 import org.rootio.handset.R;
@@ -35,8 +38,8 @@ public class SipService extends Service implements ServiceInformationPublisher {
     private String username, password, domain;
     private boolean isRunning;
     private CallListener callListener;
+    private CallReceiver receiver;
     private RegistrationListener registrationListener;
-    private CallReceiver callReceiver;
 
 
     @Override
@@ -75,9 +78,9 @@ public class SipService extends Service implements ServiceInformationPublisher {
      * Load SIP configuration information from the stored credentials
      */
     private void loadConfig() {
-        this.domain = "89.109.64.165"; //(String) Utils.getPreference("sip_domain", String.class, this);
-        this.username = "1001"; //(String) Utils.getPreference("sip_username", String.class, this);
-        this.password = "th1s_1s_passw0rd"; // (String) Utils.getPreference("sip_password", String.class, this);
+        this.domain = "89.109.64.165"; //(String)Utils.getPreference("sip_domain", String.class, this);
+            this.username = "1001"; //(String)Utils.getPreference("sip_username", String.class, this);
+            this.password = "th1s_be_passw0rd"; // (String)Utils.getPreference("sip_password", String.class, this);
     }
 
     /**
@@ -86,8 +89,8 @@ public class SipService extends Service implements ServiceInformationPublisher {
     private void listenForIncomingCalls() {
         IntentFilter filter = new IntentFilter();
         filter.addAction("org.rootio.handset.SIP.INCOMING_CALL");
-        callReceiver = new CallReceiver();
-        this.registerReceiver(callReceiver, filter);
+        receiver = new CallReceiver();
+        this.registerReceiver(receiver, filter);
     }
 
     /**
@@ -97,6 +100,7 @@ public class SipService extends Service implements ServiceInformationPublisher {
         try {
             SipProfile.Builder builder = new SipProfile.Builder(this.username, this.domain);
             builder.setPassword(this.password);
+            builder.setAutoRegistration(true);
             builder.setPort(5060);
             this.sipProfile = builder.build();
         } catch (ParseException e) {
@@ -119,9 +123,12 @@ public class SipService extends Service implements ServiceInformationPublisher {
             intent.setAction("org.rootio.handset.SIP.INCOMING_CALL");
             PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, Intent.FILL_IN_DATA);
             this.sipManager = SipManager.newInstance(this);
-            this.sipManager.open(this.sipProfile, pendingIntent, this.registrationListener);
-            this.sipManager.register(this.sipProfile, 30, this.registrationListener);
 
+            this.sipManager.open(this.sipProfile, pendingIntent, null);
+
+            this.sipManager.register(this.sipProfile, 300, new RegistrationListener());
+            //this.sipManager.setRegistrationListener(this.sipProfile.getUriString(), );
+            this.listenForIncomingCalls();
         } catch (SipException e) {
             e.printStackTrace();
         }
@@ -129,6 +136,7 @@ public class SipService extends Service implements ServiceInformationPublisher {
 
     public void deregister() {
         try {
+            this.unregisterReceiver(receiver);
             this.sipManager.unregister(this.sipProfile, new UnregistrationListener());
 
         } catch (SipException e) {
@@ -178,7 +186,7 @@ public class SipService extends Service implements ServiceInformationPublisher {
      */
     public void answer() {
         try {
-
+this.callState = CallState.INCALL;
             this.sipCall.answerCall(30);
             this.sipCall.startAudio();
         } catch (SipException e) {
@@ -193,11 +201,11 @@ public class SipService extends Service implements ServiceInformationPublisher {
         @Override
         public void onReceive(Context context, Intent intent) {
             try {
+                Utils.toastOnScreen("Incoming call...", SipService.this);
                 //take calls only if not in other call
                 if (SipService.this.callState == CallState.INCALL) {
-                    SipService.this.sipManager.takeAudioCall(intent, null).endCall();
+                    //SipService.this.sipManager.takeAudioCall(intent, null).endCall();
                 } else {
-                    Utils.toastOnScreen("Incoming call....", SipService.this);
                     SipService.this.sipCall = SipService.this.sipManager.takeAudioCall(intent, SipService.this.callListener);
                     SipService.this.handleCall();
                 }
@@ -217,7 +225,7 @@ public class SipService extends Service implements ServiceInformationPublisher {
         public void onError(SipAudioCall call, int errorCode, String message) {
             try {
                 SipService.this.callState = CallState.IDLE;
-
+                SipService.this.sendTelephonyEventBroadcast(false);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -245,10 +253,11 @@ public class SipService extends Service implements ServiceInformationPublisher {
         @Override
         public void onRinging(SipAudioCall call, SipProfile caller) {
             try {
-                SipService.this.sipCall = call;
-                SipService.this.sipCall.answerCall(30);
+//                SipService.this.sipCall = call;
+//                SipService.this.sipCall.answerCall(30);
+//                SipService.this.sipCall.startAudio();
                 SipService.this.callState = CallState.RINGING;
-            } catch (SipException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -264,7 +273,7 @@ public class SipService extends Service implements ServiceInformationPublisher {
 
         @Override
         public void onRegistrationDone(String localProfileUri, final long expiryTime) {
-
+Utils.toastOnScreen("reged", SipService.this);
             SipService.this.registrationState = RegistrationState.REGISTERED;
         }
 
@@ -299,7 +308,6 @@ public class SipService extends Service implements ServiceInformationPublisher {
         if (this.isRunning) {
             this.isRunning = false;
             this.deregister();
-            this.unregisterReceiver(callReceiver);
             Utils.doNotification(this, "RootIO", "SIP Service Stopped");
             this.sendEventBroadcast();
         }
