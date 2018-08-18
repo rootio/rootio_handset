@@ -252,9 +252,6 @@ public class PlayList implements Player.EventListener {
             String[][] data = dbagent.getData(query, args);
             for (int i = 0; i < data.length; i++) {
 
-                if (playlist.equals("jingle")) {
-                    //Utils.toastOnScreen(data[i][2], this.parent);
-                }
                 if (data[i][2].equals("1"))// songs
                 {
                     media.add(this.mediaLib.getMedia(data[i][1]));
@@ -453,6 +450,7 @@ public class PlayList implements Player.EventListener {
         CallSignProvider() {
             ArrayList jingles = new ArrayList<String>();
             jingles.add("jingle");
+            jingles.add("jingles");
             this.callSigns = PlayList.this.loadMedia(jingles);
             this.isRunning = false;
         }
