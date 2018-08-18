@@ -36,6 +36,7 @@ import java.util.Iterator;
  */
 public class PlayList implements Player.EventListener {
 
+    private static PlayList playListInstance;
     private ProgramActionType programActionType;
     private ArrayList<String> playlists, streams;
     private HashSet<Media> mediaList;
@@ -44,15 +45,23 @@ public class PlayList implements Player.EventListener {
     private SimpleExoPlayer mediaPlayer, callSignPlayer;
     private CallSignProvider callSignProvider;
     private Context parent;
-    private Media currentMedia;
+    private Uri currentMedia;
+   // private Media currentMedia;
     private long mediaPosition;
-    private static PlayList playListInstance;
     private MediaLibrary mediaLib;
-    private boolean isShuttingDown;
+    private boolean isShuttingDown, isStreaming;
 
 
     protected PlayList() {
         // do not instantiate
+    }
+
+    public static PlayList getInstance() {
+        if (PlayList.playListInstance != null) {
+            PlayList.playListInstance.stop();
+        }
+        PlayList.playListInstance = new PlayList();
+        return playListInstance;
     }
 
     public void init(Context parent, ArrayList<String> playlists, ArrayList<String> streams, ProgramActionType programActionType) {
@@ -65,15 +74,7 @@ public class PlayList implements Player.EventListener {
         this.callSignProvider = new CallSignProvider();
     }
 
-    public static PlayList getInstance() {
-        if (PlayList.playListInstance != null) {
-            PlayList.playListInstance.stop();
-        }
-        PlayList.playListInstance = new PlayList();
-        return playListInstance;
-    }
-
-     /**
+    /**
      * Load media for this playlist from the database
      */
     public void load() {
@@ -100,25 +101,27 @@ public class PlayList implements Player.EventListener {
 
             if (streamIterator.hasNext()) {
                 String stream = this.streamIterator.next();
-                mediaPlayer = ExoPlayerFactory.newSimpleInstance(this.parent, new DefaultTrackSelector()); //.n.newInstance();// MediaPlayer.create(this.parent, Uri.parse(sng));
-                mediaPlayer.addListener(this);
-                mediaPlayer.setPlayWhenReady(true);
-                mediaPlayer.prepare(this.getMediaSource(Uri.parse(stream)));
+                currentMedia = Uri.parse(stream);
+                try {
+                    playMedia(currentMedia);
 
+                } catch (NullPointerException ex) {
+                    Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(PlayList.startPlayer)" : ex.getMessage());
+                    this.startPlayer();
+                }
 
             } else if (mediaIterator.hasNext()) {
 
-                currentMedia = mediaIterator.next();
+                currentMedia = Uri.fromFile(new File(mediaIterator.next().getFileLocation()));
                 try {
-
-                    playMedia(Uri.fromFile(new File(currentMedia.getFileLocation())));
+                    playMedia(currentMedia);
 
                 } catch (NullPointerException ex) {
                     Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(PlayList.startPlayer)" : ex.getMessage());
                     this.startPlayer();
                 }
             } else {
-                 if (mediaList.size() > 0 || streams.size() > 0) // reload playlist if only there were songs in it
+                if (mediaList.size() > 0 || streams.size() > 0) // reload playlist if only there were songs in it
                 // were some songs in it
                 {
                     this.load();
@@ -146,7 +149,7 @@ public class PlayList implements Player.EventListener {
     private void playMedia(Uri uri, long seekPosition) {
         //begin by raising the volume
         AudioManager audioManager = (AudioManager) this.parent.getSystemService(Context.AUDIO_SERVICE);
-        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC) - 2, AudioManager.FLAG_SHOW_UI);
+        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC) - (BuildConfig.DEBUG?7: 2), AudioManager.FLAG_SHOW_UI);
 
         mediaPlayer = ExoPlayerFactory.newSimpleInstance(this.parent, new DefaultTrackSelector());
         mediaPlayer.setVolume(1f); //this is the volume of the individual player, not the music service of the phone
@@ -210,7 +213,7 @@ public class PlayList implements Player.EventListener {
     public void pause(boolean soft) {
         try {
             if (mediaPlayer.getPlaybackState() == Player.STATE_READY) {
-                if(soft) //typically these are thrown by SIP calls
+                if (soft) //typically these are thrown by SIP calls
                 {
                     this.fadeOut();
 
@@ -233,8 +236,8 @@ public class PlayList implements Player.EventListener {
      */
     public void resume() {
         try {
-            this.playMedia(Uri.fromFile(new File(this.currentMedia.getFileLocation())), this.mediaPosition);
-            //mediaPlayer = ExoPlayerFactory.newSimpleInstance(this.parent, new DefaultTrackSelector());
+            this.playMedia(currentMedia, this.mediaPosition);
+
 
             // resume the callSign provider
             this.callSignProvider.start();
@@ -248,7 +251,7 @@ public class PlayList implements Player.EventListener {
     private HashSet<Media> loadMedia(ArrayList<String> playlists) {
         HashSet<Media> media = new HashSet<>();
         for (String playlist : playlists) {
-             String query = "select title, item, itemtypeid from playlist where lower(title) = ?";
+            String query = "select title, item, itemtypeid from playlist where lower(title) = ?";
             String[] args = new String[]{playlist.toLowerCase()};
             DBAgent dbagent = new DBAgent(this.parent);
             String[][] data = dbagent.getData(query, args);
@@ -405,7 +408,7 @@ public class PlayList implements Player.EventListener {
                     return;
                 }
                 try {
-                     mediaPlayer.release();
+                    mediaPlayer.release();
                 } catch (Exception ex) {
                 }
                 //this.load();
@@ -428,7 +431,7 @@ public class PlayList implements Player.EventListener {
     public void onPlayerError(ExoPlaybackException error) {
         //This will be thrown when a stream is lost due to network, or an error in a local song.
         //in both cases, assume song is ended. This will cause loop of player (stream) or skipping to the next song (song list)
-         this.onPlayerStateChanged(true, Player.STATE_ENDED);
+        this.onPlayerStateChanged(true, Player.STATE_ENDED);
     }
 
     @Override
