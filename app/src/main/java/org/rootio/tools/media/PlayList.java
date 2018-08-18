@@ -205,9 +205,14 @@ public class PlayList implements Player.EventListener {
     /**
      * Pauses the currently playing media
      */
-    public void pause() {
+    public void pause(boolean soft) {
         try {
             if (mediaPlayer.getPlaybackState() == Player.STATE_READY) {
+                if(soft) //typically these are thrown by SIP calls
+                {
+                    this.fadeOut();
+
+                }
                 this.mediaPosition = this.mediaPlayer.getCurrentPosition();
                 mediaPlayer.stop(true); //advised that media players should never be reused, even in pause/play scenarios
                 mediaPlayer.release();

@@ -40,7 +40,6 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
 
     public RadioRunner(Context parent) {
         this.parent = parent;
-        this.programs = fetchPrograms();
         this.setUpAlarming();
         this.listenForTelephonyEvents();
         this.listenForScheduleChangeNotifications();
@@ -66,8 +65,6 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
      */
     private void setUpAlarming() {
         this.am = (AlarmManager) this.parent.getSystemService(Context.ALARM_SERVICE);
-        //this.intentFilter = new IntentFilter();
-        //this.intentFilter.addAction("org.rootio.RadioRunner");
         this.br = new ScheduleBroadcastHandler(this);
     }
 
@@ -77,7 +74,7 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
     }
 
     private void initialiseSchedule() {
-
+        this.programs = fetchPrograms();
         this.schedulePrograms(programs);
     }
 
@@ -224,6 +221,8 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
         for (PendingIntent pi : this.pis) {
             this.am.cancel(pi);
         }
+
+        //this.runningProgramIndex = null;
         this.pis = new ArrayList<>();
     }
 

@@ -5,6 +5,7 @@ import org.rootio.tools.media.ScheduleNotifiable;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 public class ScheduleBroadcastHandler extends BroadcastReceiver implements Runnable {
 
@@ -18,7 +19,12 @@ public class ScheduleBroadcastHandler extends BroadcastReceiver implements Runna
     @Override
     public void run() {
         if (!this.notifiable.isExpired(currentIndex)) {
+            Log.d("org.rootio.handset, ", "run: not expired!");
             this.notifiable.runProgram(currentIndex);
+        }
+        else
+        {
+            Log.d("org.rootio.handset, ", "run: expired!");
         }
     }
 
@@ -27,9 +33,6 @@ public class ScheduleBroadcastHandler extends BroadcastReceiver implements Runna
         Integer possibleIndex = i.getIntExtra("index", 0);
         if (possibleIndex == currentIndex) {
             return; // intents are thrown twice sometimes
-        }
-        if (this.currentIndex != null) {
-            this.notifiable.stopProgram(currentIndex);
         }
         currentIndex = possibleIndex;
         new Thread(this).start();

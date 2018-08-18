@@ -78,9 +78,9 @@ public class SipService extends Service implements ServiceInformationPublisher {
      * Load SIP configuration information from the stored credentials
      */
     private void loadConfig() {
-        this.domain = "89.109.64.165"; //(String)Utils.getPreference("sip_domain", String.class, this);
-            this.username = "1001"; //(String)Utils.getPreference("sip_username", String.class, this);
-            this.password = "th1s_be_passw0rd"; // (String)Utils.getPreference("sip_password", String.class, this);
+        this.domain = (String)Utils.getPreference("sip_domain", String.class, this);
+            this.username = (String)Utils.getPreference("sip_username", String.class, this);
+            this.password =  (String)Utils.getPreference("sip_password", String.class, this);
     }
 
     /**

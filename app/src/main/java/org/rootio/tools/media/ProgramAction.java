@@ -70,12 +70,12 @@ public class ProgramAction {
         switch (this.programActionType) {
             case Media:
             case Audio:
-                this.playlist.pause();
+                this.playlist.pause(false);
                 break;
             case Jingle:
                 break;
             case Outcall:
-                this.playlist.pause();
+                this.playlist.pause(false);
                 break;
             default:
                 break;

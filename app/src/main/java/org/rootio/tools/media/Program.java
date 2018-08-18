@@ -7,6 +7,7 @@ import java.util.Date;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.rootio.tools.radio.ScheduleBroadcastHandler;
+import org.rootio.tools.utils.Utils;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -22,7 +23,7 @@ public class Program implements Comparable<Program>, ScheduleNotifiable {
     final Context parent;
     private ArrayList<ProgramAction> programActions;
     private boolean isLocal;
-    private final ScheduleBroadcastHandler alertHandler;
+    private ScheduleBroadcastHandler alertHandler;
 
     public Program(Context parent, String title, Date start, Date end, String structure) {
         this.parent = parent;
@@ -122,6 +123,8 @@ public class Program implements Comparable<Program>, ScheduleNotifiable {
         for (int i = 0; i < programActions.size(); i++) {
             intentFilter.addAction("org.rootio.RadioRunner." + this.title + String.valueOf(i));
         }
+
+        alertHandler = new ScheduleBroadcastHandler(this);
         this.parent.registerReceiver(alertHandler, intentFilter);
         for (int i = 0; i < programActions.size(); i++) {
             Intent intent = new Intent("org.rootio.RadioRunner." + this.title + String.valueOf(i));
@@ -154,7 +157,7 @@ public class Program implements Comparable<Program>, ScheduleNotifiable {
     @Override
     public void finalize()
     {
-        this.parent.unregisterReceiver(this.alertHandler);
+
     }
 
 }
