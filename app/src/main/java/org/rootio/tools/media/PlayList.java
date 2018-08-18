@@ -248,8 +248,8 @@ public class PlayList implements Player.EventListener {
     private HashSet<Media> loadMedia(ArrayList<String> playlists) {
         HashSet<Media> media = new HashSet<>();
         for (String playlist : playlists) {
-             String query = "select title, item, itemtypeid from playlist where title = ?";
-            String[] args = new String[]{playlist};
+             String query = "select title, item, itemtypeid from playlist where lower(title) = ?";
+            String[] args = new String[]{playlist.toLowerCase()};
             DBAgent dbagent = new DBAgent(this.parent);
             String[][] data = dbagent.getData(query, args);
             for (int i = 0; i < data.length; i++) {
@@ -483,8 +483,9 @@ public class PlayList implements Player.EventListener {
 
         private void playCallSign() {
             try {
-                if (this.callSigns.size() < 1)
+                if (this.callSigns.size() < 1) {
                     return;
+                }
                 if (!this.mediaIterator.hasNext()) {
                     this.mediaIterator = callSigns.iterator(); // reset the iterator to 0 if at the end
                 }
