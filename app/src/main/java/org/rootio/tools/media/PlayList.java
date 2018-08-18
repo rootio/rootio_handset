@@ -2,6 +2,7 @@ package org.rootio.tools.media;
 
 import android.content.Context;
 import android.media.AudioManager;
+import android.media.session.PlaybackState;
 import android.net.Uri;
 import android.util.Log;
 
@@ -21,6 +22,7 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import org.rootio.handset.BuildConfig;
 import org.rootio.handset.R;
 import org.rootio.tools.persistence.DBAgent;
+import org.rootio.tools.utils.Utils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -116,7 +118,7 @@ public class PlayList implements Player.EventListener {
                     this.startPlayer();
                 }
             } else {
-                 if (mediaList.size() > 0) // reload playlist if only there were songs in it
+                 if (mediaList.size() > 0 || streams.size() > 0) // reload playlist if only there were songs in it
                 // were some songs in it
                 {
                     this.load();
@@ -424,6 +426,9 @@ public class PlayList implements Player.EventListener {
 
     @Override
     public void onPlayerError(ExoPlaybackException error) {
+        //This will be thrown when a stream is lost due to network, or an error in a local song.
+        //in both cases, assume song is ended. This will cause loop of player (stream) or skipping to the next song (song list)
+         this.onPlayerStateChanged(true, Player.STATE_ENDED);
     }
 
     @Override
