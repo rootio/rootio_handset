@@ -112,7 +112,7 @@
                 android:layout_marginRight="@dimen/ButtonPanelPadding"
                 android:layout_weight="60"
                 android:gravity="right"
-                android:text="Port No.:"
+                android:text="@string/PortNo"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <EditText

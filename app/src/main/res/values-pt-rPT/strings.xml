@@ -111,5 +111,10 @@
     <string name="RestartWarning">Será necessário reiniciar a aplicação</string>
     <string name="SyncFrequency">Frequência de Sincronização</string>
     <string name="DiagnosticsFrequency">Frequência de Diagnósticos</string>
+    <string name="PortNo">Port No.:</string>
+    <string name="Permission">Permissão</string>
+    <string name="PermissionGranted">Permissão Concedida</string>
+    <string name="PermissionDenied">Permissão Negada</string>
+    <string name="PermissionRequired">As proximas permissões são essenciais para o funcionamento desta aplicação</string>
 
 </resources>

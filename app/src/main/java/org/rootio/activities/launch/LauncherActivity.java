@@ -1,5 +1,6 @@
 package org.rootio.activities.launch;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.TabActivity;
 import android.content.Context;
@@ -32,7 +33,7 @@ import org.rootio.services.TelephonyService;
 import org.rootio.tools.utils.Utils;
 
 @SuppressWarnings("deprecation")
-public class LauncherActivity extends TabActivity {
+public class LauncherActivity extends TabActivity  {
 
 
     @Override

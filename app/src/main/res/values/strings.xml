@@ -109,4 +109,9 @@
     <string name="RestartWarning"><i>The application will require a restart</i></string>
     <string name="DiagnosticsFrequency">Diagnostics Frequency</string>
     <string name="SyncFrequency">Sync Frequency</string>
+    <string name="PortNo">Port No.:</string>
+    <string name="Permission">Permission</string>
+    <string name="PermissionGranted">Permission Granted</string>
+    <string name="PermissionDenied">Permission Denied</string>
+    <string name="PermissionRequired">The next permissions are essential for the operation on this app!</string>
 </resources>

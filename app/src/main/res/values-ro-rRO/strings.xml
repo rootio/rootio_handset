@@ -109,4 +109,9 @@
     <string name="RestartWarning">"Va trebui să reporniți aplicația "</string>
     <string name="SyncFrequency">"Frecvența sincronizării "</string>
     <string name="DiagnosticsFrequency">"Frecvența diagnosticării "</string>
+    <string name="PortNo">Port No.:</string>
+    <string name="Permission">Permisiune</string>
+    <string name="PermissionGranted">"Permisiunea Acordată "</string>
+    <string name="PermissionDenied">"Permisiune Negată "</string>
+    <string name="PermissionRequired">"Următoarele permisiuni sunt esențiale pentru funcționarea acestei aplicații "</string>
 </resources>
