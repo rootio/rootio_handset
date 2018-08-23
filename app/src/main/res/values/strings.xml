@@ -107,6 +107,6 @@
     <string name="Warning">Warning!</string>
     <string name="AlertMessage">Are you sure you want to proceed? </string>
     <string name="RestartWarning"><i>The application will require a restart</i></string>
-    <string name="DiagnosticsFrequency">DiagnosticsFrequency</string>
+    <string name="DiagnosticsFrequency">Diagnostics Frequency</string>
     <string name="SyncFrequency">Sync Frequency</string>
 </resources>
