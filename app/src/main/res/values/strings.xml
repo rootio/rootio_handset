@@ -109,4 +109,5 @@
     <string name="RestartWarning"><i>The application will require a restart</i></string>
     <string name="DiagnosticsFrequency">Diagnostics Frequency</string>
     <string name="SyncFrequency">Sync Frequency</string>
+    <string name="PortNo">Port No.:</string>
 </resources>

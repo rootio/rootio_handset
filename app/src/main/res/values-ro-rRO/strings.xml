@@ -109,4 +109,5 @@
     <string name="RestartWarning">"Va trebui să reporniți aplicația "</string>
     <string name="SyncFrequency">"Frecvența sincronizării "</string>
     <string name="DiagnosticsFrequency">"Frecvența diagnosticării "</string>
+    <string name="PortNo">Port No.:</string>
 </resources>
