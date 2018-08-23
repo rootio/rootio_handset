@@ -7,125 +7,125 @@
     android:gravity="center|center_vertical"
     android:orientation="vertical" >
 
- <LinearLayout
-     android:layout_width="match_parent"
-     android:layout_height="match_parent"
-     android:layout_marginBottom="@dimen/activity_horizontal_margin"
-     android:layout_marginLeft="@dimen/activity_vertical_margin"
-     android:layout_marginRight="@dimen/activity_vertical_margin"
-     android:layout_marginTop="@dimen/activity_vertical_margin"
-     android:layout_weight="100"
-     android:background="#88FFFFFF"
-     android:orientation="vertical" >
-
-     <LinearLayout
-         android:layout_width="match_parent"
-         android:layout_height="wrap_content"
-         android:layout_gravity="center_vertical|center_horizontal"
-         android:layout_marginTop="@dimen/activity_vertical_margin"
-         android:gravity="center_horizontal" >
-
-         <TextView
-             android:id="@+id/TextView01"
-             android:layout_width="match_parent"
-             android:layout_height="wrap_content"
-             android:layout_marginRight="@dimen/ButtonPanelPadding"
-             android:layout_weight="60"
-             android:gravity="right"
-             android:text="@string/StationKey"
-             android:textAlignment="center"
-             android:textAppearance="?android:attr/textAppearanceMedium" />
-
-         <EditText
-             android:id="@+id/stationKeyEt"
-             android:layout_width="fill_parent"
-             android:layout_height="wrap_content"
-             android:layout_weight="40"
-             android:ems="10"
-             android:inputType="textPassword" />
-
-     </LinearLayout>
-
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/activity_vertical_margin" >
+        android:layout_height="match_parent"
+        android:layout_marginBottom="@dimen/activity_horizontal_margin"
+        android:layout_marginLeft="@dimen/activity_vertical_margin"
+        android:layout_marginRight="@dimen/activity_vertical_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_weight="100"
+        android:background="#88FFFFFF"
+        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/textView1"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginRight="@dimen/ButtonPanelPadding"
-            android:layout_weight="60"
-            android:gravity="right"
-            android:text="@string/StationID"
-            android:textAlignment="inherit"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:gravity="center_horizontal">
 
-        <EditText
-            android:id="@+id/stationIdEt"
-            android:layout_width="fill_parent"
+            <TextView
+                android:id="@+id/TextView01"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/ButtonPanelPadding"
+                android:layout_weight="60"
+                android:gravity="right"
+                android:text="@string/StationKey"
+                android:textAlignment="center"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <EditText
+                android:id="@+id/stationKeyEt"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="40"
+                android:ems="10"
+                android:inputType="textPassword" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="40"
-            android:ems="10" >
+            android:layout_marginTop="@dimen/activity_vertical_margin">
 
-            <requestFocus />
-        </EditText>
+            <TextView
+                android:id="@+id/textView1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/ButtonPanelPadding"
+                android:layout_weight="60"
+                android:gravity="right"
+                android:text="@string/StationID"
+                android:textAlignment="inherit"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    </LinearLayout>
+            <EditText
+                android:id="@+id/stationIdEt"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="40"
+                android:ems="10">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/activity_vertical_margin" >
+                <requestFocus />
+            </EditText>
 
-        <TextView
-            android:id="@+id/textView2"
-            android:layout_width="fill_parent"
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginRight="@dimen/ButtonPanelPadding"
-            android:layout_weight="60"
-            android:gravity="right"
-            android:text="@string/ServerName"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:layout_marginTop="@dimen/activity_vertical_margin">
 
-        <EditText
-            android:id="@+id/serverAddressEt"
-            android:layout_width="fill_parent"
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/ButtonPanelPadding"
+                android:layout_weight="60"
+                android:gravity="right"
+                android:text="@string/ServerName"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <EditText
+                android:id="@+id/serverAddressEt"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="40"
+                android:ems="10"
+                android:text="production.rootio.org" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="40"
-            android:ems="10"
-            android:text="production.rootio.org"/>
+            android:layout_gravity="end"
+            android:layout_marginTop="@dimen/activity_vertical_margin">
 
-    </LinearLayout>
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/ButtonPanelPadding"
+                android:layout_weight="60"
+                android:gravity="right"
+                android:text="Port No.:"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:layout_marginTop="@dimen/activity_vertical_margin" >
+            <EditText
+                android:id="@+id/serverPortEt"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="40"
+                android:ems="10"
+                android:inputType="numberDecimal"
+                android:text="80" />
 
-        <TextView
-            android:id="@+id/textView3"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="@dimen/ButtonPanelPadding"
-            android:layout_weight="60"
-            android:gravity="right"
-            android:text="Port No.:"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+        </LinearLayout>
 
-        <EditText
-            android:id="@+id/serverPortEt"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="40"
-            android:ems="10"
-            android:inputType="numberDecimal"
-            android:text="80"/>
-
-    </LinearLayout>
-   
     </LinearLayout>
 
 <LinearLayout

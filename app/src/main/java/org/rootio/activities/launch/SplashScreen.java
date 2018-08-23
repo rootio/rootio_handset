@@ -17,6 +17,7 @@ import org.rootio.services.synchronization.SynchronizationHandler;
 import org.rootio.tools.cloud.Cloud;
 import org.rootio.tools.utils.Utils;
 
+
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
@@ -46,7 +47,6 @@ public class SplashScreen extends Activity {
             }
         }
     }
-
 
     public void onConnectClick(View view) {
 
