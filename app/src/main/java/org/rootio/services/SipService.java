@@ -96,9 +96,9 @@ public class SipService extends Service implements ServiceInformationPublisher {
      */
     private void loadConfig() {
         if (this.prefs != null) {
-            this.domain = prefs.getString("org.rootio.sipjunior.domain", "");
-            this.username = prefs.getString("org.rootio.sipjunior.username", "");
-            this.password = prefs.getString("org.rootio.sipjunior.password", "");
+            this.domain ="89.109.64.165"; // prefs.getString("org.rootio.sipjunior.domain", "");
+            this.username = "1001";// prefs.getString("org.rootio.sipjunior.username", "");
+            this.password = "this_was_password"; //prefs.getString("org.rootio.sipjunior.password", "");
         }
     }
 
