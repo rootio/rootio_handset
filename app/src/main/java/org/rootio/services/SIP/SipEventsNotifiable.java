@@ -1,11 +1,10 @@
 package org.rootio.services.SIP;
 
-import android.content.ContentValues;
-
 import org.linphone.core.Call;
+import org.linphone.core.ProxyConfig;
 
 public interface SipEventsNotifiable {
-    void updateCallState(Call.State callState, Call call, ContentValues values);
+    void updateCallState(Call.State callState, Call call);
 
-    void updateRegistrationState(org.linphone.core.RegistrationState registrationstate, ContentValues values);
+    void updateRegistrationState(org.linphone.core.RegistrationState registrationstate, ProxyConfig proxyConfig);
 }

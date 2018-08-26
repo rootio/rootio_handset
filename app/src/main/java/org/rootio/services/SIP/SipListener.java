@@ -25,6 +25,14 @@ import org.linphone.core.SubscriptionState;
 import org.linphone.core.VersionUpdateCheckResult;
 
 public class SipListener implements CoreListener {
+
+    private SipEventsNotifiable notifiable;
+
+    public SipListener(SipEventsNotifiable notifiable)
+    {
+        this.notifiable = notifiable;
+    }
+
     @Override
     public void onGlobalStateChanged(Core core, GlobalState globalState, String s) {
 
@@ -32,12 +40,12 @@ public class SipListener implements CoreListener {
 
     @Override
     public void onRegistrationStateChanged(Core core, ProxyConfig proxyConfig, RegistrationState registrationState, String s) {
-
+        this.notifiable.updateRegistrationState(registrationState, proxyConfig);
     }
 
     @Override
     public void onCallStateChanged(Core core, Call call, Call.State state, String s) {
-
+        this.notifiable.updateCallState(state, call);
     }
 
     @Override

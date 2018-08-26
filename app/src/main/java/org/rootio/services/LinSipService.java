@@ -38,7 +38,7 @@ public class LinSipService extends Service implements ServiceInformationPublishe
     @Override
     public void onCreate() {
         this.prefs = this.getSharedPreferences("org.rootio.handset", Context.MODE_PRIVATE);
-        this.callListener = new SipListener();
+        this.callListener = new SipListener(this);
     }
 
     @Override
@@ -67,13 +67,12 @@ public class LinSipService extends Service implements ServiceInformationPublishe
 
     @Override
     public IBinder onBind(Intent arg0) {
-        BindingAgent bindingAgent = new BindingAgent(this);
-        return bindingAgent;
+        return new BindingAgent(this);
     }
 
     @Override
     public void onDestroy() {
-        if (this.wasStoppedOnPurpose == false) {
+        if (!this.wasStoppedOnPurpose) {
             Intent intent = new Intent("org.rootio.services.restartServices");
             sendBroadcast(intent);
         } else {
@@ -127,6 +126,7 @@ public class LinSipService extends Service implements ServiceInformationPublishe
             this.linphoneCore.addProxyConfig(this.proxyConfig);
             this.linphoneCore.setDefaultProxyConfig(this.proxyConfig);
             this.linphoneCore.setStunServer(this.stunServer); //STUN attempt again. Not sure if this or above is used
+            //this.linphoneCore.setUserAgent(, );
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -136,7 +136,7 @@ public class LinSipService extends Service implements ServiceInformationPublishe
     boolean register() {
         try {
             this.loadConfig();
-            if (this.username == "" || this.password == "" || this.domain == "") //Some servers may take blank username or passwords. modify accordingly..
+            if (this.username.equals("") || this.password.equals("") || this.domain.equals("")) //Some servers may take blank username or passwords. modify accordingly..
             {
                 //ideally this only happen in an unreged state
                 Utils.toastOnScreen("Some configuration information is missing. SIP registration not possible", this);
@@ -191,7 +191,7 @@ public class LinSipService extends Service implements ServiceInformationPublishe
      */
     private void handleCall(Call call) {
         //check the whitelist
-        if (true) {
+        if (true /*whitelisted()*/) {
             this.answer(call);
         } else {
             this.hangup(call);
@@ -251,59 +251,55 @@ public class LinSipService extends Service implements ServiceInformationPublishe
 
 
     @Override
-    public void updateCallState(Call.State callState, Call call, ContentValues values) {
-        if (call != null && callState != null) //this notif could come in before the listener connects to SIP server
-        {
-            switch (callState) {
-                case End:
-                case Error:
-                    if (values != null && values.containsKey("otherParty")) //not being sent au moment
-                    {
-                        Utils.toastOnScreen("Call with " + values.getAsString("otherParty") + " terminated", this);
-                    }
-                    break;
-                case Connected:
-                case StreamsRunning: //in case you reconnect to the main activity during call.
-                    if (values != null && values.containsKey("otherParty")) //ideally check for direction and report if outgoing or incoming
-                    {
-                        Utils.toastOnScreen("In call with " + values.getAsString("otherParty"), this);
-                    }
-                    break;
-                case IncomingReceived:
-                    if (values != null && values.containsKey("otherParty")) {
-                        Utils.toastOnScreen("Incoming call from " + values.getAsString("otherParty"), this);
-                        this.handleCall(call); //check WhiteList first!!
-                    }
-                    break;
-                case OutgoingInit:
-                    if (values != null && values.containsKey("otherParty")) {
-                        Utils.toastOnScreen("Dialling out... ", this);
-                    }
-                    break;
-                default: //handles 13 other states!
-                    break;
-            }
+    public void updateCallState(Call.State callState, Call call) {
+        switch (callState) {
+            case End:
+            case Error:
+                if (call != null) //not being sent au moment
+                {
+                    Utils.toastOnScreen("Call with " + call.getRemoteContact() + " terminated", this);
+                }
+                break;
+            case Connected:
+            case StreamsRunning: //in case you reconnect to the main activity during call.
+                if (call != null) //ideally check for direction and report if outgoing or incoming
+                {
+                    Utils.toastOnScreen("In call with " + call.getRemoteContact(), this);
+                }
+                break;
+            case IncomingReceived:
+                if (call != null) {
+                    Utils.toastOnScreen("Incoming call from " + call.getRemoteContact(), this);
+                    this.handleCall(call); //check WhiteList first!!
+                }
+                break;
+            case OutgoingInit:
+                if (call != null) {
+                    Utils.toastOnScreen("Dialling out to" + call.getRemoteContact(), this);
+                }
+                break;
+            default: //handles 13 other states!
+                break;
         }
     }
 
     @Override
-    public void updateRegistrationState(RegistrationState registrationState, ContentValues values) {
+    public void updateRegistrationState(RegistrationState registrationState, ProxyConfig proxyConfig) {
         if (registrationState != null) { //could be sent before listener has any notifs, e.g when this service connects to service before registration
             switch (registrationState) {
                 case Progress:
                     Utils.toastOnScreen("Registering...", this);
                     break;
                 case Ok:
-                    if (values != null && values.containsKey("username")) //Requested notifications will not come with values
-                    {
-                        Utils.toastOnScreen("Registered " + values.getAsString("username") + "@" + values.getAsString("domain"), this);
+                    if (proxyConfig != null) {
+                        Utils.toastOnScreen("Registered " + proxyConfig.getIdentityAddress().getUsername() + "@" + proxyConfig.getServerAddr(), this);
                     }
                     break;
                 case None:
                 case Cleared:
                 case Failed:
-                    if (values != null && values.containsKey("localProfileUri")) {
-                        Utils.toastOnScreen("Unregistered " + values.getAsString("localProfileUri"), this);
+                    if (proxyConfig != null) {
+                        Utils.toastOnScreen("Unregistered " + proxyConfig.getIdentityAddress().asString(), this);
                     }
             }
         }
