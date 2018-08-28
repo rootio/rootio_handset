@@ -149,10 +149,11 @@ public class PlayList implements Player.EventListener {
     private void playMedia(Uri uri, long seekPosition) {
         //begin by raising the volume
         AudioManager audioManager = (AudioManager) this.parent.getSystemService(Context.AUDIO_SERVICE);
-        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC) - (BuildConfig.DEBUG?7: 2), AudioManager.FLAG_SHOW_UI);
+        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC) - (BuildConfig.DEBUG ? 7 : 2), AudioManager.FLAG_SHOW_UI);
+
 
         mediaPlayer = ExoPlayerFactory.newSimpleInstance(this.parent, new DefaultTrackSelector());
-        mediaPlayer.setVolume(1f); //this is the volume of the individual player, not the music service of the phone
+        mediaPlayer.setVolume(BuildConfig.DEBUG ? 0.5f : 1.0f); //this is the volume of the individual player, not the music service of the phone
         mediaPlayer.addListener(this);
         mediaPlayer.prepare(this.getMediaSource(uri));
         mediaPlayer.setPlayWhenReady(true);
@@ -196,7 +197,7 @@ public class PlayList implements Player.EventListener {
     private void fadeOut() {
         float volume = 1.0F;
         while (volume > 0) {
-            volume = volume - 0.02F;
+            volume = volume - 0.05F;
             mediaPlayer.setVolume(volume);
             try {
                 Thread.sleep(100);
