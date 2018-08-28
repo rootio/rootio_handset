@@ -15,6 +15,7 @@ import org.linphone.core.NatPolicy;
 import org.linphone.core.ProxyConfig;
 import org.linphone.core.RegistrationState;
 import org.linphone.core.Transports;
+import org.rootio.handset.R;
 import org.rootio.services.SIP.SipEventsNotifiable;
 import org.rootio.services.SIP.SipListener;
 import org.rootio.tools.utils.Utils;
@@ -51,6 +52,7 @@ public class LinSipService extends Service implements ServiceInformationPublishe
             Utils.doNotification(this, "RootIO", "LinSip Service Started");
             this.sendEventBroadcast();
         }
+        this.startForeground(this.serviceId, Utils.getNotification(this, "RootIO", "LinSIP service is running", R.drawable.icon, false, null, null));
         return Service.START_STICKY;
     }
 
@@ -75,18 +77,18 @@ public class LinSipService extends Service implements ServiceInformationPublishe
 
     @Override
     public void onDestroy() {
+      this.stopForeground(true);
       this.shutDownService();
       super.onDestroy();
     }
 
 
     private void loadConfig() {
-       // if (this.prefs != null) {
-            this.domain = prefs.getString("org.rootio.handset.domain", "");
-            this.username = prefs.getString("org.rootio.handset.username", "");
-            this.password = prefs.getString("org.rootio.handset.password", "");
-            this.stun = prefs.getString("org.rootio.handset.stun", "");
-        //}
+
+        this.domain = (String)Utils.getPreference("org.rootio.handset.sip_domain", String.class, this);
+        this.username = (String)Utils.getPreference("org.rootio.handset.sip_username", String.class, this);
+        this.password = (String)Utils.getPreference("org.rootio.handset.sip_password", String.class, this);
+        this.stun = (String)Utils.getPreference("org.rootio.handset.sip_stun", String.class, this);
     }
 
     private NatPolicy createNatPolicy() {
@@ -290,6 +292,7 @@ public class LinSipService extends Service implements ServiceInformationPublishe
         switch (callState) {
             case End:
             case Error:
+                this.sendTelephonyEventBroadcast(false);
                 if (call != null) //not being sent au moment
                 {
                     Utils.toastOnScreen("Call with " + call.getRemoteContact() + " terminated", this);
@@ -297,6 +300,7 @@ public class LinSipService extends Service implements ServiceInformationPublishe
                 break;
             case Connected:
             case StreamsRunning: //in case you reconnect to the main activity during call.
+                this.sendTelephonyEventBroadcast(true);
                 if (call != null) //ideally check for direction and report if outgoing or incoming
                 {
                     Utils.toastOnScreen("In call with " + call.getRemoteContact(), this);
@@ -338,5 +342,19 @@ public class LinSipService extends Service implements ServiceInformationPublishe
                     }
             }
         }
+    }
+
+    /**
+     * Sends out broadcasts informing listeners of changes in status of the
+     * Telephone
+     *
+     * @param isInCall Boolean indicating whether the Telephone is in a call or not.
+     *                 True: in call, False: Not in call
+     */
+    private void sendTelephonyEventBroadcast(boolean isInCall) {
+        Intent intent = new Intent();
+        intent.putExtra("Incall", isInCall);
+        intent.setAction("org.rootio.services.telephony.TELEPHONY_EVENT");
+        this.sendBroadcast(intent);
     }
 }
