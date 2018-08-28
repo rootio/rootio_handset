@@ -85,6 +85,8 @@ public class LinSipService extends Service implements ServiceInformationPublishe
 
     private void loadConfig() {
 
+
+
         this.domain = (String)Utils.getPreference("org.rootio.handset.sip_domain", String.class, this);
         this.username = (String)Utils.getPreference("org.rootio.handset.sip_username", String.class, this);
         this.password = (String)Utils.getPreference("org.rootio.handset.sip_password", String.class, this);
