@@ -70,7 +70,7 @@ public class DefaultErrorHandler extends Application {
                                                                   intent = new Intent(context, SynchronizationService.class);
                                                                   break;
                                                               case 6: // SIP Service
-                                                                  intent = new Intent(context, SipService.class);
+                                                                  intent = new Intent(context, LinSipService.class);
                                                                   break;
                                                           }
                                                           return intent;

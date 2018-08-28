@@ -1,8 +1,6 @@
 package org.rootio.services;
 
 import android.app.Service;
-import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.IBinder;
@@ -16,7 +14,7 @@ import org.linphone.core.Factory;
 import org.linphone.core.NatPolicy;
 import org.linphone.core.ProxyConfig;
 import org.linphone.core.RegistrationState;
-import org.rootio.services.SIP.CallState;
+import org.linphone.core.Transports;
 import org.rootio.services.SIP.SipEventsNotifiable;
 import org.rootio.services.SIP.SipListener;
 import org.rootio.tools.utils.Utils;
@@ -25,20 +23,24 @@ public class LinSipService extends Service implements ServiceInformationPublishe
 
     private final int serviceId = 6;
     private Core linphoneCore;
+    private Config sipConfig;
+    private AuthInfo authInfo;
     private ProxyConfig proxyConfig;
-    private CallState callState = CallState.IDLE;
     private String username, password, domain, stunServer;
     private SharedPreferences prefs;
     private boolean isRunning;
     private boolean wasStoppedOnPurpose;
-    private SipListener callListener;
+    private SipListener coreListener;
     private boolean isSipRunning;
+    private String stun;
+    private Config profile;
 
 
     @Override
     public void onCreate() {
-        this.prefs = this.getSharedPreferences("org.rootio.handset", Context.MODE_PRIVATE);
-        this.callListener = new SipListener(this);
+        super.onCreate();
+        this.coreListener = new SipListener(this);
+        this.initializeStack();
     }
 
     @Override
@@ -55,6 +57,7 @@ public class LinSipService extends Service implements ServiceInformationPublishe
     @Override
     public void onTaskRemoved(Intent intent) {
         super.onTaskRemoved(intent);
+        Utils.toastOnScreen("being stopped (ontskr", this);
         if (intent != null) {
             wasStoppedOnPurpose = intent.getBooleanExtra("wasStoppedOnPurpose", false);
             if (wasStoppedOnPurpose) {
@@ -72,106 +75,136 @@ public class LinSipService extends Service implements ServiceInformationPublishe
 
     @Override
     public void onDestroy() {
-        if (!this.wasStoppedOnPurpose) {
-            Intent intent = new Intent("org.rootio.services.restartServices");
-            sendBroadcast(intent);
-        } else {
-            this.shutDownService();
-        }
-        super.onDestroy();
+      this.shutDownService();
+      super.onDestroy();
     }
 
-    /**
-     * Load SIP configuration information from the stored credentials
-     */
+
     private void loadConfig() {
-        if (this.prefs != null) {
-            this.domain = "89.109.64.165"; // prefs.getString("org.rootio.handset.sip_domain", "");
-            this.username = "1001";// prefs.getString("org.rootio.handset.sip_username", "");
-            this.password = "this_was_password"; //prefs.getString("org.rootio.handset.sip_password", "");
-            this.stunServer = "stun.zoiper.com:3478"; // //prefs.getString("org.rootio.handset.sip_password", "");
-        }
+       // if (this.prefs != null) {
+            this.domain = prefs.getString("org.rootio.handset.domain", "");
+            this.username = prefs.getString("org.rootio.handset.username", "");
+            this.password = prefs.getString("org.rootio.handset.password", "");
+            this.stun = prefs.getString("org.rootio.handset.stun", "");
+        //}
     }
 
     private NatPolicy createNatPolicy() {
-        NatPolicy natPolicy = this.linphoneCore.createNatPolicy();
+        NatPolicy natPolicy = linphoneCore.createNatPolicy();
+        natPolicy.setStunServer(this.stun);
+
+        //natPolicy.enableTurn(true);
+        natPolicy.enableIce(true);
         natPolicy.enableStun(true);
-        natPolicy.setStunServer(this.stunServer);//server address in the form <address:port>
+
+        natPolicy.resolveStunServer();
         return natPolicy;
     }
 
-    /**
-     * Creates a SIP profile from the profile information supplied from the cloud platform
-     */
-    private void prepareSipProfile() {
-        try {
 
-            Config profile = Factory.instance().createConfigFromString(""); //no configuration, defaults assumed
-            this.linphoneCore = Factory.instance().createCoreWithConfig(profile, this);
-            Address peer = Factory.instance().createAddress(String.format("sip:%s@%s", this.username, this.domain));
-            AuthInfo authInfo = Factory.instance().createAuthInfo(peer.getUsername(), null, this.password, null, null, null);
-            this.linphoneCore.addAuthInfo(authInfo);
+    private void prepareProxy() {
+        this.proxyConfig = linphoneCore.createProxyConfig();
+        Transports trns = Factory.instance().createTransports();
+        trns.setUdpPort(-1);
+        trns.setTcpPort(-1);
+        this.linphoneCore.setTransports(trns);
 
-            //create the proxy element
-            this.proxyConfig = this.linphoneCore.createProxyConfig();
-            this.proxyConfig.setIdentityAddress(peer);
-            this.proxyConfig.setServerAddr(peer.getDomain());
+        //The address of the peer
+        Address addr = Factory.instance().createAddress(String.format("sip:%s@%s", this.username, this.domain));
+        Address proxy = Factory.instance().createAddress("sip:" + this.domain);
+        this.authInfo = Factory.instance().createAuthInfo(addr.getUsername(), null, this.password, null, null, null);
+        this.linphoneCore.addAuthInfo(authInfo);
 
-            //set registration deets
-            this.proxyConfig.setExpires(3600); //1 hour
-            this.proxyConfig.enableRegister(true);
-            this.proxyConfig.setNatPolicy(this.createNatPolicy()); //STUN attempt 1
 
-            //add the proxy config to the core
-            this.linphoneCore.addProxyConfig(this.proxyConfig);
-            this.linphoneCore.setDefaultProxyConfig(this.proxyConfig);
-            this.linphoneCore.setStunServer(this.stunServer); //STUN attempt again. Not sure if this or above is used
-            //this.linphoneCore.setUserAgent(, );
+        this.proxyConfig.setIdentityAddress(addr);
+        this.proxyConfig.setServerAddr(proxy.getDomain());
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        this.proxyConfig.setNatPolicy(this.createNatPolicy()); //use STUN. There is every chance you are on a NATted network
+
+        //Registration deets
+        this.proxyConfig.setExpires(2000);
+        this.proxyConfig.enableRegister(false);
+
+        this.linphoneCore.addProxyConfig(this.proxyConfig);
+        this.linphoneCore.setDefaultProxyConfig(this.proxyConfig);
     }
 
-    boolean register() {
+    private void prepareSipProfile() {
+        this.profile = Factory.instance().createConfigFromString(""); //Config string above was tripping the client, would not connect..
+
+    }
+
+    void register() {
+        this.linphoneCore.removeListener(coreListener);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                //This is a strange flow, but for STUN/TURN to kick in, you need to register first, then unregister and register again!
+                //The registration triggers a stun update but it can only be used on next registration. That's what it looks like for now
+                //so, register for 1 sec, then re-register
+
+                sipRegister();
+                try {
+                    linphoneCore.addListener(coreListener);
+                    Thread.sleep(1000);//too little and linphoneCore may not process our events due to backlog/network delay, too high and we sleep too long..
+                    deregister();
+                    Thread.sleep(1000);//too little and linphoneCore may not process our events due to backlog/network delay, too high and we sleep too long..
+                    sipRegister();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    private void sipRegister() {
+
+        linphoneCore.getDefaultProxyConfig().edit();
+        linphoneCore.getDefaultProxyConfig().enableRegister(true);
+        linphoneCore.getDefaultProxyConfig().done();
+    }
+
+    void initializeStack() {
         try {
             this.loadConfig();
-            if (this.username.equals("") || this.password.equals("") || this.domain.equals("")) //Some servers may take blank username or passwords. modify accordingly..
-            {
-                //ideally this only happen in an unreged state
-                Utils.toastOnScreen("Some configuration information is missing. SIP registration not possible", this);
-                return false;
+
+            if (this.username.isEmpty() || this.password.isEmpty() || this.domain.isEmpty()) {
+                Utils.toastOnScreen("Can't register! Username, password or domain is missing!", this);
+                this.updateRegistrationState(RegistrationState.None, null);
+                return;
             }
+
             this.prepareSipProfile();
-            this.linphoneCore.addListener(this.callListener);
-            this.isSipRunning = true;
+            this.linphoneCore = Factory.instance().createCoreWithConfig(profile, this);
+            this.prepareProxy();
+
+            linphoneCore.start();
+            isSipRunning = true;
 
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    while (LinSipService.this.isSipRunning) {
-                        LinSipService.this.linphoneCore.iterate();
+                    while (isSipRunning) {
                         try {
                             Thread.sleep(50);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
+                        LinSipService.this.linphoneCore.iterate();
                     }
-
                 }
             }).start();
 
-            return true;
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
+
         }
     }
 
     public void deregister() {
         try {
-            if (this.linphoneCore.inCall()) {
-                try {
+            if (linphoneCore.inCall()) {
+                try { //state might change between check and termination call..
                     this.linphoneCore.getCurrentCall().terminate();
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -180,12 +213,14 @@ public class LinSipService extends Service implements ServiceInformationPublishe
             this.linphoneCore.getDefaultProxyConfig().edit();
             this.linphoneCore.getDefaultProxyConfig().enableRegister(false);
             this.linphoneCore.getDefaultProxyConfig().done();
-            this.linphoneCore.clearProxyConfig();
+            //this.isRunning = false;
+            //this.linphoneCore.clearProxyConfig(); //only thing similar to deregistration
+
         } catch (Exception e) {
             e.printStackTrace();
+            //this.notifyRegistrationEvent(this.registrationState, null); //potential conflict of handling to the receiver
         }
     }
-
     /**
      * Process an incoming SIP call: Typically check the whitelist to make sure that the number is allowed to call this station
      */
@@ -223,7 +258,7 @@ public class LinSipService extends Service implements ServiceInformationPublishe
 
     private void shutDownService() {
         if (this.isRunning) {
-            this.isRunning = false;
+            this.isRunning = this.isSipRunning = false;
             this.deregister();
             Utils.doNotification(this, "RootIO", "SIP Service Stopped");
             this.sendEventBroadcast();
@@ -278,7 +313,7 @@ public class LinSipService extends Service implements ServiceInformationPublishe
                     Utils.toastOnScreen("Dialling out to" + call.getRemoteContact(), this);
                 }
                 break;
-            default: //handles 13 other states!
+            default: //handles 11 other states!
                 break;
         }
     }
