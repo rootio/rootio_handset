@@ -19,6 +19,9 @@ allprojects {
     repositories {
         google()
         jcenter()
+        maven {
+            url "https://gitlab.linphone.org/BC/public/maven_repository/raw/master"
+        }
     }
 }
 

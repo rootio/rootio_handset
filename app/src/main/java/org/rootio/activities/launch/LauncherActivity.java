@@ -20,6 +20,7 @@ import org.rootio.activities.stationDetails.StationActivity;
 import org.rootio.activities.telephoneLog.TelephoneLogActivity;
 import org.rootio.handset.R;
 import org.rootio.services.DiagnosticsService;
+import org.rootio.services.LinSipService;
 import org.rootio.services.SipService;
 import org.rootio.services.ProgramService;
 import org.rootio.services.SMSService;
@@ -126,7 +127,7 @@ public class LauncherActivity extends TabActivity {
     }
 
     public void startServices() {
-        for (int serviceId : new int[]{1, 2, 3, 4,5}) // only vitals
+        for (int serviceId : new int[]{1, 2, 3, 4,5,6}) // only vitals
         {
             //ServiceState serviceState = new ServiceState(context, serviceId);
             // if(serviceState.getServiceState() > 0)//service was started
@@ -164,8 +165,9 @@ public class LauncherActivity extends TabActivity {
             case 5: // Sync Service
                 intent = new Intent(context, SynchronizationService.class);
                 break;
-            case 6: // SIP Service
-                intent = new Intent(context, SipService.class);
+            case 6: // SIP Service.
+                //intent = new Intent(context, SipService.class); Use this to use the Android SIP stack
+                intent = new Intent (context, LinSipService.class); //Use this to use the Liblinphone SIP stack. Much more versatile and reliable
                 break;
         }
         return intent;

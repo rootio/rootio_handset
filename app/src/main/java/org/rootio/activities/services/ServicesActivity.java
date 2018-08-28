@@ -5,6 +5,7 @@ import java.util.Map.Entry;
 
 import org.rootio.handset.R;
 import org.rootio.services.DiagnosticsService;
+import org.rootio.services.LinSipService;
 import org.rootio.services.SipService;
 import org.rootio.services.Notifiable;
 import org.rootio.services.ProgramService;
@@ -78,7 +79,7 @@ public class ServicesActivity extends Activity implements OnCheckedChangeListene
         this.serviceComponents.put(3, new ServiceComponents(null, (LinearLayout) this.findViewById(R.id.diagnostic_service_lt), (Switch) this.findViewById(R.id.diagnostics_service_swt), (TextView) this.findViewById(R.id.diagnostics_service_tv), new ServiceState(this, 3), new Intent(this, DiagnosticsService.class), this));
         this.serviceComponents.put(4, new ServiceComponents(null, (LinearLayout) this.findViewById(R.id.program_service_lt), (Switch) this.findViewById(R.id.program_service_swt), (TextView) this.findViewById(R.id.program_service_tv), new ServiceState(this, 4), new Intent(this, ProgramService.class), this));
         this.serviceComponents.put(5, new ServiceComponents(null, (LinearLayout) this.findViewById(R.id.sync_service_lt), (Switch) this.findViewById(R.id.sync_service_swt), (TextView) this.findViewById(R.id.sync_service_tv), new ServiceState(this, 5), new Intent(this, SynchronizationService.class), this));
-        this.serviceComponents.put(6, new ServiceComponents(null, (LinearLayout) this.findViewById(R.id.sip_service_lt), (Switch) this.findViewById(R.id.sip_service_swt), (TextView) this.findViewById(R.id.sip_service_tv), new ServiceState(this, 6), new Intent(this, SipService.class), this));
+        this.serviceComponents.put(6, new ServiceComponents(null, (LinearLayout) this.findViewById(R.id.sip_service_lt), (Switch) this.findViewById(R.id.sip_service_swt), (TextView) this.findViewById(R.id.sip_service_tv), new ServiceState(this, 6), new Intent(this, /*SipService*/ LinSipService.class), this));
     }
 
     @Override
