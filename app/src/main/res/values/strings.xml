@@ -113,5 +113,5 @@
     <string name="Permission">Permission</string>
     <string name="PermissionGranted">Permission Granted</string>
     <string name="PermissionDenied">Permission Denied</string>
-    <string name="PermissionRequired">The next permissions are essential for the operation on this app!</string>
+    <string name="PermissionRequired">The permissions requested are essential for the operation on this app!</string>
 </resources>

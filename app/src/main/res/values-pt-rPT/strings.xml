@@ -115,6 +115,6 @@
     <string name="Permission">Permissão</string>
     <string name="PermissionGranted">Permissão Concedida</string>
     <string name="PermissionDenied">Permissão Negada</string>
-    <string name="PermissionRequired">As proximas permissões são essenciais para o funcionamento desta aplicação</string>
+    <string name="PermissionRequired">As permissões pedidas são essenciais para o funcionamento desta aplicação</string>
 
 </resources>

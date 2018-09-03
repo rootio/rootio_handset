@@ -48,7 +48,6 @@ public class SplashScreen extends Activity {
     final private int ALL_PERMISSIONS = 1;
     String listPermissionsNeededString;
 
-
     private void checkPermissions() {
         List<String> listPermissionsNeeded = new ArrayList<>();
         int ValueStorage = ContextCompat.checkSelfPermission(this,Manifest.permission.READ_EXTERNAL_STORAGE);
@@ -59,42 +58,28 @@ public class SplashScreen extends Activity {
         int ValueSMS= ContextCompat.checkSelfPermission(this,Manifest.permission.READ_SMS);
 
         if (ValueStorage != PackageManager.PERMISSION_GRANTED) {
-            listPermissionsNeeded.add(Manifest.permission.READ_EXTERNAL_STORAGE);
+            listPermissionsNeeded.add("Manifest.permission.READ_EXTERNAL_STORAGE");
         }
         if (ValueContacts != PackageManager.PERMISSION_GRANTED) {
-            listPermissionsNeeded.add(Manifest.permission.READ_CONTACTS);
+            listPermissionsNeeded.add("Manifest.permission.READ_CONTACTS");
         }
         if (ValueAudio != PackageManager.PERMISSION_GRANTED) {
-            listPermissionsNeeded.add(Manifest.permission.RECORD_AUDIO);
+            listPermissionsNeeded.add("Manifest.permission.RECORD_AUDIO");
         }
         if (ValueLocation != PackageManager.PERMISSION_GRANTED) {
-            listPermissionsNeeded.add(Manifest.permission.ACCESS_FINE_LOCATION);
+            listPermissionsNeeded.add("Manifest.permission.ACCESS_FINE_LOCATION");
         }
         if (ValueCalls != PackageManager.PERMISSION_GRANTED) {
-            listPermissionsNeeded.add(Manifest.permission.ANSWER_PHONE_CALLS);
+            listPermissionsNeeded.add("Manifest.permission.ANSWER_PHONE_CALLS");
         }
         if (ValueSMS != PackageManager.PERMISSION_GRANTED) {
-            listPermissionsNeeded.add(Manifest.permission.READ_SMS);
+            listPermissionsNeeded.add("Manifest.permission.READ_SMS");
         }
         listPermissionsNeededString = TextUtils.join(", ", listPermissionsNeeded);
-
     }
 
     private void requestRemainingPermissions(String listPermissionsNeededString){
-        if (listPermissionsNeededString!=null) {
-            ActivityCompat.requestPermissions(this, new String[]{listPermissionsNeededString}, ALL_PERMISSIONS);
-            /*android.app.AlertDialog.Builder alert = new android.app.AlertDialog.Builder(SplashScreen.this);
-            alert.setTitle(R.string.Permission);
-            alert.setMessage(getString(R.string.PermissionRequired));
-            alert.setPositiveButton(R.string.OkButtonText,new DialogInterface.OnClickListener(){
-                @Override
-                public void onClick(DialogInterface dialog,int id){
-                    ActivityCompat.requestPermissions(SplashScreen.this, new String[]{listPermissionsNeededString}, ALL_PERMISSIONS);
-                }
-            });
-            alert.create();
-            alert.show();*/
-        }
+        ActivityCompat.requestPermissions(this, new String[]{listPermissionsNeededString}, ALL_PERMISSIONS);
     }
 
 
@@ -111,6 +96,9 @@ public class SplashScreen extends Activity {
                 checkPermissions();
                 Toast.makeText(this,R.string.PermissionDenied,Toast.LENGTH_SHORT).show();
                 break;
+            }
+            else{
+                listPermissionsNeededString=null;
             }
         }
     }
@@ -135,18 +123,33 @@ public class SplashScreen extends Activity {
     }
 
     public void onConnectClick(View view) {
-        requestRemainingPermissions(listPermissionsNeededString);
-        try {
-            int stationId = Integer.parseInt(((EditText) this.findViewById(R.id.stationIdEt)).getText().toString());
-            String stationKey = ((EditText) this.findViewById(R.id.stationKeyEt)).getText().toString();
-            String serverAddress = ((EditText) this.findViewById(R.id.serverAddressEt)).getText().toString();
-            int serverPort = Integer.parseInt(((EditText) this.findViewById(R.id.serverPortEt)).getText().toString());
-           this.synchronize(new StationHandler(this, new Cloud(this, serverAddress, serverPort, stationId)));
-        }  catch (NumberFormatException e) {
-            Utils.warnOnScreen(this, "Station ID and Port number should be Integers");
-        } catch (Exception e) {
-            e.printStackTrace();
-            Utils.warnOnScreen(this, "Error encountered connecting to station. Please verify credentials and Internet connectivity");
+        if (listPermissionsNeededString!=null){
+            android.app.AlertDialog.Builder alert = new android.app.AlertDialog.Builder(this);
+            alert.setTitle(R.string.Permission);
+            alert.setMessage(getString(R.string.PermissionRequired));
+            alert.setPositiveButton(R.string.OkButtonText,new DialogInterface.OnClickListener(){
+                @Override
+                public void onClick(DialogInterface dialog,int id){
+                    //requestRemainingPermissions(listPermissionsNeededString);
+                    askAllPermissions();
+                }
+            });
+            alert.create();
+            alert.show();
+        }
+        else{
+            try {
+                int stationId = Integer.parseInt(((EditText) this.findViewById(R.id.stationIdEt)).getText().toString());
+                String stationKey = ((EditText) this.findViewById(R.id.stationKeyEt)).getText().toString();
+                String serverAddress = ((EditText) this.findViewById(R.id.serverAddressEt)).getText().toString();
+                int serverPort = Integer.parseInt(((EditText) this.findViewById(R.id.serverPortEt)).getText().toString());
+                this.synchronize(new StationHandler(this, new Cloud(this, serverAddress, serverPort, stationId)));
+            }  catch (NumberFormatException e) {
+                Utils.warnOnScreen(this, "Station ID and Port number should be Integers");
+            } catch (Exception e) {
+                e.printStackTrace();
+                Utils.warnOnScreen(this, "Error encountered connecting to station. Please verify credentials and Internet connectivity");
+            }
         }
     }
 

@@ -113,5 +113,5 @@
     <string name="Permission">Permisiune</string>
     <string name="PermissionGranted">"Permisiunea Acordată "</string>
     <string name="PermissionDenied">"Permisiune Negată "</string>
-    <string name="PermissionRequired">"Următoarele permisiuni sunt esențiale pentru funcționarea acestei aplicații "</string>
+    <string name="PermissionRequired">"Permisele solicitate sunt esențiale pentru operarea pe această aplicație! "</string>
 </resources>
