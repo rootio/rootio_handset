@@ -90,8 +90,9 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
         this.runningProgramIndex = index;
         // Check to see that we are not in a phone call before launching program
         if (this.state != State.PAUSED) {
-            this.programs.get(index).run();
             this.state = State.PLAYING;
+            this.programs.get(index).run();
+
         }
     }
 
@@ -247,6 +248,7 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
     @Override
     public void notifyTelephonyStatus(boolean isInCall) {
         if (isInCall) {
+            //it is important to set and check state ASAP. These events may be fired more than once in quick succession
             if(this.state != State.PAUSED) {
                 this.pauseProgram();
                 this.state = State.PAUSED;
@@ -254,8 +256,9 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
         } else { // notification that the call has ended
             if (this.state == State.PAUSED) {
                 // The program had begun, it was paused by the call
-                this.resumeProgram();
                 this.state = State.PLAYING;
+                this.resumeProgram();
+
             }
         }
     }

@@ -195,7 +195,7 @@ public class PlayList implements Player.EventListener {
     }
 
     private void fadeOut() {
-        float volume = 1.0F;
+        float volume = BuildConfig.DEBUG ? 0.5f : 1.0f;
         while (volume > 0) {
             volume = volume - 0.05F;
             mediaPlayer.setVolume(volume);

@@ -91,6 +91,7 @@ public class LinSipService extends Service implements ServiceInformationPublishe
         this.username = (String)Utils.getPreference("org.rootio.handset.sip_username", String.class, this);
         this.password = (String)Utils.getPreference("org.rootio.handset.sip_password", String.class, this);
         this.stun = (String)Utils.getPreference("org.rootio.handset.sip_stun", String.class, this);
+
     }
 
     private NatPolicy createNatPolicy() {
@@ -217,7 +218,10 @@ public class LinSipService extends Service implements ServiceInformationPublishe
             this.linphoneCore.getDefaultProxyConfig().edit();
             this.linphoneCore.getDefaultProxyConfig().enableRegister(false);
             this.linphoneCore.getDefaultProxyConfig().done();
-         } catch (Exception e) {
+            //this.isRunning = false;
+            //this.linphoneCore.clearProxyConfig(); //only thing similar to deregistration
+
+        } catch (Exception e) {
             e.printStackTrace();
             //this.notifyRegistrationEvent(this.registrationState, null); //potential conflict of handling to the receiver
         }
