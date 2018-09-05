@@ -314,7 +314,7 @@ public class PlayList implements Player.EventListener {
                     switch (playbackState) {
                         case Player.STATE_ENDED:
                             try {
-                                PlayList.this.mediaPlayer.setVolume(1.0f);
+                                PlayList.this.mediaPlayer.setVolume(BuildConfig.DEBUG ? 0.5f : 1.0f);
                                 callSignPlayer.removeListener(this);
                                 callSignPlayer.release();
                             } catch (Exception ex) {
@@ -397,11 +397,11 @@ public class PlayList implements Player.EventListener {
                     if (this.callSignPlayer != null || this.callSignPlayer.getPlaybackState() == Player.STATE_READY) {
                         this.mediaPlayer.setVolume(0.07f);
                     } else {
-                        this.mediaPlayer.setVolume(1f);
+                        this.mediaPlayer.setVolume(BuildConfig.DEBUG ? 0.5f : 1.0f);
                     }
 
                 } catch (Exception ex) {
-                    this.mediaPlayer.setVolume(1f);
+                    this.mediaPlayer.setVolume(BuildConfig.DEBUG ? 0.5f : 1.0f);
                 }
                 break;
             case Player.STATE_ENDED: //a song has ended
