@@ -140,7 +140,6 @@ public class SplashScreen extends Activity {
         else{
             try {
                 int stationId = Integer.parseInt(((EditText) this.findViewById(R.id.stationIdEt)).getText().toString());
-                String stationKey = ((EditText) this.findViewById(R.id.stationKeyEt)).getText().toString();
                 String serverAddress = ((EditText) this.findViewById(R.id.serverAddressEt)).getText().toString();
                 int serverPort = Integer.parseInt(((EditText) this.findViewById(R.id.serverPortEt)).getText().toString());
                 this.synchronize(new StationHandler(this, new Cloud(this, serverAddress, serverPort, stationId)));

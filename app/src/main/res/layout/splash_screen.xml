@@ -94,6 +94,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_weight="40"
+            android:text="production.rootio.org"
             android:ems="10" />
 
     </LinearLayout>
@@ -120,6 +121,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="40"
             android:ems="10"
+            android:text="80"
             android:inputType="numberDecimal" />
 
     </LinearLayout>
