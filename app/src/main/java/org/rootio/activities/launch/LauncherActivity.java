@@ -1,8 +1,12 @@
 package org.rootio.activities.launch;
 
+import android.Manifest;
+import android.app.AlertDialog;
 import android.app.TabActivity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.Menu;
@@ -10,6 +14,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
+import android.text.Html;
 
 import org.rootio.activities.DiagnosticActivity;
 import org.rootio.activities.RadioActivity;
@@ -29,7 +34,7 @@ import org.rootio.services.TelephonyService;
 import org.rootio.tools.utils.Utils;
 
 @SuppressWarnings("deprecation")
-public class LauncherActivity extends TabActivity {
+public class LauncherActivity extends TabActivity  {
 
 
     @Override
@@ -95,7 +100,6 @@ public class LauncherActivity extends TabActivity {
     @Override
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
         Intent intent;
-
         switch (item.getItemId()) {
             case R.id.station_menu_item:
                 intent = new Intent(this, StationActivity.class);
@@ -113,13 +117,37 @@ public class LauncherActivity extends TabActivity {
                 intent = new Intent(this, FrequencyActivity.class);
                 this.startActivity(intent);
                 return true;
-            case R.id.quity_menu_item:
+            case R.id.quit_menu_item:
                 this.onStop();
                 this.finish();
                 return true;
             case R.id.services_menu_item:
                 intent = new Intent(this, ServicesActivity.class);
                 this.startActivity(intent);
+                return true;
+            case R.id.station_change_menu_item:
+                AlertDialog.Builder alert = new AlertDialog.Builder(LauncherActivity.this);
+                alert.setView(R.layout.activity_main);
+                alert.setTitle(R.string.Warning);
+                alert.setMessage(Html.fromHtml(getString(R.string.AlertMessage) + "\n <i>" + getText(R.string.RestartWarning) + "</i>"));
+                alert.setPositiveButton(R.string.OkButtonText,new DialogInterface.OnClickListener(){
+                    @Override
+                    public void onClick(DialogInterface dialog,int id){
+                        SharedPreferences prefs = getSharedPreferences("org.rootio.handset", Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = prefs.edit();
+                        editor.clear();
+                        editor.apply();
+                        finish();
+                        }
+                });
+                alert.setNegativeButton(R.string.CancelButtonText,new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                        }
+                });
+                alert.create();
+                alert.show();
                 return true;
             default:
                 return super.onContextItemSelected(item);

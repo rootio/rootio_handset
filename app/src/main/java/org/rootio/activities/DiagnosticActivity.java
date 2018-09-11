@@ -91,7 +91,7 @@ public class DiagnosticActivity extends Activity {
                 intent = new Intent(this, FrequencyActivity.class);
                 startActivity(intent);
                 return true;
-            case R.id.quity_menu_item:
+            case R.id.quit_menu_item:
 
                 // radioRunner.stop
                 this.onStop();

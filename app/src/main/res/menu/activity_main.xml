@@ -4,6 +4,8 @@
     <item android:id="@+id/cloud_menu_item" android:title="@string/CloudDetailsItem"></item>
     <item android:id="@+id/telephony_menu_item" android:title="@string/TelephonyDetailsItem"></item>
     <item android:id="@+id/frequency_menu_item" android:title="@string/FrequencyMenuItem"></item>
-    <item android:id="@+id/services_menu_item" android:title="Services"></item>
-    <item android:id="@+id/quity_menu_item" android:title="@string/QuitItem"></item>
+    <item android:id="@+id/services_menu_item" android:title="@string/Services"></item>
+    <item android:id="@+id/station_change_menu_item" android:title="@string/StationChange"></item>
+    <item android:id="@+id/quit_menu_item" android:title="@string/QuitItem"></item>
+
 </menu>

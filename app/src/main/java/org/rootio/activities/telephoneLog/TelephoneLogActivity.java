@@ -84,8 +84,7 @@ public class TelephoneLogActivity extends Activity {
                 intent.putExtra("isHomeScreen", true);
                 startActivity(intent);
                 return true;
-            case R.id.quity_menu_item:
-
+            case R.id.quit_menu_item:
                 // radioRunner.stop
                 this.onStop();
                 this.finish();

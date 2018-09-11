@@ -36,7 +36,6 @@ public class CloudActivity extends Activity {
     private void renderCloudInformation(Cloud cloud) {
         ((TextView) findViewById(R.id.cloud_ip_address_tv)).setText(cloud.getServerAddress());
         ((TextView) findViewById(R.id.cloud_httpport_tv)).setText(String.valueOf(cloud.getHTTPPort()));
-        ((TextView) findViewById(R.id.cloud_server_key_tv)).setText(cloud.getServerKey());
         ((TextView) findViewById(R.id.cloud_station_id_tv)).setText(String.valueOf(cloud.getStationId()));
     }
 
