@@ -5,7 +5,6 @@ import android.content.Context;
 import java.util.ArrayList;
 
 public class ProgramAction {
-    private int duration;
     private ArrayList<String> playlists, streams;
     private ProgramActionType programActionType;
     private Context parent;
@@ -40,7 +39,13 @@ public class ProgramAction {
         switch (this.programActionType) {
             case Media:
             case Audio:
-                this.playlist.resume();
+                try {
+                    this.playlist.resume();
+                }
+                catch(Exception ex)
+                {
+                    //todo: log this
+                }
                 break;
             case Jingle:
                  break;
@@ -97,7 +102,5 @@ public class ProgramAction {
         }
     }
 
-    public int getDuration() {
-        return this.duration;
-    }
+
 }

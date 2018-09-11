@@ -49,7 +49,9 @@ public class PlayList implements Player.EventListener {
    // private Media currentMedia;
     private long mediaPosition;
     private MediaLibrary mediaLib;
-    private boolean isShuttingDown, isStreaming;
+    private boolean isShuttingDown;
+    private Thread runnerThread;
+
 
 
     protected PlayList() {
@@ -153,11 +155,11 @@ public class PlayList implements Player.EventListener {
 
 
         mediaPlayer = ExoPlayerFactory.newSimpleInstance(this.parent, new DefaultTrackSelector());
-        mediaPlayer.setVolume(BuildConfig.DEBUG ? 0.5f : 1.0f); //this is the volume of the individual player, not the music service of the phone
         mediaPlayer.addListener(this);
         mediaPlayer.prepare(this.getMediaSource(uri));
         mediaPlayer.setPlayWhenReady(true);
-        mediaPlayer.seekTo(seekPosition);
+        mediaPlayer.setVolume(BuildConfig.DEBUG ? 0.5f : 1.0f); //this is the volume of the individual player, not the music service of the phone
+        //mediaPlayer.seekTo(seekPosition); this trips streams...
     }
 
 
@@ -219,13 +221,29 @@ public class PlayList implements Player.EventListener {
                     this.fadeOut();
 
                 }
-                this.mediaPosition = this.mediaPlayer.getCurrentPosition();
-                mediaPlayer.stop(true); //advised that media players should never be reused, even in pause/play scenarios
-                mediaPlayer.release();
 
-                //stop the call sign player as well
-                this.callSignPlayer.stop(true);
-                this.callSignPlayer.release();
+                try {
+                    this.mediaPosition = this.mediaPlayer.getCurrentPosition();
+                    mediaPlayer.stop(true); //advised that media players should never be reused, even in pause/play scenarios
+                    mediaPlayer.release();
+                }
+                catch(Exception ex)
+                {
+                    //ok TODO: Log this
+                }
+
+                try {
+                    //stop the call sign player as well
+                    this.callSignPlayer.stop(true); //this thread is sleeping! TODO: interrupt it
+                    this.callSignPlayer.release();
+                }
+                catch(Exception ex)
+                {
+                    //ok too. TODO: log this
+                }
+
+                //stop the callSign looper so they do not play during the call
+                this.callSignProvider.stop();
             }
         } catch (Exception ex) {
             Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(PlayList.pause)" : ex.getMessage());
@@ -285,7 +303,7 @@ public class PlayList implements Player.EventListener {
     }
 
 
-    void onReceiveCallSign(String Url) {
+    private void onReceiveCallSign(String Url) {
 
         try {
 
@@ -483,6 +501,10 @@ public class PlayList implements Player.EventListener {
 
         void stop() {
             this.isRunning = false;
+            if(PlayList.this.runnerThread != null)
+            {
+                PlayList.this.runnerThread.interrupt(); //so the thread can exit on state change, otherwise could sleep through on->off->on
+            }
         }
 
         private void playCallSign() {
@@ -500,7 +522,8 @@ public class PlayList implements Player.EventListener {
         }
 
         public void start() {
-            new Thread(this).start();
+            PlayList.this.runnerThread = new Thread(this);
+            PlayList.this.runnerThread.start();
 
         }
     }

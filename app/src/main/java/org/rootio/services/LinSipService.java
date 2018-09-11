@@ -91,7 +91,6 @@ public class LinSipService extends Service implements ServiceInformationPublishe
         this.username = (String)Utils.getPreference("org.rootio.handset.sip_username", String.class, this);
         this.password = (String)Utils.getPreference("org.rootio.handset.sip_password", String.class, this);
         this.stun = (String)Utils.getPreference("org.rootio.handset.sip_stun", String.class, this);
-
     }
 
     private NatPolicy createNatPolicy() {
