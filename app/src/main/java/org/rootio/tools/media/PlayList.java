@@ -91,7 +91,7 @@ public class PlayList implements Player.EventListener {
     public void play() {
         startPlayer();
         this.callSignProvider.start();
-    }
+     }
 
     private void startPlayer() {
 

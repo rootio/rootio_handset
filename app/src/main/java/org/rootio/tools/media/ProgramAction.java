@@ -9,12 +9,14 @@ public class ProgramAction {
     private ProgramActionType programActionType;
     private Context parent;
     private PlayList playlist;
+    private int duration;
 
-    public ProgramAction(Context parent, ArrayList<String> playlists, ArrayList<String> streams, ProgramActionType programType) {
+    public ProgramAction(Context parent, ArrayList<String> playlists, ArrayList<String> streams, ProgramActionType programType, int duration) {
         this.parent = parent;
         this.playlists = playlists;
         this.streams = streams;
         this.programActionType = programType;
+        this.duration = duration;
     }
 
     void run() {
@@ -100,6 +102,11 @@ public class ProgramAction {
             default:
                 break;
         }
+    }
+
+    public int getDuration()
+    {
+        return this.duration;
     }
 
 

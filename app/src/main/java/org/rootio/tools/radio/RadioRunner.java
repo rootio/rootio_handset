@@ -21,6 +21,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.util.Log;
 
+import com.esotericsoftware.kryo.util.Util;
+
 enum State {
     PLAYING, PAUSED, STOPPED
 }
@@ -43,7 +45,6 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
         this.setUpAlarming();
         this.listenForTelephonyEvents();
         this.listenForScheduleChangeNotifications();
-
     }
 
     private void listenForScheduleChangeNotifications() {
@@ -266,6 +267,7 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
     @Override
     public boolean isExpired(int index) {
         Calendar referenceCalendar = Calendar.getInstance();
+        boolean isExpired = this.programs.get(index).getEndDate().compareTo(referenceCalendar.getTime()) <= 0;
         return this.programs.get(index).getEndDate().compareTo(referenceCalendar.getTime()) <= 0;
     }
 

@@ -84,14 +84,11 @@ public class LinSipService extends Service implements ServiceInformationPublishe
 
 
     private void loadConfig() {
-
-
-
         this.domain = (String)Utils.getPreference("org.rootio.handset.sip_domain", String.class, this);
         this.username = (String)Utils.getPreference("org.rootio.handset.sip_username", String.class, this);
         this.password = (String)Utils.getPreference("org.rootio.handset.sip_password", String.class, this);
         this.stun = (String)Utils.getPreference("org.rootio.handset.sip_stun", String.class, this);
-    }
+         }
 
     private NatPolicy createNatPolicy() {
         NatPolicy natPolicy = linphoneCore.createNatPolicy();
@@ -293,6 +290,12 @@ public class LinSipService extends Service implements ServiceInformationPublishe
     public void updateCallState(Call.State callState, Call call) {
         switch (callState) {
             case End:
+                this.sendTelephonyEventBroadcast(false);
+                if (call != null) //not being sent au moment
+                {
+                    Utils.toastOnScreen("Call with " + call.getRemoteContact() + " errored", this);
+                }
+                break;
             case Error:
                 this.sendTelephonyEventBroadcast(false);
                 if (call != null) //not being sent au moment

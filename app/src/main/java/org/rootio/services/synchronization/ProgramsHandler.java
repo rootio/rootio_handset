@@ -37,9 +37,10 @@ public class ProgramsHandler implements SynchronizationHandler {
             results = synchronizationResponse.getJSONArray("scheduled_programs");
 
             for (int i = 0; i < results.length(); i++) {
-                this.deleteRecord(results.getJSONObject(i).getLong("scheduled_program_id"));
+                //if the record did not exist in the DB, then it is new ;-)
+                int recs = this.deleteRecord(results.getJSONObject(i).getLong("scheduled_program_id"));
+                hasChanges = recs < 1;
                 if (!results.getJSONObject(i).getBoolean("deleted")) {
-                    hasChanges = true;
                     this.saveRecord(results.getJSONObject(i).getInt("scheduled_program_id"), results.getJSONObject(i).getString("name"), Utils.getDateFromString(results.getJSONObject(i).getString("start"), "yyyy-MM-dd'T'HH:mm:ss"), Utils.getDateFromString(results.getJSONObject(i).getString("end"), "yyyy-MM-dd'T'HH:mm:ss"), results.getJSONObject(i).getString("structure"), Utils.getDateFromString(results.getJSONObject(i).getString("updated_at"), "yyyy-MM-dd'T'HH:mm:ss"), results.getJSONObject(i).getString("program_type_id"));
                 }
             }
