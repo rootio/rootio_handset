@@ -24,7 +24,6 @@ public class LinSipService extends Service implements ServiceInformationPublishe
 
     private final int serviceId = 6;
     private Core linphoneCore;
-    private Config sipConfig;
     private AuthInfo authInfo;
     private ProxyConfig proxyConfig;
     private String username, password, domain, stunServer;
@@ -293,14 +292,14 @@ public class LinSipService extends Service implements ServiceInformationPublishe
                 this.sendTelephonyEventBroadcast(false);
                 if (call != null) //not being sent au moment
                 {
-                    Utils.toastOnScreen("Call with " + call.getRemoteContact() + " errored", this);
+                    Utils.toastOnScreen("Call with " + call.getRemoteContact() + " ended", this);
                 }
                 break;
             case Error:
                 this.sendTelephonyEventBroadcast(false);
                 if (call != null) //not being sent au moment
                 {
-                    Utils.toastOnScreen("Call with " + call.getRemoteContact() + " terminated", this);
+                    Utils.toastOnScreen("Call with " + call.getRemoteContact() + " erred", this);
                 }
                 break;
             case Connected:
