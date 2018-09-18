@@ -90,10 +90,10 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
         }
         this.runningProgramIndex = index;
         // Check to see that we are not in a phone call before launching program
+
         if (this.state != State.PAUSED) {
             this.state = State.PLAYING;
             this.programs.get(index).run();
-
         }
     }
 

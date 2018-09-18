@@ -148,7 +148,7 @@ public class PlayList implements Player.EventListener {
         this.playMedia(uri, 0l);
     }
 
-    private void playMedia(Uri uri, long seekPosition) {
+    private void    playMedia(Uri uri, long seekPosition) {
         //begin by raising the volume
         AudioManager audioManager = (AudioManager) this.parent.getSystemService(Context.AUDIO_SERVICE);
         audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC) - (BuildConfig.DEBUG ? 7 : 2), AudioManager.FLAG_SHOW_UI);
@@ -252,10 +252,15 @@ public class PlayList implements Player.EventListener {
 
     /**
      * Resumes playback after it has been paused
+     * @deprecated .This method should be called if you want to resume the media that was playing at the time the playlist was paused.
+     * THis was deprecated in favor of stopping and restarting the playlist
+     * However streams take care of themselves and for songs, another song will be chosen, so no big deal
      */
+    @Deprecated
+
     public void resume() {
         try {
-            this.playMedia(currentMedia, this.mediaPosition);
+           this.playMedia(currentMedia, this.mediaPosition);
 
 
             // resume the callSign provider

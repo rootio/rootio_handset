@@ -2,6 +2,8 @@ package org.rootio.tools.media;
 
 import android.content.Context;
 
+import org.rootio.tools.utils.Utils;
+
 import java.util.ArrayList;
 
 public class ProgramAction {
@@ -42,30 +44,15 @@ public class ProgramAction {
             case Media:
             case Audio:
                 try {
-                    this.playlist.resume();
+                    this.run();
                 }
                 catch(Exception ex)
                 {
-                    //todo: log this
+                     //todo: log this
                 }
                 break;
             case Jingle:
                  break;
-            case Outcall:
-                break;
-            default:
-                break;
-        }
-    }
-
-    void play() {
-        switch (this.programActionType) {
-            case Media:
-            case Audio:
-                this.playlist.play();
-                break;
-            case Jingle:
-                break;
             case Outcall:
                 break;
             default:
