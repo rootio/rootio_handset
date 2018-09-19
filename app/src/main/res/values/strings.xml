@@ -116,7 +116,7 @@
     <string name="PermissionRequired">The permissions requested are essential for the operation on this app!</string>
     <string name="PermissionDeniedMessage">
 <![CDATA[
-        One or more required permission(s) were not granted. Given that this application runs in the background,
+       One or more required permission(s) were not granted. Given that this application runs in the background,
        all necessary permissions should be granted before the application is connected to the cloud server
        Note that this application is not for personal use and only grant these permissions on a device running
        in accordance with the terms and conditions of the RootIO project. Please go to settings > Applications > RootIO and grant the necessary permissions to use this application.

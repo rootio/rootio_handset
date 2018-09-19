@@ -116,5 +116,13 @@
     <string name="PermissionGranted">Permissão Concedida</string>
     <string name="PermissionDenied">Permissão Negada</string>
     <string name="PermissionRequired">As permissões pedidas são essenciais para o funcionamento desta aplicação</string>
-
+    <string name="PermissionDeniedMessage">
+<![CDATA[
+       Uma ou mais permissões exigidas não foram concedidas. Dado que esta aplicação é executada em segundo plano,
+        todas as permissões necessárias devem ser concedidas antes que o aplicaçâo seja conectado ao servidor.
+        Observe que este aplicaçâo não é para uso pessoal e só concede essas permissões em um dispositivo em execução
+        de acordo com os termos e condições do projeto RootIO. Por favor, vá para Configurações> Aplicações> RootIO e conceda as permissões necessárias para usar este aplicaçâo.
+        A aplicação agora vai terminar
+        ]]>
+    </string>
 </resources>
