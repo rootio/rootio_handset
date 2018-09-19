@@ -27,12 +27,14 @@ import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.PopupMenu;
 import android.widget.Toast;
 
 @SuppressLint("SimpleDateFormat")
@@ -63,6 +65,10 @@ public class Utils {
             }
         };
         Utils.handle(toaster);
+    }
+
+    public static void warnOnScreen(Activity triggerActivity, String message, DialogInterface.OnDismissListener listener) {
+        new AlertDialog.Builder(triggerActivity).setIcon(R.drawable.attention).setOnDismissListener(listener).setTitle("Warning").setMessage(message).setNeutralButton("Close", null).show();
     }
 
     public static void warnOnScreen(Activity triggerActivity, String message) {

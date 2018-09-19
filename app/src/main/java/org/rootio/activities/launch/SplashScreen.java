@@ -50,12 +50,12 @@ public class SplashScreen extends Activity {
 
     private void checkPermissions() {
         List<String> listPermissionsNeeded = new ArrayList<>();
-        int ValueStorage = ContextCompat.checkSelfPermission(this,Manifest.permission.READ_EXTERNAL_STORAGE);
-        int ValueContacts = ContextCompat.checkSelfPermission(this,Manifest.permission.READ_CONTACTS);
-        int ValueAudio = ContextCompat.checkSelfPermission(this,Manifest.permission.RECORD_AUDIO);
-        int ValueLocation = ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION);
-        int ValueCalls = ContextCompat.checkSelfPermission(this,Manifest.permission.ANSWER_PHONE_CALLS);
-        int ValueSMS= ContextCompat.checkSelfPermission(this,Manifest.permission.READ_SMS);
+        int ValueStorage = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
+        int ValueContacts = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS);
+        int ValueAudio = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO);
+        int ValueLocation = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
+        int ValueCalls = ContextCompat.checkSelfPermission(this, Manifest.permission.ANSWER_PHONE_CALLS);
+        int ValueSMS = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_SMS);
 
         if (ValueStorage != PackageManager.PERMISSION_GRANTED) {
             listPermissionsNeeded.add("Manifest.permission.READ_EXTERNAL_STORAGE");
@@ -78,28 +78,32 @@ public class SplashScreen extends Activity {
         listPermissionsNeededString = TextUtils.join(", ", listPermissionsNeeded);
     }
 
-    private void requestRemainingPermissions(String listPermissionsNeededString){
+    private void requestRemainingPermissions(String listPermissionsNeededString) {
         ActivityCompat.requestPermissions(this, new String[]{listPermissionsNeededString}, ALL_PERMISSIONS);
     }
 
 
-    private void askAllPermissions(){
+    private void askAllPermissions() {
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.READ_SMS, Manifest.permission.RECORD_AUDIO, Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ANSWER_PHONE_CALLS,Manifest.permission.READ_CONTACTS}, ALL_PERMISSIONS);
+                Manifest.permission.ANSWER_PHONE_CALLS, Manifest.permission.READ_CONTACTS}, ALL_PERMISSIONS);
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        boolean allGranted = true;
         for (int permissionIndex : grantResults) {
             if (permissionIndex != PackageManager.PERMISSION_GRANTED) {
-                checkPermissions();
-                Toast.makeText(this,R.string.PermissionDenied,Toast.LENGTH_SHORT).show();
-                break;
+                allGranted = false;
             }
-            else{
-                listPermissionsNeededString=null;
-            }
+        }
+        if (!allGranted) {
+            Utils.warnOnScreen(this, this.getString(R.string.PermissionDeniedMessage), new DialogInterface.OnDismissListener() {
+                @Override
+                public void onDismiss(DialogInterface dialog) {
+                    SplashScreen.this.finish();
+                }
+            });
         }
     }
 
@@ -123,27 +127,26 @@ public class SplashScreen extends Activity {
     }
 
     public void onConnectClick(View view) {
-        if (listPermissionsNeededString!=null){
+        if (listPermissionsNeededString != null) {
             android.app.AlertDialog.Builder alert = new android.app.AlertDialog.Builder(this);
             alert.setTitle(R.string.Permission);
             alert.setMessage(getString(R.string.PermissionRequired));
-            alert.setPositiveButton(R.string.OkButtonText,new DialogInterface.OnClickListener(){
+            alert.setPositiveButton(R.string.OkButtonText, new DialogInterface.OnClickListener() {
                 @Override
-                public void onClick(DialogInterface dialog,int id){
+                public void onClick(DialogInterface dialog, int id) {
                     //requestRemainingPermissions(listPermissionsNeededString);
                     askAllPermissions();
                 }
             });
             alert.create();
             alert.show();
-        }
-        else{
+        } else {
             try {
                 int stationId = Integer.parseInt(((EditText) this.findViewById(R.id.stationIdEt)).getText().toString());
                 String serverAddress = ((EditText) this.findViewById(R.id.serverAddressEt)).getText().toString();
                 int serverPort = Integer.parseInt(((EditText) this.findViewById(R.id.serverPortEt)).getText().toString());
                 this.synchronize(new StationHandler(this, new Cloud(this, serverAddress, serverPort, stationId)));
-            }  catch (NumberFormatException e) {
+            } catch (NumberFormatException e) {
                 Utils.warnOnScreen(this, "Station ID and Port number should be Integers");
             } catch (Exception e) {
                 e.printStackTrace();
@@ -159,9 +162,8 @@ public class SplashScreen extends Activity {
         String serverAddress = ((EditText) this.findViewById(R.id.serverAddressEt)).getText().toString();
         int serverPort = Integer.parseInt(((EditText) this.findViewById(R.id.serverPortEt)).getText().toString());
         try {
-            this.saveCloudInformation(stationId,stationKey, serverAddress, serverPort);
-        }
-        catch (Exception e) {
+            this.saveCloudInformation(stationId, stationKey, serverAddress, serverPort);
+        } catch (Exception e) {
             Utils.warnOnScreen(this, "Station information was not saved due to an error, please try again");
             return;
         }
@@ -203,7 +205,7 @@ public class SplashScreen extends Activity {
                 foutstr = new FileOutputStream(destinationFile);
                 foutstr.write(buffer);
             } else {
-                Utils.toastOnScreen(BuildConfig.DEBUG? "Failed to create file" + fileName : "Failed to create necessary file, app may not work well", this);
+                Utils.toastOnScreen(BuildConfig.DEBUG ? "Failed to create file" + fileName : "Failed to create necessary file, app may not work well", this);
             }
         } catch (IOException ex) {
             Log.e(this.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(SplashScreen.copyDataFile)" : ex.getMessage());
