@@ -32,13 +32,11 @@ public class LinSipService extends Service implements ServiceInformationPublishe
     private Core linphoneCore;
     private AuthInfo authInfo;
     private ProxyConfig proxyConfig;
-    private String username, password, domain, stunServer;
-    private SharedPreferences prefs;
-    private boolean isRunning;
+    private String username, password, domain, stun;
+    private boolean isRunning, isPendingRestart, inCall;
     private boolean wasStoppedOnPurpose;
     private SipListener coreListener;
     private boolean isSipRunning;
-    private String stun;
     private Config profile;
     private BroadcastReceiver br;
 
@@ -67,9 +65,14 @@ public class LinSipService extends Service implements ServiceInformationPublishe
             @Override
             public void onReceive(Context context, Intent intent) {
                 if (LinSipService.this.isRunning) {
-                    LinSipService.this.deregister();
-                    LinSipService.this.initializeStack();
-                    LinSipService.this.register();
+                    if (LinSipService.this.inCall) //re-registration will cause call to be dropped
+                    {
+                        LinSipService.this.isPendingRestart = true;
+                    } else {
+                        LinSipService.this.deregister();
+                        LinSipService.this.initializeStack();
+                        LinSipService.this.register();
+                    }
                 }
             }
         };
@@ -81,7 +84,6 @@ public class LinSipService extends Service implements ServiceInformationPublishe
     @Override
     public void onTaskRemoved(Intent intent) {
         super.onTaskRemoved(intent);
-        Utils.toastOnScreen("being stopped (ontskr", this);
         if (intent != null) {
             wasStoppedOnPurpose = intent.getBooleanExtra("wasStoppedOnPurpose", false);
             if (wasStoppedOnPurpose) {
@@ -106,15 +108,15 @@ public class LinSipService extends Service implements ServiceInformationPublishe
 
 
     private void loadConfig() {
-        String stationInformation = (String)Utils.getPreference("station_information", String.class, this);
+        String stationInformation = (String) Utils.getPreference("station_information", String.class, this);
         JSONObject stationJson = null;
         try {
             stationJson = new JSONObject(stationInformation);
-        JSONObject sipConfiguration = stationJson.optJSONObject("sip_configuration");
-        this.domain = sipConfiguration.optString("sip_domain");
-        this.username = sipConfiguration.optString("sip_username");
-        this.password = sipConfiguration.optString("sip_password");
-        this.stun = sipConfiguration.optString("sip_stun");
+            JSONObject sipConfiguration = stationJson.optJSONObject("sip_configuration");
+            this.domain = sipConfiguration.optString("sip_domain");
+            this.username = sipConfiguration.optString("sip_username");
+            this.password = sipConfiguration.optString("sip_password");
+            this.stun = sipConfiguration.optString("sip_stun");
         } catch (JSONException ex) {
             Log.e(this.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(LinSipService.loadConfig)" : ex.getMessage());
         }
@@ -242,7 +244,7 @@ public class LinSipService extends Service implements ServiceInformationPublishe
             this.linphoneCore.getDefaultProxyConfig().edit();
             this.linphoneCore.getDefaultProxyConfig().enableRegister(false);
             this.linphoneCore.getDefaultProxyConfig().done();
-          } catch (Exception ex) {
+        } catch (Exception ex) {
             Log.e(this.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(LinSipService.deregister)" : ex.getMessage());
         }
     }
@@ -316,6 +318,14 @@ public class LinSipService extends Service implements ServiceInformationPublishe
     public void updateCallState(Call.State callState, Call call) {
         switch (callState) {
             case End:
+                this.inCall = false;
+                if(isPendingRestart)
+                {
+                    this.deregister();
+                    this.initializeStack();
+                   this.register();
+                    isPendingRestart = false;
+                }
                 this.sendTelephonyEventBroadcast(false);
                 if (call != null) //not being sent au moment
                 {
@@ -323,6 +333,14 @@ public class LinSipService extends Service implements ServiceInformationPublishe
                 }
                 break;
             case Error:
+                this.inCall = false;
+                if(isPendingRestart)
+                {
+                    this.deregister();
+                    this.initializeStack();
+                    this.register();
+                    isPendingRestart = false;
+                }   
                 this.sendTelephonyEventBroadcast(false);
                 if (call != null) //not being sent au moment
                 {
@@ -331,6 +349,7 @@ public class LinSipService extends Service implements ServiceInformationPublishe
                 break;
             case Connected:
             case StreamsRunning: //in case you reconnect to the main activity during call.
+                this.inCall = true;
                 this.sendTelephonyEventBroadcast(true);
                 if (call != null) //ideally check for direction and report if outgoing or incoming
                 {
