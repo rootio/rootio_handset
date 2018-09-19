@@ -2,20 +2,23 @@ package org.rootio.tools.media;
 
 import android.content.Context;
 
+import org.rootio.tools.utils.Utils;
+
 import java.util.ArrayList;
 
 public class ProgramAction {
-    private int duration;
     private ArrayList<String> playlists, streams;
     private ProgramActionType programActionType;
     private Context parent;
     private PlayList playlist;
+    private int duration;
 
-    public ProgramAction(Context parent, ArrayList<String> playlists, ArrayList<String> streams, ProgramActionType programType) {
+    public ProgramAction(Context parent, ArrayList<String> playlists, ArrayList<String> streams, ProgramActionType programType, int duration) {
         this.parent = parent;
         this.playlists = playlists;
         this.streams = streams;
         this.programActionType = programType;
+        this.duration = duration;
     }
 
     void run() {
@@ -40,25 +43,16 @@ public class ProgramAction {
         switch (this.programActionType) {
             case Media:
             case Audio:
-                this.playlist.resume();
+                try {
+                    this.run();
+                }
+                catch(Exception ex)
+                {
+                     //todo: log this
+                }
                 break;
             case Jingle:
                  break;
-            case Outcall:
-                break;
-            default:
-                break;
-        }
-    }
-
-    void play() {
-        switch (this.programActionType) {
-            case Media:
-            case Audio:
-                this.playlist.play();
-                break;
-            case Jingle:
-                break;
             case Outcall:
                 break;
             default:
@@ -97,7 +91,10 @@ public class ProgramAction {
         }
     }
 
-    public int getDuration() {
+    public int getDuration()
+    {
         return this.duration;
     }
+
+
 }

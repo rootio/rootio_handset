@@ -24,7 +24,6 @@ public class LinSipService extends Service implements ServiceInformationPublishe
 
     private final int serviceId = 6;
     private Core linphoneCore;
-    private Config sipConfig;
     private AuthInfo authInfo;
     private ProxyConfig proxyConfig;
     private String username, password, domain, stunServer;
@@ -84,12 +83,11 @@ public class LinSipService extends Service implements ServiceInformationPublishe
 
 
     private void loadConfig() {
-
         this.domain = (String)Utils.getPreference("org.rootio.handset.sip_domain", String.class, this);
         this.username = (String)Utils.getPreference("org.rootio.handset.sip_username", String.class, this);
         this.password = (String)Utils.getPreference("org.rootio.handset.sip_password", String.class, this);
         this.stun = (String)Utils.getPreference("org.rootio.handset.sip_stun", String.class, this);
-    }
+         }
 
     private NatPolicy createNatPolicy() {
         NatPolicy natPolicy = linphoneCore.createNatPolicy();
@@ -291,11 +289,17 @@ public class LinSipService extends Service implements ServiceInformationPublishe
     public void updateCallState(Call.State callState, Call call) {
         switch (callState) {
             case End:
+                this.sendTelephonyEventBroadcast(false);
+                if (call != null) //not being sent au moment
+                {
+                    Utils.toastOnScreen("Call with " + call.getRemoteContact() + " ended", this);
+                }
+                break;
             case Error:
                 this.sendTelephonyEventBroadcast(false);
                 if (call != null) //not being sent au moment
                 {
-                    Utils.toastOnScreen("Call with " + call.getRemoteContact() + " terminated", this);
+                    Utils.toastOnScreen("Call with " + call.getRemoteContact() + " erred", this);
                 }
                 break;
             case Connected:

@@ -58,6 +58,7 @@ public class Program implements Comparable<Program>, ScheduleNotifiable {
             programStructure = new JSONArray(structure);
             ArrayList<String> playlists = new ArrayList<String>();
             ArrayList<String> streams = new ArrayList<String>();
+            int duration =0;
             for (int i = 0; i < programStructure.length(); i++) {
                 if (programStructure.getJSONObject(i).getString("type").toLowerCase().equals("music"))//redundant, safe
                 {
@@ -71,9 +72,12 @@ public class Program implements Comparable<Program>, ScheduleNotifiable {
                     streams.add(programStructure.getJSONObject(i).getString("stream_url"));
                     this.isLocal = true;
                 }
+                if(programStructure.getJSONObject(i).has("duration")) { //redundant, using optInt
+                    duration = programStructure.getJSONObject(i).optInt("duration");
+                }
             }
 
-            this.programActions.add(new ProgramAction(this.parent, playlists, streams, ProgramActionType.Audio));
+            this.programActions.add(new ProgramAction(this.parent, playlists, streams, ProgramActionType.Audio, duration));
         } catch (JSONException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -150,7 +154,7 @@ public class Program implements Comparable<Program>, ScheduleNotifiable {
     public boolean isExpired(int index) {
         Calendar referenceCalendar = Calendar.getInstance();
         Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.MINUTE, this.programActions.get(index).getDuration() - 1);
+        cal.add(Calendar.MINUTE, this.programActions.get(index).getDuration() - 1); //fetch the duration from the DB for each program action
         return this.endDate.compareTo(referenceCalendar.getTime()) <= 0;
     }
 

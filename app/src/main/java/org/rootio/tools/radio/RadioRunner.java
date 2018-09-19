@@ -21,9 +21,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.util.Log;
 
+import com.esotericsoftware.kryo.util.Util;
+
 enum State {
     PLAYING, PAUSED, STOPPED
-};
+}
 
 @SuppressLint("SimpleDateFormat")
 public class RadioRunner implements Runnable, TelephonyEventNotifiable, ScheduleNotifiable, ScheduleChangeNotifiable {
@@ -43,7 +45,6 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
         this.setUpAlarming();
         this.listenForTelephonyEvents();
         this.listenForScheduleChangeNotifications();
-
     }
 
     private void listenForScheduleChangeNotifications() {
@@ -89,16 +90,17 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
         }
         this.runningProgramIndex = index;
         // Check to see that we are not in a phone call before launching program
+
         if (this.state != State.PAUSED) {
-            this.programs.get(index).run();
             this.state = State.PLAYING;
+            this.programs.get(index).run();
         }
     }
 
     /**
      * Pauses the running program
      */
-    public void pauseProgram() {
+    private void pauseProgram() {
         if (this.runningProgramIndex != null) {
             this.programs.get(this.runningProgramIndex).pause();
         }
@@ -107,7 +109,7 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
     /**
      * Resumes the program that is currently playing if it was paused before
      */
-    public void resumeProgram() {
+    private void resumeProgram() {
         if (this.runningProgramIndex != null) {
             this.programs.get(this.runningProgramIndex).resume();
         }
@@ -131,7 +133,6 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
 
     public void stop() {
         this.stopProgram(this.runningProgramIndex);
-
         this.finalize();
 
     }
@@ -236,10 +237,10 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
         String query = "select id, name, start, end, structure, programtypeid from scheduledprogram where date(start) = date(current_timestamp,'localtime')";
         String[] args = new String[]{};
         String[][] data = agent.getData(query, args);
-        ArrayList<Program> programs = new ArrayList<Program>();
-        for (int i = 0; i < data.length; i++) {
+        ArrayList<Program> programs = new ArrayList<>();
+        for(String[] row : data) {
             Program program;
-            program = new Program(this.parent, data[i][1], Utils.getDateFromString(data[i][2], "yyyy-MM-dd HH:mm:ss"), Utils.getDateFromString(data[i][3], "yyyy-MM-dd HH:mm:ss"), data[i][4]);
+            program = new Program(this.parent, row[1], Utils.getDateFromString(row[2], "yyyy-MM-dd HH:mm:ss"), Utils.getDateFromString(row[3], "yyyy-MM-dd HH:mm:ss"), row[4]);
             programs.add(program);
         }
         return programs;
@@ -248,13 +249,17 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
     @Override
     public void notifyTelephonyStatus(boolean isInCall) {
         if (isInCall) {
-            this.pauseProgram();
-            this.state = State.PAUSED;
+            //it is important to set and check state ASAP. These events may be fired more than once in quick succession
+            if(this.state != State.PAUSED) {
+                this.pauseProgram();
+                this.state = State.PAUSED;
+            }
         } else { // notification that the call has ended
             if (this.state == State.PAUSED) {
                 // The program had begun, it was paused by the call
-                this.resumeProgram();
                 this.state = State.PLAYING;
+                this.resumeProgram();
+
             }
         }
     }
@@ -262,6 +267,7 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
     @Override
     public boolean isExpired(int index) {
         Calendar referenceCalendar = Calendar.getInstance();
+        boolean isExpired = this.programs.get(index).getEndDate().compareTo(referenceCalendar.getTime()) <= 0;
         return this.programs.get(index).getEndDate().compareTo(referenceCalendar.getTime()) <= 0;
     }
 
