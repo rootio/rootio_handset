@@ -9,6 +9,7 @@ import org.rootio.tools.utils.Utils;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 
 /**
  * @author Jude Mukundane, M-ITI/IST-UL
@@ -29,9 +30,10 @@ public class StationHandler implements SynchronizationHandler {
     /**
      * Breaks down the information in the JSON file for program and schedule information
      *
-     * @param programDefinition The JSON program definition received from the cloud server
+     * @param synchronizationResponse The response returned from the cloud server
      */
     public void processJSONResponse(JSONObject synchronizationResponse) {
+        this.checkForSipConfigChange(synchronizationResponse.toString());
         //Lazy approach: save all JSON to prefs in one field, get it out and parse it later :-D
         ContentValues values  = new ContentValues();
         values.put("station_information", synchronizationResponse.toString());
@@ -42,6 +44,17 @@ public class StationHandler implements SynchronizationHandler {
     @Override
     public String getSynchronizationURL() {
         return String.format("http://%s:%s/%s/%s/information?api_key=%s", this.cloud.getServerAddress(), this.cloud.getHTTPPort(), "api/station", this.cloud.getStationId(), this.cloud.getServerKey());
+    }
+
+    private void checkForSipConfigChange(String newConfiguration)
+    {
+        //This is lazy -- any station change will result in re-registration. Ideal is to extract SIP components and compare them
+        String currentConfiguration = (String)Utils.getPreference("station_information", String.class, this.parent);
+        if(currentConfiguration == newConfiguration)
+        {
+            Intent intent = new Intent("org.rootio.handset.SIP.CONFIGURATION_CHANGE");
+            this.parent.sendBroadcast(intent);
+        }
     }
 
 }

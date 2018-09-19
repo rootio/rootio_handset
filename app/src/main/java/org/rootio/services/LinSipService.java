@@ -1,10 +1,16 @@
 package org.rootio.services;
 
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.IBinder;
+import android.util.Log;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.linphone.core.Address;
 import org.linphone.core.AuthInfo;
 import org.linphone.core.Call;
@@ -34,7 +40,7 @@ public class LinSipService extends Service implements ServiceInformationPublishe
     private boolean isSipRunning;
     private String stun;
     private Config profile;
-
+    private BroadcastReceiver br;
 
     @Override
     public void onCreate() {
@@ -48,11 +54,28 @@ public class LinSipService extends Service implements ServiceInformationPublishe
         if (!isRunning) {
             isRunning = true;
             this.register();
+            this.listenForConfigChange();
             Utils.doNotification(this, "RootIO", "LinSip Service Started");
             this.sendEventBroadcast();
         }
         this.startForeground(this.serviceId, Utils.getNotification(this, "RootIO", "LinSIP service is running", R.drawable.icon, false, null, null));
         return Service.START_STICKY;
+    }
+
+    private void listenForConfigChange() {
+        br = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (LinSipService.this.isRunning) {
+                    LinSipService.this.deregister();
+                    LinSipService.this.initializeStack();
+                    LinSipService.this.register();
+                }
+            }
+        };
+        IntentFilter fltr = new IntentFilter();
+        fltr.addAction("org.rootio.handset.SIP.CONFIGURATION_CHANGE");
+        this.registerReceiver(br, fltr);
     }
 
     @Override
@@ -76,18 +99,26 @@ public class LinSipService extends Service implements ServiceInformationPublishe
 
     @Override
     public void onDestroy() {
-      this.stopForeground(true);
-      this.shutDownService();
-      super.onDestroy();
+        this.stopForeground(true);
+        this.shutDownService();
+        super.onDestroy();
     }
 
 
     private void loadConfig() {
-        this.domain = (String)Utils.getPreference("org.rootio.handset.sip_domain", String.class, this);
-        this.username = (String)Utils.getPreference("org.rootio.handset.sip_username", String.class, this);
-        this.password = (String)Utils.getPreference("org.rootio.handset.sip_password", String.class, this);
-        this.stun = (String)Utils.getPreference("org.rootio.handset.sip_stun", String.class, this);
-         }
+        String stationInformation = (String)Utils.getPreference("station_information", String.class, this);
+        JSONObject stationJson = null;
+        try {
+            stationJson = new JSONObject(stationInformation);
+        JSONObject sipConfiguration = stationJson.optJSONObject("sip_configuration");
+        this.domain = sipConfiguration.optString("sip_domain");
+        this.username = sipConfiguration.optString("sip_username");
+        this.password = sipConfiguration.optString("sip_password");
+        this.stun = sipConfiguration.optString("sip_stun");
+        } catch (JSONException ex) {
+            Log.e(this.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(LinSipService.loadConfig)" : ex.getMessage());
+        }
+    }
 
     private NatPolicy createNatPolicy() {
         NatPolicy natPolicy = linphoneCore.createNatPolicy();
@@ -194,10 +225,8 @@ public class LinSipService extends Service implements ServiceInformationPublishe
                     }
                 }
             }).start();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-
+        } catch (Exception ex) {
+            Log.e(this.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(LinSipService.initializeStack)" : ex.getMessage());
         }
     }
 
@@ -213,14 +242,11 @@ public class LinSipService extends Service implements ServiceInformationPublishe
             this.linphoneCore.getDefaultProxyConfig().edit();
             this.linphoneCore.getDefaultProxyConfig().enableRegister(false);
             this.linphoneCore.getDefaultProxyConfig().done();
-            //this.isRunning = false;
-            //this.linphoneCore.clearProxyConfig(); //only thing similar to deregistration
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            //this.notifyRegistrationEvent(this.registrationState, null); //potential conflict of handling to the receiver
+          } catch (Exception ex) {
+            Log.e(this.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(LinSipService.deregister)" : ex.getMessage());
         }
     }
+
     /**
      * Process an incoming SIP call: Typically check the whitelist to make sure that the number is allowed to call this station
      */
@@ -260,6 +286,7 @@ public class LinSipService extends Service implements ServiceInformationPublishe
         if (this.isRunning) {
             this.isRunning = this.isSipRunning = false;
             this.deregister();
+            this.stopListeningForConfigChange();
             Utils.doNotification(this, "RootIO", "SIP Service Stopped");
             this.sendEventBroadcast();
         }
@@ -324,6 +351,10 @@ public class LinSipService extends Service implements ServiceInformationPublishe
             default: //handles 11 other states!
                 break;
         }
+    }
+
+    private void stopListeningForConfigChange() {
+        this.unregisterReceiver(br);
     }
 
     @Override
