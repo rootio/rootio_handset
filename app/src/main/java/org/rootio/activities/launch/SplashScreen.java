@@ -237,6 +237,7 @@ public class SplashScreen extends Activity {
                 String response = Utils.doPostHTTP(synchronizationUrl, handler.getSynchronizationData().toString());
                 try {
                     SplashScreen.this.progressDialog.dismiss();
+                    Utils.toastOnScreen(response, SplashScreen.this);
                     JSONObject responseJSON = new JSONObject(response);
                     handler.processJSONResponse(responseJSON);
                     Utils.toastOnScreen("Successfully connected to cloud server!", SplashScreen.this);

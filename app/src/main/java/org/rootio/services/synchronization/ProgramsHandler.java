@@ -59,7 +59,7 @@ public class ProgramsHandler implements SynchronizationHandler {
 
     @Override
     public String getSynchronizationURL() {
-        return String.format("http://%s:%s/api/station/%s/programs?api_key=%s&%s", cloud.getServerAddress(), cloud.getHTTPPort(), cloud.getStationId(), cloud.getServerKey(), this.getSincePart());
+        return String.format("https://%s:%s/api/station/%s/programs?api_key=%s&%s", cloud.getServerAddress(), cloud.getHTTPPort(), cloud.getStationId(), cloud.getServerKey(), this.getSincePart());
     }
 
     private String getSincePart() {

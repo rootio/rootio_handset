@@ -47,7 +47,7 @@ public class MusicListHandler implements SynchronizationHandler {
 
     @Override
     public String getSynchronizationURL() {
-        return String.format("http://%s:%s/api/station/%s/music?api_key=%s", cloud.getServerAddress(), cloud.getHTTPPort(), cloud.getStationId(), cloud.getServerKey());
+        return String.format("https://%s:%s/api/station/%s/music?api_key=%s", cloud.getServerAddress(), cloud.getHTTPPort(), cloud.getStationId(), cloud.getServerKey());
     }
 
     private JSONObject getSongList() {

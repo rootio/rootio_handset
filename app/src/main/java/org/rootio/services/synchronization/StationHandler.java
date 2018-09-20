@@ -43,16 +43,16 @@ public class StationHandler implements SynchronizationHandler {
 
     @Override
     public String getSynchronizationURL() {
-        return String.format("http://%s:%s/%s/%s/information?api_key=%s", this.cloud.getServerAddress(), this.cloud.getHTTPPort(), "api/station", this.cloud.getStationId(), this.cloud.getServerKey());
+        return String.format("https://%s:%s/%s/%s/information?api_key=%s", this.cloud.getServerAddress(), this.cloud.getHTTPPort(), "api/station", this.cloud.getStationId(), this.cloud.getServerKey());
     }
 
     private void checkForSipConfigChange(String newConfiguration)
     {
         //This is lazy -- any station change will result in re-registration. Ideal is to extract SIP components and compare them
         String currentConfiguration = (String)Utils.getPreference("station_information", String.class, this.parent);
-        if(currentConfiguration == newConfiguration)
+        if(!currentConfiguration.equals(newConfiguration))
         {
-            Intent intent = new Intent("org.rootio.handset.SIP.CONFIGURATION_CHANGE");
+             Intent intent = new Intent("org.rootio.handset.SIP.CONFIGURATION_CHANGE");
             this.parent.sendBroadcast(intent);
         }
     }

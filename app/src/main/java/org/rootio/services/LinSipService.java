@@ -111,8 +111,8 @@ public class LinSipService extends Service implements ServiceInformationPublishe
         String stationInformation = (String) Utils.getPreference("station_information", String.class, this);
         JSONObject stationJson = null;
         try {
-            stationJson = new JSONObject(stationInformation);
-            JSONObject sipConfiguration = stationJson.optJSONObject("sip_configuration");
+            stationJson = new JSONObject(stationInformation).optJSONObject("station");
+            JSONObject sipConfiguration = new JSONObject(stationJson.optString("sip_settings")); //optJSONObject("sip_settings"); the sip config is JSON as a string in a JSON file :-(
             this.domain = sipConfiguration.optString("sip_domain");
             this.username = sipConfiguration.optString("sip_username");
             this.password = sipConfiguration.optString("sip_password");
@@ -168,26 +168,28 @@ public class LinSipService extends Service implements ServiceInformationPublishe
     }
 
     void register() {
-        this.linphoneCore.removeListener(coreListener);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                //This is a strange flow, but for STUN/TURN to kick in, you need to register first, then unregister and register again!
-                //The registration triggers a stun update but it can only be used on next registration. That's what it looks like for now
-                //so, register for 1 sec, then re-register
+        if(this.linphoneCore!=null) { //LinPhone core can be null if initialized with wrong parameters!
+            this.linphoneCore.removeListener(coreListener);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    //This is a strange flow, but for STUN/TURN to kick in, you need to register first, then unregister and register again!
+                    //The registration triggers a stun update but it can only be used on next registration. That's what it looks like for now
+                    //so, register for 1 sec, then re-register
 
-                sipRegister();
-                try {
-                    linphoneCore.addListener(coreListener);
-                    Thread.sleep(1000);//too little and linphoneCore may not process our events due to backlog/network delay, too high and we sleep too long..
-                    deregister();
-                    Thread.sleep(1000);//too little and linphoneCore may not process our events due to backlog/network delay, too high and we sleep too long..
                     sipRegister();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    try {
+                        linphoneCore.addListener(coreListener);
+                        Thread.sleep(1000);//too little and linphoneCore may not process our events due to backlog/network delay, too high and we sleep too long..
+                        deregister();
+                        Thread.sleep(1000);//too little and linphoneCore may not process our events due to backlog/network delay, too high and we sleep too long..
+                        sipRegister();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
-            }
-        }).start();
+            }).start();
+        }
     }
 
     private void sipRegister() {

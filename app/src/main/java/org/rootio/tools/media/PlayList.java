@@ -309,7 +309,6 @@ public class PlayList implements Player.EventListener {
 
 
     private void onReceiveCallSign(String Url) {
-
         try {
 
             callSignPlayer = ExoPlayerFactory.newSimpleInstance(this.parent, new DefaultTrackSelector());
@@ -496,7 +495,7 @@ public class PlayList implements Player.EventListener {
             while (this.isRunning) {
                 try {
                     this.playCallSign();
-                    Thread.sleep(1200000);// 20 mins
+                    Thread.sleep(BuildConfig.DEBUG? 120000 : 720000);// 2 mins debug, 12 mins release
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
