@@ -86,7 +86,7 @@ public class SplashScreen extends Activity {
     private void askAllPermissions() {
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.READ_SMS, Manifest.permission.RECORD_AUDIO, Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ANSWER_PHONE_CALLS, Manifest.permission.READ_CONTACTS}, ALL_PERMISSIONS);
+                Manifest.permission.ANSWER_PHONE_CALLS, Manifest.permission.READ_CONTACTS, Manifest.permission.READ_CALL_LOG, Manifest.permission.ACCESS_FINE_LOCATION}, ALL_PERMISSIONS);
     }
 
     @Override
@@ -237,7 +237,6 @@ public class SplashScreen extends Activity {
                 String response = Utils.doPostHTTP(synchronizationUrl, handler.getSynchronizationData().toString());
                 try {
                     SplashScreen.this.progressDialog.dismiss();
-                    Utils.toastOnScreen(response, SplashScreen.this);
                     JSONObject responseJSON = new JSONObject(response);
                     handler.processJSONResponse(responseJSON);
                     Utils.toastOnScreen("Successfully connected to cloud server!", SplashScreen.this);

@@ -1,5 +1,13 @@
 package org.rootio.activities;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.MenuItem;
+import android.widget.ListView;
+
 import org.rootio.activities.cloud.CloudActivity;
 import org.rootio.activities.diagnostics.FrequencyActivity;
 import org.rootio.activities.services.ServiceExitInformable;
@@ -12,17 +20,6 @@ import org.rootio.services.Notifiable;
 import org.rootio.services.ProgramService;
 import org.rootio.services.ServiceConnectionAgent;
 import org.rootio.services.ServiceStopNotifiable;
-
-import android.app.Activity;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ListView;
 
 public class RadioActivity extends Activity implements Notifiable, ServiceExitInformable, ServiceStopNotifiable {
 

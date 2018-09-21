@@ -1,6 +1,5 @@
 package org.rootio.activities.launch;
 
-import android.Manifest;
 import android.app.AlertDialog;
 import android.app.TabActivity;
 import android.content.Context;
@@ -9,12 +8,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
-import android.text.Html;
 
 import org.rootio.activities.DiagnosticActivity;
 import org.rootio.activities.RadioActivity;
@@ -26,7 +25,6 @@ import org.rootio.activities.telephoneLog.TelephoneLogActivity;
 import org.rootio.handset.R;
 import org.rootio.services.DiagnosticsService;
 import org.rootio.services.LinSipService;
-import org.rootio.services.SipService;
 import org.rootio.services.ProgramService;
 import org.rootio.services.SMSService;
 import org.rootio.services.SynchronizationService;
@@ -154,7 +152,7 @@ public class LauncherActivity extends TabActivity  {
         }
     }
 
-    public void startServices() {
+    private void startServices() {
         for (int serviceId : new int[]{1, 2, 3, 4,5,6}) // only vitals
         {
             //ServiceState serviceState = new ServiceState(context, serviceId);

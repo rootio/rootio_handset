@@ -13,6 +13,7 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Map;
 
 import org.json.JSONObject;
 import org.rootio.handset.R;
@@ -275,6 +276,6 @@ public class Utils {
      */
     public static boolean isConnectedToStation(Context context) {
         SharedPreferences prefs = context.getSharedPreferences("org.rootio.handset", Context.MODE_PRIVATE);
-        return prefs != null && !prefs.getAll().isEmpty();
+        return prefs != null && prefs.contains("station_information");
      }
 }

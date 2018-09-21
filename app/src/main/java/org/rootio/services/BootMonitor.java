@@ -20,11 +20,11 @@ public class BootMonitor extends BroadcastReceiver {
         if(Utils.isConnectedToStation(context)) {
             for (int serviceId : new int[]{1, 2, 3, 4, 5, 6}) {
                 ServiceState serviceState = new ServiceState(context, serviceId);
-                if (serviceState.getServiceState() > 0)// service was started
-                {
+               // if (serviceState.getServiceState() > 0)// service was started
+               // {
                     Intent intent = this.getIntentToLaunch(context, serviceId);
                     context.startService(intent);
-                }
+               // }
             }
         }
 

@@ -49,11 +49,15 @@ public class StationHandler implements SynchronizationHandler {
     private void checkForSipConfigChange(String newConfiguration)
     {
         //This is lazy -- any station change will result in re-registration. Ideal is to extract SIP components and compare them
-        String currentConfiguration = (String)Utils.getPreference("station_information", String.class, this.parent);
-        if(!currentConfiguration.equals(newConfiguration))
-        {
-             Intent intent = new Intent("org.rootio.handset.SIP.CONFIGURATION_CHANGE");
-            this.parent.sendBroadcast(intent);
+        try {
+            String currentConfiguration = (String) Utils.getPreference("station_information", String.class, this.parent);
+            if (!currentConfiguration.equals(newConfiguration)) {
+                Intent intent = new Intent("org.rootio.handset.SIP.CONFIGURATION_CHANGE");
+                this.parent.sendBroadcast(intent);
+            }
+        }
+        catch(Exception ex){
+            //todo: log this
         }
     }
 

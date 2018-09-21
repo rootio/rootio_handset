@@ -2,6 +2,7 @@ package org.rootio.services;
 
 import org.rootio.tools.utils.Utils;
 
+import android.app.Application;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -11,14 +12,16 @@ public class UpgradeMonitor extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent arg1) {
         Utils.setContext(context);
+        if(Utils.isConnectedToStation(context))
+        {
         for (int serviceId : new int[]{1, 2, 3, 4, 5, 6}) {
             ServiceState serviceState = new ServiceState(context, serviceId);
-            if (serviceState.getServiceState() > 0)// service was started
-            {
+           // if (serviceState.getServiceState() > 0)// service was started
+           // {
                 Intent intent = this.getIntentToLaunch(context, serviceId);
                 context.startService(intent);
-            }
-        }
+           // }
+        }}
 
     }
 
