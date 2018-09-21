@@ -10,7 +10,7 @@ import android.util.Log;
 public class ScheduleBroadcastHandler extends BroadcastReceiver implements Runnable {
 
     private final ScheduleNotifiable notifiable;
-    private Integer currentIndex = null; // prevent initial assignment to 0
+    private Integer currentIndex = -1; // prevent initial assignment to 0
 
     public ScheduleBroadcastHandler(ScheduleNotifiable notifiable) {
         this.notifiable = notifiable;
@@ -31,7 +31,7 @@ public class ScheduleBroadcastHandler extends BroadcastReceiver implements Runna
     @Override
     public void onReceive(Context c, Intent i) {
         Integer possibleIndex = i.getIntExtra("index", 0);
-        if (possibleIndex == currentIndex) {
+        if (possibleIndex <= currentIndex) { //sometimes two programs will be started at the same time
             return; // intents are thrown twice sometimes
         }
         currentIndex = possibleIndex;

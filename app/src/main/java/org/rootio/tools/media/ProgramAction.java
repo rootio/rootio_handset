@@ -64,12 +64,17 @@ public class ProgramAction {
         switch (this.programActionType) {
             case Media:
             case Audio:
-                this.playlist.pause(false);
+                try {
+                    this.playlist.pause(false);
+                }
+                catch(Exception ex)
+                {
+                    //todo: log this
+                }
                 break;
             case Jingle:
                 break;
             case Outcall:
-                this.playlist.pause(false);
                 break;
             default:
                 break;
@@ -80,7 +85,13 @@ public class ProgramAction {
         switch (this.programActionType) {
             case Media:
             case Audio:
-                this.playlist.stop();
+                try {
+                    this.playlist.stop();
+                }
+                catch(Exception ex)
+            {
+                //todo: log this
+            }
                 break;
             case Jingle:
                 break;

@@ -48,45 +48,10 @@ public class SplashScreen extends Activity {
     final private int ALL_PERMISSIONS = 1;
     String listPermissionsNeededString;
 
-    private void checkPermissions() {
-        List<String> listPermissionsNeeded = new ArrayList<>();
-        int ValueStorage = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
-        int ValueContacts = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS);
-        int ValueAudio = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO);
-        int ValueLocation = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
-        int ValueCalls = ContextCompat.checkSelfPermission(this, Manifest.permission.ANSWER_PHONE_CALLS);
-        int ValueSMS = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_SMS);
-
-        if (ValueStorage != PackageManager.PERMISSION_GRANTED) {
-            listPermissionsNeeded.add("Manifest.permission.READ_EXTERNAL_STORAGE");
-        }
-        if (ValueContacts != PackageManager.PERMISSION_GRANTED) {
-            listPermissionsNeeded.add("Manifest.permission.READ_CONTACTS");
-        }
-        if (ValueAudio != PackageManager.PERMISSION_GRANTED) {
-            listPermissionsNeeded.add("Manifest.permission.RECORD_AUDIO");
-        }
-        if (ValueLocation != PackageManager.PERMISSION_GRANTED) {
-            listPermissionsNeeded.add("Manifest.permission.ACCESS_FINE_LOCATION");
-        }
-        if (ValueCalls != PackageManager.PERMISSION_GRANTED) {
-            listPermissionsNeeded.add("Manifest.permission.ANSWER_PHONE_CALLS");
-        }
-        if (ValueSMS != PackageManager.PERMISSION_GRANTED) {
-            listPermissionsNeeded.add("Manifest.permission.READ_SMS");
-        }
-        listPermissionsNeededString = TextUtils.join(", ", listPermissionsNeeded);
-    }
-
-    private void requestRemainingPermissions(String listPermissionsNeededString) {
-        ActivityCompat.requestPermissions(this, new String[]{listPermissionsNeededString}, ALL_PERMISSIONS);
-    }
-
-
     private void askAllPermissions() {
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.READ_SMS, Manifest.permission.RECORD_AUDIO, Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ANSWER_PHONE_CALLS, Manifest.permission.READ_CONTACTS, Manifest.permission.READ_CALL_LOG, Manifest.permission.ACCESS_FINE_LOCATION}, ALL_PERMISSIONS);
+                Manifest.permission.ANSWER_PHONE_CALLS, Manifest.permission.READ_CONTACTS, Manifest.permission.READ_CALL_LOG}, ALL_PERMISSIONS);
     }
 
     @Override
