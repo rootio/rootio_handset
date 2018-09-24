@@ -1,5 +1,6 @@
 package org.rootio.services.synchronization;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -31,7 +32,7 @@ public class ProgramsHandler implements SynchronizationHandler {
 
     @Override
     public void processJSONResponse(JSONObject synchronizationResponse) {
-        boolean hasChanges = false;
+        ArrayList<JSONObject> changes = new ArrayList<>();
         JSONArray results;
         try {
             results = synchronizationResponse.getJSONArray("scheduled_programs");
@@ -39,13 +40,27 @@ public class ProgramsHandler implements SynchronizationHandler {
             for (int i = 0; i < results.length(); i++) {
                 //if the record did not exist in the DB, then it is new ;-)
                 int recs = this.deleteRecord(results.getJSONObject(i).getLong("scheduled_program_id"));
-                hasChanges = recs < 1;
-                if (!results.getJSONObject(i).getBoolean("deleted")) {
-                    this.saveRecord(results.getJSONObject(i).getInt("scheduled_program_id"), results.getJSONObject(i).getString("name"), Utils.getDateFromString(results.getJSONObject(i).getString("start"), "yyyy-MM-dd'T'HH:mm:ss"), Utils.getDateFromString(results.getJSONObject(i).getString("end"), "yyyy-MM-dd'T'HH:mm:ss"), results.getJSONObject(i).getString("structure"), Utils.getDateFromString(results.getJSONObject(i).getString("updated_at"), "yyyy-MM-dd'T'HH:mm:ss"), results.getJSONObject(i).getString("program_type_id"));
+                if (recs < 1 || results.getJSONObject(i).getBoolean("deleted")) //new record, or deleted record!
+                {
+                    changes.add(results.getJSONObject(i));
                 }
+                this.saveRecord(results.getJSONObject(i).getInt("scheduled_program_id"), results.getJSONObject(i).getString("name"), Utils.getDateFromString(results.getJSONObject(i).getString("start"), "yyyy-MM-dd'T'HH:mm:ss"), Utils.getDateFromString(results.getJSONObject(i).getString("end"), "yyyy-MM-dd'T'HH:mm:ss"), results.getJSONObject(i).getString("structure"), Utils.getDateFromString(results.getJSONObject(i).getString("updated_at"), "yyyy-MM-dd'T'HH:mm:ss"), results.getJSONObject(i).getString("program_type_id"), results.getJSONObject(i).getBoolean("deleted"));
             }
-            if (hasChanges) { //TODO: call this only when changes affect schedule of the day
-                this.announceScheduleChange();
+            if (changes.size() > 0) {
+                Utils.toastOnScreen("changes found", this.parent);
+                Date today = Calendar.getInstance().getTime();
+                for (JSONObject change : changes) {
+                    Date changeDate = Utils.getDateFromString(change.getString("start"), "yyyy-MM-dd'T'HH:mm:ss");
+                    if (changeDate.getDate() == today.getDate() && changeDate.getMonth() == today.getMonth() && changeDate.getYear() == today.getYear()) // call this only when changes affect schedule of the day
+                    {
+                        Utils.toastOnScreen("Announcing", this.parent);
+                        this.announceScheduleChange();
+                    }
+                    else
+                    {
+                        Utils.toastOnScreen("Not today", this.parent);
+                    }
+                }
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -74,7 +89,7 @@ public class ProgramsHandler implements SynchronizationHandler {
         return String.format("updated_since=%s", Utils.getDateString(cal.getTime(), "yyyy-MM-dd'T'HH:mm:ss"));
     }
 
-    private long saveRecord(int id, String name, Date start, Date end, String structure, Date updatedAt, String programTypeId) {
+    private long saveRecord(int id, String name, Date start, Date end, String structure, Date updatedAt, String programTypeId, boolean deleted) {
         String tableName = "scheduledprogram";
         ContentValues data = new ContentValues();
         data.put("id", id);
@@ -84,6 +99,7 @@ public class ProgramsHandler implements SynchronizationHandler {
         data.put("structure", structure);
         data.put("programtypeid", programTypeId);
         data.put("updatedat", Utils.getDateString(updatedAt, "yyyy-MM-dd HH:mm:ss"));
+        data.put("deleted", deleted);
         return new DBAgent(this.parent).saveData(tableName, null, data);
     }
 

@@ -42,7 +42,7 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
 
     public RadioRunner(Context parent) {
         this.parent = parent;
-        this.setUpAlarming();
+        //this.setUpAlarming();
         this.listenForTelephonyEvents();
         this.listenForScheduleChangeNotifications();
     }
@@ -75,6 +75,7 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
     }
 
     private void initialiseSchedule() {
+        this.setUpAlarming();
         this.programs = fetchPrograms();
         this.schedulePrograms(programs);
     }
@@ -122,7 +123,7 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
          if (index != null) {
             try {
                 this.programs.get(this.runningProgramIndex).stop();
-            } catch (NullPointerException e) {
+            } catch (Exception e) {
                 Log.e(this.parent.getString(R.string.app_name), e.getMessage() == null ? "Null pointer exception(RadioRunner.stopProgram)" : e.getMessage());
             }
         }
@@ -206,7 +207,7 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
     private void addAlarmEvent(int index, Date startTime) {
         try {
             Intent intent = new Intent("org.rootio.RadioRunner" + String.valueOf(index));
-            intent.putExtra("index", index);
+             intent.putExtra("index", index);
             PendingIntent pi = PendingIntent.getBroadcast(parent, 0, intent, 0);
             this.am.set(AlarmManager.RTC_WAKEUP, startTime.getTime(), pi);
             this.pis.add(pi);
@@ -234,7 +235,7 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
      */
     private ArrayList<Program> fetchPrograms() {
         DBAgent agent = new DBAgent(this.parent);
-        String query = "select id, name, start, end, structure, programtypeid from scheduledprogram where date(start) = date(current_timestamp,'localtime')";
+        String query = "select id, name, start, end, structure, programtypeid from scheduledprogram where date(start) = date(current_timestamp,'localtime') and deleted = 0";
         String[] args = new String[]{};
         String[][] data = agent.getData(query, args);
         ArrayList<Program> programs = new ArrayList<>();
@@ -266,13 +267,19 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
 
     @Override
     public boolean isExpired(int index) {
+        try{
         Calendar referenceCalendar = Calendar.getInstance();
-        boolean isExpired = this.programs.get(index).getEndDate().compareTo(referenceCalendar.getTime()) <= 0;
-        return this.programs.get(index).getEndDate().compareTo(referenceCalendar.getTime()) <= 0;
+        return this.programs.get(index).getEndDate().compareTo(referenceCalendar.getTime()) <= 0;}
+        catch(Exception ex)
+        {
+            return true;
+        }
     }
 
     @Override
     public void notifyScheduleChange() {
+        this.stopProgram(this.runningProgramIndex);
+        this.parent.unregisterReceiver(br);
         this.resetSchedule();
         this.initialiseSchedule();
     }
