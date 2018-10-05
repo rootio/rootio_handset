@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.telephony.SmsMessage;
 
+import org.rootio.tools.utils.Utils;
+
 /**
  * This class is a listener for incoming SMS
  *
@@ -21,13 +23,17 @@ public class IncomingSMSReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Bundle bundle = intent.getExtras();
-        Object[] pdus = (Object[]) bundle.get("pdus");
-        for (int i = 0; i < pdus.length; i++) {
-            SmsMessage smsMessage = SmsMessage.createFromPdu((byte[]) pdus[i]);
-            this.incomingSMSNotifiable.notifyIncomingSMS(smsMessage);
+        try {
+            Bundle bundle = intent.getExtras();
+            Object[] pdus = (Object[]) bundle.get("pdus");
+            for (Object pdu : pdus) {
+                SmsMessage smsMessage = SmsMessage.createFromPdu((byte[]) pdu);
+                this.incomingSMSNotifiable.notifyIncomingSMS(smsMessage);
+            }
         }
+        catch (Exception ex){
 
+        }
     }
 
 }

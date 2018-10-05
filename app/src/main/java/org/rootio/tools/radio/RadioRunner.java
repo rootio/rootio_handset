@@ -117,6 +117,7 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
 
     /**
      * Stops the program that is currently running
+     *
      */
     public void stopProgram(Integer index) {
          if (index != null) {
@@ -190,7 +191,7 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
         // Schedule the program slots
         for (int i = 0; i < programs.size(); i++) {
             if(programs.get(i).isLocal()) { // no point scheduling non local progs
-                if(i == 0 || (i > 0 && programs.get(i).getStartDate() != programs.get(i-1).getStartDate())) //do not double schedule at same time.
+                if(i == 0 || (programs.get(i).getStartDate() != programs.get(i-1).getStartDate())) //do not double schedule at same time.
                 addAlarmEvent(i, programs.get(i).getStartDate());
             }
         }

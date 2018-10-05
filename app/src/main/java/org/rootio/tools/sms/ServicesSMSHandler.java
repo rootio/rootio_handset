@@ -2,10 +2,14 @@ package org.rootio.tools.sms;
 
 import org.rootio.handset.BuildConfig;
 import org.rootio.services.DiagnosticsService;
+import org.rootio.services.LinSipService;
 import org.rootio.services.Notifiable;
 import org.rootio.services.ProgramService;
+import org.rootio.services.SMSService;
 import org.rootio.services.ServiceConnectionAgent;
 import org.rootio.services.ServiceInformationPublisher;
+import org.rootio.services.SipService;
+import org.rootio.services.SynchronizationService;
 import org.rootio.services.TelephonyService;
 import org.rootio.tools.utils.Utils;
 
@@ -20,7 +24,7 @@ public class ServicesSMSHandler implements MessageProcessor, Notifiable {
     private final String[] messageParts;
     private ServiceConnectionAgent serviceConnectionAgent;
 
-    public ServicesSMSHandler(Context parent, String from, String[] messageParts) {
+    ServicesSMSHandler(Context parent, String from, String[] messageParts) {
         this.parent = parent;
         this.from = from;
         this.messageParts = messageParts;
@@ -123,7 +127,8 @@ public class ServicesSMSHandler implements MessageProcessor, Notifiable {
             case 1:
                 intent = new Intent(this.parent, TelephonyService.class);
                 break;
-            case 2: // the SMS service can not be stopped remotely
+            case 2:
+                intent = new Intent(this.parent, SMSService.class);
                 break;
             case 3:
                 intent = new Intent(this.parent, DiagnosticsService.class);
@@ -131,7 +136,11 @@ public class ServicesSMSHandler implements MessageProcessor, Notifiable {
             case 4:
                 intent = new Intent(this.parent, ProgramService.class);
                 break;
-            case 5: // not yet implemented
+            case 5:
+                intent = new Intent(this.parent, SynchronizationService.class);
+                break;
+            case 6:
+                intent = new Intent(this.parent, LinSipService.class);
                 break;
         }
         return intent;

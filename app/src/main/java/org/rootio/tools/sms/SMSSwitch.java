@@ -1,7 +1,5 @@
 package org.rootio.tools.sms;
 
-import org.rootio.tools.utils.Utils;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.telephony.SmsMessage;
@@ -35,9 +33,8 @@ public class SMSSwitch {
      * @return Array of strings representing tokens in the message
      */
     private String[] getMessageParts(String message) {
-        String[] parts = message.split("[|]");
-        return parts;
-    }
+        return message.split("[|]");
+     }
 
     /**
      * Examines the message parts and returns a suitable message processor to

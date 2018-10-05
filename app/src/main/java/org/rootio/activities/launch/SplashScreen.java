@@ -1,6 +1,3 @@
-/**
- *
- */
 package org.rootio.activities.launch;
 
 import java.io.File;
@@ -50,7 +47,7 @@ public class SplashScreen extends Activity {
 
     private void askAllPermissions() {
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
-                Manifest.permission.READ_SMS, Manifest.permission.RECORD_AUDIO, Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.READ_SMS,Manifest.permission.RECEIVE_SMS,Manifest.permission.SEND_SMS, Manifest.permission.RECORD_AUDIO, Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ANSWER_PHONE_CALLS, Manifest.permission.READ_CONTACTS, Manifest.permission.READ_CALL_LOG}, ALL_PERMISSIONS);
     }
 
@@ -140,23 +137,19 @@ public class SplashScreen extends Activity {
         this.finish();
     }
 
-    private void saveCloudInformation(int stationId, String stationKey, String serverAddress, int serverPort) throws Exception {
-        try {
+    private void saveCloudInformation(int stationId, String stationKey, String serverAddress, int serverPort){
             ContentValues cloudInformation = new ContentValues();
             cloudInformation.put("station_id", stationId);
             cloudInformation.put("station_key", stationKey);
             cloudInformation.put("server_IP", serverAddress);
             cloudInformation.put("server_port", serverPort);
             Utils.savePreferences(cloudInformation, this);
-        } catch (Exception e) {
-            throw e;
-        }
-    }
+         }
 
     private void copyDataFile(String fileName) {
         InputStream instr = null;
         FileOutputStream foutstr = null;
-        File destinationFile = null;
+        File destinationFile;
         try {
             instr = this.getAssets().open(fileName);
 

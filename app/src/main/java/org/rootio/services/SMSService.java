@@ -12,17 +12,17 @@ import android.os.IBinder;
 import android.telephony.SmsMessage;
 import android.util.Log;
 
+import static android.provider.Telephony.Sms.Intents.SMS_RECEIVED_ACTION;
+
 public class SMSService extends Service implements IncomingSMSNotifiable, ServiceInformationPublisher {
 
     private boolean isRunning;
     private final int serviceId = 2;
     private IncomingSMSReceiver incomingSMSReceiver;
-    private boolean wasStoppedOnPurpose = true;
 
     @Override
     public IBinder onBind(Intent arg0) {
-        BindingAgent bindingAgent = new BindingAgent(this);
-        return bindingAgent;
+       return new BindingAgent(this);
     }
 
     @Override
@@ -35,10 +35,11 @@ public class SMSService extends Service implements IncomingSMSNotifiable, Servic
     public int onStartCommand(Intent intent, int flags, int startID) {
         Utils.doNotification(this, "RootIO", "SMS Service started");
         IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction("android.provider.Telephony.SMS_RECEIVED");
+        intentFilter.addAction(SMS_RECEIVED_ACTION);
         this.registerReceiver(this.incomingSMSReceiver, intentFilter);
         this.isRunning = true;
         this.sendEventBroadcast();
+        this.startForeground(this.serviceId, Utils.getNotification(this, "RootIO", "SMS service is running", R.drawable.icon, false, null, null));
         return Service.START_STICKY;
     }
 
@@ -51,9 +52,10 @@ public class SMSService extends Service implements IncomingSMSNotifiable, Servic
 
     private void shutDownService() {
         if (this.isRunning) {
+            this.stopForeground(true);
             this.isRunning = false;
             try {
-                this.unregisterReceiver(this.incomingSMSReceiver);
+                 this.unregisterReceiver(this.incomingSMSReceiver);
             } catch (Exception ex) {
                 Log.e(this.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer" : ex.getMessage());
             }
