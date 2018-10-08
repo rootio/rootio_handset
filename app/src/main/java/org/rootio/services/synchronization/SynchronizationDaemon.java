@@ -46,7 +46,7 @@ public class SynchronizationDaemon implements Runnable {
     }
 
     private void synchronize() {
-        this.handler.postDelayed(new Runnable() {
+        this.handler.post(new Runnable() {
             @Override
             public void run() {
                 Thread thread = new Thread(new Runnable() {
@@ -80,18 +80,12 @@ public class SynchronizationDaemon implements Runnable {
                                 synchronize(new PlaylistHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud));
                     }
                 });
-                thread.start();
-                try {
-                    //if this sync is taking long, wait for at most 3 sync cycles to finish before scheduling next iteration
-                    thread.join(SynchronizationDaemon.this.getFrequency() * 1000 * 3);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                thread.start(); //TODO: fix synchronicity. if the interval is too short, next jobs will start before this finishes!
                 if (((SynchronizationService) SynchronizationDaemon.this.parent).isRunning()) { //the service might be stopped in between the scheduling and actual run of this job
-                    SynchronizationDaemon.this.handler.postDelayed(this, SynchronizationDaemon.this.getFrequency() * 1000);
+                        SynchronizationDaemon.this.handler.postDelayed(this, SynchronizationDaemon.this.getFrequency() * 1000);
                 }
             }
-        }, this.getFrequency() * 1000); //this is the first run. Maybe do not delay it..
+        }); //this is the first run. Maybe do not delay it..
 
     }
 

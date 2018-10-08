@@ -46,12 +46,11 @@ public class PlayList implements Player.EventListener {
     private CallSignProvider callSignProvider;
     private Context parent;
     private Uri currentMedia;
-   // private Media currentMedia;
+    // private Media currentMedia;
     private long mediaPosition;
     private MediaLibrary mediaLib;
     private boolean isShuttingDown;
     private Thread runnerThread;
-
 
 
     private PlayList() {
@@ -91,10 +90,10 @@ public class PlayList implements Player.EventListener {
     public void play() {
         startPlayer();
         this.callSignProvider.start();
-     }
+    }
 
     private void startPlayer() {
-       try {
+        try {
             AudioManager audioManager = (AudioManager) this.parent.getSystemService(Context.AUDIO_SERVICE);
             audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC) - (BuildConfig.DEBUG ? 7 : 2), AudioManager.FLAG_SHOW_UI);
 
@@ -145,17 +144,17 @@ public class PlayList implements Player.EventListener {
         this.playMedia(uri, 0L);
     }
 
-    private void    playMedia(Uri uri, long seekPosition) {
+    private void playMedia(Uri uri, long seekPosition) {
         //begin by raising the volume
         AudioManager audioManager = (AudioManager) this.parent.getSystemService(Context.AUDIO_SERVICE);
-        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC) - (BuildConfig.DEBUG ? 2 : 2), AudioManager.FLAG_SHOW_UI);
+        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC) - (BuildConfig.DEBUG ? 7 : 2), AudioManager.FLAG_SHOW_UI);
 
 
         mediaPlayer = ExoPlayerFactory.newSimpleInstance(this.parent, new DefaultTrackSelector());
         mediaPlayer.addListener(this);
         mediaPlayer.prepare(this.getMediaSource(uri));
+        mediaPlayer.setVolume(BuildConfig.DEBUG ? 0.5F : 1.0F); //this is the volume of the individual player, not the music service of the phone
         mediaPlayer.setPlayWhenReady(true);
-        mediaPlayer.setVolume(BuildConfig.DEBUG ? 0.5f : 1.0f); //this is the volume of the individual player, not the music service of the phone
         //mediaPlayer.seekTo(seekPosition); this trips streams...
 
     }
@@ -195,7 +194,7 @@ public class PlayList implements Player.EventListener {
     }
 
     private void fadeOut() {
-        float volume = BuildConfig.DEBUG ? 1.0f : 1.0f;
+        float volume = BuildConfig.DEBUG ? 0.5F : 1.0F;
         while (volume > 0) {
             volume = volume - 0.05F;
             mediaPlayer.setVolume(volume);
@@ -224,9 +223,7 @@ public class PlayList implements Player.EventListener {
                     this.mediaPosition = this.mediaPlayer.getCurrentPosition();
                     mediaPlayer.stop(true); //advised that media players should never be reused, even in pause/play scenarios
                     mediaPlayer.release();
-                }
-                catch(Exception ex)
-                {
+                } catch (Exception ex) {
                     //ok TODO: Log this
                 }
 
@@ -234,9 +231,7 @@ public class PlayList implements Player.EventListener {
                     //stop the call sign player as well
                     this.callSignPlayer.stop(true); //this thread is sleeping! TODO: interrupt it
                     this.callSignPlayer.release();
-                }
-                catch(Exception ex)
-                {
+                } catch (Exception ex) {
                     //ok too. TODO: log this
                 }
 
@@ -250,6 +245,7 @@ public class PlayList implements Player.EventListener {
 
     /**
      * Resumes playback after it has been paused
+     *
      * @deprecated .This method should be called if you want to resume the media that was playing at the time the playlist was paused.
      * THis was deprecated in favor of stopping and restarting the playlist
      * However streams take care of themselves and for songs, another song will be chosen, so no big deal
@@ -258,7 +254,7 @@ public class PlayList implements Player.EventListener {
 
     public void resume() {
         try {
-           this.playMedia(currentMedia, this.mediaPosition);
+            this.playMedia(currentMedia, this.mediaPosition);
 
 
             // resume the callSign provider
@@ -279,16 +275,16 @@ public class PlayList implements Player.EventListener {
             String[][] data = dbagent.getData(query, args);
             for (String[] record : data) {
 
-                switch(record[2]){
+                switch (record[2]) {
                     case "1"://songs
-                    media.add(this.mediaLib.getMedia(record[1]));
-                    break;
+                        media.add(this.mediaLib.getMedia(record[1]));
+                        break;
                     case "2":// albums
-                    media.addAll(this.mediaLib.getMediaForAlbum(record[1]));
-                    break;
+                        media.addAll(this.mediaLib.getMediaForAlbum(record[1]));
+                        break;
                     case "3":// artists
-                    media.addAll(this.mediaLib.getMediaForArtist(record[1]));
-                    break;
+                        media.addAll(this.mediaLib.getMediaForArtist(record[1]));
+                        break;
                 }
             }
         }
@@ -335,7 +331,7 @@ public class PlayList implements Player.EventListener {
                     switch (playbackState) {
                         case Player.STATE_ENDED:
                             try {
-                                PlayList.this.mediaPlayer.setVolume(BuildConfig.DEBUG ? 1.0f : 1.0f);
+                                PlayList.this.mediaPlayer.setVolume(BuildConfig.DEBUG ? 0.5F : 1.0F);
                                 callSignPlayer.removeListener(this);
                                 callSignPlayer.release();
                             } catch (Exception ex) {
@@ -373,11 +369,11 @@ public class PlayList implements Player.EventListener {
 
                 @Override
                 public void onSeekProcessed() {
- 
+
                 }
             });
             this.mediaPlayer.setVolume(0.07f);
-            callSignPlayer.setVolume(1.0f);
+            callSignPlayer.setVolume(BuildConfig.DEBUG ? 0.5F : 1.0F);
             callSignPlayer.prepare(this.getMediaSource(Uri.fromFile(new File(Url))));
             this.callSignPlayer.setPlayWhenReady(true);
         } catch (Exception ex) {
@@ -415,14 +411,14 @@ public class PlayList implements Player.EventListener {
         switch (playbackState) {
             case Player.STATE_READY:
                 try {
-                    if (this.callSignPlayer != null || this.callSignPlayer.getPlaybackState() == Player.STATE_READY) {
+                    if (this.callSignPlayer != null && this.callSignPlayer.getPlaybackState() == Player.STATE_READY) {
                         this.mediaPlayer.setVolume(0.07f);
                     } else {
-                        this.mediaPlayer.setVolume(BuildConfig.DEBUG ? 1.0f : 1.0f);
+                        this.mediaPlayer.setVolume(BuildConfig.DEBUG ? 0.5F : 1.0F);
                     }
 
                 } catch (Exception ex) {
-                    this.mediaPlayer.setVolume(BuildConfig.DEBUG ? 1.0f : 1.0f);
+                    this.mediaPlayer.setVolume(BuildConfig.DEBUG ? 0.5F : 1.0F);
                 }
                 break;
             case Player.STATE_ENDED: //a song has ended
@@ -495,7 +491,7 @@ public class PlayList implements Player.EventListener {
             while (this.isRunning) {
                 try {
                     this.playCallSign();
-                    Thread.sleep(BuildConfig.DEBUG? 120000 : 720000);// 2 mins debug, 12 mins release
+                    Thread.sleep(BuildConfig.DEBUG ? 120000 : 720000);// 2 mins debug, 12 mins release
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -505,8 +501,7 @@ public class PlayList implements Player.EventListener {
 
         void stop() {
             this.isRunning = false;
-            if(PlayList.this.runnerThread != null)
-            {
+            if (PlayList.this.runnerThread != null) {
                 PlayList.this.runnerThread.interrupt(); //so the thread can exit on state change, otherwise could sleep through on->off->on
             }
         }

@@ -6,8 +6,8 @@ android {
         applicationId "org.rootio.handset"
         minSdkVersion 26
         targetSdkVersion 26
-        versionCode 15
-        versionName "Danubian Summer"
+        versionCode 16
+        versionName "Automna"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
