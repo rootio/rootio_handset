@@ -28,11 +28,12 @@ public class Cloud {
         this.loadCloudInfo();
     }
 
-    public Cloud(Context context, String serverAddress, int HTTPPort, int stationId) {
+    public Cloud(Context context, String serverAddress, int HTTPPort, int stationId, String serverKey) {
         this.parent = context;
         this.HTTPPort = HTTPPort;
         this.serverAddress = serverAddress;
         this.stationId = stationId;
+        this.serverKey = serverKey;
     }
 
     /**

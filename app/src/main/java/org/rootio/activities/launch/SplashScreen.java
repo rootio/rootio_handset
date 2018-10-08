@@ -107,7 +107,8 @@ public class SplashScreen extends Activity {
                 int stationId = Integer.parseInt(((EditText) this.findViewById(R.id.stationIdEt)).getText().toString());
                 String serverAddress = ((EditText) this.findViewById(R.id.serverAddressEt)).getText().toString();
                 int serverPort = Integer.parseInt(((EditText) this.findViewById(R.id.serverPortEt)).getText().toString());
-                this.synchronize(new StationHandler(this, new Cloud(this, serverAddress, serverPort, stationId)));
+                String serverKey = ((EditText) this.findViewById(R.id.stationKeyEt)).getText().toString();
+                this.synchronize(new StationHandler(this, new Cloud(this, serverAddress, serverPort, stationId, serverKey)));
             } catch (NumberFormatException e) {
                 Utils.warnOnScreen(this, "Station ID and Port number should be Integers");
             } catch (Exception e) {
