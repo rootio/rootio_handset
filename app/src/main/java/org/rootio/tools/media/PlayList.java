@@ -95,7 +95,7 @@ public class PlayList implements Player.EventListener {
     private void startPlayer() {
         try {
             AudioManager audioManager = (AudioManager) this.parent.getSystemService(Context.AUDIO_SERVICE);
-            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC) - (BuildConfig.DEBUG ? 5 : 5), AudioManager.FLAG_SHOW_UI);
+            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC) - (BuildConfig.DEBUG ? 5 : 6), AudioManager.FLAG_SHOW_UI);
 
             if (streamIterator.hasNext()) {
                 String stream = this.streamIterator.next();
@@ -147,13 +147,13 @@ public class PlayList implements Player.EventListener {
     private void playMedia(Uri uri, long seekPosition) {
         //begin by raising the volume
         AudioManager audioManager = (AudioManager) this.parent.getSystemService(Context.AUDIO_SERVICE);
-        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC) - (BuildConfig.DEBUG ? 5 : 5), AudioManager.FLAG_SHOW_UI);
+        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC) - (BuildConfig.DEBUG ? 5 : 6), AudioManager.FLAG_SHOW_UI);
 
 
         mediaPlayer = ExoPlayerFactory.newSimpleInstance(this.parent, new DefaultTrackSelector());
         mediaPlayer.addListener(this);
         mediaPlayer.prepare(this.getMediaSource(uri));
-        mediaPlayer.setVolume(BuildConfig.DEBUG ? 0.5F : 0.8F); //this is the volume of the individual player, not the music service of the phone
+        mediaPlayer.setVolume(BuildConfig.DEBUG ? 0.5F : 0.9F); //this is the volume of the individual player, not the music service of the phone
         mediaPlayer.setPlayWhenReady(true);
         //mediaPlayer.seekTo(seekPosition); this trips streams...
 
@@ -194,7 +194,7 @@ public class PlayList implements Player.EventListener {
     }
 
     private void fadeOut() {
-        float volume = BuildConfig.DEBUG ? 0.5F : 0.8F;
+        float volume = BuildConfig.DEBUG ? 0.5F : 0.9F;
         while (volume > 0) {
             volume = volume - 0.05F;
             mediaPlayer.setVolume(volume);
@@ -331,7 +331,7 @@ public class PlayList implements Player.EventListener {
                     switch (playbackState) {
                         case Player.STATE_ENDED:
                             try {
-                                PlayList.this.mediaPlayer.setVolume(BuildConfig.DEBUG ? 0.5F : 0.8F);
+                                PlayList.this.mediaPlayer.setVolume(BuildConfig.DEBUG ? 0.5F : 0.9F);
                                 callSignPlayer.removeListener(this);
                                 callSignPlayer.release();
                             } catch (Exception ex) {
@@ -373,7 +373,7 @@ public class PlayList implements Player.EventListener {
                 }
             });
             this.mediaPlayer.setVolume(0.07f);
-            callSignPlayer.setVolume(BuildConfig.DEBUG ? 0.5F : 0.8F);
+            callSignPlayer.setVolume(BuildConfig.DEBUG ? 0.5F : 0.9F);
             callSignPlayer.prepare(this.getMediaSource(Uri.fromFile(new File(Url))));
             this.callSignPlayer.setPlayWhenReady(true);
         } catch (Exception ex) {
@@ -414,11 +414,11 @@ public class PlayList implements Player.EventListener {
                     if (this.callSignPlayer != null && this.callSignPlayer.getPlaybackState() == Player.STATE_READY) {
                         this.mediaPlayer.setVolume(0.07f);
                     } else {
-                        this.mediaPlayer.setVolume(BuildConfig.DEBUG ? 0.5F : 0.8F);
+                        this.mediaPlayer.setVolume(BuildConfig.DEBUG ? 0.5F : 0.9F);
                     }
 
                 } catch (Exception ex) {
-                    this.mediaPlayer.setVolume(BuildConfig.DEBUG ? 0.5F : 0.8F);
+                    this.mediaPlayer.setVolume(BuildConfig.DEBUG ? 0.5F : 0.9F);
                 }
                 break;
             case Player.STATE_ENDED: //a song has ended

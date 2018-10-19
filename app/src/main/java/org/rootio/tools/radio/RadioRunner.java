@@ -42,7 +42,7 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
 
     public RadioRunner(Context parent) {
         this.parent = parent;
-        this.setUpAlarming();
+        //this.setUpAlarming();
         this.listenForTelephonyEvents();
         this.listenForScheduleChangeNotifications();
     }
@@ -75,6 +75,7 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
     }
 
     private void initialiseSchedule() {
+        this.setUpAlarming();
         this.programs = fetchPrograms();
         this.schedulePrograms(programs);
     }
@@ -235,7 +236,7 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
      */
     private ArrayList<Program> fetchPrograms() {
         DBAgent agent = new DBAgent(this.parent);
-        String query = "select id, name, start, end, structure, programtypeid from scheduledprogram where date(start) = date(current_timestamp,'localtime')";
+        String query = "select id, name, start, end, structure, programtypeid from scheduledprogram where date(start) = date(current_timestamp,'localtime') and not deleted";
         String[] args = new String[]{};
         String[][] data = agent.getData(query, args);
         ArrayList<Program> programs = new ArrayList<>();
@@ -274,6 +275,9 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
 
     @Override
     public void notifyScheduleChange() {
+        this.stopProgram(this.runningProgramIndex);
+        this.runningProgramIndex = null;
+        this.parent.unregisterReceiver(br);
         this.resetSchedule();
         this.initialiseSchedule();
     }

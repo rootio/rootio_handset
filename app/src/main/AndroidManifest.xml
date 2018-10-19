@@ -73,7 +73,7 @@
                 <action android:name="android.provider.Telephony.SMS_RECEIVED"/>
             </intent-filter>
         </receiver>
-        <receiver android:name="org.rootio.services.UpgradeMonitor">
+        <receiver android:name="org.rootio.services.UpgradeMonitor"  android:enabled="true"   android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
             </intent-filter>

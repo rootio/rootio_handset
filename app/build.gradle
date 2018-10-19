@@ -6,8 +6,8 @@ android {
         applicationId "org.rootio.handset"
         minSdkVersion 26
         targetSdkVersion 26
-        versionCode 16
-        versionName "Automna"
+        versionCode 17
+        versionName "Automna Ku Bo"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

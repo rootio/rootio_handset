@@ -39,16 +39,28 @@ public class ProgramsHandler implements SynchronizationHandler {
             for (int i = 0; i < results.length(); i++) {
                 //if the record did not exist in the DB, then it is new ;-)
                 int recs = this.deleteRecord(results.getJSONObject(i).getLong("scheduled_program_id"));
-                hasChanges = recs < 1;
-                if (!results.getJSONObject(i).getBoolean("deleted")) {
-                    this.saveRecord(results.getJSONObject(i).getInt("scheduled_program_id"), results.getJSONObject(i).getString("name"), Utils.getDateFromString(results.getJSONObject(i).getString("start"), "yyyy-MM-dd'T'HH:mm:ss"), Utils.getDateFromString(results.getJSONObject(i).getString("end"), "yyyy-MM-dd'T'HH:mm:ss"), results.getJSONObject(i).getString("structure"), Utils.getDateFromString(results.getJSONObject(i).getString("updated_at"), "yyyy-MM-dd'T'HH:mm:ss"), results.getJSONObject(i).getString("program_type_id"));
+                if ((recs < 1 || results.getJSONObject(i).getBoolean("deleted")) && (isCurrentOrFutureChange(results.getJSONObject(i).getString("start"), results.getJSONObject(i).getString("end")))) {
+                    hasChanges = true;
                 }
+                this.saveRecord(results.getJSONObject(i).getInt("scheduled_program_id"), results.getJSONObject(i).getString("name"), Utils.getDateFromString(results.getJSONObject(i).getString("start"), "yyyy-MM-dd'T'HH:mm:ss"), Utils.getDateFromString(results.getJSONObject(i).getString("end"), "yyyy-MM-dd'T'HH:mm:ss"), results.getJSONObject(i).getString("structure"), Utils.getDateFromString(results.getJSONObject(i).getString("updated_at"), "yyyy-MM-dd'T'HH:mm:ss"), results.getJSONObject(i).getString("program_type_id"), results.getJSONObject(i).getBoolean("deleted"));
             }
-            if (hasChanges) { //TODO: call this only when changes affect schedule of the day
+            if (hasChanges) {
                 this.announceScheduleChange();
             }
         } catch (JSONException e) {
             e.printStackTrace();
+        }
+    }
+
+    private boolean isCurrentOrFutureChange(String startDateStr, String endDateStr) {
+        try {
+            Date now = Calendar.getInstance().getTime();
+            Date startDate = Utils.getDateFromString(startDateStr, "yyyy-MM-dd'T'HH:mm:ss");
+            Date endDate = Utils.getDateFromString(endDateStr, "yyyy-MM-dd'T'HH:mm:ss");
+            Boolean isToday = now.getYear() == startDate.getYear() && now.getMonth() == startDate.getMonth() && now.getDate() == startDate.getDate();
+            return (isToday && startDate.compareTo(now) >= 0) || (startDate.compareTo(now) <= 0 && endDate.compareTo(now) >= 0); //yet to begin today, or is running
+        } catch (Exception ex) {
+            return false;
         }
     }
 
@@ -74,7 +86,7 @@ public class ProgramsHandler implements SynchronizationHandler {
         return String.format("updated_since=%s", Utils.getDateString(cal.getTime(), "yyyy-MM-dd'T'HH:mm:ss"));
     }
 
-    private long saveRecord(int id, String name, Date start, Date end, String structure, Date updatedAt, String programTypeId) {
+    private long saveRecord(int id, String name, Date start, Date end, String structure, Date updatedAt, String programTypeId, Boolean deleted) {
         String tableName = "scheduledprogram";
         ContentValues data = new ContentValues();
         data.put("id", id);
@@ -84,6 +96,7 @@ public class ProgramsHandler implements SynchronizationHandler {
         data.put("structure", structure);
         data.put("programtypeid", programTypeId);
         data.put("updatedat", Utils.getDateString(updatedAt, "yyyy-MM-dd HH:mm:ss"));
+        data.put("deleted", deleted);
         return new DBAgent(this.parent).saveData(tableName, null, data);
     }
 
