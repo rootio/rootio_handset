@@ -1,1 +1,1 @@
-include ':app', ':extension-flac1'
+include ':app', ':extension-flac1', ':exoplayer-core-2.8.2'

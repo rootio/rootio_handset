@@ -9,6 +9,7 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/exoplayer-core-2.8.2" />
             <option value="$PROJECT_DIR$/extension-flac1" />
           </set>
         </option>
