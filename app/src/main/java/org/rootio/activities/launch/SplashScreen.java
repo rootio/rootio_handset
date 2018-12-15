@@ -20,6 +20,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.content.DialogInterface;
@@ -48,7 +49,7 @@ public class SplashScreen extends Activity {
     private void askAllPermissions() {
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.READ_SMS,Manifest.permission.RECEIVE_SMS,Manifest.permission.SEND_SMS, Manifest.permission.RECORD_AUDIO, Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ANSWER_PHONE_CALLS, Manifest.permission.READ_CONTACTS, Manifest.permission.READ_CALL_LOG}, ALL_PERMISSIONS);
+                Manifest.permission.ANSWER_PHONE_CALLS, Manifest.permission.READ_CONTACTS, Manifest.permission.READ_CALL_LOG, Manifest.permission.CHANGE_WIFI_STATE}, ALL_PERMISSIONS);
     }
 
     @Override
@@ -192,6 +193,7 @@ public class SplashScreen extends Activity {
 
             @Override
             public void run() {
+                Looper.prepare();
                 String synchronizationUrl = handler.getSynchronizationURL();
                 String response = Utils.doPostHTTP(synchronizationUrl, handler.getSynchronizationData().toString());
                 try {

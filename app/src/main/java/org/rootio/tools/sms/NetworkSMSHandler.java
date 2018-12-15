@@ -36,7 +36,7 @@ public class NetworkSMSHandler implements MessageProcessor {
 
         if (messageParts[1].equals("wifi")) {
             if (messageParts[2].equals("on") || messageParts[2].equals("off")) {
-                return this.toggleWifi(messageParts[3]);
+                return this.toggleWifi(messageParts[2]);
             }
 
             if (messageParts[2].equals("status")) {
