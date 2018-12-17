@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.media.AudioManager;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -39,6 +40,7 @@ public class LinSipService extends Service implements ServiceInformationPublishe
     private boolean isSipRunning;
     private Config profile;
     private BroadcastReceiver br;
+    private int callVolume;
 
     @Override
     public void onCreate() {
@@ -117,6 +119,11 @@ public class LinSipService extends Service implements ServiceInformationPublishe
             this.username = sipConfiguration.optString("sip_username");
             this.password = sipConfiguration.optString("sip_password");
             this.stun = sipConfiguration.optString("sip_stun");
+            this.callVolume = sipConfiguration.optInt("call_volume", 5);
+            if (this.callVolume <= 0 || this.callVolume > 5) //unacceptable values
+            {
+                this.callVolume = 5;
+            }
         } catch (JSONException ex) {
             Log.e(this.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(LinSipService.loadConfig)" : ex.getMessage());
         }
@@ -168,7 +175,7 @@ public class LinSipService extends Service implements ServiceInformationPublishe
     }
 
     void register() {
-        if(this.linphoneCore!=null) { //LinPhone core can be null if initialized with wrong parameters!
+        if (this.linphoneCore != null) { //LinPhone core can be null if initialized with wrong parameters!
             this.linphoneCore.removeListener(coreListener);
             new Thread(new Runnable() {
                 @Override
@@ -278,9 +285,13 @@ public class LinSipService extends Service implements ServiceInformationPublishe
     /**
      * Answer a SIP call that has been taken over by this service
      */
-    public void answer(Call call) {
+    public void answer(final Call call) {
         try {
             call.accept();
+            call.setSpeakerVolumeGain(1.0f);
+            // adjust the volume of the telephony stream
+            AudioManager audioManager = (AudioManager) LinSipService.this.getSystemService(Context.AUDIO_SERVICE);
+            audioManager.setStreamVolume(AudioManager.STREAM_VOICE_CALL, this.callVolume, AudioManager.FLAG_SHOW_UI);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -321,11 +332,10 @@ public class LinSipService extends Service implements ServiceInformationPublishe
         switch (callState) {
             case End:
                 this.inCall = false;
-                if(isPendingRestart)
-                {
+                if (isPendingRestart) {
                     this.deregister();
                     this.initializeStack();
-                   this.register();
+                    this.register();
                     isPendingRestart = false;
                 }
                 this.sendTelephonyEventBroadcast(false);
@@ -336,13 +346,12 @@ public class LinSipService extends Service implements ServiceInformationPublishe
                 break;
             case Error:
                 this.inCall = false;
-                if(isPendingRestart)
-                {
+                if (isPendingRestart) {
                     this.deregister();
                     this.initializeStack();
                     this.register();
                     isPendingRestart = false;
-                }   
+                }
                 this.sendTelephonyEventBroadcast(false);
                 if (call != null) //not being sent au moment
                 {
