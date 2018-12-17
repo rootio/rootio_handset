@@ -19,6 +19,8 @@ import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.rootio.handset.BuildConfig;
 import org.rootio.handset.R;
 import org.rootio.tools.persistence.DBAgent;
@@ -51,6 +53,7 @@ public class PlayList implements Player.EventListener {
     private MediaLibrary mediaLib;
     private boolean isShuttingDown;
     private Thread runnerThread;
+    private int maxVolume;
 
 
     private PlayList() {
@@ -88,6 +91,7 @@ public class PlayList implements Player.EventListener {
      * Play the media loaded in this playlist
      */
     public void play() {
+        this.maxVolume = this.getMaxVolume();
         startPlayer();
         this.callSignProvider.start();
     }
@@ -95,7 +99,7 @@ public class PlayList implements Player.EventListener {
     private void startPlayer() {
         try {
             AudioManager audioManager = (AudioManager) this.parent.getSystemService(Context.AUDIO_SERVICE);
-            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC) - (BuildConfig.DEBUG ? 5 : 6), AudioManager.FLAG_SHOW_UI);
+            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, this.maxVolume, AudioManager.FLAG_SHOW_UI);
 
             if (streamIterator.hasNext()) {
                 String stream = this.streamIterator.next();
@@ -147,7 +151,7 @@ public class PlayList implements Player.EventListener {
     private void playMedia(Uri uri, long seekPosition) {
         //begin by raising the volume
         AudioManager audioManager = (AudioManager) this.parent.getSystemService(Context.AUDIO_SERVICE);
-        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC) - (BuildConfig.DEBUG ? 5 : 6), AudioManager.FLAG_SHOW_UI);
+        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, this.maxVolume, AudioManager.FLAG_SHOW_UI);
 
 
         mediaPlayer = ExoPlayerFactory.newSimpleInstance(this.parent, new DefaultTrackSelector());
@@ -525,6 +529,24 @@ public class PlayList implements Player.EventListener {
             PlayList.this.runnerThread.start();
 
         }
+    }
+
+    private int getMaxVolume()
+    {
+        String stationInfo = (String)Utils.getPreference("station_information", String.class, this.parent);
+        try {
+            JSONObject stationInfoJson = new JSONObject(stationInfo);
+            if(stationInfoJson.has("media_volume"))
+            {
+                int volume = stationInfoJson.getInt("media_volume");
+                return volume >= 0 && volume <= 15 ? volume : 8;
+            }
+            else
+                return 8;
+        } catch (Exception ex) {
+            Log.e(PlayList.this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(PlayList.playCallSign)" : ex.getMessage());
+        }
+        return 8;
     }
 
 }
