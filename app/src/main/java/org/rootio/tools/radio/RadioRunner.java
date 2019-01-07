@@ -39,6 +39,7 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
     private State state;
     private TelephonyEventBroadcastReceiver telephonyEventBroadcastReceiver;
     private ScheduleChangeBroadcastHandler scheduleChangeNotificationReceiver;
+    private boolean isPendingScheduleReload;
 
     public RadioRunner(Context parent) {
         this.parent = parent;
@@ -74,7 +75,7 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
         initialiseSchedule();
     }
 
-    private void initialiseSchedule() {
+    private void  initialiseSchedule() {
         this.setUpAlarming();
         this.programs = fetchPrograms();
         this.schedulePrograms(programs);
@@ -86,6 +87,11 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
      * @param index The index of the program to run
      */
     public synchronized void runProgram(int index) {
+        if(this.isPendingScheduleReload)
+        {
+            this.isPendingScheduleReload = false;
+            this.restartProgramming();
+        }
         if (this.runningProgramIndex != null && !this.isExpired(this.runningProgramIndex)) {
             this.stopProgram(this.runningProgramIndex);
         }
@@ -274,7 +280,17 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
     }
 
     @Override
-    public void notifyScheduleChange() {
+    public void notifyScheduleChange(boolean shouldRestart) {
+        if(shouldRestart) {
+            restartProgramming();
+        }
+        else
+        {
+            this.isPendingScheduleReload = true;
+        }
+    }
+
+    private void restartProgramming() {
         this.stopProgram(this.runningProgramIndex);
         this.runningProgramIndex = null;
         this.parent.unregisterReceiver(br);
