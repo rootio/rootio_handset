@@ -39,7 +39,6 @@ import java.util.Iterator;
 public class PlayList implements Player.EventListener {
 
     private static PlayList playListInstance;
-    private ProgramActionType programActionType;
     private ArrayList<String> playlists, streams;
     private HashSet<Media> mediaList;
     private Iterator<Media> mediaIterator;
@@ -74,7 +73,6 @@ public class PlayList implements Player.EventListener {
         this.streams = streams;
         this.parent = parent;
         this.mediaLib = new MediaLibrary(this.parent);
-        this.programActionType = programActionType;
         this.callSignProvider = new CallSignProvider();
     }
 

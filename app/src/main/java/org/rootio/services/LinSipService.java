@@ -21,6 +21,7 @@ import org.linphone.core.Factory;
 import org.linphone.core.NatPolicy;
 import org.linphone.core.ProxyConfig;
 import org.linphone.core.RegistrationState;
+import org.linphone.core.TransportType;
 import org.linphone.core.Transports;
 import org.rootio.handset.R;
 import org.rootio.services.SIP.SipEventsNotifiable;
@@ -30,14 +31,14 @@ import org.rootio.tools.utils.Utils;
 public class LinSipService extends Service implements ServiceInformationPublisher, SipEventsNotifiable {
 
     private final int serviceId = 6;
+    private int port, reRegisterPeriod;
     private Core linphoneCore;
     private AuthInfo authInfo;
     private ProxyConfig proxyConfig;
-    private String username, password, domain, stun;
+    private String username, password, domain, stun, protocol;
     private boolean isRunning, isPendingRestart, inCall;
-    private boolean wasStoppedOnPurpose;
+    private boolean wasStoppedOnPurpose, isSipRunning;
     private SipListener coreListener;
-    private boolean isSipRunning;
     private Config profile;
     private BroadcastReceiver br;
     private int callVolume;
@@ -119,6 +120,9 @@ public class LinSipService extends Service implements ServiceInformationPublishe
             this.username = sipConfiguration.optString("sip_username");
             this.password = sipConfiguration.optString("sip_password");
             this.stun = sipConfiguration.optString("sip_stun");
+            this.protocol = sipConfiguration.optString("protocol", "udp");
+            this.port = sipConfiguration.optInt("sip_port", 5060);
+            this.reRegisterPeriod = sipConfiguration.optInt("sip_reregister_period", 30);
             this.callVolume = sipConfiguration.optInt("call_volume", 5);
             if (this.callVolume <= 0 || this.callVolume > 5) //unacceptable values
             {
@@ -151,9 +155,14 @@ public class LinSipService extends Service implements ServiceInformationPublishe
 
         //The address of the peer
         Address addr = Factory.instance().createAddress(String.format("sip:%s@%s", this.username, this.domain));
+        addr.setPort(this.port);
+        addr.setTransport(this.protocol.toLowerCase().equals("udp") ? TransportType.Udp : TransportType.Tcp);
         Address proxy = Factory.instance().createAddress("sip:" + this.domain);
+
+
         this.authInfo = Factory.instance().createAuthInfo(addr.getUsername(), null, this.password, null, null, null);
         this.linphoneCore.addAuthInfo(authInfo);
+
 
 
         this.proxyConfig.setIdentityAddress(addr);
@@ -162,8 +171,9 @@ public class LinSipService extends Service implements ServiceInformationPublishe
         this.proxyConfig.setNatPolicy(this.createNatPolicy()); //use STUN. There is every chance you are on a NATted network
 
         //Registration deets
-        this.proxyConfig.setExpires(2000);
-        this.proxyConfig.enableRegister(false);
+        this.proxyConfig.setExpires(this.reRegisterPeriod);
+        this.proxyConfig.enableRegister(true);
+
 
         this.linphoneCore.addProxyConfig(this.proxyConfig);
         this.linphoneCore.setDefaultProxyConfig(this.proxyConfig);
