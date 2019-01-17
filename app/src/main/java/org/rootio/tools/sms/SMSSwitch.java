@@ -61,6 +61,8 @@ public class SMSSwitch {
                 return new WhiteListSMSHandler(this.parent, from, messageParts);
             case "ussd": //ussd|*123#
                 return new USSDSMSHandler(this.parent, this.from, messageParts);
+            case "mark":
+                return new MarkHandler(this.parent, this.from, messageParts);
             default:
             return null;
         }
