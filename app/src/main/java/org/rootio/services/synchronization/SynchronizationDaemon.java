@@ -18,10 +18,12 @@ public class SynchronizationDaemon implements Runnable {
     private final Context parent;
     private final Cloud cloud;
     private Handler handler;
+    private MusicListHandler musicListHandler;
 
     @Override
     public void run() {
 
+        this.musicListHandler = new MusicListHandler(this.parent, this.cloud);
        /* while (((SynchronizationService) this.parent).isRunning()) {
             // turn on mobile data and wait
             //this.toggleData(true);
@@ -74,7 +76,7 @@ public class SynchronizationDaemon implements Runnable {
                                 synchronize(new StationHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud));
                         SynchronizationDaemon.this.
 
-                                synchronize(new MusicListHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud));
+                                synchronize(SynchronizationDaemon.this.musicListHandler);
                         SynchronizationDaemon.this.
 
                                 synchronize(new PlaylistHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud));

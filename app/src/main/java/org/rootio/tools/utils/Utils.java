@@ -1,24 +1,5 @@
 package org.rootio.tools.utils;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.InetAddress;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Map;
-
-import org.json.JSONObject;
-import org.rootio.handset.R;
-import org.rootio.tools.persistence.DBAgent;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -33,10 +14,25 @@ import android.content.SharedPreferences;
 import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.PopupMenu;
 import android.widget.Toast;
+
+import org.json.JSONObject;
+import org.rootio.handset.R;
+import org.rootio.tools.persistence.DBAgent;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 @SuppressLint("SimpleDateFormat")
 public class Utils {
@@ -248,6 +244,7 @@ public class Utils {
             httpUrlConnection.setRequestProperty("Content-Type", "application/json");
             httpUrlConnection.connect();
             OutputStream outstr = httpUrlConnection.getOutputStream();
+            //writeToFile(data);
             outstr.write(data.getBytes());
             outstr.flush();
             InputStream instr = httpUrlConnection.getInputStream();
@@ -277,5 +274,18 @@ public class Utils {
     public static boolean isConnectedToStation(Context context) {
         SharedPreferences prefs = context.getSharedPreferences("org.rootio.handset", Context.MODE_PRIVATE);
         return prefs != null && prefs.contains("station_information");
+     }
+
+    public static void writeToFile(Context ctx, String data){
+        File fl = new File(ctx.getExternalFilesDir(null), Utils.getCurrentDateAsString("YYYYMMDD_HmS")+ "_data.txt");
+         FileWriter fwr = null;
+         try {
+             fwr = new FileWriter(fl);
+
+         fwr.write(data);
+         fwr.close();
+         } catch (IOException e) {
+             e.printStackTrace();
+         }
      }
 }
