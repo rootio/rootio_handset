@@ -38,7 +38,6 @@ public class MusicListHandler implements SynchronizationHandler {
     @Override
     public JSONObject getSynchronizationData() {
         JSONObject snglist = this.getSongList();
-        Utils.writeToFile(this.parent, snglist.toString());
         return snglist;
         // return this.getSongList();
     }
@@ -80,6 +79,7 @@ public class MusicListHandler implements SynchronizationHandler {
             ContentResolver cr = this.parent.getContentResolver();
             Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
             String selection = MediaStore.Audio.Media.IS_MUSIC + "!= 0 and date_added > ?";
+            //uncomment last bit to turn on paging in case of very many records, but in this case sort by date_added asc
             String sortOrder = MediaStore.Audio.Media.TITLE + " ASC"; // limit   " + String.valueOf(limit) + " offset "+String.valueOf(offset);
             cur = cr.query(uri, null, selection, new String[]{String.valueOf(this.maxDateadded)}, sortOrder);
             offset += limit;

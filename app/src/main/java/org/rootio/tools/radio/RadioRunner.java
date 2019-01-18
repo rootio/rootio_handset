@@ -1,9 +1,12 @@
 package org.rootio.tools.radio;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
+import android.annotation.SuppressLint;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.util.Log;
 
 import org.rootio.activities.services.TelephonyEventNotifiable;
 import org.rootio.handset.R;
@@ -13,15 +16,10 @@ import org.rootio.tools.media.ScheduleNotifiable;
 import org.rootio.tools.persistence.DBAgent;
 import org.rootio.tools.utils.Utils;
 
-import android.annotation.SuppressLint;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.util.Log;
-
-import com.esotericsoftware.kryo.util.Util;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
 
 enum State {
     PLAYING, PAUSED, STOPPED
@@ -31,10 +29,10 @@ enum State {
 public class RadioRunner implements Runnable, TelephonyEventNotifiable, ScheduleNotifiable, ScheduleChangeNotifiable {
     private AlarmManager am;
     private ScheduleBroadcastHandler br;
-    private ArrayList<PendingIntent> pis;
+    private ArrayList<Object[]> pendingIntents;
+    //private ArrayList<PendingIntent> pis;
     private final Context parent;
     private ArrayList<Program> programs;
-    private IntentFilter intentFilter;
     private Integer runningProgramIndex = null;
     private State state;
     private TelephonyEventBroadcastReceiver telephonyEventBroadcastReceiver;
@@ -186,7 +184,8 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
      */
     private void schedulePrograms(ArrayList<Program> programs) {
         IntentFilter intentFilter = new IntentFilter();
-        this.pis = new ArrayList<>();
+        //this.pis = new ArrayList<>();
+        this.pendingIntents = new ArrayList<>();
         for (int i = 0; i < programs.size(); i++) {
             intentFilter.addAction("org.rootio.RadioRunner" + String.valueOf(i));
         }
@@ -215,9 +214,11 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
         try {
             Intent intent = new Intent("org.rootio.RadioRunner" + String.valueOf(index));
             intent.putExtra("index", index);
+            intent.putExtra("startTime", startTime.getTime());
             PendingIntent pi = PendingIntent.getBroadcast(parent, 0, intent, 0);
             this.am.set(AlarmManager.RTC_WAKEUP, startTime.getTime(), pi);
-            this.pis.add(pi);
+            //this.pis.add(pi);
+            this.pendingIntents.add(new Object[]{pi, startTime.getTime()});
         } catch (Exception ex) {
             Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(RadioRunner.addAlarmEvent)" : ex.getMessage());
         }
@@ -227,12 +228,51 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
      * This clears all scheduled events
      */
     private void resetSchedule() {
-        for (PendingIntent pi : this.pis) {
-            this.am.cancel(pi);
+        for (Object[] pi : this.pendingIntents) {
+            this.am.cancel((PendingIntent)pi[0]);
         }
 
         //this.runningProgramIndex = null;
-        this.pis = new ArrayList<>();
+        this.pendingIntents = new ArrayList<>();
+    }
+
+    /**
+     * This clears all scheduled events
+     */
+    private void deleteFutureSchedule() {
+        for (Object[] pi : this.pendingIntents) {
+            if((long)pi[1] >= Calendar.getInstance().getTimeInMillis())
+            this.am.cancel((PendingIntent)pi[0]);
+        }
+
+        //this.runningProgramIndex = null;
+        //this.pis = new ArrayList<>();
+    }
+
+    /**
+     * Schedules the supplied programs according to their schedule information
+     *
+     * @param programs ArrayList of the programs to be scheduled
+     */
+    private void scheduleFuturePrograms(ArrayList<Program> programs) {
+        IntentFilter intentFilter = new IntentFilter();
+        //this.pis = new ArrayList<>();
+        this.pendingIntents = new ArrayList<>();
+        for (int i = 0; i < programs.size(); i++) {
+            intentFilter.addAction("org.rootio.RadioRunner" + String.valueOf(i));
+        }
+        this.parent.registerReceiver(br, intentFilter);
+
+        // Sort the program slots by time at which they will play
+        Collections.sort(programs);
+
+        // Schedule the program slots
+        for (int i = 0; i < programs.size(); i++) {
+            if(programs.get(i).isLocal() && programs.get(i).getStartDate().getTime() >= Calendar.getInstance().getTimeInMillis()) { // no point scheduling non local progs
+                if(i == 0 || (programs.get(i).getStartDate() != programs.get(i-1).getStartDate())) //do not double schedule at same time.
+                    addAlarmEvent(i, programs.get(i).getStartDate());
+            }
+        }
     }
 
     /**
@@ -275,7 +315,7 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
     @Override
     public boolean isExpired(int index) {
         Calendar referenceCalendar = Calendar.getInstance();
-        boolean isExpired = this.programs.get(index).getEndDate().compareTo(referenceCalendar.getTime()) <= 0;
+        //boolean isExpired = this.programs.get(index).getEndDate().compareTo(referenceCalendar.getTime()) <= 0;
         return this.programs.get(index).getEndDate().compareTo(referenceCalendar.getTime()) <= 0;
     }
 
@@ -286,7 +326,8 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
         }
         else
         {
-            this.isPendingScheduleReload = true;
+            this.reloadSchedule();
+            //this.isPendingScheduleReload = true;
         }
     }
 
@@ -296,5 +337,12 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
         this.parent.unregisterReceiver(br);
         this.resetSchedule();
         this.initialiseSchedule();
+    }
+
+    private void reloadSchedule()
+    {
+        this.deleteFutureSchedule();
+        this.programs = this.getPrograms();
+        this.scheduleFuturePrograms(programs);
     }
 }
