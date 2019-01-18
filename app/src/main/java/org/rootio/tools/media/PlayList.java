@@ -534,9 +534,9 @@ public class PlayList implements Player.EventListener {
         String stationInfo = (String)Utils.getPreference("station_information", String.class, this.parent);
         try {
             JSONObject stationInfoJson = new JSONObject(stationInfo);
-            if(stationInfoJson.has("media_volume"))
+            if(stationInfoJson.has("station") && stationInfoJson.getJSONObject("station").has("media_volume"))
             {
-                int volume = stationInfoJson.getInt("media_volume");
+                int volume = stationInfoJson.getJSONObject("station").getInt("media_volume");
                 return volume >= 0 && volume <= 15 ? volume : 8;
             }
             else
