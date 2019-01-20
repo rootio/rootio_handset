@@ -10,6 +10,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
@@ -276,6 +277,15 @@ public class Utils {
         return prefs != null && prefs.contains("station_information");
      }
 
+     public static void logEvent(Context context, EventCategory category, EventAction action, String argument)
+     {
+         Intent intent = new Intent("org.rootio.logging.LOG_EVENT");
+         intent.putExtra("category", category.name());
+         intent.putExtra("action", action.name());
+         intent.putExtra("argument", argument);
+         context.sendBroadcast(intent);
+     }
+
     public static void writeToFile(Context ctx, String data){
         File fl = new File(ctx.getExternalFilesDir(null), Utils.getCurrentDateAsString("YYYYMMDD_HmS")+ "_data.txt");
          FileWriter fwr = null;
@@ -288,4 +298,14 @@ public class Utils {
              e.printStackTrace();
          }
      }
+
+     public enum EventCategory
+    {
+        MEDIA, SERVICES, SYNC, SMS, CALL, SIP_CALL, DATA_NETWORK
+    }
+
+    public enum EventAction
+    {
+        ON, OFF, PAUSE, STOP, START, SEND, RECEIVE
+    }
 }

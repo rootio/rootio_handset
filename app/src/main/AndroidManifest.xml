@@ -78,5 +78,11 @@
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
             </intent-filter>
         </receiver>
+        <receiver android:name="org.rootio.tools.logging.Logger" >
+            <intent-filter>
+                <action android:name="org.rootio.logging.LOGGING_EVENT" >
+                </action>
+            </intent-filter>
+        </receiver>
     </application>
 </manifest>
