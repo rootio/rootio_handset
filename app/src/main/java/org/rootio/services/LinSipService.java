@@ -112,7 +112,7 @@ public class LinSipService extends Service implements ServiceInformationPublishe
 
     private void loadConfig() {
         String stationInformation = (String) Utils.getPreference("station_information", String.class, this);
-        JSONObject stationJson = null;
+        JSONObject stationJson;
         try {
             stationJson = new JSONObject(stationInformation).optJSONObject("station");
             JSONObject sipConfiguration = new JSONObject(stationJson.optString("sip_settings")); //optJSONObject("sip_settings"); the sip config is JSON as a string in a JSON file :-(
@@ -302,6 +302,7 @@ public class LinSipService extends Service implements ServiceInformationPublishe
             // adjust the volume of the telephony stream
             AudioManager audioManager = (AudioManager) LinSipService.this.getSystemService(Context.AUDIO_SERVICE);
             audioManager.setStreamVolume(AudioManager.STREAM_VOICE_CALL, this.callVolume, AudioManager.FLAG_SHOW_UI);
+            Utils.logEvent(this, Utils.EventCategory.SIP_CALL, Utils.EventAction.START, call.getRemoteContact());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -349,9 +350,10 @@ public class LinSipService extends Service implements ServiceInformationPublishe
                     isPendingRestart = false;
                 }
                 this.sendTelephonyEventBroadcast(false);
+                Utils.logEvent(this, Utils.EventCategory.SIP_CALL, Utils.EventAction.STOP, call != null? call.getRemoteContact(): "");
                 if (call != null) //not being sent au moment
                 {
-                    Utils.toastOnScreen("Call with " + call.getRemoteContact() + " ended", this);
+                    Utils.toastOnScreen("Call with " + call != null? call.getRemoteContact():"" + " ended", this);
                 }
                 break;
             case Error:
@@ -362,10 +364,11 @@ public class LinSipService extends Service implements ServiceInformationPublishe
                     this.register();
                     isPendingRestart = false;
                 }
+                Utils.logEvent(this, Utils.EventCategory.SIP_CALL, Utils.EventAction.STOP, call != null? call.getRemoteContact(): "");
                 this.sendTelephonyEventBroadcast(false);
                 if (call != null) //not being sent au moment
                 {
-                    Utils.toastOnScreen("Call with " + call.getRemoteContact() + " erred", this);
+                    Utils.toastOnScreen("Call with " + call != null? call.getRemoteContact():"" + " erred", this);
                 }
                 break;
             case Connected:
@@ -374,18 +377,20 @@ public class LinSipService extends Service implements ServiceInformationPublishe
                 this.sendTelephonyEventBroadcast(true);
                 if (call != null) //ideally check for direction and report if outgoing or incoming
                 {
-                    Utils.toastOnScreen("In call with " + call.getRemoteContact(), this);
+                    Utils.toastOnScreen("In call with " + call != null? call.getRemoteContact():"", this);
                 }
+                Utils.logEvent(this, Utils.EventCategory.SIP_CALL, Utils.EventAction.START, call != null? call.getRemoteContact(): "");
                 break;
             case IncomingReceived:
                 if (call != null) {
-                    Utils.toastOnScreen("Incoming call from " + call.getRemoteContact(), this);
+                    Utils.toastOnScreen("Incoming call from " + call != null? call.getRemoteContact():"", this);
                     this.handleCall(call); //check WhiteList first!!
                 }
+                Utils.logEvent(this, Utils.EventCategory.SIP_CALL, Utils.EventAction.RINGING, call != null? call.getRemoteContact(): "");
                 break;
             case OutgoingInit:
                 if (call != null) {
-                    Utils.toastOnScreen("Dialling out to" + call.getRemoteContact(), this);
+                    Utils.toastOnScreen("Dialling out to" + call != null? call.getRemoteContact():"", this);
                 }
                 break;
             default: //handles 11 other states!
@@ -400,6 +405,7 @@ public class LinSipService extends Service implements ServiceInformationPublishe
     @Override
     public void updateRegistrationState(RegistrationState registrationState, ProxyConfig proxyConfig) {
         if (registrationState != null) { //could be sent before listener has any notifs, e.g when this service connects to service before registration
+            Utils.logEvent(this, Utils.EventCategory.SIP_CALL, Utils.EventAction.REGISTRATION, registrationState.name());
             switch (registrationState) {
                 case Progress:
                     Utils.toastOnScreen("Registering...", this);
