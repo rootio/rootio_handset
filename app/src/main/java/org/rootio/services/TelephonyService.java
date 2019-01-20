@@ -86,7 +86,7 @@ public class TelephonyService extends Service implements ServiceInformationPubli
     /**
      * Answers an incoming call
      */
-    private void pickCall() {
+    private void pickCall(String frommNumber) {
         if (BuildConfig.DEBUG) {
             Utils.toastOnScreen("call ringing...", this);
         }
@@ -108,6 +108,7 @@ public class TelephonyService extends Service implements ServiceInformationPubli
                 return;
             }
             this.telecomManager.acceptRingingCall();
+            Utils.logEvent(this, Utils.EventCategory.CALL, Utils.EventAction.START, frommNumber);
         } else { //hail mary. This works only for Kitkat and below
 
             new Thread(new Runnable() {
@@ -158,7 +159,7 @@ public class TelephonyService extends Service implements ServiceInformationPubli
     /**
      * Declines an incoming call or ends an ongoing call.
      */
-    private void declineCall() {
+    private void declineCall(String fromNumber) {
         ITelephony telephonyService;
         TelephonyManager telephony = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
         try {
@@ -167,6 +168,8 @@ public class TelephonyService extends Service implements ServiceInformationPubli
             m.setAccessible(true);
             telephonyService = (ITelephony) m.invoke(telephony);
             telephonyService.endCall();
+            Utils.logEvent(this, Utils.EventCategory.CALL, Utils.EventAction.STOP, fromNumber);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -178,13 +181,13 @@ public class TelephonyService extends Service implements ServiceInformationPubli
      * pick the phone call basing on the calling phone number * @param
      * incomingNumber
      */
-    public void handleCall(String incomingNumber) {
-        if (true || new CallAuthenticator(this).isWhiteListed(incomingNumber)) {
+    public void handleCall(String fromNumber) {
+        if (true || new CallAuthenticator(this).isWhiteListed(fromNumber)) {
             this.sendTelephonyEventBroadcast(true);
-            pickCall();
+            pickCall(fromNumber);
             // this.setupCallRecording(); //not possible on pockets
         } else {
-            declineCall();
+            declineCall(fromNumber);
         }
     }
 
@@ -205,6 +208,7 @@ public class TelephonyService extends Service implements ServiceInformationPubli
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+                    Utils.logEvent(TelephonyService.this, Utils.EventCategory.CALL, Utils.EventAction.RINGING, incomingNumber);
                     handleCall(incomingNumber);
                     break;
                 case TelephonyManager.CALL_STATE_IDLE:
@@ -213,6 +217,7 @@ public class TelephonyService extends Service implements ServiceInformationPubli
                         TelephonyService.this.callRecorder.stopRecording();
                         TelephonyService.this.callRecorder = null;
                     }
+                    Utils.logEvent(TelephonyService.this, Utils.EventCategory.CALL, Utils.EventAction.STOP, incomingNumber);
                     break;
             }
         }
