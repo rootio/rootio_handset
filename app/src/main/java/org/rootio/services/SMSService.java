@@ -66,6 +66,7 @@ public class SMSService extends Service implements IncomingSMSNotifiable, Servic
 
     @Override
     public void notifyIncomingSMS(SmsMessage message) {
+        Utils.logEvent(this, Utils.EventCategory.SMS, Utils.EventAction.RECEIVE, message.getOriginatingAddress()+ ">>" +message.getMessageBody());
         SMSSwitch smsSwitch = new SMSSwitch(this, message);
         MessageProcessor messageProcessor = smsSwitch.getMessageProcessor();
         if (messageProcessor != null) {
