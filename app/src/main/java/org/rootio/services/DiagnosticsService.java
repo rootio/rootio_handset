@@ -28,6 +28,7 @@ public class DiagnosticsService extends Service implements ServiceInformationPub
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Utils.logEvent(this, Utils.EventCategory.SERVICES, Utils.EventAction.START, "Diagnostics Service");
         if (!this.isRunning) {
             Utils.doNotification(this, "RootIO", "Diagnostics service started");
             long delay = this.getDelay();
@@ -44,6 +45,7 @@ public class DiagnosticsService extends Service implements ServiceInformationPub
 
     @Override
     public void onDestroy() {
+        Utils.logEvent(this, Utils.EventCategory.SERVICES, Utils.EventAction.STOP, "Diagnostics Service");
         this.stopForeground(true);
         this.shutDownService();
         super.onDestroy();

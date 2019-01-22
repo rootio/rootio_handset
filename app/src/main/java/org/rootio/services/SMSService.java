@@ -34,6 +34,7 @@ public class SMSService extends Service implements IncomingSMSNotifiable, Servic
     @Override
     public int onStartCommand(Intent intent, int flags, int startID) {
         Utils.doNotification(this, "RootIO", "SMS Service started");
+        Utils.logEvent(this, Utils.EventCategory.SERVICES, Utils.EventAction.START, "SMS Service");
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(SMS_RECEIVED_ACTION);
         this.registerReceiver(this.incomingSMSReceiver, intentFilter);
@@ -45,6 +46,7 @@ public class SMSService extends Service implements IncomingSMSNotifiable, Servic
 
     @Override
     public void onDestroy() {
+        Utils.logEvent(this, Utils.EventCategory.SERVICES, Utils.EventAction.STOP, "SMS Service");
         this.stopForeground(true);
         this.shutDownService();
         super.onDestroy();

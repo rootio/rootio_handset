@@ -5,7 +5,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.os.IBinder;
 import android.util.Log;
@@ -52,6 +51,7 @@ public class LinSipService extends Service implements ServiceInformationPublishe
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Utils.logEvent(this, Utils.EventCategory.SERVICES, Utils.EventAction.START, "LinSIP Service");
         if (!isRunning) {
             isRunning = true;
             this.register();
@@ -104,6 +104,7 @@ public class LinSipService extends Service implements ServiceInformationPublishe
 
     @Override
     public void onDestroy() {
+        Utils.logEvent(this, Utils.EventCategory.SERVICES, Utils.EventAction.STOP, "LinSIP Service");
         this.stopForeground(true);
         this.shutDownService();
         super.onDestroy();

@@ -46,6 +46,7 @@ public class TelephonyService extends Service implements ServiceInformationPubli
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Utils.logEvent(this, Utils.EventCategory.SERVICES, Utils.EventAction.START, "Telephony Service");
         if (!isRunning) {
             Utils.doNotification(this, "RootIO", "Telephony Service started");
             this.waitForCalls();
@@ -59,6 +60,7 @@ public class TelephonyService extends Service implements ServiceInformationPubli
 
     @Override
     public void onDestroy() {
+        Utils.logEvent(this, Utils.EventCategory.SERVICES, Utils.EventAction.STOP, "Telephony Service");
         this.stopForeground(true);
         this.shutDownService();
         super.onDestroy();
