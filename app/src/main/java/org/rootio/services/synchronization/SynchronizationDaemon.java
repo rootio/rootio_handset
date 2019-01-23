@@ -80,6 +80,7 @@ public class SynchronizationDaemon implements Runnable {
                         SynchronizationDaemon.this.
 
                                 synchronize(new PlaylistHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud));
+                        SynchronizationDaemon.this.synchronize(new LogHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud));
                     }
                 });
                 thread.start(); //TODO: fix synchronicity. if the interval is too short, next jobs will start before this finishes!

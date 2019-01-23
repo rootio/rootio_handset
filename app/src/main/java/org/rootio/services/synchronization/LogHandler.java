@@ -1,5 +1,8 @@
 package org.rootio.services.synchronization;
 
+import android.content.Context;
+import android.util.Log;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -9,23 +12,18 @@ import org.rootio.tools.cloud.Cloud;
 import org.rootio.tools.persistence.DBAgent;
 import org.rootio.tools.utils.Utils;
 
-import android.content.Context;
-import android.util.Log;
-
-public class DiagnosticsHandler implements SynchronizationHandler {
+public class LogHandler implements SynchronizationHandler {
 
     private Context parent;
-    private DiagnosticStatistics diagnosticStatistics;
     private Cloud cloud;
 
-    DiagnosticsHandler(Context parent, Cloud cloud) {
+    LogHandler(Context parent, Cloud cloud) {
         this.parent = parent;
         this.cloud = cloud;
-        this.diagnosticStatistics = new DiagnosticStatistics(this.parent);
     }
 
     public JSONObject getSynchronizationData() {
-        return this.diagnosticStatistics.getJSONRecords();
+        return this.getRecords();
     }
 
     /**
@@ -49,8 +47,8 @@ public class DiagnosticsHandler implements SynchronizationHandler {
     }
 
     private int deleteSyncedRecord(String id) {
-        String tableName = "diagnostic";
-        String whereClause = "_id = ?";
+        String tableName = "activitylog";
+        String whereClause = "id = ?";
         String[] filterArgs = new String[]{id};
         DBAgent agent = new DBAgent(this.parent);
         return agent.deleteRecords(tableName, whereClause, filterArgs);
@@ -58,6 +56,33 @@ public class DiagnosticsHandler implements SynchronizationHandler {
 
     @Override
     public String getSynchronizationURL() {
-        return String.format("https://%s:%s/%s/%s/analytics?api_key=%s", this.cloud.getServerAddress(), this.cloud.getHTTPPort(), "api/station", this.cloud.getStationId(), this.cloud.getServerKey());
+        return String.format("https://%s:%s/%s/%s/log?api_key=%s", this.cloud.getServerAddress(), this.cloud.getHTTPPort(), "api/station", this.cloud.getStationId(), this.cloud.getServerKey());
+    }
+
+    private JSONObject getRecords() {
+        String query = "select id, category, argument, event, eventdate  from activitylog";
+        String[] filterArgs = new String[]{};
+        DBAgent agent = new DBAgent(this.parent);
+        String[][] results = agent.getData(query, filterArgs);
+        JSONObject parent = new JSONObject();
+        JSONArray analyticData = new JSONArray();
+        try {
+            for (int index = 0; index < results.length; index++) {
+                JSONObject record = new JSONObject();
+                record.put("id", results[index][0]);
+                record.put("category", results[index][1]);
+                record.put("argument", results[index][2]);
+                record.put("event", results[index][3]);
+                record.put("eventdate", results[index][4]);
+                analyticData.put(record);
+
+            }
+            parent.put("log_data", analyticData);
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        return parent;
     }
 }
