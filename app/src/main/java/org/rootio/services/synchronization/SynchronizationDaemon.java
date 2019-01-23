@@ -2,6 +2,7 @@ package org.rootio.services.synchronization;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 
 import org.json.JSONObject;
 import org.rootio.handset.R;
@@ -24,25 +25,6 @@ public class SynchronizationDaemon implements Runnable {
     public void run() {
 
         this.musicListHandler = new MusicListHandler(this.parent, this.cloud);
-       /* while (((SynchronizationService) this.parent).isRunning()) {
-            // turn on mobile data and wait
-            //this.toggleData(true);
-            //this.getSomeSleep(15000);
-
-            // do the sync
-            this.synchronize(new DiagnosticsHandler(this.parent, this.cloud));
-            this.synchronize(new ProgramsHandler(this.parent, this.cloud));
-            this.synchronize(new CallLogHandler(this.parent, this.cloud));
-            this.synchronize(new SMSLogHandler(this.parent, this.cloud));
-            this.synchronize(new WhitelistHandler(this.parent, this.cloud));
-            this.synchronize(new FrequencyHandler(this.parent, this.cloud));
-            this.synchronize(new StationHandler(this.parent, this.cloud));
-            this.synchronize(new MusicListHandler(this.parent, this.cloud));
-            this.synchronize(new PlaylistHandler(this.parent, this.cloud));
-            // turn off mobile data
-            //this.toggleData(false);
-
-            this.getSomeSleep(this.getFrequency() * 1000); // seconds to milliseconds*/
         this.synchronize();
 
     }
@@ -151,10 +133,11 @@ public class SynchronizationDaemon implements Runnable {
     public void synchronize(final SynchronizationHandler handler) {
         try {
             String synchronizationUrl = handler.getSynchronizationURL();
-            String response = Utils.doPostHTTP(synchronizationUrl, handler.getSynchronizationData().toString());
+            HashMap<String, Object> response = Utils.doDetailedPostHTTP(synchronizationUrl, handler.getSynchronizationData().toString());
             JSONObject responseJSON;
-            responseJSON = new JSONObject(response);
+            responseJSON = new JSONObject((String)response.get("response"));
             handler.processJSONResponse(responseJSON);
+            Utils.logEvent(this.parent, Utils.EventCategory.SYNC, Utils.EventAction.START, String.format("length: %s, response code: %s, duration: %s, url: %s", response.get("length"), response.get("responseCode"), response.get("duration"), response.get("url")));
         } catch (Exception ex) {
             ex.printStackTrace();
             Log.e(SynchronizationDaemon.this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(SynchronizationDaemon.synchronize)" : ex.getMessage());

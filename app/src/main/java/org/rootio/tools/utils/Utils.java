@@ -12,6 +12,7 @@ import android.content.ContextWrapper;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.icu.util.DateInterval;
 import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -32,8 +33,13 @@ import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 
 @SuppressLint("SimpleDateFormat")
 public class Utils {
@@ -258,6 +264,45 @@ public class Utils {
                 response.append((char) tmp);
             }
             return response.toString();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            return null;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static HashMap<String, Object> doDetailedPostHTTP(String httpUrl, String data) {
+        URL url;
+        LocalDate dt = LocalDate.now();
+        HashMap<String, Object> responseData = new HashMap<>();
+        try {
+            url = new URL(httpUrl);
+            HttpURLConnection httpUrlConnection = (HttpURLConnection) url.openConnection();
+            httpUrlConnection.setRequestMethod("POST");
+            httpUrlConnection.setDoOutput(true);
+            httpUrlConnection.setRequestProperty("Content-Type", "application/json");
+            httpUrlConnection.connect();
+            OutputStream outstr = httpUrlConnection.getOutputStream();
+            //writeToFile(data);
+            outstr.write(data.getBytes());
+            outstr.flush();
+            InputStream instr = httpUrlConnection.getInputStream();
+            StringBuilder response = new StringBuilder();
+            while (true) {
+                int tmp = instr.read();
+                if (tmp < 0) {
+                    break;
+                }
+                response.append((char) tmp);
+            }
+            responseData.put("response", response);
+            responseData.put("duration", ChronoUnit.SECONDS.between(dt, LocalDate.now()));
+            responseData.put("responseCode", httpUrlConnection.getResponseCode());
+            responseData.put("length", httpUrlConnection.getContentLength());
+            responseData.put("url", httpUrlConnection.getURL());
+            return responseData;
         } catch (MalformedURLException e) {
             e.printStackTrace();
             return null;
