@@ -6,7 +6,6 @@ import android.util.Log;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.rootio.activities.DiagnosticStatistics;
 import org.rootio.handset.R;
 import org.rootio.tools.cloud.Cloud;
 import org.rootio.tools.persistence.DBAgent;
@@ -65,7 +64,7 @@ public class LogHandler implements SynchronizationHandler {
         DBAgent agent = new DBAgent(this.parent);
         String[][] results = agent.getData(query, filterArgs);
         JSONObject parent = new JSONObject();
-        JSONArray analyticData = new JSONArray();
+        JSONArray logData = new JSONArray();
         try {
             for (int index = 0; index < results.length; index++) {
                 JSONObject record = new JSONObject();
@@ -74,15 +73,14 @@ public class LogHandler implements SynchronizationHandler {
                 record.put("argument", results[index][2]);
                 record.put("event", results[index][3]);
                 record.put("eventdate", results[index][4]);
-                analyticData.put(record);
-
+                logData.put(record);
             }
-            parent.put("log_data", analyticData);
+            parent.put("log_data", logData);
         } catch (JSONException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-
+        Utils.writeToFile(this.parent, parent.toString());
         return parent;
     }
 }

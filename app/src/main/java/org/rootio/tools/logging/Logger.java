@@ -13,6 +13,7 @@ public class Logger extends BroadcastReceiver {
 
     private long log(Context context, Intent intent)
     {
+        Utils.toastOnScreen("received logging event..", context);
         try {
             ContentValues values = new ContentValues();
             values.put("category", intent.getStringExtra("category"));
@@ -23,7 +24,7 @@ public class Logger extends BroadcastReceiver {
         }
         catch (Exception ex)
         {
-
+            ex.printStackTrace();
         }
         return 0;
     }

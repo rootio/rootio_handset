@@ -6,11 +6,13 @@ import java.io.RandomAccessFile;
 import org.rootio.handset.R;
 import org.rootio.tools.utils.Utils;
 
+import android.Manifest;
 import android.app.ActivityManager;
 import android.app.ActivityManager.MemoryInfo;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
@@ -18,7 +20,10 @@ import android.net.NetworkInfo;
 import android.os.BatteryManager;
 import android.os.Environment;
 import android.os.StatFs;
+import android.support.v4.app.ActivityCompat;
+import android.telecom.TelecomManager;
 import android.telephony.PhoneStateListener;
+import android.telephony.SubscriptionManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
@@ -33,7 +38,7 @@ public class DiagnosticAgent {
     private double latitude;
     private double longitude;
     private double storageStatus;
-    private String telecomOperatorName;
+    private String telecomOperatorName, mobileNetworkType;
     private final ConnectivityManager connectivityManager;
     private final Context parentActivity;
     private final SignalStrengthListener signalStrengthListener;
@@ -61,6 +66,24 @@ public class DiagnosticAgent {
         this.loadCPUutilization();
         this.loadLatitudeLongitude();
         this.loadTelecomOperatorName();
+        this.loadMobileNetworkType();
+    }
+
+    private void loadMobileNetworkType() {
+        if (ActivityCompat.checkSelfPermission(this.parentActivity, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+
+        TelephonyManager mgr = ((TelephonyManager) this.parentActivity.getSystemService(Context.TELEPHONY_SERVICE));
+
+        this.mobileNetworkType = String.format("%s|%s|%s", ((TelephonyManager) this.parentActivity.getSystemService(Context.TELEPHONY_SERVICE)).getNetworkType(), ((TelephonyManager) this.parentActivity.getSystemService(Context.TELEPHONY_SERVICE)).getDataNetworkType(), ((TelephonyManager) this.parentActivity.getSystemService(Context.TELEPHONY_SERVICE)).getVoiceNetworkType());
     }
 
     /**
@@ -192,6 +215,16 @@ public class DiagnosticAgent {
      * Loads the GPS coordinates of the phone
      */
     private void loadLatitudeLongitude() {
+        if (ActivityCompat.checkSelfPermission(this.parentActivity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this.parentActivity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
         Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         if (location != null) {
             this.latitude = location.getLatitude();
@@ -299,7 +332,13 @@ public class DiagnosticAgent {
      *
      * @return Longitude of the phone
      */
-    public double getLongitude() {
+
+    public double  getLongitude()
+    {
         return this.longitude;
+    }
+
+    public String getMobileNetworkType(){
+        return this.mobileNetworkType;
     }
 }

@@ -10,9 +10,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.icu.util.DateInterval;
 import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -33,10 +31,7 @@ import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.time.Duration;
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.Temporal;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -297,8 +292,8 @@ public class Utils {
                 }
                 response.append((char) tmp);
             }
-            responseData.put("response", response);
-            responseData.put("duration", ChronoUnit.SECONDS.between(dt, LocalDate.now()));
+            responseData.put("response", response.toString());
+            responseData.put("duration", 0); //ChronoUnit.MICROS.between(dt, LocalDate.now()));
             responseData.put("responseCode", httpUrlConnection.getResponseCode());
             responseData.put("length", httpUrlConnection.getContentLength());
             responseData.put("url", httpUrlConnection.getURL());
@@ -322,17 +317,25 @@ public class Utils {
         return prefs != null && prefs.contains("station_information");
      }
 
-     public static void logEvent(Context context, EventCategory category, EventAction action, String argument)
+     public static long logEvent(Context context, EventCategory category, EventAction action, String argument)
      {
-         Intent intent = new Intent("org.rootio.logging.LOG_EVENT");
-         intent.putExtra("category", category.name());
-         intent.putExtra("action", action.name());
-         intent.putExtra("argument", argument);
-         context.sendBroadcast(intent);
+          try {
+             ContentValues values = new ContentValues();
+             values.put("category", category.name());
+             values.put("argument", argument);
+             values.put("event", action.name());
+             values.put("eventdate", Utils.getCurrentDateAsString("yyyy-MM-dd HH:mm:ss"));
+             return new DBAgent(context).saveData("activitylog", null, values);
+         }
+         catch (Exception ex)
+         {
+             ex.printStackTrace();
+         }
+         return 0;
      }
 
     public static void writeToFile(Context ctx, String data){
-        File fl = new File(ctx.getExternalFilesDir(null), Utils.getCurrentDateAsString("YYYYMMDD_HmS")+ "_data.txt");
+        File fl = new File(ctx.getExternalFilesDir(null), Utils.getCurrentDateAsString("YYYYMMDD_HmS")+ "_log.txt");
          FileWriter fwr = null;
          try {
              fwr = new FileWriter(fl);
