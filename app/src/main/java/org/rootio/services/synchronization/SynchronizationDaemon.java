@@ -107,7 +107,7 @@ public class SynchronizationDaemon implements Runnable {
             return frequencies.getJSONObject("synchronization").getInt("interval");
         } catch (Exception ex) {
             Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(SynchronizationDaemon.toggleData)" : ex.getMessage());
-            return 180; // default to 3 mins
+            return 60; // default to 1 minute
         }
     }
 
