@@ -34,7 +34,6 @@ public class WhitelistHandler implements SynchronizationHandler {
     /**
      * Breaks down the information in the JSON file for program and schedule information
      *
-     * @param programDefinition The JSON program definition received from the cloud server
      */
     public void processJSONResponse(JSONObject synchronizationResponse) {
         ContentValues values = new ContentValues();
@@ -44,7 +43,7 @@ public class WhitelistHandler implements SynchronizationHandler {
 
     @Override
     public String getSynchronizationURL() {
-        return String.format("https://%s:%s/%s/%s/whitelist?api_key=%s", this.cloud.getServerAddress(), this.cloud.getHTTPPort(), "api/station", this.cloud.getStationId(), this.cloud.getServerKey());
+        return String.format("%s://%s:%s/%s/%s/whitelist?api_key=%s", this.cloud.getServerScheme(), this.cloud.getServerAddress(), this.cloud.getHTTPPort(), "api/station", this.cloud.getStationId(), this.cloud.getServerKey());
     }
 
 }

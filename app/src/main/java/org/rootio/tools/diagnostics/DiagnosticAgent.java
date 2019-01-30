@@ -31,8 +31,8 @@ public class DiagnosticAgent {
 
     private boolean isConnectedToWifi;
     private float batteryLevel;
-    private boolean isConnectedToGSM;
-    private int GSMConnectionStrength;
+    private boolean isConnectedToMobileNetwork;
+    private int mobileSignalStrength;
     private float memoryStatus;
     private float CPUUtilization;
     private double latitude;
@@ -58,7 +58,7 @@ public class DiagnosticAgent {
      * Runs the checks for the various defined diagnostics
      */
     public void runDiagnostics() {
-        this.loadIsConnectedToGSM();
+        this.loadIsConnectedToMobileNetwork();
         this.loadIsConnectedToWifi();
         this.loadBatteryLevel();
         this.loadMemoryStatus();
@@ -83,7 +83,7 @@ public class DiagnosticAgent {
 
         TelephonyManager mgr = ((TelephonyManager) this.parentActivity.getSystemService(Context.TELEPHONY_SERVICE));
 
-        this.mobileNetworkType = String.format("%s|%s|%s", ((TelephonyManager) this.parentActivity.getSystemService(Context.TELEPHONY_SERVICE)).getNetworkType(), ((TelephonyManager) this.parentActivity.getSystemService(Context.TELEPHONY_SERVICE)).getDataNetworkType(), ((TelephonyManager) this.parentActivity.getSystemService(Context.TELEPHONY_SERVICE)).getVoiceNetworkType());
+        this.mobileNetworkType = String.format("%s|%s|%s", mgr.getNetworkType(), mgr.getDataNetworkType(), mgr.getVoiceNetworkType());
     }
 
     /**
@@ -120,11 +120,11 @@ public class DiagnosticAgent {
     }
 
     /**
-     * Loads the GSM connectivity status
+     * Loads the mobile data connectivity status
      */
-    private void loadIsConnectedToGSM() {
-        NetworkInfo gsmInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-        this.isConnectedToGSM = gsmInfo.isConnected();
+    private void loadIsConnectedToMobileNetwork() {
+        NetworkInfo mobileInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+        this.isConnectedToMobileNetwork = mobileInfo.isConnected();
     }
 
     /**
@@ -135,7 +135,7 @@ public class DiagnosticAgent {
     private class SignalStrengthListener extends PhoneStateListener {
         @Override
         public void onSignalStrengthsChanged(android.telephony.SignalStrength signalStrength) {
-            GSMConnectionStrength = signalStrength.getGsmSignalStrength();
+           mobileSignalStrength = signalStrength.getGsmSignalStrength();
             super.onSignalStrengthsChanged(signalStrength);
         }
     }
@@ -269,8 +269,8 @@ public class DiagnosticAgent {
      * @return Boolean indicating GSM connection strength. True: Connected,
      * False: Not connected
      */
-    public boolean isConnectedToGSM() {
-        return this.isConnectedToGSM;
+    public boolean isConnectedToMobileNetwork() {
+        return this.isConnectedToMobileNetwork;
     }
 
     /**
@@ -278,8 +278,8 @@ public class DiagnosticAgent {
      *
      * @return GSM strength in decibels
      */
-    public int getGSMConnectionStrength() {
-        return this.GSMConnectionStrength;
+    public int getMobileSignalStrength() {
+        return this.mobileSignalStrength;
     }
 
     /**

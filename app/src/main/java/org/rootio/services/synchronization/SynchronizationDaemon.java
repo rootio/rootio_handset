@@ -1,8 +1,8 @@
 package org.rootio.services.synchronization;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.HashMap;
+import android.content.Context;
+import android.os.Handler;
+import android.util.Log;
 
 import org.json.JSONObject;
 import org.rootio.handset.R;
@@ -10,10 +10,7 @@ import org.rootio.services.SynchronizationService;
 import org.rootio.tools.cloud.Cloud;
 import org.rootio.tools.utils.Utils;
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.os.Handler;
-import android.util.Log;
+import java.util.HashMap;
 
 public class SynchronizationDaemon implements Runnable {
     private final Context parent;
@@ -108,25 +105,6 @@ public class SynchronizationDaemon implements Runnable {
         } catch (Exception ex) {
             Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(SynchronizationDaemon.toggleData)" : ex.getMessage());
             return 60; // default to 1 minute
-        }
-    }
-
-    private boolean toggleData(boolean status) {
-        try {
-            final ConnectivityManager conman = (ConnectivityManager) this.parent.getSystemService(Context.CONNECTIVITY_SERVICE);
-            Class conmanClass;
-            conmanClass = Class.forName(conman.getClass().getName());
-            final Field iConnectivityManagerField = conmanClass.getDeclaredField("mService");
-            iConnectivityManagerField.setAccessible(true);
-            final Object iConnectivityManager = iConnectivityManagerField.get(conman);
-            final Class iConnectivityManagerClass = Class.forName(iConnectivityManager.getClass().getName());
-            final Method setMobileDataEnabledMethod = iConnectivityManagerClass.getDeclaredMethod("setMobileDataEnabled", Boolean.TYPE);
-            setMobileDataEnabledMethod.setAccessible(true);
-            setMobileDataEnabledMethod.invoke(iConnectivityManager, status);
-            return true;
-        } catch (Exception ex) {
-            Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(SynchronizationDaemon.toggleData)" : ex.getMessage());
-            return false;
         }
     }
 

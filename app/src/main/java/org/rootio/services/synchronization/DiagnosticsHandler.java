@@ -1,16 +1,14 @@
 package org.rootio.services.synchronization;
 
+import android.content.Context;
+import android.util.Log;
+
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.rootio.activities.DiagnosticStatistics;
 import org.rootio.handset.R;
 import org.rootio.tools.cloud.Cloud;
 import org.rootio.tools.persistence.DBAgent;
-import org.rootio.tools.utils.Utils;
-
-import android.content.Context;
-import android.util.Log;
 
 public class DiagnosticsHandler implements SynchronizationHandler {
 
@@ -58,6 +56,6 @@ public class DiagnosticsHandler implements SynchronizationHandler {
 
     @Override
     public String getSynchronizationURL() {
-        return String.format("https://%s:%s/%s/%s/analytics?api_key=%s", this.cloud.getServerAddress(), this.cloud.getHTTPPort(), "api/station", this.cloud.getStationId(), this.cloud.getServerKey());
+        return String.format("%s://%s:%s/%s/%s/analytics?api_key=%s", this.cloud.getServerScheme(), this.cloud.getServerAddress(), this.cloud.getHTTPPort(), "api/station", this.cloud.getStationId(), this.cloud.getServerKey());
     }
 }

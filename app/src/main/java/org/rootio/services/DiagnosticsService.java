@@ -134,6 +134,7 @@ public class DiagnosticsService extends Service implements ServiceInformationPub
          * Saves the diagnostics gathered to the database
          */
         private void logToDB() {
+            Utils.toastOnScreen("network is "+diagnosticAgent.getTelecomOperatorName() + diagnosticAgent.getMobileNetworkType() + " and str is "+diagnosticAgent.getMobileSignalStrength(), this.parentActivity);
             String tableName = "diagnostic";
             ContentValues values = new ContentValues();
             values.put("batterylevel", diagnosticAgent.getBatteryLevel());
@@ -141,8 +142,10 @@ public class DiagnosticsService extends Service implements ServiceInformationPub
             values.put("storageutilization", diagnosticAgent.getStorageStatus());
             values.put("CPUutilization", diagnosticAgent.getCPUUtilization());
             values.put("wificonnected", diagnosticAgent.isConnectedToWifi());
-            values.put("gsmconnected", diagnosticAgent.isConnectedToGSM());
-            values.put("gsmstrength", diagnosticAgent.getGSMConnectionStrength());
+            values.put("firstmobilenetworkname", diagnosticAgent.getTelecomOperatorName());
+            values.put("firstmobilenetworkconnected", diagnosticAgent.isConnectedToMobileNetwork());
+            values.put("firstmobilenetworkstrength", diagnosticAgent.getMobileSignalStrength());
+            values.put("firstmobilenetworktype", diagnosticAgent.getMobileNetworkType());
             values.put("latitude", diagnosticAgent.getLatitude());
             values.put("longitude", diagnosticAgent.getLongitude());
             DBAgent dbAgent = new DBAgent(this.parentActivity);

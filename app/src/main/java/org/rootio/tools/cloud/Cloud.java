@@ -1,13 +1,12 @@
 package org.rootio.tools.cloud;
 
-import java.net.InetAddress;
+import android.content.Context;
+import android.util.Log;
 
-import org.json.JSONObject;
 import org.rootio.handset.R;
 import org.rootio.tools.utils.Utils;
 
-import android.content.Context;
-import android.util.Log;
+import java.net.InetAddress;
 
 /**
  * This class is the representation of the cloud server
@@ -16,9 +15,8 @@ import android.util.Log;
  */
 public class Cloud {
     private InetAddress IPAddress;
-    private String serverAddress;
     private int HTTPPort;
-    private String serverKey;
+    private String serverKey, serverScheme, serverAddress;
     private int stationId;
 
     private Context parent;
@@ -28,12 +26,13 @@ public class Cloud {
         this.loadCloudInfo();
     }
 
-    public Cloud(Context context, String serverAddress, int HTTPPort, int stationId, String serverKey) {
+    public Cloud(Context context, String serverAddress, int HTTPPort, int stationId, String serverKey, String serverScheme) {
         this.parent = context;
         this.HTTPPort = HTTPPort;
         this.serverAddress = serverAddress;
         this.stationId = stationId;
         this.serverKey = serverKey;
+        this.serverScheme = serverScheme;
     }
 
     /**
@@ -82,60 +81,20 @@ public class Cloud {
         return this.stationId;
     }
 
-    /**
-     * Sets the HTTP port on which the cloud server is listening
-     *
-     * @param HTTPPort The value to which to set the HTTP port
-     */
-    public void setHTTPPort(int HTTPPort) {
-        this.HTTPPort = HTTPPort;
-    }
-
-    /**
-     * Sets the address of the cloud server
-     *
-     * @param serverAddress The Address to which to set the cloud server
-     */
-    public void setServerAddress(String serverAddress) {
-        this.serverAddress = serverAddress;
-    }
-
-    /**
-     * Sets the IP address of the cloud server
-     *
-     * @param IPAddress The IP address of the cloud server
-     */
-    public void setIPAddress(InetAddress IPAddress) {
-        this.IPAddress = IPAddress;
-    }
-
-    /**
-     * Sets the key used to authenticate on the cloud server
-     *
-     * @param serverKey The server key
-     */
-    public void setServerKey(String serverKey) {
-        this.serverKey = serverKey;
-    }
-
-    /**
-     * Sets the ID of the station as recorded on the cloud server
-     *
-     * @param stationId The ID of the station
-     */
-    public void setStationId(int stationId) {
-        this.stationId = stationId;
-    }
-
     private void loadCloudInfo() {
         try {
             this.serverAddress = (String)Utils.getPreference("server_IP", String.class, this.parent);
             this.HTTPPort = (int)Utils.getPreference("server_port", int.class, this.parent);
             this.stationId = (int)Utils.getPreference("station_id", int.class, this.parent);
             this.serverKey = (String)Utils.getPreference("station_key", String.class, this.parent);
+            this.serverScheme = (String)Utils.getPreference("server_scheme", String.class, this.parent);
 
         } catch (Exception ex) {
             Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "NullPointer(Station.LoadStationInfo)" : ex.getMessage());
         }
+    }
+
+    public String getServerScheme() {
+        return this.serverScheme;
     }
 }

@@ -142,7 +142,7 @@ public class NetworkSMSHandler implements MessageProcessor {
         try {
             DiagnosticAgent diagnosticAgent = new DiagnosticAgent(this.parent);
             diagnosticAgent.runDiagnostics();
-            String response = String.format("connected to %s with signal strength %s", diagnosticAgent.getTelecomOperatorName(), diagnosticAgent.getGSMConnectionStrength());
+            String response = String.format("connected to %s with signal strength %s", diagnosticAgent.getTelecomOperatorName(), diagnosticAgent.getMobileSignalStrength());
             this.respondAsyncStatusRequest(response, from);
             return true;
         } catch (Exception ex) {

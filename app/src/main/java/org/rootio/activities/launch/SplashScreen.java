@@ -36,6 +36,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -47,7 +48,7 @@ public class SplashScreen extends Activity {
     String listPermissionsNeededString;
 
     private void askAllPermissions() {
-        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE,
                 Manifest.permission.READ_SMS,Manifest.permission.RECEIVE_SMS,Manifest.permission.SEND_SMS, Manifest.permission.RECORD_AUDIO, Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ANSWER_PHONE_CALLS, Manifest.permission.READ_CONTACTS, Manifest.permission.READ_CALL_LOG, Manifest.permission.CHANGE_WIFI_STATE, Manifest.permission.CALL_PHONE}, ALL_PERMISSIONS);
     }
@@ -109,7 +110,8 @@ public class SplashScreen extends Activity {
                 String serverAddress = ((EditText) this.findViewById(R.id.serverAddressEt)).getText().toString();
                 int serverPort = Integer.parseInt(((EditText) this.findViewById(R.id.serverPortEt)).getText().toString());
                 String serverKey = ((EditText) this.findViewById(R.id.stationKeyEt)).getText().toString();
-                this.synchronize(new StationHandler(this, new Cloud(this, serverAddress, serverPort, stationId, serverKey)));
+                String scheme = ((CheckBox)this.findViewById(R.id.serverSchemeCb)).isChecked()? "https" : "http";
+                this.synchronize(new StationHandler(this, new Cloud(this, serverAddress, serverPort, stationId, serverKey, scheme)));
             } catch (NumberFormatException e) {
                 Utils.warnOnScreen(this, "Station ID and Port number should be Integers");
             } catch (Exception e) {
@@ -125,8 +127,9 @@ public class SplashScreen extends Activity {
         String stationKey = ((EditText) this.findViewById(R.id.stationKeyEt)).getText().toString();
         String serverAddress = ((EditText) this.findViewById(R.id.serverAddressEt)).getText().toString();
         int serverPort = Integer.parseInt(((EditText) this.findViewById(R.id.serverPortEt)).getText().toString());
+        String scheme = ((CheckBox)this.findViewById(R.id.serverSchemeCb)).isChecked()? "https" : "http";
         try {
-            this.saveCloudInformation(stationId, stationKey, serverAddress, serverPort);
+            this.saveCloudInformation(stationId, stationKey, serverAddress, serverPort, scheme);
         } catch (Exception e) {
             Utils.warnOnScreen(this, "Station information was not saved due to an error, please try again");
             return;
@@ -139,12 +142,13 @@ public class SplashScreen extends Activity {
         this.finish();
     }
 
-    private void saveCloudInformation(int stationId, String stationKey, String serverAddress, int serverPort){
+    private void saveCloudInformation(int stationId, String stationKey, String serverAddress, int serverPort, String serverscheme){
             ContentValues cloudInformation = new ContentValues();
             cloudInformation.put("station_id", stationId);
             cloudInformation.put("station_key", stationKey);
             cloudInformation.put("server_IP", serverAddress);
             cloudInformation.put("server_port", serverPort);
+            cloudInformation.put("server_scheme", serverscheme);
             Utils.savePreferences(cloudInformation, this);
          }
 

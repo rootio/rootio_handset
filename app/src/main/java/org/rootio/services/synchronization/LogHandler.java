@@ -55,8 +55,8 @@ public class LogHandler implements SynchronizationHandler {
 
     @Override
     public String getSynchronizationURL() {
-        return String.format("https://%s:%s/%s/%s/log?api_key=%s", this.cloud.getServerAddress(), this.cloud.getHTTPPort(), "api/station", this.cloud.getStationId(), this.cloud.getServerKey());
-    }
+        return String.format("%s://%s:%s/%s/%s/log?api_key=%s", this.cloud.getServerScheme(), this.cloud.getServerAddress(), this.cloud.getHTTPPort(), "api/station", this.cloud.getStationId(), this.cloud.getServerKey());
+   }
 
     private JSONObject getRecords() {
         String query = "select id, category, argument, event, eventdate  from activitylog";
@@ -80,7 +80,7 @@ public class LogHandler implements SynchronizationHandler {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        Utils.writeToFile(this.parent, parent.toString());
+        //Utils.writeToFile(this.parent, parent.toString());
         return parent;
     }
 }

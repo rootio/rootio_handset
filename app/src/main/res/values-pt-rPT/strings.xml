@@ -126,4 +126,5 @@
         ]]>
     </string>
     <string name="NecessaryPermissionsMissing">As permissões necessariass para esta operação não são grantidas</string>
+    <string name="httpSecure">HTTPS:</string>
 </resources>
