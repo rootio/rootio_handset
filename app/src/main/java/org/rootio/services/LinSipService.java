@@ -22,6 +22,7 @@ import org.linphone.core.ProxyConfig;
 import org.linphone.core.RegistrationState;
 import org.linphone.core.TransportType;
 import org.linphone.core.Transports;
+import org.rootio.handset.BuildConfig;
 import org.rootio.handset.R;
 import org.rootio.services.SIP.SipEventsNotifiable;
 import org.rootio.services.SIP.SipListener;
@@ -409,18 +410,18 @@ public class LinSipService extends Service implements ServiceInformationPublishe
             Utils.logEvent(this, Utils.EventCategory.SIP_CALL, Utils.EventAction.REGISTRATION, registrationState.name());
             switch (registrationState) {
                 case Progress:
-                    Utils.toastOnScreen("Registering...", this);
+                    if(BuildConfig.DEBUG) Utils.toastOnScreen("Registering...", this);
                     break;
                 case Ok:
                     if (proxyConfig != null) {
-                        Utils.toastOnScreen("Registered " + proxyConfig.getIdentityAddress().getUsername() + "@" + proxyConfig.getServerAddr(), this);
+                        if(BuildConfig.DEBUG) Utils.toastOnScreen("Registered " + proxyConfig.getIdentityAddress().getUsername() + "@" + proxyConfig.getServerAddr(), this);
                     }
                     break;
                 case None:
                 case Cleared:
                 case Failed:
                     if (proxyConfig != null) {
-                        Utils.toastOnScreen("Unregistered " + proxyConfig.getIdentityAddress().asString(), this);
+                        if(BuildConfig.DEBUG) Utils.toastOnScreen("Unregistered " + proxyConfig.getIdentityAddress().asString(), this);
                     }
             }
         }
