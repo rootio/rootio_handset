@@ -529,7 +529,7 @@ public class PlayList implements Player.EventListener {
             while (this.isRunning) {
                 try {
                     this.playCallSign();
-                    Thread.sleep(BuildConfig.DEBUG ? 120000 : 720000);// 2 mins debug, 12 mins release
+                    Thread.sleep(PlayList.this.getJingleInterval());// 2 mins debug, 12 mins release
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -581,9 +581,24 @@ public class PlayList implements Player.EventListener {
             } else
                 return 8;
         } catch (Exception ex) {
-            Log.e(PlayList.this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(PlayList.playCallSign)" : ex.getMessage());
+            Log.e(PlayList.this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(PlayList.getMaxVolume)" : ex.getMessage());
         }
         return 8;
+    }
+
+    private int getJingleInterval() {
+        String stationInfo = (String) Utils.getPreference("station_information", String.class, this.parent);
+        try {
+            JSONObject stationInfoJson = new JSONObject(stationInfo);
+            if (stationInfoJson.has("station") && stationInfoJson.getJSONObject("station").has("jingle_interval")) {
+                int interval = stationInfoJson.getJSONObject("station").getInt("jingle_interval");
+                return interval >= 1 && interval <= 15 ? interval * 1000 : 600000;
+            } else
+                return 600000;
+        } catch (Exception ex) {
+            Log.e(PlayList.this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(PlayList.getJingleInterval)" : ex.getMessage());
+        }
+        return 600000;
     }
 
 }
