@@ -5,7 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
+import android.media.AudioManager;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -20,6 +20,7 @@ import org.linphone.core.Factory;
 import org.linphone.core.NatPolicy;
 import org.linphone.core.ProxyConfig;
 import org.linphone.core.RegistrationState;
+import org.linphone.core.TransportType;
 import org.linphone.core.Transports;
 import org.rootio.handset.R;
 import org.rootio.services.SIP.SipEventsNotifiable;
@@ -29,16 +30,17 @@ import org.rootio.tools.utils.Utils;
 public class LinSipService extends Service implements ServiceInformationPublisher, SipEventsNotifiable {
 
     private final int serviceId = 6;
+    private int port, reRegisterPeriod;
     private Core linphoneCore;
     private AuthInfo authInfo;
     private ProxyConfig proxyConfig;
-    private String username, password, domain, stun;
+    private String username, password, domain, stun, protocol;
     private boolean isRunning, isPendingRestart, inCall;
-    private boolean wasStoppedOnPurpose;
+    private boolean wasStoppedOnPurpose, isSipRunning;
     private SipListener coreListener;
-    private boolean isSipRunning;
     private Config profile;
     private BroadcastReceiver br;
+    private int callVolume;
 
     @Override
     public void onCreate() {
@@ -49,6 +51,7 @@ public class LinSipService extends Service implements ServiceInformationPublishe
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Utils.logEvent(this, Utils.EventCategory.SERVICES, Utils.EventAction.START, "LinSIP Service");
         if (!isRunning) {
             isRunning = true;
             this.register();
@@ -101,6 +104,7 @@ public class LinSipService extends Service implements ServiceInformationPublishe
 
     @Override
     public void onDestroy() {
+        Utils.logEvent(this, Utils.EventCategory.SERVICES, Utils.EventAction.STOP, "LinSIP Service");
         this.stopForeground(true);
         this.shutDownService();
         super.onDestroy();
@@ -109,7 +113,7 @@ public class LinSipService extends Service implements ServiceInformationPublishe
 
     private void loadConfig() {
         String stationInformation = (String) Utils.getPreference("station_information", String.class, this);
-        JSONObject stationJson = null;
+        JSONObject stationJson;
         try {
             stationJson = new JSONObject(stationInformation).optJSONObject("station");
             JSONObject sipConfiguration = new JSONObject(stationJson.optString("sip_settings")); //optJSONObject("sip_settings"); the sip config is JSON as a string in a JSON file :-(
@@ -117,6 +121,14 @@ public class LinSipService extends Service implements ServiceInformationPublishe
             this.username = sipConfiguration.optString("sip_username");
             this.password = sipConfiguration.optString("sip_password");
             this.stun = sipConfiguration.optString("sip_stun");
+            this.protocol = sipConfiguration.optString("protocol", "udp");
+            this.port = sipConfiguration.optInt("sip_port", 5060);
+            this.reRegisterPeriod = sipConfiguration.optInt("sip_reregister_period", 30);
+            this.callVolume = sipConfiguration.optInt("call_volume", 5);
+            if (this.callVolume <= 0 || this.callVolume > 5) //unacceptable values
+            {
+                this.callVolume = 5;
+            }
         } catch (JSONException ex) {
             Log.e(this.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(LinSipService.loadConfig)" : ex.getMessage());
         }
@@ -144,9 +156,14 @@ public class LinSipService extends Service implements ServiceInformationPublishe
 
         //The address of the peer
         Address addr = Factory.instance().createAddress(String.format("sip:%s@%s", this.username, this.domain));
+        addr.setPort(this.port);
+        addr.setTransport(this.protocol.toLowerCase().equals("udp") ? TransportType.Udp : TransportType.Tcp);
         Address proxy = Factory.instance().createAddress("sip:" + this.domain);
+
+
         this.authInfo = Factory.instance().createAuthInfo(addr.getUsername(), null, this.password, null, null, null);
         this.linphoneCore.addAuthInfo(authInfo);
+
 
 
         this.proxyConfig.setIdentityAddress(addr);
@@ -155,8 +172,9 @@ public class LinSipService extends Service implements ServiceInformationPublishe
         this.proxyConfig.setNatPolicy(this.createNatPolicy()); //use STUN. There is every chance you are on a NATted network
 
         //Registration deets
-        this.proxyConfig.setExpires(2000);
-        this.proxyConfig.enableRegister(false);
+        this.proxyConfig.setExpires(this.reRegisterPeriod);
+        this.proxyConfig.enableRegister(true);
+
 
         this.linphoneCore.addProxyConfig(this.proxyConfig);
         this.linphoneCore.setDefaultProxyConfig(this.proxyConfig);
@@ -168,7 +186,7 @@ public class LinSipService extends Service implements ServiceInformationPublishe
     }
 
     void register() {
-        if(this.linphoneCore!=null) { //LinPhone core can be null if initialized with wrong parameters!
+        if (this.linphoneCore != null) { //LinPhone core can be null if initialized with wrong parameters!
             this.linphoneCore.removeListener(coreListener);
             new Thread(new Runnable() {
                 @Override
@@ -278,9 +296,14 @@ public class LinSipService extends Service implements ServiceInformationPublishe
     /**
      * Answer a SIP call that has been taken over by this service
      */
-    public void answer(Call call) {
+    public void answer(final Call call) {
         try {
             call.accept();
+            call.setSpeakerVolumeGain(1.0f);
+            // adjust the volume of the telephony stream
+            AudioManager audioManager = (AudioManager) LinSipService.this.getSystemService(Context.AUDIO_SERVICE);
+            audioManager.setStreamVolume(AudioManager.STREAM_VOICE_CALL, this.callVolume, AudioManager.FLAG_SHOW_UI);
+            Utils.logEvent(this, Utils.EventCategory.SIP_CALL, Utils.EventAction.START, call.getRemoteContact());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -321,32 +344,32 @@ public class LinSipService extends Service implements ServiceInformationPublishe
         switch (callState) {
             case End:
                 this.inCall = false;
-                if(isPendingRestart)
-                {
-                    this.deregister();
-                    this.initializeStack();
-                   this.register();
-                    isPendingRestart = false;
-                }
-                this.sendTelephonyEventBroadcast(false);
-                if (call != null) //not being sent au moment
-                {
-                    Utils.toastOnScreen("Call with " + call.getRemoteContact() + " ended", this);
-                }
-                break;
-            case Error:
-                this.inCall = false;
-                if(isPendingRestart)
-                {
+                if (isPendingRestart) {
                     this.deregister();
                     this.initializeStack();
                     this.register();
                     isPendingRestart = false;
-                }   
+                }
+                this.sendTelephonyEventBroadcast(false);
+                Utils.logEvent(this, Utils.EventCategory.SIP_CALL, Utils.EventAction.STOP, call != null? call.getRemoteContact(): "");
+                if (call != null) //not being sent au moment
+                {
+                    Utils.toastOnScreen("Call with " + call != null? call.getRemoteContact():"" + " ended", this);
+                }
+                break;
+            case Error:
+                this.inCall = false;
+                if (isPendingRestart) {
+                    this.deregister();
+                    this.initializeStack();
+                    this.register();
+                    isPendingRestart = false;
+                }
+                Utils.logEvent(this, Utils.EventCategory.SIP_CALL, Utils.EventAction.STOP, call != null? call.getRemoteContact(): "");
                 this.sendTelephonyEventBroadcast(false);
                 if (call != null) //not being sent au moment
                 {
-                    Utils.toastOnScreen("Call with " + call.getRemoteContact() + " erred", this);
+                    Utils.toastOnScreen("Call with " + call != null? call.getRemoteContact():"" + " erred", this);
                 }
                 break;
             case Connected:
@@ -355,18 +378,20 @@ public class LinSipService extends Service implements ServiceInformationPublishe
                 this.sendTelephonyEventBroadcast(true);
                 if (call != null) //ideally check for direction and report if outgoing or incoming
                 {
-                    Utils.toastOnScreen("In call with " + call.getRemoteContact(), this);
+                    Utils.toastOnScreen("In call with " + call != null? call.getRemoteContact():"", this);
                 }
+                Utils.logEvent(this, Utils.EventCategory.SIP_CALL, Utils.EventAction.START, call != null? call.getRemoteContact(): "");
                 break;
             case IncomingReceived:
                 if (call != null) {
-                    Utils.toastOnScreen("Incoming call from " + call.getRemoteContact(), this);
+                    Utils.toastOnScreen("Incoming call from " + call != null? call.getRemoteContact():"", this);
                     this.handleCall(call); //check WhiteList first!!
                 }
+                Utils.logEvent(this, Utils.EventCategory.SIP_CALL, Utils.EventAction.RINGING, call != null? call.getRemoteContact(): "");
                 break;
             case OutgoingInit:
                 if (call != null) {
-                    Utils.toastOnScreen("Dialling out to" + call.getRemoteContact(), this);
+                    Utils.toastOnScreen("Dialling out to" + call != null? call.getRemoteContact():"", this);
                 }
                 break;
             default: //handles 11 other states!
@@ -381,6 +406,7 @@ public class LinSipService extends Service implements ServiceInformationPublishe
     @Override
     public void updateRegistrationState(RegistrationState registrationState, ProxyConfig proxyConfig) {
         if (registrationState != null) { //could be sent before listener has any notifs, e.g when this service connects to service before registration
+            Utils.logEvent(this, Utils.EventCategory.SIP_CALL, Utils.EventAction.REGISTRATION, registrationState.name());
             switch (registrationState) {
                 case Progress:
                     Utils.toastOnScreen("Registering...", this);

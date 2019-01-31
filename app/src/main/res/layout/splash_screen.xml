@@ -125,6 +125,32 @@
             android:inputType="numberDecimal" />
 
     </LinearLayout>
+
+     <LinearLayout
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:layout_gravity="right"
+         android:layout_marginTop="@dimen/activity_vertical_margin" >
+
+         <TextView
+             android:id="@+id/textView4"
+             android:layout_width="fill_parent"
+             android:layout_height="wrap_content"
+             android:layout_marginRight="@dimen/ButtonPanelPadding"
+             android:layout_weight="60"
+             android:gravity="right"
+             android:text="@string/httpSecure"
+             android:textAppearance="?android:attr/textAppearanceMedium" />
+
+         <CheckBox
+             android:id="@+id/serverSchemeCb"
+             android:layout_width="fill_parent"
+             android:layout_height="wrap_content"
+             android:layout_weight="40"
+             android:ems="10"
+             android:inputType="numberDecimal" />
+
+     </LinearLayout>
    
     </LinearLayout>
 

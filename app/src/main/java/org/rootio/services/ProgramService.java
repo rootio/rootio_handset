@@ -37,6 +37,7 @@ public class ProgramService extends Service implements ServiceInformationPublish
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Utils.logEvent(this, Utils.EventCategory.SERVICES, Utils.EventAction.START, "Program Service");
         if (!this.isRunning) {
             Utils.doNotification(this, "RootIO", "Radio Service Started");
             this.am = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
@@ -64,6 +65,7 @@ public class ProgramService extends Service implements ServiceInformationPublish
 
     @Override
     public void onDestroy() {
+        Utils.logEvent(this, Utils.EventCategory.SERVICES, Utils.EventAction.STOP, "Program Service");
             this.stopForeground(true);
             this.shutDownService();
             super.onDestroy();

@@ -11,6 +11,7 @@ import org.rootio.tools.utils.Utils;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteCantOpenDatabaseException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteException;
@@ -36,7 +37,7 @@ public class DBAgent {
     private SQLiteDatabase getDBConnection(String databaseName, CursorFactory factory, int flag) {
         try {
             return SQLiteDatabase.openDatabase(databaseName, null, flag);
-        } catch (SQLiteException ex) {
+        } catch (Exception ex) {
             // db file is corrupt, reinstall db
             // this.createDatabaseFile();
             // return SQLiteDatabase.openDatabase(databaseName, null, flag);

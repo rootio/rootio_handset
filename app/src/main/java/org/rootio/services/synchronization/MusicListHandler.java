@@ -3,22 +3,21 @@
  */
 package org.rootio.services.synchronization;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.rootio.handset.R;
-import org.rootio.tools.cloud.Cloud;
-import org.rootio.tools.utils.Utils;
-
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.rootio.handset.BuildConfig;
+import org.rootio.handset.R;
+import org.rootio.tools.cloud.Cloud;
+import org.rootio.tools.utils.Utils;
 
 /**
  * @author Jude Mukundane, M-ITI/IST-UL
@@ -27,10 +26,13 @@ public class MusicListHandler implements SynchronizationHandler {
 
     private Context parent;
     private Cloud cloud;
+    private int offset, limit = 100;
+    private long maxDateadded;
 
     MusicListHandler(Context parent, Cloud cloud) {
         this.parent = parent;
         this.cloud = cloud;
+        this.maxDateadded = this.getMaxDateAdded();
     }
 
     @Override
@@ -43,35 +45,71 @@ public class MusicListHandler implements SynchronizationHandler {
     @Override
     public void processJSONResponse(JSONObject synchronizationResponse) {
         // do nothing with the response
+        try {
+            if(synchronizationResponse.getBoolean("status"))
+            {
+                this.logMaxDateAdded(this.maxDateadded);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public String getSynchronizationURL() {
-        return String.format("https://%s:%s/api/station/%s/music?api_key=%s", cloud.getServerAddress(), cloud.getHTTPPort(), cloud.getStationId(), cloud.getServerKey());
+        return String.format("%s://%s:%s/%s/%s/music?api_key=%s", this.cloud.getServerScheme(), this.cloud.getServerAddress(), this.cloud.getHTTPPort(), "api/station", this.cloud.getStationId(), this.cloud.getServerKey());
+  }
+
+    private long getMaxDateAdded()
+    {
+        return (long)Utils.getPreference("media_max_date_added", long.class, this.parent);
+    }
+
+    private void logMaxDateAdded(long maxDate) {
+        ContentValues values = new ContentValues();
+        values.put("media_max_date_added", maxDate);
+        Utils.savePreferences(values, this.parent);
     }
 
     private JSONObject getSongList() {
         JSONObject music = new JSONObject();
-        String artist, album, title;
+        String artist, album;
         Cursor cur = null;
         try {
             ContentResolver cr = this.parent.getContentResolver();
             Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-            String selection = MediaStore.Audio.Media.IS_MUSIC + "!= 0";
-            String sortOrder = MediaStore.Audio.Media.TITLE + " ASC";
-            cur = cr.query(uri, null, selection, null, sortOrder);
-            int count = 0;
+            String selection = MediaStore.Audio.Media.IS_MUSIC + "!= 0 and date_added > ?";
+            //uncomment last bit to turn on paging in case of very many records, but in this case sort by date_added asc
+            String sortOrder = MediaStore.Audio.Media.TITLE + " ASC"; // limit   " + String.valueOf(limit) + " offset "+String.valueOf(offset);
+            cur = cr.query(uri, null, selection, new String[]{String.valueOf(this.maxDateadded)}, sortOrder);
+            offset += limit;
+            int count;
 
             if (cur != null) {
                 count = cur.getCount();
+                if(BuildConfig.DEBUG)
+                {
+                    Utils.toastOnScreen("Syncing "+ count + "music records", this.parent);
+                }
 
                 if (count > 0) {
+                    if(count < limit) // we have reached the end of all records!
+                    {
+                        offset = 0;
+                    }
                     while (cur.moveToNext()) {
                         JSONObject song = new JSONObject();
 
 
                         song.put("title", cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.TITLE)).replace("\u2019", "'").replace("\u2018", "'"));
                         song.put("duration", cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.DURATION)));
+                        long dateAdded = cur.getLong(cur.getColumnIndex(MediaStore.Audio.Media.DATE_ADDED));
+                        song.put("date_added", dateAdded);
+                        song.put("date_modified", cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.DATE_MODIFIED)));
+                        if(dateAdded > maxDateadded)
+                        {
+                            maxDateadded = dateAdded;
+                        }
 
                         artist = cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ARTIST)) == null ? "unknown" : cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.ARTIST));
                         artist = artist.replace("\u2019", "'").replace("\u2018", "'");

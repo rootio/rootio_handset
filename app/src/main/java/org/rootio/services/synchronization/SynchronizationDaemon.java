@@ -1,7 +1,8 @@
 package org.rootio.services.synchronization;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
+import android.content.Context;
+import android.os.Handler;
+import android.util.Log;
 
 import org.json.JSONObject;
 import org.rootio.handset.R;
@@ -9,38 +10,18 @@ import org.rootio.services.SynchronizationService;
 import org.rootio.tools.cloud.Cloud;
 import org.rootio.tools.utils.Utils;
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.os.Handler;
-import android.util.Log;
+import java.util.HashMap;
 
 public class SynchronizationDaemon implements Runnable {
     private final Context parent;
     private final Cloud cloud;
     private Handler handler;
+    private MusicListHandler musicListHandler;
 
     @Override
     public void run() {
 
-       /* while (((SynchronizationService) this.parent).isRunning()) {
-            // turn on mobile data and wait
-            //this.toggleData(true);
-            //this.getSomeSleep(15000);
-
-            // do the sync
-            this.synchronize(new DiagnosticsHandler(this.parent, this.cloud));
-            this.synchronize(new ProgramsHandler(this.parent, this.cloud));
-            this.synchronize(new CallLogHandler(this.parent, this.cloud));
-            this.synchronize(new SMSLogHandler(this.parent, this.cloud));
-            this.synchronize(new WhitelistHandler(this.parent, this.cloud));
-            this.synchronize(new FrequencyHandler(this.parent, this.cloud));
-            this.synchronize(new StationHandler(this.parent, this.cloud));
-            this.synchronize(new MusicListHandler(this.parent, this.cloud));
-            this.synchronize(new PlaylistHandler(this.parent, this.cloud));
-            // turn off mobile data
-            //this.toggleData(false);
-
-            this.getSomeSleep(this.getFrequency() * 1000); // seconds to milliseconds*/
+        this.musicListHandler = new MusicListHandler(this.parent, this.cloud);
         this.synchronize();
 
     }
@@ -74,10 +55,11 @@ public class SynchronizationDaemon implements Runnable {
                                 synchronize(new StationHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud));
                         SynchronizationDaemon.this.
 
-                                synchronize(new MusicListHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud));
+                                synchronize(SynchronizationDaemon.this.musicListHandler);
                         SynchronizationDaemon.this.
 
                                 synchronize(new PlaylistHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud));
+                        SynchronizationDaemon.this.synchronize(new LogHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud));
                     }
                 });
                 thread.start(); //TODO: fix synchronicity. if the interval is too short, next jobs will start before this finishes!
@@ -122,36 +104,18 @@ public class SynchronizationDaemon implements Runnable {
             return frequencies.getJSONObject("synchronization").getInt("interval");
         } catch (Exception ex) {
             Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(SynchronizationDaemon.toggleData)" : ex.getMessage());
-            return 180; // default to 3 mins
-        }
-    }
-
-    private boolean toggleData(boolean status) {
-        try {
-            final ConnectivityManager conman = (ConnectivityManager) this.parent.getSystemService(Context.CONNECTIVITY_SERVICE);
-            Class conmanClass;
-            conmanClass = Class.forName(conman.getClass().getName());
-            final Field iConnectivityManagerField = conmanClass.getDeclaredField("mService");
-            iConnectivityManagerField.setAccessible(true);
-            final Object iConnectivityManager = iConnectivityManagerField.get(conman);
-            final Class iConnectivityManagerClass = Class.forName(iConnectivityManager.getClass().getName());
-            final Method setMobileDataEnabledMethod = iConnectivityManagerClass.getDeclaredMethod("setMobileDataEnabled", Boolean.TYPE);
-            setMobileDataEnabledMethod.setAccessible(true);
-            setMobileDataEnabledMethod.invoke(iConnectivityManager, status);
-            return true;
-        } catch (Exception ex) {
-            Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(SynchronizationDaemon.toggleData)" : ex.getMessage());
-            return false;
+            return 60; // default to 1 minute
         }
     }
 
     public void synchronize(final SynchronizationHandler handler) {
         try {
             String synchronizationUrl = handler.getSynchronizationURL();
-            String response = Utils.doPostHTTP(synchronizationUrl, handler.getSynchronizationData().toString());
+            HashMap<String, Object> response = Utils.doDetailedPostHTTP(synchronizationUrl, handler.getSynchronizationData().toString());
             JSONObject responseJSON;
-            responseJSON = new JSONObject(response);
+            responseJSON = new JSONObject((String)response.get("response"));
             handler.processJSONResponse(responseJSON);
+            Utils.logEvent(this.parent, Utils.EventCategory.SYNC, Utils.EventAction.START, String.format("length: %s, response code: %s, duration: %s, url: %s", response.get("length"), response.get("responseCode"), response.get("duration"), response.get("url")));
         } catch (Exception ex) {
             ex.printStackTrace();
             Log.e(SynchronizationDaemon.this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(SynchronizationDaemon.synchronize)" : ex.getMessage());

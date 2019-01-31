@@ -21,6 +21,7 @@ public class ScheduleChangeBroadcastHandler extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context c, Intent i) {
-        this.notifiable.notifyScheduleChange();
+        boolean shouldRestart = i.getBooleanExtra("shouldRestart", false);
+        this.notifiable.notifyScheduleChange(shouldRestart);
     }
 }

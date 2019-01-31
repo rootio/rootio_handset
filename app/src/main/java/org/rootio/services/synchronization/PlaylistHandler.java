@@ -83,7 +83,7 @@ public class PlaylistHandler implements SynchronizationHandler {
      */
     @Override
     public String getSynchronizationURL() {
-        return String.format("https://%s:%s/api/station/%s/playlists?api_key=%s", cloud.getServerAddress(), cloud.getHTTPPort(), cloud.getStationId(), cloud.getServerKey());
+        return String.format("%s://%s:%s/%s/%s/playlists?api_key=%s", this.cloud.getServerScheme(), this.cloud.getServerAddress(), this.cloud.getHTTPPort(), "api/station", this.cloud.getStationId(), this.cloud.getServerKey());
     }
 
 }

@@ -45,28 +45,27 @@ public class SMSSwitch {
      */
     private MessageProcessor switchSMS(String[] messageParts) {
         String keyword = messageParts.length > 0 ? messageParts[0] : "";
-        if (keyword.equals("network")) {
-            return new NetworkSMSHandler(this.parent, from, messageParts);
+        switch(keyword.toLowerCase())
+        {
+            case "network": //network|<wifi | gsm >|<on | off | status>
+                return new NetworkSMSHandler(this.parent, from, messageParts);
+            case "station":
+                return new StationSMSHandler(this.parent, from, messageParts);
+            case "services": //services|<service_id>|<start | stop | status>
+                return new ServicesSMSHandler(this.parent, from, messageParts);
+            case "resources":
+                return new ResourcesSMSHandler(this.parent, from, messageParts);
+            case"sound":
+                return new SoundSMSHandler(this.parent, from, messageParts);
+            case "whitelist":
+                return new WhiteListSMSHandler(this.parent, from, messageParts);
+            case "ussd": //ussd|*123#
+                return new USSDSMSHandler(this.parent, this.from, messageParts);
+            case "mark":
+                return new MarkHandler(this.parent, this.from, messageParts);
+            default:
+            return null;
         }
-        if (keyword.equals("station")) {
 
-            return new StationSMSHandler(this.parent, from, messageParts);
-        }
-        if (keyword.equals("services")) {
-
-            return new ServicesSMSHandler(this.parent, from, messageParts);
-        }
-        if (keyword.equals("resources")) {
-
-            return new ResourcesSMSHandler(this.parent, from, messageParts);
-        }
-        if (keyword.equals("sound")) {
-
-            return new SoundSMSHandler(this.parent, from, messageParts);
-        }
-        if (keyword.equals("whitelist")) {
-            return new WhiteListSMSHandler(this.parent, from, messageParts);
-        }
-        return null;
     }
 }

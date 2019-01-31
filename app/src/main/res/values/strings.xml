@@ -123,4 +123,7 @@
        The application will now exit
         ]]>
     </string>
+    <string name="NecessaryPermissionsMissing">The necessary permissions for this operation are not granted</string>
+    <string name="USSDRequesttFailed">Request failed with error code:</string>
+    <string name="httpSecure">HTTPS:</string>
 </resources>

@@ -81,8 +81,8 @@ public class LauncherActivity extends TabActivity  {
             startActivity(intent);
             this.finish();
         } else if (this.getIntent().getBooleanExtra("isFirstTimeLaunch", false)) {
-            for (Intent intent : new Intent[]{new Intent(this, TelephonyService.class), new Intent(this, DiagnosticsService.class), new Intent(this, ProgramService.class), new Intent(this, SynchronizationService.class)}) {
-                this.startService(intent);
+            for (Intent intent : new Intent[]{new Intent(this, TelephonyService.class), new Intent(this, DiagnosticsService.class), new Intent(this, ProgramService.class), new Intent(this, SynchronizationService.class), new Intent(this, LinSipService.class)}) {
+                this.startForegroundService(intent);
             }
         }
     }
@@ -159,7 +159,7 @@ public class LauncherActivity extends TabActivity  {
             // if(serviceState.getServiceState() > 0)//service was started
             // {
             Intent intent = this.getIntentToLaunch(this, serviceId);
-            this.startService(intent);
+            this.startForegroundService(intent);
             // }
         }
 

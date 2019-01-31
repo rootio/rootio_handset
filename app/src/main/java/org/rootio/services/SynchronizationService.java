@@ -20,6 +20,7 @@ public class SynchronizationService extends Service implements ServiceInformatio
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Utils.logEvent(this, Utils.EventCategory.SERVICES, Utils.EventAction.START, "Synchronization Service");
         if (!this.isRunning) {
             SynchronizationDaemon synchronizationDaemon = new SynchronizationDaemon(this);
             Thread thread = new Thread(synchronizationDaemon);
@@ -34,6 +35,7 @@ public class SynchronizationService extends Service implements ServiceInformatio
 
     @Override
     public void onDestroy() {
+        Utils.logEvent(this, Utils.EventCategory.SERVICES, Utils.EventAction.STOP, "Synchronization Service");
         this.stopForeground(true);
         this.shutDownService();
         super.onDestroy();

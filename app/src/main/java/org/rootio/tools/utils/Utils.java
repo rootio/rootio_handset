@@ -1,24 +1,5 @@
 package org.rootio.tools.utils;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.InetAddress;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Map;
-
-import org.json.JSONObject;
-import org.rootio.handset.R;
-import org.rootio.tools.persistence.DBAgent;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -33,10 +14,27 @@ import android.content.SharedPreferences;
 import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.PopupMenu;
 import android.widget.Toast;
+
+import org.json.JSONObject;
+import org.rootio.handset.R;
+import org.rootio.tools.persistence.DBAgent;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
 
 @SuppressLint("SimpleDateFormat")
 public class Utils {
@@ -248,6 +246,7 @@ public class Utils {
             httpUrlConnection.setRequestProperty("Content-Type", "application/json");
             httpUrlConnection.connect();
             OutputStream outstr = httpUrlConnection.getOutputStream();
+            //writeToFile(data);
             outstr.write(data.getBytes());
             outstr.flush();
             InputStream instr = httpUrlConnection.getInputStream();
@@ -269,6 +268,45 @@ public class Utils {
         }
     }
 
+    public static HashMap<String, Object> doDetailedPostHTTP(String httpUrl, String data) {
+        URL url;
+        LocalDate dt = LocalDate.now();
+        HashMap<String, Object> responseData = new HashMap<>();
+        try {
+            url = new URL(httpUrl);
+            HttpURLConnection httpUrlConnection = (HttpURLConnection) url.openConnection();
+            httpUrlConnection.setRequestMethod("POST");
+            httpUrlConnection.setDoOutput(true);
+            httpUrlConnection.setRequestProperty("Content-Type", "application/json");
+            httpUrlConnection.connect();
+            OutputStream outstr = httpUrlConnection.getOutputStream();
+            //writeToFile(data);
+            outstr.write(data.getBytes());
+            outstr.flush();
+            InputStream instr = httpUrlConnection.getInputStream();
+            StringBuilder response = new StringBuilder();
+            while (true) {
+                int tmp = instr.read();
+                if (tmp < 0) {
+                    break;
+                }
+                response.append((char) tmp);
+            }
+            responseData.put("response", response.toString());
+            responseData.put("duration", 0); //ChronoUnit.MICROS.between(dt, LocalDate.now()));
+            responseData.put("responseCode", httpUrlConnection.getResponseCode());
+            responseData.put("length", httpUrlConnection.getContentLength());
+            responseData.put("url", httpUrlConnection.getURL());
+            return responseData;
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            return null;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     /**
      * Check to see if this phone is connected to a station in the cloud. This is done by looking for config files that are created when a station is connected
      *
@@ -277,5 +315,45 @@ public class Utils {
     public static boolean isConnectedToStation(Context context) {
         SharedPreferences prefs = context.getSharedPreferences("org.rootio.handset", Context.MODE_PRIVATE);
         return prefs != null && prefs.contains("station_information");
+     }
+
+     public static long logEvent(Context context, EventCategory category, EventAction action, String argument)
+     {
+          try {
+             ContentValues values = new ContentValues();
+             values.put("category", category.name());
+             values.put("argument", argument);
+             values.put("event", action.name());
+             values.put("eventdate", Utils.getCurrentDateAsString("yyyy-MM-dd HH:mm:ss"));
+             return new DBAgent(context).saveData("activitylog", null, values);
+         }
+         catch (Exception ex)
+         {
+             ex.printStackTrace();
+         }
+         return 0;
+     }
+
+    public static void writeToFile(Context ctx, String data){
+        File fl = new File(ctx.getExternalFilesDir(null), Utils.getCurrentDateAsString("YYYYMMDD_HmS")+ "_log.txt");
+         FileWriter fwr = null;
+         try {
+             fwr = new FileWriter(fl);
+
+         fwr.write(data);
+         fwr.close();
+         } catch (IOException e) {
+             e.printStackTrace();
+         }
+     }
+
+     public enum EventCategory
+    {
+        MEDIA, SERVICES, SYNC, SMS, CALL, SIP_CALL, DATA_NETWORK
+    }
+
+    public enum EventAction
+    {
+        ON, OFF, PAUSE, STOP, START, SEND, RECEIVE, REGISTRATION, RINGING
      }
 }

@@ -1,7 +1,6 @@
 package org.rootio.activities;
 
-import java.util.Date;
-import java.util.HashMap;
+import android.content.Context;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -10,14 +9,16 @@ import org.rootio.tools.persistence.DBAgent;
 import org.rootio.tools.utils.PoorManStatistics;
 import org.rootio.tools.utils.Utils;
 
-import android.content.Context;
+import java.util.Date;
 
 public class DiagnosticStatistics {
 
     private final Context parent;
-    private double[] cpuData, memoryData, storageData, batteryData, gsmData, wifiConnectivityData, latitudeData, longitudeData;
+    private double[] cpuData, memoryData, storageData, batteryData, mobileNetworkStrength, wifiConnectivityData, latitudeData, longitudeData;
     private Date[] dateData;
     private int[] idData;
+    private String[] mobileNetworkName, mobileNetworkType;
+    private boolean [] mobileNetworkConnected;
     private int size;
 
     public DiagnosticStatistics(Context parent) {
@@ -27,14 +28,11 @@ public class DiagnosticStatistics {
 
     /**
      * Returns the diagnostic records written since the specified ID
-     *
-     * @param maxId The ID since which records should be returned. 0 returns
-     *              everything
-     * @return An array of String arrays each representing a record of
+      @return An array of String arrays each representing a record of
      * diagnostics
      */
     private void LoadDiagnosticsData() {
-        String query = "select batterylevel, gsmstrength, wificonnected, storageutilization, memoryutilization, cpuutilization, _id, diagnostictime, latitude, longitude  from diagnostic ";
+        String query = "select batterylevel, firstmobilenetworkname, firstmobilenetworktype, firstmobilenetworkconnected, firstmobilenetworkstrength, wificonnected, storageutilization, memoryutilization, cpuutilization, _id, diagnostictime, latitude, longitude  from diagnostic ";
         String[] filterArgs = new String[]{};
         DBAgent agent = new DBAgent(this.parent);
         String[][] results = agent.getData(query, filterArgs);
@@ -44,22 +42,28 @@ public class DiagnosticStatistics {
         memoryData = new double[results.length];
         storageData = new double[results.length];
         batteryData = new double[results.length];
-        gsmData = new double[results.length];
+        mobileNetworkStrength = new double[results.length];
+        mobileNetworkName = new String[results.length];
+        mobileNetworkType = new String[results.length];
+        mobileNetworkConnected = new boolean[results.length];
         wifiConnectivityData = new double[results.length];
         latitudeData = new double[results.length];
         longitudeData = new double[results.length];
         size = results.length;
         for (int i = 0; i < results.length; i++) {
-            idData[i] = Utils.parseIntFromString(results[i][6]);
-            dateData[i] = Utils.getDateFromString(results[i][7], "yyyy-MM-dd HH:mm:ss");
+            idData[i] = Utils.parseIntFromString(results[i][9]);
+            dateData[i] = Utils.getDateFromString(results[i][10], "yyyy-MM-dd HH:mm:ss");
             batteryData[i] = Utils.parseDoubleFromString(results[i][0]);
-            cpuData[i] = Utils.parseDoubleFromString(results[i][5]);
-            storageData[i] = Utils.parseDoubleFromString(results[i][3]);
-            memoryData[i] = Utils.parseDoubleFromString(results[i][4]);
-            gsmData[i] = Utils.parseDoubleFromString(results[i][1]);
-            wifiConnectivityData[i] = Utils.parseDoubleFromString(results[i][2]);
-            latitudeData[i] = Utils.parseDoubleFromString(results[i][8]);
-            longitudeData[i] = Utils.parseDoubleFromString(results[i][9]);
+            cpuData[i] = Utils.parseDoubleFromString(results[i][8]);
+            storageData[i] = Utils.parseDoubleFromString(results[i][6]);
+            memoryData[i] = Utils.parseDoubleFromString(results[i][7]);
+            mobileNetworkStrength[i] = Utils.parseDoubleFromString(results[i][4]);
+            mobileNetworkName[i] = results[i][1];
+            mobileNetworkType[i] = results[i][2];
+            mobileNetworkConnected[i] = results[i][3] == "1";
+            wifiConnectivityData[i] = Utils.parseDoubleFromString(results[i][5]);
+            latitudeData[i] = Utils.parseDoubleFromString(results[i][11]);
+            longitudeData[i] = Utils.parseDoubleFromString(results[i][12]);
         }
     }
 
@@ -150,7 +154,7 @@ public class DiagnosticStatistics {
      * @return Double representing average GSM signal strength for the day
      */
     public double getAverageGSMStrength() {
-        return PoorManStatistics.mean(this.gsmData);
+        return PoorManStatistics.mean(this.mobileNetworkStrength);
     }
 
     /**
@@ -159,7 +163,7 @@ public class DiagnosticStatistics {
      * @return Double representing max GSM signal strength for the day
      */
     public double getMaxGSMStrength() {
-        return PoorManStatistics.max(gsmData);
+        return PoorManStatistics.max(this.mobileNetworkStrength);
     }
 
     /**
@@ -168,7 +172,7 @@ public class DiagnosticStatistics {
      * @return Double representing min GSM signal strength for the day
      */
     public double getMinGSMStrength() {
-        return PoorManStatistics.min(gsmData);
+        return PoorManStatistics.min(this.mobileNetworkStrength);
     }
 
     /**
@@ -253,27 +257,6 @@ public class DiagnosticStatistics {
         return this.size;
     }
 
-    /**
-     * Gets a record containing diagnostic information
-     *
-     * @param index The index of the record to be returned
-     * @return A Hashmap representing a record of diagnostic information
-     */
-    public HashMap<String, Object> getRecord(int index) {
-        HashMap<String, Object> record = new HashMap<String, Object>();
-        record.put("gsm_signal", gsmData[index]);
-        record.put("wifi_connectivity", wifiConnectivityData[index]);
-        record.put("cpu_load", cpuData[index]);
-        record.put("battery_level", batteryData[index]);
-        record.put("storage_usage", storageData[index]);
-        record.put("memory_utilization", memoryData[index]);
-        record.put("gps_lat", latitudeData[index]);
-        record.put("gps_lon", longitudeData[index]);
-        record.put("record_date", dateData[index]);
-        record.put("id", idData[index]);
-        return record;
-    }
-
     public JSONObject getJSONRecords() {
         JSONObject parent = new JSONObject();
         JSONArray analyticData = new JSONArray();
@@ -281,7 +264,10 @@ public class DiagnosticStatistics {
             for (int index = 0; index < idData.length; index++) {
                 JSONObject record = new JSONObject();
 
-                record.put("gsm_signal", gsmData[index]);
+                record.put("gsm_signal", mobileNetworkStrength[index]);
+                //record.put("mobilenetworkname", mobileNetworkName[index]);
+                record.put("gsm_network_type_1", mobileNetworkType[index]);
+                //record.put("firstmobilenetworkconnected", mobileNetworkConnected[index]);
                 record.put("wifi_connectivity", wifiConnectivityData[index]);
                 record.put("cpu_load", cpuData[index]);
                 record.put("battery_level", batteryData[index]);

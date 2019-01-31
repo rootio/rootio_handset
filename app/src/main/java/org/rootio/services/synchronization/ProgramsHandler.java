@@ -32,6 +32,7 @@ public class ProgramsHandler implements SynchronizationHandler {
     @Override
     public void processJSONResponse(JSONObject synchronizationResponse) {
         boolean hasChanges = false;
+        boolean shouldRestart = false;
         JSONArray results;
         try {
             results = synchronizationResponse.getJSONArray("scheduled_programs");
@@ -41,14 +42,30 @@ public class ProgramsHandler implements SynchronizationHandler {
                 int recs = this.deleteRecord(results.getJSONObject(i).getLong("scheduled_program_id"));
                 if ((recs < 1 || results.getJSONObject(i).getBoolean("deleted")) && (isCurrentOrFutureChange(results.getJSONObject(i).getString("start"), results.getJSONObject(i).getString("end")))) {
                     hasChanges = true;
+                    if(results.getJSONObject(i).getInt("program_type_id") == 2 && isCurrent(results.getJSONObject(i).getString("start"), results.getJSONObject(i).getString("end")))
+                    {
+                        shouldRestart = true;
+                    }
                 }
                 this.saveRecord(results.getJSONObject(i).getInt("scheduled_program_id"), results.getJSONObject(i).getString("name"), Utils.getDateFromString(results.getJSONObject(i).getString("start"), "yyyy-MM-dd'T'HH:mm:ss"), Utils.getDateFromString(results.getJSONObject(i).getString("end"), "yyyy-MM-dd'T'HH:mm:ss"), results.getJSONObject(i).getString("structure"), Utils.getDateFromString(results.getJSONObject(i).getString("updated_at"), "yyyy-MM-dd'T'HH:mm:ss"), results.getJSONObject(i).getString("program_type_id"), results.getJSONObject(i).getBoolean("deleted"));
             }
             if (hasChanges) {
-                this.announceScheduleChange();
+                this.announceScheduleChange(shouldRestart);
             }
         } catch (JSONException e) {
             e.printStackTrace();
+        }
+    }
+
+    private boolean isCurrent(String startDateStr, String endDateStr)
+    {
+        try {
+            Date now = Calendar.getInstance().getTime();
+            Date startDate = Utils.getDateFromString(startDateStr, "yyyy-MM-dd'T'HH:mm:ss");
+            Date endDate = Utils.getDateFromString(endDateStr, "yyyy-MM-dd'T'HH:mm:ss");
+            return (startDate.compareTo(now) <= 0 && endDate.compareTo(now) >= 0); //yet to begin today, or is running
+        } catch (Exception ex) {
+            return false;
         }
     }
 
@@ -64,14 +81,15 @@ public class ProgramsHandler implements SynchronizationHandler {
         }
     }
 
-    private void announceScheduleChange() {
+    private void announceScheduleChange(boolean shouldRestart) {
         Intent intent = new Intent("org.rootio.services.synchronization.SCHEDULE_CHANGE_EVENT");
+        intent.putExtra("shouldRestart", shouldRestart);
         this.parent.sendBroadcast(intent);
     }
 
     @Override
     public String getSynchronizationURL() {
-        return String.format("https://%s:%s/api/station/%s/programs?api_key=%s&%s", cloud.getServerAddress(), cloud.getHTTPPort(), cloud.getStationId(), cloud.getServerKey(), this.getSincePart());
+        return String.format("%s://%s:%s/%s/%s/programs?api_key=%s", this.cloud.getServerScheme(), this.cloud.getServerAddress(), this.cloud.getHTTPPort(), "api/station", this.cloud.getStationId(), this.cloud.getServerKey());
     }
 
     private String getSincePart() {

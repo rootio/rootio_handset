@@ -3,24 +3,19 @@ package org.rootio.services;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.net.sip.SipAudioCall;
 import android.net.sip.SipException;
 import android.net.sip.SipManager;
 import android.net.sip.SipProfile;
 import android.net.sip.SipRegistrationListener;
-import android.os.Binder;
 import android.os.IBinder;
-import android.telecom.Call;
 import android.util.Log;
 
 import org.rootio.handset.R;
 import org.rootio.services.SIP.CallState;
-import org.rootio.services.SIP.RegistrationState;
 import org.rootio.tools.utils.Utils;
 
 import java.text.ParseException;
@@ -34,18 +29,15 @@ public class SipService extends Service implements ServiceInformationPublisher {
     private SipProfile sipProfile;
     private SipAudioCall sipCall;
     private CallState callState = CallState.IDLE;
-    private RegistrationState registrationState = RegistrationState.UNREGISTERED;
     private String username, password, domain;
     private boolean isRunning;
     private CallListener callListener;
     private CallReceiver receiver;
-    private RegistrationListener registrationListener;
 
 
     @Override
     public void onCreate() {
         this.callListener = new CallListener();
-        this.registrationListener = new RegistrationListener();
     }
 
     @Override
@@ -78,9 +70,9 @@ public class SipService extends Service implements ServiceInformationPublisher {
      * Load SIP configuration information from the stored credentials
      */
     private void loadConfig() {
-        this.domain = (String)Utils.getPreference("sip_domain", String.class, this);
-            this.username = (String)Utils.getPreference("sip_username", String.class, this);
-            this.password =  (String)Utils.getPreference("sip_password", String.class, this);
+        this.domain = (String) Utils.getPreference("sip_domain", String.class, this);
+        this.username = (String) Utils.getPreference("sip_username", String.class, this);
+        this.password = (String) Utils.getPreference("sip_password", String.class, this);
     }
 
     /**
@@ -176,6 +168,7 @@ public class SipService extends Service implements ServiceInformationPublisher {
     public void hangup() {
         try {
             this.sipCall.endCall();
+            Utils.logEvent(this, Utils.EventCategory.SIP_CALL, Utils.EventAction.STOP, this.sipCall.getPeerProfile().getUriString());
         } catch (SipException e) {
             e.printStackTrace();
         }
@@ -186,9 +179,10 @@ public class SipService extends Service implements ServiceInformationPublisher {
      */
     public void answer() {
         try {
-this.callState = CallState.INCALL;
+            this.callState = CallState.INCALL;
             this.sipCall.answerCall(30);
             this.sipCall.startAudio();
+            Utils.logEvent(this, Utils.EventCategory.SIP_CALL, Utils.EventAction.START, this.sipCall.getPeerProfile().getUriString());
         } catch (SipException e) {
             e.printStackTrace();
         }
@@ -268,19 +262,16 @@ this.callState = CallState.INCALL;
 
         @Override
         public void onRegistering(String localProfileUri) {
-            SipService.this.registrationState = RegistrationState.REGISTERING;
         }
 
         @Override
         public void onRegistrationDone(String localProfileUri, final long expiryTime) {
-Utils.toastOnScreen("reged", SipService.this);
-            SipService.this.registrationState = RegistrationState.REGISTERED;
+            Utils.toastOnScreen("reged", SipService.this);
         }
 
         @Override
         public void onRegistrationFailed(final String localProfileUri, final int errorCode, final String errorMessage) {
 
-            SipService.this.registrationState = RegistrationState.UNREGISTERED;
         }
     }
 
@@ -289,18 +280,15 @@ Utils.toastOnScreen("reged", SipService.this);
 
         @Override
         public void onRegistering(String localProfileUri) {
-            SipService.this.registrationState = RegistrationState.DEREGISTERING;
         }
 
         @Override
         public void onRegistrationDone(String localProfileUri, final long expiryTime) {
-            SipService.this.registrationState = RegistrationState.UNREGISTERED;
         }
 
         @Override
         public void onRegistrationFailed(final String localProfileUri, final int errorCode, final String errorMessage) {
             Log.i(TAG, "onRegistrationFailed: " + errorMessage + errorCode);
-            SipService.this.registrationState = RegistrationState.REGISTERED;
         }
     }
 

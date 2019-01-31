@@ -19,6 +19,8 @@ import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.rootio.handset.BuildConfig;
 import org.rootio.handset.R;
 import org.rootio.tools.persistence.DBAgent;
@@ -37,7 +39,6 @@ import java.util.Iterator;
 public class PlayList implements Player.EventListener {
 
     private static PlayList playListInstance;
-    private ProgramActionType programActionType;
     private ArrayList<String> playlists, streams;
     private HashSet<Media> mediaList;
     private Iterator<Media> mediaIterator;
@@ -45,12 +46,13 @@ public class PlayList implements Player.EventListener {
     private SimpleExoPlayer mediaPlayer, callSignPlayer;
     private CallSignProvider callSignProvider;
     private Context parent;
-    private Uri currentMedia;
-    // private Media currentMedia;
+    private Uri currentMediaUri;
+    private Media currentMedia, currentCallSign;
     private long mediaPosition;
     private MediaLibrary mediaLib;
     private boolean isShuttingDown;
     private Thread runnerThread;
+    private int maxVolume;
 
 
     private PlayList() {
@@ -71,7 +73,6 @@ public class PlayList implements Player.EventListener {
         this.streams = streams;
         this.parent = parent;
         this.mediaLib = new MediaLibrary(this.parent);
-        this.programActionType = programActionType;
         this.callSignProvider = new CallSignProvider();
     }
 
@@ -88,6 +89,7 @@ public class PlayList implements Player.EventListener {
      * Play the media loaded in this playlist
      */
     public void play() {
+        this.maxVolume = this.getMaxVolume();
         startPlayer();
         this.callSignProvider.start();
     }
@@ -95,13 +97,13 @@ public class PlayList implements Player.EventListener {
     private void startPlayer() {
         try {
             AudioManager audioManager = (AudioManager) this.parent.getSystemService(Context.AUDIO_SERVICE);
-            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC) - (BuildConfig.DEBUG ? 5 : 6), AudioManager.FLAG_SHOW_UI);
+            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, this.maxVolume, AudioManager.FLAG_SHOW_UI);
 
             if (streamIterator.hasNext()) {
                 String stream = this.streamIterator.next();
-                currentMedia = Uri.parse(stream);
+                currentMedia = new Media("", stream, 0, null);
                 try {
-                    playMedia(currentMedia);
+                    playMedia(Uri.parse(currentMedia.getFileLocation()));
 
                 } catch (NullPointerException ex) {
                     Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(PlayList.startPlayer)" : ex.getMessage());
@@ -110,9 +112,10 @@ public class PlayList implements Player.EventListener {
 
             } else if (mediaIterator.hasNext()) {
 
-                currentMedia = Uri.fromFile(new File(mediaIterator.next().getFileLocation()));
+                currentMedia = mediaIterator.next();
+
                 try {
-                    playMedia(currentMedia);
+                    playMedia(Uri.fromFile(new File(currentMedia.getFileLocation())));
 
                 } catch (NullPointerException ex) {
                     Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(PlayList.startPlayer)" : ex.getMessage());
@@ -145,14 +148,16 @@ public class PlayList implements Player.EventListener {
     }
 
     private void playMedia(Uri uri, long seekPosition) {
+        this.currentMediaUri = uri;
         //begin by raising the volume
         AudioManager audioManager = (AudioManager) this.parent.getSystemService(Context.AUDIO_SERVICE);
-        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC) - (BuildConfig.DEBUG ? 5 : 6), AudioManager.FLAG_SHOW_UI);
+        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, this.maxVolume, AudioManager.FLAG_SHOW_UI);
 
 
         mediaPlayer = ExoPlayerFactory.newSimpleInstance(this.parent, new DefaultTrackSelector());
         mediaPlayer.addListener(this);
         mediaPlayer.prepare(this.getMediaSource(uri));
+
         mediaPlayer.setVolume(BuildConfig.DEBUG ? 0.5F : 0.9F); //this is the volume of the individual player, not the music service of the phone
         mediaPlayer.setPlayWhenReady(true);
         //mediaPlayer.seekTo(seekPosition); this trips streams...
@@ -172,14 +177,20 @@ public class PlayList implements Player.EventListener {
         this.isShuttingDown = true; //async nature of stuff means stuff can be called in the middle of shutdown. This flag shd be inspected...
         if (this.callSignProvider != null) {
             this.callSignProvider.stop();
-            if (this.callSignPlayer != null)
+            if (this.callSignPlayer != null) {
                 try {
                     this.callSignPlayer.stop();
                     this.callSignPlayer.release();
                 } catch (Exception ex) {
                     Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(PlayList.stop)" : ex.getMessage());
                 }
+            }
+            try {
 
+                Utils.logEvent(this.parent, Utils.EventCategory.MEDIA, Utils.EventAction.STOP, String.format("Title: %s, Artist: %s, Location: %s", currentMedia.getTitle(), currentMedia.getArtists(), currentMedia.getFileLocation()));
+            } catch (Exception ex) {
+                Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(PlayList.stop)" : ex.getMessage());
+            }
             if (mediaPlayer != null) {
                 try {
                     this.fadeOut();
@@ -219,6 +230,8 @@ public class PlayList implements Player.EventListener {
 
                 }
 
+                Utils.logEvent(this.parent, Utils.EventCategory.MEDIA, Utils.EventAction.PAUSE, String.format("Title: %s, Artist: %s, Location: %s", currentMedia.getTitle(), currentMedia.getArtists(), currentMedia.getFileLocation()));
+
                 try {
                     this.mediaPosition = this.mediaPlayer.getCurrentPosition();
                     mediaPlayer.stop(true); //advised that media players should never be reused, even in pause/play scenarios
@@ -254,9 +267,13 @@ public class PlayList implements Player.EventListener {
 
     public void resume() {
         try {
-            this.playMedia(currentMedia, this.mediaPosition);
+            this.playMedia(this.currentMediaUri, this.mediaPosition);
+            try {
 
-
+                Utils.logEvent(this.parent, Utils.EventCategory.MEDIA, Utils.EventAction.START, String.format("Title: %s, Artist: %s, Location: %s", currentMedia.getTitle(), currentMedia.getArtists(), currentMedia.getFileLocation()));
+            } catch (Exception ex) {
+                Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(PlayList.stop)" : ex.getMessage());
+            }
             // resume the callSign provider
             this.callSignProvider.start();
 
@@ -332,6 +349,12 @@ public class PlayList implements Player.EventListener {
                         case Player.STATE_ENDED:
                             try {
                                 PlayList.this.mediaPlayer.setVolume(BuildConfig.DEBUG ? 0.5F : 0.9F);
+                                Utils.toastOnScreen("logging media...", PlayList.this.parent);
+                                try {
+                                    Utils.logEvent(PlayList.this.parent, Utils.EventCategory.MEDIA, Utils.EventAction.STOP, String.format("Title: %s, Artist: %s, Location: %s", currentCallSign.getTitle(), currentCallSign.getArtists(), currentCallSign.getFileLocation()));
+                                } catch (Exception ex) {
+                                    Log.e(PlayList.this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(PlayList.stop)" : ex.getMessage());
+                                }
                                 callSignPlayer.removeListener(this);
                                 callSignPlayer.release();
                             } catch (Exception ex) {
@@ -374,7 +397,14 @@ public class PlayList implements Player.EventListener {
             });
             this.mediaPlayer.setVolume(0.07f);
             callSignPlayer.setVolume(BuildConfig.DEBUG ? 0.5F : 0.9F);
+            //currentCallSign = Uri.fromFile(new File(Url));
             callSignPlayer.prepare(this.getMediaSource(Uri.fromFile(new File(Url))));
+            Utils.toastOnScreen("logging media...", this.parent);
+            try {
+                Utils.logEvent(PlayList.this.parent, Utils.EventCategory.MEDIA, Utils.EventAction.START, String.format("Title: %s, Artist: %s, Location: %s", currentCallSign.getTitle(), currentCallSign.getArtists(), currentCallSign.getFileLocation()));
+            } catch (Exception ex) {
+                Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(PlayList.stop)" : ex.getMessage());
+            }
             this.callSignPlayer.setPlayWhenReady(true);
         } catch (Exception ex) {
             Log.e(PlayList.this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(PlayList.onReceiveCallSign)" : ex.getMessage());
@@ -416,17 +446,25 @@ public class PlayList implements Player.EventListener {
                     } else {
                         this.mediaPlayer.setVolume(BuildConfig.DEBUG ? 0.5F : 0.9F);
                     }
+                    Utils.toastOnScreen("logging media...", this.parent);
+                    Utils.logEvent(this.parent, Utils.EventCategory.MEDIA, Utils.EventAction.START, String.format("Title: %s, Artist: %s, Location: %s", currentMedia.getTitle(), currentMedia.getArtists(), currentMedia.getFileLocation()));
+
 
                 } catch (Exception ex) {
+
                     this.mediaPlayer.setVolume(BuildConfig.DEBUG ? 0.5F : 0.9F);
                 }
                 break;
             case Player.STATE_ENDED: //a song has ended
+                Utils.toastOnScreen("logging media...", this.parent);
+                Utils.logEvent(this.parent, Utils.EventCategory.MEDIA, Utils.EventAction.STOP, String.format("Title: %s, Artist: %s, Location: %s", currentMedia.getTitle(), currentMedia.getArtists(), currentMedia.getFileLocation()));
                 if (this.isShuttingDown) {
                     return;
                 }
                 try {
+
                     mediaPlayer.release();
+
                 } catch (Exception ex) {
                     Log.e(PlayList.this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(PlayList.onPlayerStateChanged)" : ex.getMessage());
                 }
@@ -501,6 +539,11 @@ public class PlayList implements Player.EventListener {
 
         void stop() {
             this.isRunning = false;
+            try {
+                Utils.logEvent(PlayList.this.parent, Utils.EventCategory.MEDIA, Utils.EventAction.STOP, String.format("Title: %s, Artist: %s, Location: %s", currentCallSign.getTitle(), currentCallSign.getArtists(), currentCallSign.getFileLocation()));
+            } catch (Exception ex) {
+                Log.e(PlayList.this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(PlayList.stop)" : ex.getMessage());
+            }
             if (PlayList.this.runnerThread != null) {
                 PlayList.this.runnerThread.interrupt(); //so the thread can exit on state change, otherwise could sleep through on->off->on
             }
@@ -514,7 +557,8 @@ public class PlayList implements Player.EventListener {
                 if (!this.mediaIterator.hasNext()) {
                     this.mediaIterator = callSigns.iterator(); // reset the iterator to 0 if at the end
                 }
-                onReceiveCallSign(mediaIterator.next().getFileLocation());
+                currentCallSign = mediaIterator.next();
+                onReceiveCallSign(currentCallSign.getFileLocation());
             } catch (Exception ex) {
                 Log.e(PlayList.this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(PlayList.playCallSign)" : ex.getMessage());
             }
@@ -525,6 +569,21 @@ public class PlayList implements Player.EventListener {
             PlayList.this.runnerThread.start();
 
         }
+    }
+
+    private int getMaxVolume() {
+        String stationInfo = (String) Utils.getPreference("station_information", String.class, this.parent);
+        try {
+            JSONObject stationInfoJson = new JSONObject(stationInfo);
+            if (stationInfoJson.has("station") && stationInfoJson.getJSONObject("station").has("media_volume")) {
+                int volume = stationInfoJson.getJSONObject("station").getInt("media_volume");
+                return volume >= 0 && volume <= 15 ? volume : 8;
+            } else
+                return 8;
+        } catch (Exception ex) {
+            Log.e(PlayList.this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(PlayList.playCallSign)" : ex.getMessage());
+        }
+        return 8;
     }
 
 }

@@ -36,7 +36,7 @@ public class NetworkSMSHandler implements MessageProcessor {
 
         if (messageParts[1].equals("wifi")) {
             if (messageParts[2].equals("on") || messageParts[2].equals("off")) {
-                return this.toggleWifi(messageParts[3]);
+                return this.toggleWifi(messageParts[2]);
             }
 
             if (messageParts[2].equals("status")) {
@@ -142,7 +142,7 @@ public class NetworkSMSHandler implements MessageProcessor {
         try {
             DiagnosticAgent diagnosticAgent = new DiagnosticAgent(this.parent);
             diagnosticAgent.runDiagnostics();
-            String response = String.format("connected to %s with signal strength %s", diagnosticAgent.getTelecomOperatorName(), diagnosticAgent.getGSMConnectionStrength());
+            String response = String.format("connected to %s with signal strength %s", diagnosticAgent.getTelecomOperatorName(), diagnosticAgent.getMobileSignalStrength());
             this.respondAsyncStatusRequest(response, from);
             return true;
         } catch (Exception ex) {

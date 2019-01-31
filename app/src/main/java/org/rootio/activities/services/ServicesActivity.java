@@ -194,7 +194,7 @@ public class ServicesActivity extends Activity implements OnCheckedChangeListene
     private void startService(int serviceId) {
         Intent serviceIntent = this.serviceComponents.get(serviceId).getIntent();
         this.bindServiceConnection(serviceId);
-        this.startService(serviceIntent);
+        this.startForegroundService(serviceIntent);
         this.serviceComponents.get(serviceId).getServiceState().setServiceState(1);
     }
 
