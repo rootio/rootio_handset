@@ -151,15 +151,19 @@ public class LinSipService extends Service implements ServiceInformationPublishe
     private void prepareProxy() {
         this.proxyConfig = linphoneCore.createProxyConfig();
         Transports trns = Factory.instance().createTransports();
-        trns.setUdpPort(-1);
-        trns.setTcpPort(-1);
+        trns.setUdpPort(this.port);
+        trns.setTcpPort(this.port);
         this.linphoneCore.setTransports(trns);
 
         //The address of the peer
-        Address addr = Factory.instance().createAddress(String.format("sip:%s@%s", this.username, this.domain));
+        Address addr = Factory.instance().createAddress(String.format("sip:%s@%s:%s", this.username, this.domain, this.port));
         addr.setPort(this.port);
         addr.setTransport(this.protocol.toLowerCase().equals("udp") ? TransportType.Udp : TransportType.Tcp);
-        Address proxy = Factory.instance().createAddress("sip:" + this.domain);
+
+        //the address of the SIP server
+        Address proxy = Factory.instance().createAddress(String.format("sip:%s:%s", this.domain, this.port));
+        proxy.setTransport(this.protocol.toLowerCase().equals("udp") ? TransportType.Udp : TransportType.Tcp);
+        //proxy.setPort(this.port);
 
 
         this.authInfo = Factory.instance().createAuthInfo(addr.getUsername(), null, this.password, null, null, null);
@@ -168,7 +172,9 @@ public class LinSipService extends Service implements ServiceInformationPublishe
 
 
         this.proxyConfig.setIdentityAddress(addr);
-        this.proxyConfig.setServerAddr(proxy.getDomain());
+        this.proxyConfig.setServerAddr(String.format("sip:%s:%s", this.domain, this.port));
+        //this.proxyConfig.setServerAddr(proxy.getDomain());
+
 
         this.proxyConfig.setNatPolicy(this.createNatPolicy()); //use STUN. There is every chance you are on a NATted network
 
