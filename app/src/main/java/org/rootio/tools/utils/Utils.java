@@ -270,7 +270,7 @@ public class Utils {
 
     public static HashMap<String, Object> doDetailedPostHTTP(String httpUrl, String data) {
         URL url;
-        LocalDate dt = LocalDate.now();
+        Long then  = Calendar.getInstance().getTimeInMillis();
         HashMap<String, Object> responseData = new HashMap<>();
         try {
             url = new URL(httpUrl);
@@ -293,7 +293,7 @@ public class Utils {
                 response.append((char) tmp);
             }
             responseData.put("response", response.toString());
-            responseData.put("duration", 0); //ChronoUnit.MICROS.between(dt, LocalDate.now()));
+            responseData.put("duration", Calendar.getInstance().getTimeInMillis() - then); //ChronoUnit.MICROS.between(dt, LocalDate.now()));
             responseData.put("responseCode", httpUrlConnection.getResponseCode());
             responseData.put("length", httpUrlConnection.getContentLength());
             responseData.put("url", httpUrlConnection.getURL());

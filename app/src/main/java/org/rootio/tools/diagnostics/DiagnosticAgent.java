@@ -70,7 +70,7 @@ public class DiagnosticAgent {
         this.loadLatitudeLongitude();
         this.loadTelecomOperatorName();
         this.loadMobileNetworkType();
-    }
+     }
 
     private void loadMobileNetworkType() {
         if (ActivityCompat.checkSelfPermission(this.parentActivity, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
