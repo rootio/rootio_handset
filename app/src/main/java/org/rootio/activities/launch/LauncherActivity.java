@@ -131,10 +131,17 @@ public class LauncherActivity extends TabActivity  {
                 alert.setPositiveButton(R.string.OkButtonText,new DialogInterface.OnClickListener(){
                     @Override
                     public void onClick(DialogInterface dialog,int id){
+                        //first stop all services
+                        LauncherActivity.this.stopServices();
+
+                        //Clear settings
                         SharedPreferences prefs = getSharedPreferences("org.rootio.handset", Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = prefs.edit();
                         editor.clear();
                         editor.apply();
+
+                        //clear the database - but this is reset on new station connection anyway...
+                        //LauncherActivity.this.clearDatabase();
                         finish();
                         }
                 });
@@ -149,6 +156,19 @@ public class LauncherActivity extends TabActivity  {
                 return true;
             default:
                 return super.onContextItemSelected(item);
+        }
+    }
+
+    private void stopServices()
+    {
+        for (int serviceId : new int[]{1, 2, 3, 4,5,6}) // only vitals
+        {
+            //ServiceState serviceState = new ServiceState(context, serviceId);
+            // if(serviceState.getServiceState() > 0)//service was started
+            // {
+            Intent intent = this.getIntentToLaunch(this, serviceId);
+            this.stopService(intent);
+            // }
         }
     }
 

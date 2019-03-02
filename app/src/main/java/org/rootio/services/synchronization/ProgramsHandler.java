@@ -44,7 +44,7 @@ public class ProgramsHandler implements SynchronizationHandler {
                     hasChanges = true;
                     if(results.getJSONObject(i).getInt("program_type_id") == 2 && isCurrent(results.getJSONObject(i).getString("start"), results.getJSONObject(i).getString("end")))
                     {
-                        shouldRestart = true;
+                       shouldRestart = true;
                     }
                 }
                 this.saveRecord(results.getJSONObject(i).getInt("scheduled_program_id"), results.getJSONObject(i).getString("name"), Utils.getDateFromString(results.getJSONObject(i).getString("start"), "yyyy-MM-dd'T'HH:mm:ss"), Utils.getDateFromString(results.getJSONObject(i).getString("end"), "yyyy-MM-dd'T'HH:mm:ss"), results.getJSONObject(i).getString("structure"), Utils.getDateFromString(results.getJSONObject(i).getString("updated_at"), "yyyy-MM-dd'T'HH:mm:ss"), results.getJSONObject(i).getString("program_type_id"), results.getJSONObject(i).getBoolean("deleted"));
@@ -89,7 +89,7 @@ public class ProgramsHandler implements SynchronizationHandler {
 
     @Override
     public String getSynchronizationURL() {
-        return String.format("%s://%s:%s/%s/%s/programs?api_key=%s", this.cloud.getServerScheme(), this.cloud.getServerAddress(), this.cloud.getHTTPPort(), "api/station", this.cloud.getStationId(), this.cloud.getServerKey());
+        return String.format("%s://%s:%s/%s/%s/programs?api_key=%s&%s", this.cloud.getServerScheme(), this.cloud.getServerAddress(), this.cloud.getHTTPPort(), "api/station", this.cloud.getStationId(), this.cloud.getServerKey(), this.getSincePart());
     }
 
     private String getSincePart() {
