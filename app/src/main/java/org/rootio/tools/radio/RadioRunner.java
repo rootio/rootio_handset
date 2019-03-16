@@ -90,7 +90,7 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
             this.isPendingScheduleReload = false;
             this.restartProgramming();
         }
-        if (this.runningProgramIndex != null && !this.isExpired(this.runningProgramIndex)) {
+        if (this.runningProgramIndex != null && !this.isExpired(index)) {
             this.stopProgram(this.runningProgramIndex);
         }
         this.runningProgramIndex = index;
