@@ -1,6 +1,7 @@
 package org.rootio.services.synchronization;
 
 import android.content.Context;
+import android.provider.MediaStore;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -59,7 +60,7 @@ public class LogHandler implements SynchronizationHandler {
    }
 
     private JSONObject getRecords() {
-        String query = "select id, category, argument, event, eventdate  from activitylog";
+        String query = "select id, category, argument, event, eventdate  from activitylog limit 100";
         String[] filterArgs = new String[]{};
         DBAgent agent = new DBAgent(this.parent);
         String[][] results = agent.getData(query, filterArgs);
