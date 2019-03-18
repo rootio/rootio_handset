@@ -117,8 +117,7 @@ public class Program implements Comparable<Program>, ScheduleNotifiable {
 
     @Override
     public int compareTo(Program another) {
-        // TODO Auto-generated method stub
-        return 0;
+        return this.startDate.compareTo(another.getStartDate());
     }
 
     private void setupAlertReceiver(ArrayList<ProgramAction> programActions) {

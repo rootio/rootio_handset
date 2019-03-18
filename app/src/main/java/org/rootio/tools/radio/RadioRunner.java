@@ -307,7 +307,6 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
                 // The program had begun, it was paused by the call
                 this.state = State.PLAYING;
                 this.resumeProgram();
-
             }
         }
     }

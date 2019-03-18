@@ -16,18 +16,25 @@ public class BootMonitor extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent arg1) {
-        Utils.setContext(context);
+        if(arg1.getBooleanExtra("isRestart", false))
+        {
+            this.stopAllServices(context);
+        }
+        startAllServices(context);
+
+    }
+
+    private void startAllServices(Context context) {
         if(Utils.isConnectedToStation(context)) {
             for (int serviceId : new int[]{1, 2, 3, 4, 5, 6}) {
                 ServiceState serviceState = new ServiceState(context, serviceId);
                // if (serviceState.getServiceState() > 0)// service was started
                // {
                     Intent intent = this.getIntentToLaunch(context, serviceId);
-                    context.startService(intent);
+                    context.startForegroundService(intent);
                // }
             }
         }
-
     }
 
     /**
@@ -61,6 +68,20 @@ public class BootMonitor extends BroadcastReceiver {
                 break;
         }
         return intent;
+    }
+
+    private void stopAllServices(Context context)
+    {
+        if(Utils.isConnectedToStation(context)) {
+            for (int serviceId : new int[]{1, 2, 3, 4, 5, 6}) {
+                ServiceState serviceState = new ServiceState(context, serviceId);
+                // if (serviceState.getServiceState() > 0)// service was started
+                // {
+                Intent intent = this.getIntentToLaunch(context, serviceId);
+                context.startForegroundService(intent);
+                // }
+            }
+        }
     }
 
 }

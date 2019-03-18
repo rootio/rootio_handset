@@ -19,7 +19,7 @@ public class UpgradeMonitor extends BroadcastReceiver {
            // if (serviceState.getServiceState() > 0)// service was started
            // {
                 Intent intent = this.getIntentToLaunch(context, serviceId);
-                context.startService(intent);
+                context.startForegroundService(intent);
            // }
         }}
 

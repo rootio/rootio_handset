@@ -123,9 +123,18 @@ public class ProgramService extends Service implements ServiceInformationPublish
         Date dt = this.getTomorrowBaseDate();
         Intent intent = new Intent("org.rootio.services.program.NEW_DAY_SCHEDULE");
 
-        this.pi = PendingIntent.getBroadcast(this, 0, intent, 0);
-        this.am.set(AlarmManager.RTC_WAKEUP, dt.getTime(), this.pi);
+        //send an intent to restart services
+        Intent restartIntent = new Intent("org.rootio.services.RESTART_ALL");
+        restartIntent.putExtra("isRestart", true);
+        PendingIntent restartPendingIntent = PendingIntent.getBroadcast(this, 0, restartIntent,0);
+        this.am.set(AlarmManager.RTC_WAKEUP, dt.getTime() + 5000, restartPendingIntent);
+
+
+        //this.pi = PendingIntent.getBroadcast(this, 0, intent, 0);
+        //this.am.set(AlarmManager.RTC_WAKEUP, dt.getTime(), this.pi);
     }
+
+
 
     private Date getTomorrowBaseDate() {
         Calendar cal = Calendar.getInstance();

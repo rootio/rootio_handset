@@ -77,7 +77,7 @@ public class ServicesSMSHandler implements MessageProcessor, Notifiable {
         if (intent == null) {
             return false;
         }
-        this.parent.startService(intent);
+        this.parent.startForegroundService(intent);
         this.respondAsyncStatusRequest("start ok", from);
         return true;
     }

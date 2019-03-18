@@ -64,10 +64,11 @@
         <service android:name="org.rootio.services.SynchronizationService" />
         <service android:name="org.rootio.services.SipService" />
         <service android:name="org.rootio.services.LinSipService" />
-        <receiver android:name="org.rootio.services.BootMonitor" >
+        <receiver android:name="org.rootio.services.BootMonitor" android:enabled="true" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" >
                 </action>
+                <action android:name="org.rootio.services.RESTART_ALL"></action>
             </intent-filter>
         </receiver>
         <receiver android:name="org.rootio.tools.sms.SMSReceiver" android:enabled="true"   android:exported="true">
