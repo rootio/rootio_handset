@@ -55,6 +55,16 @@ public class ServicesSMSHandler implements MessageProcessor, Notifiable {
             }
         }
 
+        //restarting a service
+        if (messageParts[1].equals("restart")) {
+            try {
+                if(BuildConfig.DEBUG) Utils.toastOnScreen("starting service " + messageParts[2], this.parent);
+                return this.restartService(Integer.parseInt(messageParts[2]));
+            } catch (Exception ex) {
+                return false;
+            }
+        }
+
         // getting the service status
         if (messageParts[1].equals("status")) {
             try {
@@ -63,23 +73,47 @@ public class ServicesSMSHandler implements MessageProcessor, Notifiable {
                 return false;
             }
         }
+
+
+
         return false;
+    }
+
+    private boolean restartService(int i) {
+        return this.stopService(i) && this.startService(i);
     }
 
     /**
      * Starts the service whose ID is specified
      *
      * @param serviceId The ID of the service to start
-     * @return Boolean indicating whether or not the operatoin was successful
+     * @return Boolean indicating whether or not the operation was successful
      */
     private boolean startService(int serviceId) {
-        Intent intent = this.getServiceIntent(serviceId);
-        if (intent == null) {
-            return false;
+        if(serviceId==0)//all services
+        {
+            for(int i : new int[]{1,2,3,4,5,6})
+            {
+                Intent intent = this.getServiceIntent(i);
+                if (intent == null) {
+                    return false;
+                }
+                this.parent.startForegroundService(intent);
+            }
+            this.respondAsyncStatusRequest("start all ok", from);
         }
-        this.parent.startForegroundService(intent);
-        this.respondAsyncStatusRequest("start ok", from);
-        return true;
+        else {
+            Intent intent = this.getServiceIntent(serviceId);
+            if (intent == null) {
+                return false;
+            }
+            this.parent.startForegroundService(intent);
+            this.respondAsyncStatusRequest("start ok", from);
+        }
+
+
+            return true;
+
     }
 
     /**
@@ -89,17 +123,36 @@ public class ServicesSMSHandler implements MessageProcessor, Notifiable {
      * @return Boolean indicating whether or not the operation was successful
      */
     private boolean stopService(int serviceId) {
-        Intent intent = new Intent();
-        intent.setAction("org.rootio.services.STOP_EVENT");
-        intent.putExtra("serviceId", serviceId);
-        this.parent.sendBroadcast(intent);
-        // try to shutdown
-        Intent intent2 = this.getServiceIntent(serviceId);
-        if (intent2 == null) {
-            return false;
+        if(serviceId==0) {
+            for(int i : new int[] {1, 2, 3, 4, 5, 6})
+            {
+                Intent intent = new Intent();
+                intent.setAction("org.rootio.services.STOP_EVENT");
+                intent.putExtra("serviceId", i);
+                this.parent.sendBroadcast(intent);
+                // try to shutdown
+                Intent intent2 = this.getServiceIntent(i);
+                if (intent2 == null) {
+                    return false;
+                }
+                this.parent.stopService(intent2);
+            }
+            this.respondAsyncStatusRequest("stop all ok", from);
         }
-        this.parent.stopService(intent2);
-        this.respondAsyncStatusRequest("start ok", from);
+        else
+        {
+            Intent intent = new Intent();
+            intent.setAction("org.rootio.services.STOP_EVENT");
+            intent.putExtra("serviceId", serviceId);
+            this.parent.sendBroadcast(intent);
+            // try to shutdown
+            Intent intent2 = this.getServiceIntent(serviceId);
+            if (intent2 == null) {
+                return false;
+            }
+            this.parent.stopService(intent2);
+            this.respondAsyncStatusRequest("stop ok", from);
+        }
         return true;
     }
 
