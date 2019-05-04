@@ -175,8 +175,36 @@ public class DBAgent {
 
             return database.insert(tableName, nullColumnHack, data);
         } catch (Exception ex) {
+            Log.e(this.context.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(DBAgent.saveData)" : ex.getMessage());
             return 0;
         } finally {
+            database.close();
+        }
+    }
+
+    /**
+     * Saves a row to the Database
+     *
+     * @param tableName      The name of the table to which to save the data
+     * @param nullColumnHack The column in which to insert a null in case of an empty row
+     * @param data           Map of column names and column values to be inserted into the
+     *                       specified table
+     * @return The row id of the inserted row
+     */
+    public boolean bulkSaveData(String tableName, String nullColumnHack, ContentValues[] data) {
+        SQLiteDatabase database = this.getDBConnection(this.databaseName, null, SQLiteDatabase.OPEN_READWRITE);
+        try {
+            database.beginTransaction();
+            for (ContentValues datum : data) {
+                database.insert(tableName, nullColumnHack, datum);
+            }
+            database.setTransactionSuccessful();
+            return true;
+        } catch (Exception ex) {
+            Log.e(this.context.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(DBAgent.saveData)" : ex.getMessage());
+            return false;
+        } finally {
+            database.endTransaction();
             database.close();
         }
     }
@@ -209,7 +237,21 @@ public class DBAgent {
             Log.e(this.context.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(DBAgent.bulkSaveData)" : ex.getMessage());
             return false;
         } finally {
-            database.close();
+            try
+            {database.endTransaction();}
+            catch(Exception ex)
+            {
+
+            }
+            try{
+                database.close();
+            }
+            catch(Exception ex)
+            {
+
+            }
+
+
         }
     }
 

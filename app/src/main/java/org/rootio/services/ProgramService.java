@@ -16,6 +16,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.Uri;
+import android.os.Environment;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -126,7 +128,7 @@ public class ProgramService extends Service implements ServiceInformationPublish
         //send an intent to restart services
         Intent restartIntent = new Intent("org.rootio.services.RESTART_ALL");
         restartIntent.putExtra("isRestart", true);
-        PendingIntent restartPendingIntent = PendingIntent.getBroadcast(this, 0, restartIntent,0);
+        PendingIntent restartPendingIntent = PendingIntent.getBroadcast(this, 0, intent,0);
         this.am.set(AlarmManager.RTC_WAKEUP, dt.getTime() + 5000, restartPendingIntent);
 
 
@@ -151,12 +153,15 @@ public class ProgramService extends Service implements ServiceInformationPublish
         public void onReceive(Context context, Intent intent) {
             ProgramService.this.radioRunner.stop();
             try {
-                ProgramService.this.finalize();
+                //ProgramService.this.finalize();
+                intent.putExtra("isRestart", true);
+                new BootMonitor().onReceive(context, intent);
+
             } catch (Throwable e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-            ProgramService.this.runTodaySchedule();
+            //ProgramService.this.runTodaySchedule();
 
         }
     }

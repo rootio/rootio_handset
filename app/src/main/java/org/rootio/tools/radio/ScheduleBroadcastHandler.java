@@ -31,7 +31,9 @@ public class ScheduleBroadcastHandler extends BroadcastReceiver implements Runna
 
     @Override
     public void onReceive(Context c, Intent i) {
-        Integer possibleIndex = i.getIntExtra("index", 0);
+
+        Integer possibleIndex = i.getIntExtra("index", -1);
+        //Utils.toastOnScreen("Launching program",c);
         if (possibleIndex <= currentIndex) { //sometimes two programs will be started at the same time
             return; // intents are thrown twice sometimes
         }

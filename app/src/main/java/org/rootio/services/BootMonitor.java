@@ -6,6 +6,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import com.esotericsoftware.kryo.util.Util;
+
 /**
  * This class listens for boot incidents and restores the services to the state
  * they were in before the phone shut down
@@ -78,7 +80,7 @@ public class BootMonitor extends BroadcastReceiver {
                 // if (serviceState.getServiceState() > 0)// service was started
                 // {
                 Intent intent = this.getIntentToLaunch(context, serviceId);
-                context.startForegroundService(intent);
+                context.stopService(intent);
                 // }
             }
         }

@@ -77,6 +77,7 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
         this.setUpAlarming();
         this.programs = fetchPrograms();
         this.schedulePrograms(programs);
+        //Utils.toastOnScreen("initing programme..", this.parent);
     }
 
     /**
@@ -99,6 +100,7 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
         if (this.state != State.PAUSED) {
             this.state = State.PLAYING;
             this.programs.get(index).run();
+            //Utils.toastOnScreen("starting program...", this.parent);
         }
     }
 
@@ -212,6 +214,8 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
      */
     private void addAlarmEvent(int index, Date startTime) {
         try {
+            Utils.toastOnScreen("scheduling for "+startTime, this.parent);
+            //Thread.sleep(1000);
             Intent intent = new Intent("org.rootio.RadioRunner" + String.valueOf(index));
             intent.putExtra("index", index);
             intent.putExtra("startTime", startTime.getTime());
@@ -220,7 +224,7 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
             //this.pis.add(pi);
             this.pendingIntents.add(new Object[]{pi, startTime.getTime()});
         } catch (Exception ex) {
-            Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(RadioRunner.addAlarmEvent)" : ex.getMessage());
+            Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? " Null pointer exception(RadioRunner.addAlarmEvent)" : ex.getMessage());
         }
     }
 
@@ -272,6 +276,10 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
                 if(i == 0 || (programs.get(i).getStartDate() != programs.get(i-1).getStartDate())) //do not double schedule at same time.
                     addAlarmEvent(i, programs.get(i).getStartDate());
             }
+            else
+            {
+                Utils.toastOnScreen("TIme issue...", this.parent);
+            }
         }
     }
 
@@ -282,7 +290,7 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
      */
     private ArrayList<Program> fetchPrograms() {
         DBAgent agent = new DBAgent(this.parent);
-        String query = "select id, name, start, end, structure, programtypeid from scheduledprogram where date(start) = date(current_timestamp,'localtime') and not deleted";
+        String query = "select id, name, start, end, structure, programtypeid, deleted from scheduledprogram where (date(start) = date(current_timestamp,'localtime') or date(end) = date(current_timestamp,'localtime'))  and not deleted";
         String[] args = new String[]{};
         String[][] data = agent.getData(query, args);
         ArrayList<Program> programs = new ArrayList<>();

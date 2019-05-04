@@ -33,6 +33,7 @@
 
     <application
         android:allowBackup="false"
+        android:enabled="true"
         android:icon="@drawable/ic_launcher"
         android:theme="@style/AppBaseTheme"
         android:logo="@drawable/ic_launcher"
@@ -64,14 +65,13 @@
         <service android:name="org.rootio.services.SynchronizationService" />
         <service android:name="org.rootio.services.SipService" />
         <service android:name="org.rootio.services.LinSipService" />
-        <receiver android:name="org.rootio.services.BootMonitor" android:enabled="true" android:exported="true">
+        <receiver android:name="org.rootio.services.BootMonitor" android:enabled="true" android:exported="true" android:directBootAware="true">
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" >
-                </action>
-                <action android:name="org.rootio.services.RESTART_ALL"></action>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="org.rootio.services.RESTART_ALL"/>
             </intent-filter>
         </receiver>
-        <receiver android:name="org.rootio.tools.sms.SMSReceiver" android:enabled="true"   android:exported="true">
+        <receiver android:name="org.rootio.tools.sms.SMSReceiver" android:enabled="true"   android:exported="true" android:directBootAware="true">
             <intent-filter android:priority="1000">
                 <category android:name="android.intent.category.DEFAULT" />
                 <action android:name="android.provider.Telephony.SMS_RECEIVED"/>

@@ -87,10 +87,7 @@ public class MusicListHandler implements SynchronizationHandler {
 
             if (cur != null) {
                 count = cur.getCount();
-                if(BuildConfig.DEBUG)
-                {
-                    Utils.toastOnScreen("Syncing "+ count + "music records", this.parent);
-                }
+
 
                 if (count > 0) {
                     if(count < limit) // we have reached the end of all records!

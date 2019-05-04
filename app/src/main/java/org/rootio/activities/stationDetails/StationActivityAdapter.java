@@ -18,7 +18,7 @@ import android.widget.TextView;
 
 public class StationActivityAdapter extends BaseAdapter {
 
-    private ArrayList<Program> programSlots;
+    private ArrayList<Program> programSlots = new ArrayList<>();
 
     public StationActivityAdapter(ArrayList<Program> programSlots) {
         this.programSlots = programSlots;

@@ -1,7 +1,9 @@
 package org.rootio.services.synchronization;
 
-import java.util.Calendar;
-import java.util.Date;
+import android.content.ContentValues;
+import android.content.Context;
+import android.content.Intent;
+import android.support.annotation.NonNull;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -10,14 +12,16 @@ import org.rootio.tools.cloud.Cloud;
 import org.rootio.tools.persistence.DBAgent;
 import org.rootio.tools.utils.Utils;
 
-import android.content.ContentValues;
-import android.content.Context;
-import android.content.Intent;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+
 
 public class ProgramsHandler implements SynchronizationHandler {
 
     private Context parent;
     private Cloud cloud;
+    private int records=500;
 
     ProgramsHandler(Context parent, Cloud cloud) {
         this.parent = parent;
@@ -33,6 +37,9 @@ public class ProgramsHandler implements SynchronizationHandler {
     public void processJSONResponse(JSONObject synchronizationResponse) {
         boolean hasChanges = false;
         boolean shouldRestart = false;
+        boolean result = false;
+        ArrayList<ContentValues> values = new ArrayList();
+        //long result = 0;
         JSONArray results;
         try {
             results = synchronizationResponse.getJSONArray("scheduled_programs");
@@ -47,14 +54,35 @@ public class ProgramsHandler implements SynchronizationHandler {
                        shouldRestart = true;
                     }
                 }
-                this.saveRecord(results.getJSONObject(i).getInt("scheduled_program_id"), results.getJSONObject(i).getString("name"), Utils.getDateFromString(results.getJSONObject(i).getString("start"), "yyyy-MM-dd'T'HH:mm:ss"), Utils.getDateFromString(results.getJSONObject(i).getString("end"), "yyyy-MM-dd'T'HH:mm:ss"), results.getJSONObject(i).getString("structure"), Utils.getDateFromString(results.getJSONObject(i).getString("updated_at"), "yyyy-MM-dd'T'HH:mm:ss"), results.getJSONObject(i).getString("program_type_id"), results.getJSONObject(i).getBoolean("deleted"));
+
+                values.add(getContentValues(results.getJSONObject(i).getInt("scheduled_program_id"), results.getJSONObject(i).getString("name"), Utils.getDateFromString(results.getJSONObject(i).getString("start"), "yyyy-MM-dd'T'HH:mm:ss"), Utils.getDateFromString(results.getJSONObject(i).getString("end"), "yyyy-MM-dd'T'HH:mm:ss"), results.getJSONObject(i).getString("structure"), Utils.getDateFromString(results.getJSONObject(i).getString("updated_at"), "yyyy-MM-dd'T'HH:mm:ss"), results.getJSONObject(i).getString("program_type_id"), results.getJSONObject(i).getBoolean("deleted")));
             }
-            if (hasChanges) {
+            if(values.size() > 0) {
+                result = this.saveRecords(values);
+            }
+            if (result && hasChanges) {
                 this.announceScheduleChange(shouldRestart);
             }
+            if(results.length() == this.records) // we had a full page, maybe more records..
+            {
+                 this.requestSync(true);
+            }
+            else
+                this.requestSync(false);
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void requestSync(boolean isStarting) {
+        Intent intent = new Intent();
+        intent.setAction("org.rootio.services.synchronization.SYNC_REQUEST");
+        intent.putExtra("category", 2);
+        intent.putExtra("sync", isStarting?"start": "end");
+        this.parent.sendBroadcast(intent);
     }
 
     private boolean isCurrent(String startDateStr, String endDateStr)
@@ -93,19 +121,25 @@ public class ProgramsHandler implements SynchronizationHandler {
     }
 
     private String getSincePart() {
-        String query = "select max(updatedat) from scheduledprogram";
+        String query = "select max(id) from scheduledprogram";
         String[][] result = new DBAgent(this.parent).getData(query, new String[]{});
         if (result == null || result.length == 0 || result[0][0] == null) {
-            return String.format("start=%sT00:00:00", Utils.getDateString(Calendar.getInstance().getTime(), "yyyy-MM-dd"));
+            return String.format("all=1&records=%s", this.records); //Todo: implement start and end based filtering to not fetch very old records
         }
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(Utils.getDateFromString(result[0][0], "yyyy-MM-dd HH:mm:ss"));
-        cal.add(Calendar.SECOND, 1); //Add 1 second, server side compares using greater or equal
-        return String.format("updated_since=%s", Utils.getDateString(cal.getTime(), "yyyy-MM-dd'T'HH:mm:ss"));
+        String baseId = result[0][0];
+//        Calendar cal = Calendar.getInstance();
+//        cal.setTime(Utils.getDateFromString(result[0][0], "yyyy-MM-dd HH:mm:ss"));
+//        cal.add(Calendar.SECOND, 1); //Add 1 second, server side compares using greater or equal
+        return String.format("base_id=%s&records=%s", baseId, this.records);
     }
 
-    private long saveRecord(int id, String name, Date start, Date end, String structure, Date updatedAt, String programTypeId, Boolean deleted) {
+    private boolean saveRecords(ArrayList<ContentValues> values) {
         String tableName = "scheduledprogram";
+        return new DBAgent(this.parent).bulkSaveData(tableName, null, values.toArray(new ContentValues[values.size()]));
+    }
+
+    @NonNull
+    private ContentValues getContentValues(int id, String name, Date start, Date end, String structure, Date updatedAt, String programTypeId, Boolean deleted) {
         ContentValues data = new ContentValues();
         data.put("id", id);
         data.put("name", name);
@@ -115,7 +149,7 @@ public class ProgramsHandler implements SynchronizationHandler {
         data.put("programtypeid", programTypeId);
         data.put("updatedat", Utils.getDateString(updatedAt, "yyyy-MM-dd HH:mm:ss"));
         data.put("deleted", deleted);
-        return new DBAgent(this.parent).saveData(tableName, null, data);
+        return data;
     }
 
     private int deleteRecord(long id) {

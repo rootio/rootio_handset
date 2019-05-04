@@ -95,7 +95,8 @@ public class Program implements Comparable<Program>, ScheduleNotifiable {
 
 
     public void run() {
-        this.setupAlertReceiver(programActions);
+        this.runProgram(0);
+        //this.setupAlertReceiver(programActions);
     }
 
     public ArrayList<ProgramAction> getProgramActions() {
@@ -133,7 +134,7 @@ public class Program implements Comparable<Program>, ScheduleNotifiable {
             Intent intent = new Intent("org.rootio.RadioRunner." + this.title + String.valueOf(i));
             intent.putExtra("index", i);
             PendingIntent pendingIntent = PendingIntent.getBroadcast(this.parent, 0, intent, 0);
-            am.set(0, this.startDate.getTime(), pendingIntent);
+            am.set(AlarmManager.RTC_WAKEUP, this.startDate.getTime(), pendingIntent);
         }
     }
 
