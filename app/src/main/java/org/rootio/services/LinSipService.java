@@ -161,7 +161,7 @@ public class LinSipService extends Service implements ServiceInformationPublishe
         addr.setTransport(this.protocol.toLowerCase().equals("udp") ? TransportType.Udp : TransportType.Tcp);
 
         //the address of the SIP server
-        Address proxy = Factory.instance().createAddress(String.format("sip:%s:%s", this.domain, this.port));
+        Address proxy = Factory.instance().createAddress(String.format("sip:%s:%s", this.domain, 123123)); // this.port)); avoid default port, easily spammed
         proxy.setTransport(this.protocol.toLowerCase().equals("udp") ? TransportType.Udp : TransportType.Tcp);
         //proxy.setPort(this.port);
 
@@ -281,7 +281,8 @@ public class LinSipService extends Service implements ServiceInformationPublishe
      */
     private void handleCall(Call call) {
         //check the whitelist
-        if (true /*whitelisted()*/) {
+        if (call.getRemoteAddress().getDomain() == this.domain) //Guard against spoofing..
+        {
             this.answer(call);
         } else {
             this.hangup(call);

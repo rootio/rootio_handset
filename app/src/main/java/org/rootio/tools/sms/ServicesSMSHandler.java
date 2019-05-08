@@ -80,7 +80,14 @@ public class ServicesSMSHandler implements MessageProcessor, Notifiable {
     }
 
     private boolean restartService(int i) {
-        return this.stopService(i) && this.startService(i);
+        this.stopService(i);
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        this.startService(i);
+        return true;
     }
 
     /**
