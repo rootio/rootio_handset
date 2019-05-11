@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.rootio.handset.BuildConfig;
 import org.rootio.tools.cloud.Cloud;
 import org.rootio.tools.persistence.DBAgent;
 import org.rootio.tools.utils.Utils;
@@ -117,7 +118,7 @@ public class ProgramsHandler implements SynchronizationHandler {
 
     @Override
     public String getSynchronizationURL() {
-        return String.format("%s://%s:%s/%s/%s/programs?api_key=%s&%s", this.cloud.getServerScheme(), this.cloud.getServerAddress(), this.cloud.getHTTPPort(), "api/station", this.cloud.getStationId(), this.cloud.getServerKey(), this.getSincePart());
+        return String.format("%s://%s:%s/%s/%s/programs?api_key=%s&%s&version=%s_%s", this.cloud.getServerScheme(), this.cloud.getServerAddress(), this.cloud.getHTTPPort(), "api/station", this.cloud.getStationId(), this.cloud.getServerKey(), this.getSincePart(), BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE);
     }
 
     private String getSincePart() {
