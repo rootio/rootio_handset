@@ -205,9 +205,9 @@ public class LinSipService extends Service implements ServiceInformationPublishe
                     sipRegister();
                     try {
                         linphoneCore.addListener(coreListener);
-                        Thread.sleep(1000);//too little and linphoneCore may not process our events due to backlog/network delay, too high and we sleep too long..
+                        Thread.sleep(5000);//too little and linphoneCore may not process our events due to backlog/network delay, too high and we sleep too long..
                         deregister();
-                        Thread.sleep(1000);//too little and linphoneCore may not process our events due to backlog/network delay, too high and we sleep too long..
+                        Thread.sleep(5000);//too little and linphoneCore may not process our events due to backlog/network delay, too high and we sleep too long..
                         sipRegister();
                     } catch (InterruptedException e) {
                         e.printStackTrace();

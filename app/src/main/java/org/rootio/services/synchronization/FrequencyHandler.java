@@ -8,6 +8,7 @@ import java.io.FileOutputStream;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.rootio.handset.BuildConfig;
 import org.rootio.handset.R;
 import org.rootio.tools.cloud.Cloud;
 import org.rootio.tools.utils.Utils;
@@ -48,6 +49,6 @@ public class FrequencyHandler implements SynchronizationHandler {
 
     @Override
     public String getSynchronizationURL() {
-        return String.format("%s://%s:%s/%s/%s/frequency_update?api_key=%s", this.cloud.getServerScheme(), this.cloud.getServerAddress(), this.cloud.getHTTPPort(), "api/station", this.cloud.getStationId(), this.cloud.getServerKey());
+        return String.format("%s://%s:%s/%s/%s/frequency_update?api_key=%s&version=%s_%s", this.cloud.getServerScheme(), this.cloud.getServerAddress(), this.cloud.getHTTPPort(), "api/station", this.cloud.getStationId(), this.cloud.getServerKey(), BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE);
     }
 }

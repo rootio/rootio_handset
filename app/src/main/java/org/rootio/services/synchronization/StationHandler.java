@@ -4,6 +4,7 @@
 package org.rootio.services.synchronization;
 
 import org.json.JSONObject;
+import org.rootio.handset.BuildConfig;
 import org.rootio.tools.cloud.Cloud;
 import org.rootio.tools.utils.Utils;
 
@@ -43,7 +44,7 @@ public class StationHandler implements SynchronizationHandler {
 
     @Override
     public String getSynchronizationURL() {
-        return String.format("%s://%s:%s/%s/%s/information?api_key=%s", this.cloud.getServerScheme(), this.cloud.getServerAddress(), this.cloud.getHTTPPort(), "api/station", this.cloud.getStationId(), this.cloud.getServerKey());
+        return String.format("%s://%s:%s/%s/%s/information?api_key=%s&version=%s_%s", this.cloud.getServerScheme(), this.cloud.getServerAddress(), this.cloud.getHTTPPort(), "api/station", this.cloud.getStationId(), this.cloud.getServerKey(), BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE);
     }
 
     private void checkForSipConfigChange(String newConfiguration)
