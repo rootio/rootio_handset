@@ -50,7 +50,7 @@ public class SplashScreen extends Activity {
     private void askAllPermissions() {
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE,
                 Manifest.permission.READ_SMS,Manifest.permission.RECEIVE_SMS,Manifest.permission.SEND_SMS, Manifest.permission.RECORD_AUDIO, Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ANSWER_PHONE_CALLS, Manifest.permission.READ_CONTACTS, Manifest.permission.READ_CALL_LOG, Manifest.permission.CHANGE_WIFI_STATE, Manifest.permission.CALL_PHONE}, ALL_PERMISSIONS);
+                Manifest.permission.ANSWER_PHONE_CALLS, Manifest.permission.READ_CONTACTS, Manifest.permission.READ_CALL_LOG, Manifest.permission.CHANGE_WIFI_STATE, Manifest.permission.CALL_PHONE, Manifest.permission.ACCESS_NOTIFICATION_POLICY}, ALL_PERMISSIONS);
     }
 
     @Override

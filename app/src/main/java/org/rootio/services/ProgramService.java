@@ -16,6 +16,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.IBinder;
@@ -47,6 +48,7 @@ public class ProgramService extends Service implements ServiceInformationPublish
             this.setupNewDayScheduleListener();
             this.isRunning = true;
             this.sendEventBroadcast();
+            this.silenceRinger();
         }
         this.startForeground(this.serviceId, Utils.getNotification(this, "RootIO", "Program service is running", R.drawable.icon, false, null, null));
         return Service.START_STICKY;
@@ -63,6 +65,19 @@ public class ProgramService extends Service implements ServiceInformationPublish
         runnerThread = new Thread(radioRunner);
         runnerThread.start();
         this.scheduleNextDayAlarm();
+    }
+
+    private void silenceRinger()
+    {
+        try {
+            AudioManager audioManager = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
+            audioManager.setStreamVolume(AudioManager.STREAM_RING, 0, AudioManager.FLAG_SHOW_UI);
+            audioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, 0, AudioManager.FLAG_SHOW_UI);
+        }
+        catch(Exception ex)
+            {
+                Log.e(this.getString(R.string.app_name), String.format("[ProgramService.silenceRinger] %s", ex.getMessage() == null ? "Null pointer exception" : ex.getMessage()));
+            }
     }
 
     @Override
