@@ -205,10 +205,11 @@ public class PlayList implements Player.EventListener {
     }
 
     private void fadeOut() {
-        float volume = BuildConfig.DEBUG ? 0.5F : 0.9F;
-        while (volume > 0) {
-            volume = volume - 0.05F;
-            mediaPlayer.setVolume(volume);
+        //fade out in 5 secs
+        float step = mediaPlayer.getVolume() / 50;
+        while (mediaPlayer.getVolume() > 0) {
+            //volume = volume - 0.05F;
+            mediaPlayer.setVolume(mediaPlayer.getVolume() - step);
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
@@ -237,7 +238,7 @@ public class PlayList implements Player.EventListener {
                     mediaPlayer.stop(true); //advised that media players should never be reused, even in pause/play scenarios
                     mediaPlayer.release();
                 } catch (Exception ex) {
-                    //ok TODO: Log this
+                    Log.e(this.parent.getString(R.string.app_name) + " (PlayList.pause)", ex.getMessage() == null ? "Null pointer exception" : ex.getMessage());
                 }
 
                 try {
@@ -245,14 +246,14 @@ public class PlayList implements Player.EventListener {
                     this.callSignPlayer.stop(true); //this thread is sleeping! TODO: interrupt it
                     this.callSignPlayer.release();
                 } catch (Exception ex) {
-                    //ok too. TODO: log this
+                    Log.e(this.parent.getString(R.string.app_name) + " (PlayList.pause)", ex.getMessage() == null ? "Null pointer exception" : ex.getMessage());
                 }
 
                 //stop the callSign looper so they do not play during the call
                 this.callSignProvider.stop();
             }
         } catch (Exception ex) {
-            Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(PlayList.pause)" : ex.getMessage());
+            Log.e(this.parent.getString(R.string.app_name)   + " (PlayList.pause)", ex.getMessage() == null ? "Null pointer exception" : ex.getMessage());
         }
     }
 

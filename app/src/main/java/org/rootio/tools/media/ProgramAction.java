@@ -65,7 +65,7 @@ public class ProgramAction {
             case Media:
             case Audio:
                 try {
-                    this.playlist.pause(false);
+                    this.playlist.pause(true);
                 }
                 catch(Exception ex)
                 {

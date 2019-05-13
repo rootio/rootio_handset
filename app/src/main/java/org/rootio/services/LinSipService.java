@@ -281,11 +281,17 @@ public class LinSipService extends Service implements ServiceInformationPublishe
      */
     private void handleCall(Call call) {
         //check the whitelist
-        if (call.getRemoteAddress().getDomain() == this.domain) //Guard against spoofing..
+        if (call.getRemoteAddress().getDomain().equals(this.domain)) //Guard against spoofing..
         {
+            this.sendTelephonyEventBroadcast(true);
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             this.answer(call);
         } else {
-            this.hangup(call);
+           this.hangup(call);
         }
     }
 
@@ -391,9 +397,10 @@ public class LinSipService extends Service implements ServiceInformationPublishe
                 Utils.logEvent(this, Utils.EventCategory.SIP_CALL, Utils.EventAction.START, call != null? call.getRemoteContact(): "");
                 break;
             case IncomingReceived:
+                this.linphoneCore.stopRinging();
                 if (call != null) {
                     Utils.toastOnScreen("Incoming call from " + call != null? call.getRemoteContact():"", this);
-                    this.handleCall(call); //check WhiteList first!!
+                   this.handleCall(call); //check WhiteList first!!
                 }
                 Utils.logEvent(this, Utils.EventCategory.SIP_CALL, Utils.EventAction.RINGING, call != null? call.getRemoteContact(): "");
                 break;

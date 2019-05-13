@@ -6,7 +6,7 @@ android {
         applicationId "org.rootio.handset"
         minSdkVersion 26
         targetSdkVersion 26
-        versionCode 23
+        versionCode 24
         versionName "Berean Chill"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
