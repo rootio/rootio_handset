@@ -21,6 +21,7 @@ public class SynchronizationDaemon implements Runnable {
     private final Cloud cloud;
     private Handler handler;
     private MusicListHandler musicListHandler;
+    private boolean isSyncing = false;
     private HashSet<Integer> syncLocks = new HashSet();
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
@@ -50,41 +51,42 @@ public class SynchronizationDaemon implements Runnable {
     }
 
     private void synchronize() {
-        this.handler.post(new Runnable() {
-            @Override
-            public void run() {
-                Thread thread = new Thread(new Runnable() {
-                    public void run() {
-                        if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(1)))
+        if(!isSyncing) {
+            this.handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    Thread thread = new Thread(new Runnable() {
+                        public void run() {
+                            isSyncing = true;
+                            //if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(2)))
                             SynchronizationDaemon.this.synchronize(new DiagnosticsHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud));
-                        if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(2)))
-                            SynchronizationDaemon.this.syncLocks.add(new Integer(2));
+                            // if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(2)))
+                            //  SynchronizationDaemon.this.syncLocks.add(new Integer(2));
                             SynchronizationDaemon.this.synchronize(new ProgramsHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud));
-                        if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(3)))
+                            //if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(2)))
                             SynchronizationDaemon.this.synchronize(new CallLogHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud));
-                        if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(4)))
+                            // if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(2)))
                             SynchronizationDaemon.this.synchronize(new SMSLogHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud));
-                        if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(5)))
+                            // if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(2)))
                             SynchronizationDaemon.this.synchronize(new WhitelistHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud));
-                        if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(6)))
+                            // if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(2)))
                             SynchronizationDaemon.this.synchronize(new FrequencyHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud));
-                        if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(7)))
-                            SynchronizationDaemon.this.synchronize(new StationHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud));
-                        if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(8)))
+//                        if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(2)))
                             SynchronizationDaemon.this.synchronize(SynchronizationDaemon.this.musicListHandler);
-                        if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(9)))
+                            // if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(2)))
                             SynchronizationDaemon.this.synchronize(new PlaylistHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud));
-                        if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(9)))
+                            // if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(2)))
                             SynchronizationDaemon.this.synchronize(new LogHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud));
+                            isSyncing = false;
+                        }
+                    });
+                    thread.start(); //TODO: fix synchronicity. if the interval is too short, next jobs will start before this finishes!
+                    if (((SynchronizationService) SynchronizationDaemon.this.parent).isRunning()) { //the service might be stopped in between the scheduling and actual run of this job
+                        SynchronizationDaemon.this.handler.postDelayed(this, SynchronizationDaemon.this.getFrequency() * 1000);
                     }
-                });
-                thread.start(); //TODO: fix synchronicity. if the interval is too short, next jobs will start before this finishes!
-                if (((SynchronizationService) SynchronizationDaemon.this.parent).isRunning()) { //the service might be stopped in between the scheduling and actual run of this job
-                    SynchronizationDaemon.this.handler.postDelayed(this, SynchronizationDaemon.this.getFrequency() * 1000);
                 }
-            }
-        }); //this is the first run. Maybe do not delay it..
-
+            }); //this is the first run. Maybe do not delay it..
+        }
     }
 
     public void requestSync(int category) {

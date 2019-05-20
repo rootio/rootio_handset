@@ -151,8 +151,8 @@ public class LinSipService extends Service implements ServiceInformationPublishe
     private void prepareProxy() {
         this.proxyConfig = linphoneCore.createProxyConfig();
         Transports trns = Factory.instance().createTransports();
-        trns.setUdpPort(this.port);
-        trns.setTcpPort(this.port);
+        trns.setUdpPort(12312);
+        trns.setTcpPort(12312);
         this.linphoneCore.setTransports(trns);
 
         //The address of the peer
@@ -161,9 +161,9 @@ public class LinSipService extends Service implements ServiceInformationPublishe
         addr.setTransport(this.protocol.toLowerCase().equals("udp") ? TransportType.Udp : TransportType.Tcp);
 
         //the address of the SIP server
-        Address proxy = Factory.instance().createAddress(String.format("sip:%s:%s", this.domain, 123123)); // this.port)); avoid default port, easily spammed
+        Address proxy = Factory.instance().createAddress(String.format("sip:%s:%s", this.domain, 12312)); // this.port)); avoid default port, easily spammed
         proxy.setTransport(this.protocol.toLowerCase().equals("udp") ? TransportType.Udp : TransportType.Tcp);
-        //proxy.setPort(this.port);
+        proxy.setPort(12312);
 
 
         this.authInfo = Factory.instance().createAuthInfo(addr.getUsername(), null, this.password, null, null, null);
@@ -357,6 +357,8 @@ public class LinSipService extends Service implements ServiceInformationPublishe
     public void updateCallState(Call.State callState, Call call) {
         switch (callState) {
             case End:
+                if(call.getRemoteAddress().getDomain().equals(this.domain))
+                {
                 this.inCall = false;
                 if (isPendingRestart) {
                     this.deregister();
@@ -369,7 +371,7 @@ public class LinSipService extends Service implements ServiceInformationPublishe
                 if (call != null) //not being sent au moment
                 {
                     Utils.toastOnScreen("Call with " + call != null? call.getRemoteContact():"" + " ended", this);
-                }
+                }}
                 break;
             case Error:
                 this.inCall = false;

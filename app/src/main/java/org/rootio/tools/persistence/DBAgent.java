@@ -14,6 +14,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteCantOpenDatabaseException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
+import android.database.sqlite.SQLiteDatabaseLockedException;
 import android.database.sqlite.SQLiteException;
 import android.util.Log;
 
@@ -170,16 +171,27 @@ public class DBAgent {
      * @return The row id of the inserted row
      */
     public long saveData(String tableName, String nullColumnHack, ContentValues data) {
-        SQLiteDatabase database = this.getDBConnection(this.databaseName, null, SQLiteDatabase.OPEN_READWRITE);
-        try {
+        int tries;
+        for (tries = 0; tries < 10; ) {
+            SQLiteDatabase database = this.getDBConnection(this.databaseName, null, SQLiteDatabase.OPEN_READWRITE);
+            try {
 
-            return database.insert(tableName, nullColumnHack, data);
-        } catch (Exception ex) {
-            Log.e(this.context.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(DBAgent.saveData)" : ex.getMessage());
-            return 0;
-        } finally {
-            database.close();
+                return database.insert(tableName, nullColumnHack, data);
+            } catch (SQLiteDatabaseLockedException ex) {
+                tries++;
+                /*try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }*/
+            } catch (Exception ex) {
+                Log.e(this.context.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(DBAgent.saveData)" : ex.getMessage());
+                return 0;
+            } finally {
+                database.close();
+            }
         }
+        return 0;
     }
 
     /**
@@ -192,21 +204,31 @@ public class DBAgent {
      * @return The row id of the inserted row
      */
     public boolean bulkSaveData(String tableName, String nullColumnHack, ContentValues[] data) {
-        SQLiteDatabase database = this.getDBConnection(this.databaseName, null, SQLiteDatabase.OPEN_READWRITE);
-        try {
+        int tries;
+        for (tries = 0; tries < 10; ) {
+            SQLiteDatabase database = this.getDBConnection(this.databaseName, null, SQLiteDatabase.OPEN_READWRITE);
             database.beginTransaction();
-            for (ContentValues datum : data) {
-                database.insert(tableName, nullColumnHack, datum);
+            try {
+                for (ContentValues datum : data) {
+                    database.insert(tableName, nullColumnHack, datum);
+                }
+                database.setTransactionSuccessful();
+                return true;
+            } catch (SQLiteDatabaseLockedException ex) {
+                tries++;
+                /*try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }*/
+            } catch (Exception ex) {
+                Log.e(this.context.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(DBAgent.saveData)" : ex.getMessage());
+                return false;
+            } finally {
+                database.endTransaction();
             }
-            database.setTransactionSuccessful();
-            return true;
-        } catch (Exception ex) {
-            Log.e(this.context.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(DBAgent.saveData)" : ex.getMessage());
-            return false;
-        } finally {
-            database.endTransaction();
-            database.close();
         }
+        return false;
     }
 
     /**
@@ -219,40 +241,37 @@ public class DBAgent {
      * @return Whether or not the transaction was successful
      */
     public boolean bulkSaveData(String tableName, String nullColumnHack, String[] columns, String[][] data) {
-        SQLiteDatabase database = this.getDBConnection(this.databaseName, null, SQLiteDatabase.OPEN_READWRITE);
-        try {
-            ContentValues dt = new ContentValues();
+        int tries;
+        for (tries = 0; tries < 10; ) {
+            SQLiteDatabase database = this.getDBConnection(this.databaseName, null, SQLiteDatabase.OPEN_READWRITE);
             database.beginTransaction();
-            for (int i = 0; i < data.length; i++) {
-                for (int j = 0; j < columns.length; j++) {
-                    dt.put(columns[j], data[i][j]);
+            try {
+                ContentValues dt = new ContentValues();
+
+                for (int i = 0; i < data.length; i++) {
+                    for (int j = 0; j < columns.length; j++) {
+                        dt.put(columns[j], data[i][j]);
+                    }
+                    database.insert(tableName, nullColumnHack, dt);
+
                 }
-                database.insert(tableName, nullColumnHack, dt);
-
+                database.setTransactionSuccessful();
+                return true;
+            } catch (SQLiteDatabaseLockedException ex) {
+                tries++;
+                /*try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }*/
+            } catch (Exception ex) {
+                Log.e(this.context.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(DBAgent.bulkSaveData)" : ex.getMessage());
+                return false;
+            } finally {
+                database.endTransaction();
             }
-            database.setTransactionSuccessful();
-            database.endTransaction();
-            return true;
-        } catch (Exception ex) {
-            Log.e(this.context.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(DBAgent.bulkSaveData)" : ex.getMessage());
-            return false;
-        } finally {
-            try
-            {database.endTransaction();}
-            catch(Exception ex)
-            {
-
-            }
-            try{
-                database.close();
-            }
-            catch(Exception ex)
-            {
-
-            }
-
-
         }
+        return false;
     }
 
     /**
@@ -264,14 +283,26 @@ public class DBAgent {
      * @return The number of records affected by this delete action
      */
     public int deleteRecords(String tableName, String whereClause, String[] args) {
-        SQLiteDatabase database = this.getDBConnection(this.databaseName, null, SQLiteDatabase.OPEN_READWRITE);
-        try {
+        int tries;
+        for (tries = 0; tries < 10; ) {
+            SQLiteDatabase database = this.getDBConnection(this.databaseName, null, SQLiteDatabase.OPEN_READWRITE);
+            try {
             return database.delete(tableName, whereClause, args);
-        } catch (Exception ex) {
-            return 0;
-        } finally {
-            database.close();
+            } catch (SQLiteDatabaseLockedException ex) {
+                tries++;
+               /* try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }*/
+            } catch (Exception ex) {
+                Log.e(this.context.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(DBAgent.deleteRecords)" : ex.getMessage());
+                return 0;
+            } finally {
+                database.close();
+            }
         }
+        return 0;
     }
 
     /**
@@ -284,14 +315,26 @@ public class DBAgent {
      * @return The number of rows affected by the update transaction
      */
     public int updateRecords(String tableName, ContentValues data, String whereClause, String[] whereArgs) {
-        SQLiteDatabase database = this.getDBConnection(this.databaseName, null, SQLiteDatabase.OPEN_READWRITE);
-        try {
-            return database.update(tableName, data, whereClause, whereArgs);
-        } catch (Exception ex) {
-            return 0;
-        } finally {
-            database.close();
+        int tries;
+        for (tries = 0; tries < 10; ) {
+            SQLiteDatabase database = this.getDBConnection(this.databaseName, null, SQLiteDatabase.OPEN_READWRITE);
+            try {
+                return database.update(tableName, data, whereClause, whereArgs);
+            } catch (SQLiteDatabaseLockedException ex) {
+                tries++;
+                /*try {
+                    //Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }*/
+            } catch (Exception ex) {
+                Log.e(this.context.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(DBAgent.updateRecords)" : ex.getMessage());
+                return 0;
+            } finally {
+                database.close();
+            }
         }
+        return 0;
     }
 
 }

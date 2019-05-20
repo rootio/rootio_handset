@@ -34,6 +34,15 @@ public class ProgramsHandler implements SynchronizationHandler {
         return new JSONObject();
     }
 
+    private Date getTodayBaseDate() {
+        Calendar cal = Calendar.getInstance();
+        //cal.add(Calendar.DAY_OF_MONTH, 1);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        return cal.getTime();
+    }
+
     @Override
     public void processJSONResponse(JSONObject synchronizationResponse) {
         boolean hasChanges = false;
@@ -66,10 +75,11 @@ public class ProgramsHandler implements SynchronizationHandler {
             }
             if(results.length() == this.records) // we had a full page, maybe more records..
             {
-                 this.requestSync(true);
+                 //this.requestSync(true);
             }
-            else
-                this.requestSync(false);
+            else {
+                //this.requestSync(false);
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -122,16 +132,16 @@ public class ProgramsHandler implements SynchronizationHandler {
     }
 
     private String getSincePart() {
-        String query = "select max(id) from scheduledprogram";
+        String query = "select max(start) from scheduledprogram";
         String[][] result = new DBAgent(this.parent).getData(query, new String[]{});
         if (result == null || result.length == 0 || result[0][0] == null) {
-            return String.format("all=1&records=%s", this.records); //Todo: implement start and end based filtering to not fetch very old records
+            return String.format("start=%s&records=%s", Utils.getDateString( getTodayBaseDate(), "yyyy-MM-dd'T'HH:mm:ss"), records); //Todo: implement start and end based filtering to not fetch very old records
         }
         String baseId = result[0][0];
 //        Calendar cal = Calendar.getInstance();
 //        cal.setTime(Utils.getDateFromString(result[0][0], "yyyy-MM-dd HH:mm:ss"));
 //        cal.add(Calendar.SECOND, 1); //Add 1 second, server side compares using greater or equal
-        return String.format("base_id=%s&records=%s", baseId, this.records);
+        return String.format("start=%s&records=%s", baseId.replace(" ","T"), this.records);
     }
 
     private boolean saveRecords(ArrayList<ContentValues> values) {

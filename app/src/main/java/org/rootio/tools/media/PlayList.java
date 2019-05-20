@@ -106,6 +106,7 @@ public class PlayList implements Player.EventListener {
                     playMedia(Uri.parse(currentMedia.getFileLocation()));
 
                 } catch (NullPointerException ex) {
+                    Log.i(this.parent.getString(R.string.app_name), "startPlayer: "+currentMedia.getFileLocation());
                     Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(PlayList.startPlayer)" : ex.getMessage());
                     this.startPlayer();
                 }
@@ -118,6 +119,7 @@ public class PlayList implements Player.EventListener {
                     playMedia(Uri.fromFile(new File(currentMedia.getFileLocation())));
 
                 } catch (NullPointerException ex) {
+                    Log.i(this.parent.getString(R.string.app_name), "startPlayer: "+currentMedia.getFileLocation());
                     Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(PlayList.startPlayer)" : ex.getMessage());
                     this.startPlayer();
                 }
@@ -134,11 +136,11 @@ public class PlayList implements Player.EventListener {
         } catch (Exception ex) {
 
             Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(PlayList.play)" : ex.getMessage());
-            try {
+            /*try {
                 Thread.sleep(10000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
-            }
+            }*/
             this.startPlayer();
         }
     }
