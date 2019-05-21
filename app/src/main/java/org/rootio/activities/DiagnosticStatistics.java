@@ -34,8 +34,8 @@ public class DiagnosticStatistics {
     private void LoadDiagnosticsData() {
         String query = "select batterylevel, firstmobilenetworkname, firstmobilenetworktype, firstmobilenetworkconnected, firstmobilenetworkstrength, wificonnected, storageutilization, memoryutilization, cpuutilization, _id, diagnostictime, latitude, longitude  from diagnostic ";
         String[] filterArgs = new String[]{};
-        DBAgent agent = new DBAgent(this.parent);
-        String[][] results = agent.getData(query, filterArgs);
+        //DBAgent agent = new DBAgent(this.parent);
+        String[][] results = DBAgent.getData(query, filterArgs);
         idData = new int[results.length];
         dateData = new Date[results.length];
         cpuData = new double[results.length];

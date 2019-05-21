@@ -51,8 +51,8 @@ public class DiagnosticsHandler implements SynchronizationHandler {
         String tableName = "diagnostic";
         String whereClause = "_id = ?";
         String[] filterArgs = new String[]{id};
-        DBAgent agent = new DBAgent(this.parent);
-        return agent.deleteRecords(tableName, whereClause, filterArgs);
+        //DBAgent agent = new DBAgent(this.parent);
+        return DBAgent.deleteRecords(tableName, whereClause, filterArgs);
     }
 
     @Override

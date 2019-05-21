@@ -49,11 +49,11 @@ public class WhiteListSMSHandler implements MessageProcessor {
 
     private boolean addNumberToWhitelist(String phoneNumber) {
         try {
-            DBAgent dbAgent = new DBAgent(this.parent);
+            //DBAgent dbAgent = new DBAgent(this.parent);
             String tableName = "whitelist";
             ContentValues data = new ContentValues();
             data.put("telephonenumber", phoneNumber);
-            dbAgent.saveData(tableName, "", data);
+            DBAgent.saveData(tableName, "", data);
             return true;
         } catch (Exception ex) {
             return false;
@@ -62,11 +62,11 @@ public class WhiteListSMSHandler implements MessageProcessor {
 
     private boolean removeNumberFromWhitelist(String phoneNumber) {
         try {
-            DBAgent dbAgent = new DBAgent(this.parent);
+            //DBAgent dbAgent = new DBAgent(this.parent);
             String tableName = "whitelist";
             String whereClause = "telephonenumber = ?";
             String[] whereArgs = new String[]{phoneNumber};
-            dbAgent.deleteRecords(tableName, whereClause, whereArgs);
+            DBAgent.deleteRecords(tableName, whereClause, whereArgs);
             return true;
         } catch (Exception ex) {
             return false;

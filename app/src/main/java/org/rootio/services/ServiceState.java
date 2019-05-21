@@ -65,8 +65,8 @@ public class ServiceState {
         data.put("lastupdateddate", Utils.getCurrentDateAsString("yyyy-MM-dd HH:mm:ss"));
         String whereClause = "id = ?";
         String[] whereArgs = new String[]{String.valueOf(serviceId)};
-        DBAgent agent = new DBAgent(this.context);
-        agent.updateRecords(tableName, data, whereClause, whereArgs);
+        //DBAgent agent = new DBAgent(this.context);
+        DBAgent.updateRecords(tableName, data, whereClause, whereArgs);
     }
 
     /**
@@ -77,8 +77,8 @@ public class ServiceState {
         String[] columns = new String[]{"service", "servicestate", "lastupdateddate"};
         String whereClause = "id = ?";
         String[] whereArgs = new String[]{String.valueOf(serviceId)};
-        DBAgent agent = new DBAgent(this.context);
-        String[][] result = agent.getData(true, tableName, columns, whereClause, whereArgs, null, null, null, null);
+        //DBAgent agent = new DBAgent(this.context);
+        String[][] result = DBAgent.getData(true, tableName, columns, whereClause, whereArgs, null, null, null, null);
         this.serviceState = result.length > 0 ? Utils.parseIntFromString(result[0][1]) : 0;
     }
 }

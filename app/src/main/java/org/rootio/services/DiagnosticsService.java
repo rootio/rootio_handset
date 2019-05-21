@@ -147,8 +147,8 @@ public class DiagnosticsService extends Service implements ServiceInformationPub
             values.put("firstmobilenetworktype", diagnosticAgent.getMobileNetworkType());
             values.put("latitude", diagnosticAgent.getLatitude());
             values.put("longitude", diagnosticAgent.getLongitude());
-            DBAgent dbAgent = new DBAgent(this.parentActivity);
-            dbAgent.saveData(tableName, null, values);
+            //DBAgent dbAgent = new DBAgent(this.parentActivity);
+            DBAgent.saveData(tableName, null, values);
         }
     }
 

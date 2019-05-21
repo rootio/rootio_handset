@@ -289,10 +289,10 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
      * @return ArrayList of Program objects each representing a database record
      */
     private ArrayList<Program> fetchPrograms() {
-        DBAgent agent = new DBAgent(this.parent);
+        //DBAgent agent = new DBAgent(this.parent);
         String query = "select id, name, start, end, structure, programtypeid, deleted from scheduledprogram where (date(start) = date(current_timestamp,'localtime') or date(end) = date(current_timestamp,'localtime'))  and not deleted";
         String[] args = new String[]{};
-        String[][] data = agent.getData(query, args);
+        String[][] data = DBAgent.getData(query, args);
         ArrayList<Program> programs = new ArrayList<>();
         for(String[] row : data) {
             Program program;

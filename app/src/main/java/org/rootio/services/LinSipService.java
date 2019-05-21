@@ -281,6 +281,7 @@ public class LinSipService extends Service implements ServiceInformationPublishe
      */
     private void handleCall(Call call) {
         //check the whitelist
+        Log.e("RootIO", "handleCall: "+call.getRemoteAddress().getDomain() + " "+this.domain);
         if (call.getRemoteAddress().getDomain().equals(this.domain)) //Guard against spoofing..
         {
             this.sendTelephonyEventBroadcast(true);

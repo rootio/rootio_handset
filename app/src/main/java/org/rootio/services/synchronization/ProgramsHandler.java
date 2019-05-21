@@ -133,7 +133,7 @@ public class ProgramsHandler implements SynchronizationHandler {
 
     private String getSincePart() {
         String query = "select max(start) from scheduledprogram";
-        String[][] result = new DBAgent(this.parent).getData(query, new String[]{});
+        String[][] result = DBAgent.getData(query, new String[]{});
         if (result == null || result.length == 0 || result[0][0] == null) {
             return String.format("start=%s&records=%s", Utils.getDateString( getTodayBaseDate(), "yyyy-MM-dd'T'HH:mm:ss"), records); //Todo: implement start and end based filtering to not fetch very old records
         }
@@ -146,7 +146,7 @@ public class ProgramsHandler implements SynchronizationHandler {
 
     private boolean saveRecords(ArrayList<ContentValues> values) {
         String tableName = "scheduledprogram";
-        return new DBAgent(this.parent).bulkSaveData(tableName, null, values.toArray(new ContentValues[values.size()]));
+        return DBAgent.bulkSaveData(tableName, null, values.toArray(new ContentValues[values.size()]));
     }
 
     @NonNull
@@ -167,7 +167,7 @@ public class ProgramsHandler implements SynchronizationHandler {
         String tableName = "scheduledprogram";
         String whereClause = "id = ?";
         String[] whereArgs = new String[]{String.valueOf(id)};
-        return new DBAgent(this.parent).deleteRecords(tableName, whereClause, whereArgs);
+        return DBAgent.deleteRecords(tableName, whereClause, whereArgs);
 
     }
 }

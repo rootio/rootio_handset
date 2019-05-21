@@ -50,8 +50,8 @@ public class Utils {
         String[] columns = new String[]{"id"};
         String whereClause = "programid = ? and duration = ? and scheduledate = ?";
         String[] whereArgs = new String[]{String.valueOf(programId), String.valueOf(duration), Utils.getDateString(scheduleDate, "yyyy-MM-dd HH:mm:ss")};
-        DBAgent dbAgent = new DBAgent(parent);
-        String[][] results = dbAgent.getData(true, tableName, columns, whereClause, whereArgs, null, null, null, null);
+        //DBAgent dbAgent = new DBAgent(parent);
+        String[][] results = DBAgent.getData(true, tableName, columns, whereClause, whereArgs, null, null, null, null);
         return results.length > 0 ? Long.parseLong(results[0][0]) : 0l;
     }
 
@@ -325,7 +325,7 @@ public class Utils {
              values.put("argument", argument);
              values.put("event", action.name());
              values.put("eventdate", Utils.getCurrentDateAsString("yyyy-MM-dd HH:mm:ss"));
-             return new DBAgent(context).saveData("activitylog", null, values);
+             return DBAgent.saveData("activitylog", null, values);
          }
          catch (Exception ex)
          {

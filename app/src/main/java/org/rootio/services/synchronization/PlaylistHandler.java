@@ -68,9 +68,9 @@ public class PlaylistHandler implements SynchronizationHandler {
                     playlistItems.add(new String[]{playlist.getString("title"), artists.getJSONObject(j).getString("title"), "3"});
                 }
             }
-            DBAgent dbAgent = new DBAgent(this.parent);
-            dbAgent.deleteRecords("playlist", null, null);//empty playlist info
-            dbAgent.bulkSaveData("playlist", null, new String[]{"title", "item", "itemtypeid"}, playlistItems.toArray(new String[playlistItems.size()][]));
+           // DBAgent dbAgent = new DBAgent(this.parent);
+            DBAgent.deleteRecords("playlist", null, null);//empty playlist info
+            DBAgent.bulkSaveData("playlist", null, new String[]{"title", "item", "itemtypeid"}, playlistItems.toArray(new String[playlistItems.size()][]));
         } catch (Exception ex) {
             Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(PlaylistHandler.processJSONResponse)" : ex.getMessage());
         }

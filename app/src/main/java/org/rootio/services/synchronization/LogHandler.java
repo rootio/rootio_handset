@@ -51,8 +51,8 @@ public class LogHandler implements SynchronizationHandler {
         String tableName = "activitylog";
         String whereClause = "id = ?";
         String[] filterArgs = new String[]{id};
-        DBAgent agent = new DBAgent(this.parent);
-        return agent.deleteRecords(tableName, whereClause, filterArgs);
+        //DBAgent agent = new DBAgent(this.parent);
+        return DBAgent.deleteRecords(tableName, whereClause, filterArgs);
     }
 
     @Override
@@ -63,8 +63,8 @@ public class LogHandler implements SynchronizationHandler {
     private JSONObject getRecords() {
         String query = "select id, category, argument, event, eventdate  from activitylog limit 100";
         String[] filterArgs = new String[]{};
-        DBAgent agent = new DBAgent(this.parent);
-        String[][] results = agent.getData(query, filterArgs);
+        //DBAgent agent = new DBAgent(this.parent);
+        String[][] results = DBAgent.getData(query, filterArgs);
         JSONObject parent = new JSONObject();
         JSONArray logData = new JSONArray();
         try {

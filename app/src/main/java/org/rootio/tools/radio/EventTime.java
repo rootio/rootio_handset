@@ -80,7 +80,7 @@ public class EventTime {
         data.put("scheduledate", Utils.getDateString(this.scheduleDate, "yyyy-MM-dd HH:mm:ss"));
         data.put("duration", this.duration);
         data.put("isrepeat", this.isRepeat);
-        DBAgent agent = new DBAgent(this.parent);
-        return agent.saveData(tableName, null, data);
+        //DBAgent agent = new DBAgent(this.parent);
+        return DBAgent.saveData(tableName, null, data);
     }
 }

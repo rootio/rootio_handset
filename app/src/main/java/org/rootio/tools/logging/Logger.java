@@ -20,7 +20,7 @@ public class Logger extends BroadcastReceiver {
             values.put("argument", intent.getStringExtra("argument"));
             values.put("event", intent.getStringExtra("event"));
             values.put("eventdate", Utils.getCurrentDateAsString("yyyy-MM-dd HH:mm:ss"));
-            return new DBAgent(context).saveData("activitylog", null, values);
+            return DBAgent.saveData("activitylog", null, values);
         }
         catch (Exception ex)
         {

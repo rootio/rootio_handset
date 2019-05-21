@@ -6,8 +6,8 @@ android {
         applicationId "org.rootio.handset"
         minSdkVersion 26
         targetSdkVersion 26
-        versionCode 25
-        versionName "Oltenian Rush  "
+        versionCode 26
+        versionName "Oltenian Rush"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
