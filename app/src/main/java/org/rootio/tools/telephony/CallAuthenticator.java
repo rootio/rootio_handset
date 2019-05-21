@@ -3,6 +3,7 @@ package org.rootio.tools.telephony;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.HashSet;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,9 +29,18 @@ public class CallAuthenticator {
 
 
     public boolean isWhiteListed(String phoneNumber) {
+        HashSet<String> pool = new HashSet<>();
         try {
             String sanitizedPhoneNumber = this.sanitizePhoneNumber(phoneNumber);
-            return this.whiteList.getJSONArray("whitelist").toString().contains(sanitizedPhoneNumber); // potentially
+            for(int i = 0; i < this.whiteList.getJSONArray("whitelist").length(); i++)
+            {
+                String sanitiziedWlNum = this.sanitizePhoneNumber(this.whiteList.getJSONArray("whitelist").getString(i));
+                if(sanitizedPhoneNumber.substring(sanitizedPhoneNumber.length()>=7?sanitizedPhoneNumber.length() - 7: 0).equals(sanitiziedWlNum.substring(sanitiziedWlNum.length()>=7?sanitiziedWlNum.length() - 7: 0)))
+                {
+                    return true;
+                }
+            }
+           return this.whiteList.getJSONArray("whitelist").toString().contains(sanitizedPhoneNumber); // potentially
             // problematic
         } catch (JSONException ex) {
             Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "NullPointerException(CallAuthenticator.isWhiteListed)" : ex.getMessage());
@@ -41,6 +51,6 @@ public class CallAuthenticator {
     }
 
     private String sanitizePhoneNumber(String phoneNumber) {
-        return phoneNumber.trim();
+        return phoneNumber.trim().replace(" ", "");
     }
 }

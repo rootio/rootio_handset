@@ -162,19 +162,20 @@ public class TelephonyService extends Service implements ServiceInformationPubli
      * Declines an incoming call or ends an ongoing call.
      */
     private void declineCall(String fromNumber) {
-        ITelephony telephonyService;
-        TelephonyManager telephony = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
-        try {
-            Class c = Class.forName(telephony.getClass().getName());
-            Method m = c.getDeclaredMethod("getITelephony");
-            m.setAccessible(true);
-            telephonyService = (ITelephony) m.invoke(telephony);
-            telephonyService.endCall();
-            Utils.logEvent(this, Utils.EventCategory.CALL, Utils.EventAction.STOP, fromNumber);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        this.telecomManager.silenceRinger();
+//        ITelephony telephonyService;
+//        TelephonyManager telephony = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
+//        try {
+//            Class c = Class.forName(telephony.getClass().getName());
+//            Method m = c.getDeclaredMethod("getITelephony");
+//            m.setAccessible(true);
+//            telephonyService = (ITelephony) m.invoke(telephony);
+//            telephonyService.endCall();
+//            Utils.logEvent(this, Utils.EventCategory.CALL, Utils.EventAction.STOP, fromNumber);
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
     }
 
@@ -183,11 +184,23 @@ public class TelephonyService extends Service implements ServiceInformationPubli
      * pick the phone call basing on the calling phone number * @param
      * incomingNumber
      */
-    public void handleCall(String fromNumber) {
-        if (true || new CallAuthenticator(this).isWhiteListed(fromNumber)) {
-            this.sendTelephonyEventBroadcast(true);
-            pickCall(fromNumber);
-            // this.setupCallRecording(); //not possible on pockets
+    public void handleCall(final String fromNumber) {
+        if (new CallAuthenticator(this).isWhiteListed(fromNumber)) {
+
+            TelephonyService.this.sendTelephonyEventBroadcast(true);
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Thread.sleep(5000); // Music thread is fading out
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    pickCall(fromNumber);
+                    // this.setupCallRecording(); //not possible on pockets
+                }
+            }).start();
         } else {
             declineCall(fromNumber);
         }
@@ -205,11 +218,11 @@ public class TelephonyService extends Service implements ServiceInformationPubli
 
             switch (state) {
                 case TelephonyManager.CALL_STATE_RINGING:
-                    try {
-                        Thread.sleep(500);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+//                    try {
+//                        Thread.sleep(500);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
                     Utils.logEvent(TelephonyService.this, Utils.EventCategory.CALL, Utils.EventAction.RINGING, incomingNumber);
                     handleCall(incomingNumber);
                     break;
