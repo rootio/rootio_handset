@@ -51,32 +51,33 @@ public class SynchronizationDaemon implements Runnable {
     }
 
     private void synchronize() {
-        if(!isSyncing) {
+        if (!isSyncing) {
             this.handler.post(new Runnable() {
                 @Override
                 public void run() {
                     Thread thread = new Thread(new Runnable() {
                         public void run() {
                             isSyncing = true;
-                            //if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(2)))
-                            SynchronizationDaemon.this.synchronize(new DiagnosticsHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud));
-                            // if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(2)))
-                            //  SynchronizationDaemon.this.syncLocks.add(new Integer(2));
-                            SynchronizationDaemon.this.synchronize(new ProgramsHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud));
-                            //if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(2)))
-                            SynchronizationDaemon.this.synchronize(new CallLogHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud));
-                            // if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(2)))
-                            SynchronizationDaemon.this.synchronize(new SMSLogHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud));
-                            // if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(2)))
-                            SynchronizationDaemon.this.synchronize(new WhitelistHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud));
-                            // if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(2)))
-                            SynchronizationDaemon.this.synchronize(new FrequencyHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud));
-//                        if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(2)))
-                            SynchronizationDaemon.this.synchronize(SynchronizationDaemon.this.musicListHandler);
-                            // if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(2)))
-                            SynchronizationDaemon.this.synchronize(new PlaylistHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud));
-                            // if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(2)))
-                            SynchronizationDaemon.this.synchronize(new LogHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud));
+                            if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(1)))
+                                SynchronizationDaemon.this.synchronize(new DiagnosticsHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud));
+                            if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(2))) {
+                                SynchronizationDaemon.this.syncLocks.add(new Integer(2));
+                                SynchronizationDaemon.this.synchronize(new ProgramsHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud));
+                            }
+                            if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(3)))
+                                SynchronizationDaemon.this.synchronize(new CallLogHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud));
+                            if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(4)))
+                                SynchronizationDaemon.this.synchronize(new SMSLogHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud));
+                            if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(5)))
+                                SynchronizationDaemon.this.synchronize(new WhitelistHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud));
+                            if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(6)))
+                                SynchronizationDaemon.this.synchronize(new FrequencyHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud));
+                            if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(7)))
+                                SynchronizationDaemon.this.synchronize(SynchronizationDaemon.this.musicListHandler);
+                            if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(8)))
+                                SynchronizationDaemon.this.synchronize(new PlaylistHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud));
+                            if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(9)))
+                                SynchronizationDaemon.this.synchronize(new LogHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud));
                             isSyncing = false;
                         }
                     });

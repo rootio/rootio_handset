@@ -22,7 +22,7 @@ public class ProgramsHandler implements SynchronizationHandler {
 
     private Context parent;
     private Cloud cloud;
-    private int records=500;
+    private int records=2000;
 
     ProgramsHandler(Context parent, Cloud cloud) {
         this.parent = parent;
@@ -75,10 +75,10 @@ public class ProgramsHandler implements SynchronizationHandler {
             }
             if(results.length() == this.records) // we had a full page, maybe more records..
             {
-                 //this.requestSync(true);
+                 this.requestSync(true);
             }
             else {
-                //this.requestSync(false);
+                this.requestSync(false);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -132,16 +132,15 @@ public class ProgramsHandler implements SynchronizationHandler {
     }
 
     private String getSincePart() {
-        String query = "select max(start) from scheduledprogram";
+        String query = "select max(updatedat) from scheduledprogram";
         String[][] result = DBAgent.getData(query, new String[]{});
         if (result == null || result.length == 0 || result[0][0] == null) {
-            return String.format("start=%s&records=%s", Utils.getDateString( getTodayBaseDate(), "yyyy-MM-dd'T'HH:mm:ss"), records); //Todo: implement start and end based filtering to not fetch very old records
+            return String.format("all=1&records=%s", this.records); //Todo: implement start and end based filtering to not fetch very old records
         }
-        String baseId = result[0][0];
-//        Calendar cal = Calendar.getInstance();
-//        cal.setTime(Utils.getDateFromString(result[0][0], "yyyy-MM-dd HH:mm:ss"));
-//        cal.add(Calendar.SECOND, 1); //Add 1 second, server side compares using greater or equal
-        return String.format("start=%s&records=%s", baseId.replace(" ","T"), this.records);
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(Utils.getDateFromString(result[0][0], "yyyy-MM-dd HH:mm:ss"));
+        cal.add(Calendar.SECOND, 1); //Add 1 second, server side compares using greater or equal
+        return String.format("updated_since=%s&records=%s", Utils.getDateString(cal.getTime(), "yyyy-MM-dd'T'HH:mm:ss"), records);
     }
 
     private boolean saveRecords(ArrayList<ContentValues> values) {
