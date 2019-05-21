@@ -185,6 +185,8 @@ public class LinSipService extends Service implements ServiceInformationPublishe
 
         this.linphoneCore.addProxyConfig(this.proxyConfig);
         this.linphoneCore.setDefaultProxyConfig(this.proxyConfig);
+        this.linphoneCore.setRingerDevice(null);
+        this.linphoneCore.setRing(null);
     }
 
     private void prepareSipProfile() {
