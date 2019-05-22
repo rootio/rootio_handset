@@ -78,6 +78,8 @@ public class SynchronizationDaemon implements Runnable {
                                 SynchronizationDaemon.this.synchronize(new PlaylistHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud));
                             if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(9)))
                                 SynchronizationDaemon.this.synchronize(new LogHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud));
+                            if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(10)))
+                                SynchronizationDaemon.this.synchronize(new StationHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud));
                             isSyncing = false;
                         }
                     });

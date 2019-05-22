@@ -360,7 +360,7 @@ public class LinSipService extends Service implements ServiceInformationPublishe
     public void updateCallState(Call.State callState, Call call) {
         switch (callState) {
             case End:
-                if(call.getRemoteAddress().getDomain().equals(this.domain))
+                if(call.getRemoteAddress().getDomain().equals(this.domain) && this.inCall)
                 {
                 this.inCall = false;
                 if (isPendingRestart) {

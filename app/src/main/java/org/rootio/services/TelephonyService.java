@@ -32,6 +32,8 @@ public class TelephonyService extends Service implements ServiceInformationPubli
     private TelecomManager telecomManager;
     private PhoneCallListener listener;
     private CallRecorder callRecorder;
+    private boolean inCall;
+    private String currentCallingNumber;
 
     @Override
     public IBinder onBind(Intent arg0) {
@@ -186,7 +188,7 @@ public class TelephonyService extends Service implements ServiceInformationPubli
      */
     public void handleCall(final String fromNumber) {
         if (new CallAuthenticator(this).isWhiteListed(fromNumber)) {
-
+            this.inCall = true;
             TelephonyService.this.sendTelephonyEventBroadcast(true);
 
             new Thread(new Runnable() {
@@ -218,19 +220,20 @@ public class TelephonyService extends Service implements ServiceInformationPubli
 
             switch (state) {
                 case TelephonyManager.CALL_STATE_RINGING:
-//                    try {
-//                        Thread.sleep(500);
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                    }
-                    Utils.logEvent(TelephonyService.this, Utils.EventCategory.CALL, Utils.EventAction.RINGING, incomingNumber);
-                    handleCall(incomingNumber);
+                    if (!inCall) {
+                        currentCallingNumber = incomingNumber;
+                        Utils.logEvent(TelephonyService.this, Utils.EventCategory.CALL, Utils.EventAction.RINGING, incomingNumber);
+                        handleCall(incomingNumber);
+                    }
                     break;
                 case TelephonyManager.CALL_STATE_IDLE:
-                    TelephonyService.this.sendTelephonyEventBroadcast(false);
-                    if (TelephonyService.this.callRecorder != null) {
-                        TelephonyService.this.callRecorder.stopRecording();
-                        TelephonyService.this.callRecorder = null;
+                    if (incomingNumber.equals(currentCallingNumber)) {
+                        inCall = false;
+                        TelephonyService.this.sendTelephonyEventBroadcast(false);
+                        if (TelephonyService.this.callRecorder != null) {
+                            TelephonyService.this.callRecorder.stopRecording();
+                            TelephonyService.this.callRecorder = null;
+                        }
                     }
                     Utils.logEvent(TelephonyService.this, Utils.EventCategory.CALL, Utils.EventAction.STOP, incomingNumber);
                     break;
