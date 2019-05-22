@@ -34,11 +34,15 @@ public class StationHandler implements SynchronizationHandler {
      * @param synchronizationResponse The response returned from the cloud server
      */
     public void processJSONResponse(JSONObject synchronizationResponse) {
-        this.checkForSipConfigChange(synchronizationResponse.toString());
+        boolean isConfigChanged = this.isConfigChanged(synchronizationResponse.toString());
         //Lazy approach: save all JSON to prefs in one field, get it out and parse it later :-D
         ContentValues values  = new ContentValues();
         values.put("station_information", synchronizationResponse.toString());
         Utils.savePreferences(values, this.parent);
+        if(isConfigChanged)
+        {
+            this.announceSIPChange();
+        }
         //Utils.saveJSONToFile(this.parent, synchronizationResponse, this.parent.getFilesDir().getAbsolutePath() + "/station.json");
     }
 
@@ -47,15 +51,18 @@ public class StationHandler implements SynchronizationHandler {
         return String.format("%s://%s:%s/%s/%s/information?api_key=%s&version=%s_%s", this.cloud.getServerScheme(), this.cloud.getServerAddress(), this.cloud.getHTTPPort(), "api/station", this.cloud.getStationId(), this.cloud.getServerKey(), BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE);
     }
 
-    private void checkForSipConfigChange(String newConfiguration)
+    private boolean isConfigChanged(String newConfiguration)
+    {
+        String currentConfiguration = (String) Utils.getPreference("station_information", String.class, this.parent);
+        return (!currentConfiguration.equals(newConfiguration));
+    }
+
+    private void announceSIPChange()
     {
         //This is lazy -- any station change will result in re-registration. Ideal is to extract SIP components and compare them
         try {
-            String currentConfiguration = (String) Utils.getPreference("station_information", String.class, this.parent);
-            if (!currentConfiguration.equals(newConfiguration)) {
-                Intent intent = new Intent("org.rootio.handset.SIP.CONFIGURATION_CHANGE");
+               Intent intent = new Intent("org.rootio.handset.SIP.CONFIGURATION_CHANGE");
                 this.parent.sendBroadcast(intent);
-            }
         }
         catch(Exception ex){
             //todo: log this

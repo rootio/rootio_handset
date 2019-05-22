@@ -170,7 +170,6 @@ public class LinSipService extends Service implements ServiceInformationPublishe
         this.linphoneCore.addAuthInfo(authInfo);
 
 
-
         this.proxyConfig.setIdentityAddress(addr);
         this.proxyConfig.setServerAddr(String.format("sip:%s:%s", this.domain, this.port));
         //this.proxyConfig.setServerAddr(proxy.getDomain());
@@ -229,7 +228,6 @@ public class LinSipService extends Service implements ServiceInformationPublishe
     void initializeStack() {
         try {
             this.loadConfig();
-
             if (this.username.isEmpty() || this.password.isEmpty() || this.domain.isEmpty()) {
                 Utils.toastOnScreen("Can't register! Username, password or domain is missing!", this);
                 this.updateRegistrationState(RegistrationState.None, null);
@@ -283,7 +281,7 @@ public class LinSipService extends Service implements ServiceInformationPublishe
      */
     private void handleCall(Call call) {
         //check the whitelist
-        Log.e("RootIO", "handleCall: "+call.getRemoteAddress().getDomain() + " "+this.domain);
+        Log.e("RootIO", "handleCall: " + call.getRemoteAddress().getDomain() + " " + this.domain);
         if (call.getRemoteAddress().getDomain().equals(this.domain)) //Guard against spoofing..
         {
             this.sendTelephonyEventBroadcast(true);
@@ -294,7 +292,7 @@ public class LinSipService extends Service implements ServiceInformationPublishe
             }
             this.answer(call);
         } else {
-           this.hangup(call);
+            this.hangup(call);
         }
     }
 
@@ -360,21 +358,21 @@ public class LinSipService extends Service implements ServiceInformationPublishe
     public void updateCallState(Call.State callState, Call call) {
         switch (callState) {
             case End:
-                if(call.getRemoteAddress().getDomain().equals(this.domain) && this.inCall)
-                {
-                this.inCall = false;
-                if (isPendingRestart) {
-                    this.deregister();
-                    this.initializeStack();
-                    this.register();
-                    isPendingRestart = false;
+                if (call.getRemoteAddress().getDomain().equals(this.domain) && this.inCall) {
+                    this.inCall = false;
+                    if (isPendingRestart) {
+                        this.deregister();
+                        this.initializeStack();
+                        this.register();
+                        isPendingRestart = false;
+                    }
+                    this.sendTelephonyEventBroadcast(false);
+                    Utils.logEvent(this, Utils.EventCategory.SIP_CALL, Utils.EventAction.STOP, call != null ? call.getRemoteContact() : "");
+                    if (call != null) //not being sent au moment
+                    {
+                        Utils.toastOnScreen("Call with " + call != null ? call.getRemoteContact() : "" + " ended", this);
+                    }
                 }
-                this.sendTelephonyEventBroadcast(false);
-                Utils.logEvent(this, Utils.EventCategory.SIP_CALL, Utils.EventAction.STOP, call != null? call.getRemoteContact(): "");
-                if (call != null) //not being sent au moment
-                {
-                    Utils.toastOnScreen("Call with " + call != null? call.getRemoteContact():"" + " ended", this);
-                }}
                 break;
             case Error:
                 this.inCall = false;
@@ -384,11 +382,11 @@ public class LinSipService extends Service implements ServiceInformationPublishe
                     this.register();
                     isPendingRestart = false;
                 }
-                Utils.logEvent(this, Utils.EventCategory.SIP_CALL, Utils.EventAction.STOP, call != null? call.getRemoteContact(): "");
+                Utils.logEvent(this, Utils.EventCategory.SIP_CALL, Utils.EventAction.STOP, call != null ? call.getRemoteContact() : "");
                 this.sendTelephonyEventBroadcast(false);
                 if (call != null) //not being sent au moment
                 {
-                    Utils.toastOnScreen("Call with " + call != null? call.getRemoteContact():"" + " erred", this);
+                    Utils.toastOnScreen("Call with " + call != null ? call.getRemoteContact() : "" + " erred", this);
                 }
                 break;
             case Connected:
@@ -397,21 +395,21 @@ public class LinSipService extends Service implements ServiceInformationPublishe
                 this.sendTelephonyEventBroadcast(true);
                 if (call != null) //ideally check for direction and report if outgoing or incoming
                 {
-                    Utils.toastOnScreen("In call with " + call != null? call.getRemoteContact():"", this);
+                    Utils.toastOnScreen("In call with " + call != null ? call.getRemoteContact() : "", this);
                 }
-                Utils.logEvent(this, Utils.EventCategory.SIP_CALL, Utils.EventAction.START, call != null? call.getRemoteContact(): "");
+                Utils.logEvent(this, Utils.EventCategory.SIP_CALL, Utils.EventAction.START, call != null ? call.getRemoteContact() : "");
                 break;
             case IncomingReceived:
                 this.linphoneCore.stopRinging();
                 if (call != null) {
-                    Utils.toastOnScreen("Incoming call from " + call != null? call.getRemoteContact():"", this);
-                   this.handleCall(call); //check WhiteList first!!
+                    Utils.toastOnScreen("Incoming call from " + call != null ? call.getRemoteContact() : "", this);
+                    this.handleCall(call); //check WhiteList first!!
                 }
-                Utils.logEvent(this, Utils.EventCategory.SIP_CALL, Utils.EventAction.RINGING, call != null? call.getRemoteContact(): "");
+                Utils.logEvent(this, Utils.EventCategory.SIP_CALL, Utils.EventAction.RINGING, call != null ? call.getRemoteContact() : "");
                 break;
             case OutgoingInit:
                 if (call != null) {
-                    Utils.toastOnScreen("Dialling out to" + call != null? call.getRemoteContact():"", this);
+                    Utils.toastOnScreen("Dialling out to" + call != null ? call.getRemoteContact() : "", this);
                 }
                 break;
             default: //handles 11 other states!
@@ -429,18 +427,20 @@ public class LinSipService extends Service implements ServiceInformationPublishe
             Utils.logEvent(this, Utils.EventCategory.SIP_CALL, Utils.EventAction.REGISTRATION, registrationState.name());
             switch (registrationState) {
                 case Progress:
-                    if(BuildConfig.DEBUG) Utils.toastOnScreen("Registering...", this);
+                    if (BuildConfig.DEBUG) Utils.toastOnScreen("Registering...", this);
                     break;
                 case Ok:
                     if (proxyConfig != null) {
-                        if(BuildConfig.DEBUG) Utils.toastOnScreen("Registered " + proxyConfig.getIdentityAddress().getUsername() + "@" + proxyConfig.getServerAddr(), this);
+                        if (BuildConfig.DEBUG)
+                            Utils.toastOnScreen("Registered " + proxyConfig.getIdentityAddress().getUsername() + "@" + proxyConfig.getServerAddr(), this);
                     }
                     break;
                 case None:
                 case Cleared:
                 case Failed:
                     if (proxyConfig != null) {
-                        if(BuildConfig.DEBUG) Utils.toastOnScreen("Unregistered " + proxyConfig.getIdentityAddress().asString(), this);
+                        if (BuildConfig.DEBUG)
+                            Utils.toastOnScreen("Unregistered " + proxyConfig.getIdentityAddress().asString(), this);
                     }
             }
         }
