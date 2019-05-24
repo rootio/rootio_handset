@@ -22,6 +22,7 @@ import org.linphone.core.ProxyConfig;
 import org.linphone.core.RegistrationState;
 import org.linphone.core.TransportType;
 import org.linphone.core.Transports;
+import org.rootio.RootioApp;
 import org.rootio.handset.BuildConfig;
 import org.rootio.handset.R;
 import org.rootio.services.SIP.SipEventsNotifiable;
@@ -284,6 +285,7 @@ public class LinSipService extends Service implements ServiceInformationPublishe
         Log.e("RootIO", "handleCall: " + call.getRemoteAddress().getDomain() + " " + this.domain);
         if (call.getRemoteAddress().getDomain().equals(this.domain)) //Guard against spoofing..
         {
+            RootioApp.setInSIPCall(true);
             this.sendTelephonyEventBroadcast(true);
             try {
                 Thread.sleep(5000);
@@ -366,6 +368,7 @@ public class LinSipService extends Service implements ServiceInformationPublishe
                         this.register();
                         isPendingRestart = false;
                     }
+                    RootioApp.setInSIPCall(false);
                     this.sendTelephonyEventBroadcast(false);
                     Utils.logEvent(this, Utils.EventCategory.SIP_CALL, Utils.EventAction.STOP, call != null ? call.getRemoteContact() : "");
                     if (call != null) //not being sent au moment

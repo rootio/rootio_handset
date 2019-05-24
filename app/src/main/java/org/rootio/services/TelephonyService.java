@@ -2,6 +2,7 @@ package org.rootio.services;
 
 import java.lang.reflect.Method;
 
+import org.rootio.RootioApp;
 import org.rootio.handset.BuildConfig;
 import org.rootio.handset.R;
 import org.rootio.tools.telephony.CallAuthenticator;
@@ -189,6 +190,7 @@ public class TelephonyService extends Service implements ServiceInformationPubli
     public void handleCall(final String fromNumber) {
         if (new CallAuthenticator(this).isWhiteListed(fromNumber)) {
             this.inCall = true;
+            RootioApp.setInCall(true);
             TelephonyService.this.sendTelephonyEventBroadcast(true);
 
             new Thread(new Runnable() {
@@ -229,6 +231,7 @@ public class TelephonyService extends Service implements ServiceInformationPubli
                 case TelephonyManager.CALL_STATE_IDLE:
                     if (incomingNumber.equals(currentCallingNumber)) {
                         inCall = false;
+                        RootioApp.setInCall(false);
                         TelephonyService.this.sendTelephonyEventBroadcast(false);
                         if (TelephonyService.this.callRecorder != null) {
                             TelephonyService.this.callRecorder.stopRecording();

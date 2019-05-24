@@ -59,27 +59,27 @@ public class SynchronizationDaemon implements Runnable {
                         public void run() {
                             isSyncing = true;
                             if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(1)))
-                                SynchronizationDaemon.this.synchronize(new DiagnosticsHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud));
+                                SynchronizationDaemon.this.synchronize(new DiagnosticsHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud),new Integer(1));
                             if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(2))) {
                                 SynchronizationDaemon.this.syncLocks.add(new Integer(2));
-                                SynchronizationDaemon.this.synchronize(new ProgramsHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud));
+                                SynchronizationDaemon.this.synchronize(new ProgramsHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud),new Integer(2));
                             }
                             if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(3)))
-                                SynchronizationDaemon.this.synchronize(new CallLogHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud));
+                                SynchronizationDaemon.this.synchronize(new CallLogHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud),new Integer(3));
                             if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(4)))
-                                SynchronizationDaemon.this.synchronize(new SMSLogHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud));
+                                SynchronizationDaemon.this.synchronize(new SMSLogHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud),new Integer(4));
                             if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(5)))
-                                SynchronizationDaemon.this.synchronize(new WhitelistHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud));
+                                SynchronizationDaemon.this.synchronize(new WhitelistHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud),new Integer(5));
                             if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(6)))
-                                SynchronizationDaemon.this.synchronize(new FrequencyHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud));
+                                SynchronizationDaemon.this.synchronize(new FrequencyHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud),new Integer(6));
                             if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(7)))
-                                SynchronizationDaemon.this.synchronize(SynchronizationDaemon.this.musicListHandler);
+                                SynchronizationDaemon.this.synchronize(SynchronizationDaemon.this.musicListHandler,new Integer(7));
                             if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(8)))
-                                SynchronizationDaemon.this.synchronize(new PlaylistHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud));
+                                SynchronizationDaemon.this.synchronize(new PlaylistHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud),new Integer(8));
                             if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(9)))
-                                SynchronizationDaemon.this.synchronize(new LogHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud));
+                                SynchronizationDaemon.this.synchronize(new LogHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud),new Integer(9));
                             if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(10)))
-                                SynchronizationDaemon.this.synchronize(new StationHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud));
+                                SynchronizationDaemon.this.synchronize(new StationHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud),new Integer(10));
                             isSyncing = false;
                         }
                     });
@@ -92,7 +92,7 @@ public class SynchronizationDaemon implements Runnable {
         }
     }
 
-    public void requestSync(int category) {
+    public void requestSync(final int category) {
         this.syncLocks.add(new Integer(category)); //prevent automated sync while this is running
         final SynchronizationHandler syncHandler;
         switch (category) {
@@ -135,7 +135,7 @@ public class SynchronizationDaemon implements Runnable {
                     Thread thread = new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            SynchronizationDaemon.this.synchronize(syncHandler);
+                            SynchronizationDaemon.this.synchronize(syncHandler, new Integer(category));
                         }
                     });
                     thread.start();
@@ -181,7 +181,7 @@ public class SynchronizationDaemon implements Runnable {
         }
     }
 
-    public void synchronize(final SynchronizationHandler handler) {
+    public void synchronize(final SynchronizationHandler handler, Integer id) {
         try {
             String synchronizationUrl = handler.getSynchronizationURL();
             HashMap<String, Object> response = Utils.doDetailedPostHTTP(synchronizationUrl, handler.getSynchronizationData().toString());
@@ -190,6 +190,7 @@ public class SynchronizationDaemon implements Runnable {
             handler.processJSONResponse(responseJSON);
             Utils.logEvent(this.parent, Utils.EventCategory.SYNC, Utils.EventAction.START, String.format("length: %s, response code: %s, duration: %s, url: %s", response.get("length"), response.get("responseCode"), response.get("duration"), response.get("url")));
         } catch (Exception ex) {
+            this.syncLocks.remove(id);
             ex.printStackTrace();
             Log.e(SynchronizationDaemon.this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(SynchronizationDaemon.synchronize)" : ex.getMessage());
         }

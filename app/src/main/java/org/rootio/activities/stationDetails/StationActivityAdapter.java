@@ -26,7 +26,13 @@ public class StationActivityAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return programSlots.size();
+        try {
+            return programSlots.size();
+        }
+        catch (Exception ex)
+        {
+            return 0;
+        }
     }
 
     @Override

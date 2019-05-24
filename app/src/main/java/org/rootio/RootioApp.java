@@ -16,6 +16,8 @@ import org.rootio.services.TelephonyService;
 public class RootioApp extends Application {
     public static RootioApp instance;
 
+    private static boolean inCall, inSIPCall;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -42,16 +44,13 @@ public class RootioApp extends Application {
                                                               Intent intent = this.getIntentToLaunch(RootioApp.this, serviceId);
                                                               try {
                                                                   RootioApp.this.stopService(intent);
-                                                              }
-                                                              catch(Exception ex)
-                                                              {
+                                                              } catch (Exception ex) {
                                                                   Log.e(RootioApp.this.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer[DefaultErrorHandler]" : ex.getMessage());
                                                               }
 
                                                               try {
-                                                              RootioApp.this.startForegroundService(intent);
-                                                              }
-                                                              catch(Exception ex){
+                                                                  RootioApp.this.startForegroundService(intent);
+                                                              } catch (Exception ex) {
                                                                   Log.e(RootioApp.this.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer[DefaultErrorHandler]" : ex.getMessage());
                                                               }
                                                           }
@@ -102,5 +101,21 @@ public class RootioApp extends Application {
 
     public static RootioApp getInstance() {
         return instance;
+    }
+
+    public static boolean isInCall() {
+        return inCall;
+    }
+
+    public static void setInCall(boolean isInCall) {
+        inCall = isInCall;
+    }
+
+    public static boolean isInSIPCall() {
+        return inSIPCall;
+    }
+
+    public static void setInSIPCall(boolean isInSIPCall) {
+        inSIPCall = isInSIPCall;
     }
 }

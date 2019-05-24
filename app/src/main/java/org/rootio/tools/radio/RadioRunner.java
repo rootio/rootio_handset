@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.util.Log;
 
+import org.rootio.RootioApp;
 import org.rootio.activities.services.TelephonyEventNotifiable;
 import org.rootio.handset.R;
 import org.rootio.tools.media.Program;
@@ -97,7 +98,7 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
         this.runningProgramIndex = index;
         // Check to see that we are not in a phone call before launching program
 
-        if (this.state != State.PAUSED) {
+        if (!RootioApp.isInCall() && !RootioApp.isInSIPCall()){ //this.state != State.PAUSED) {
             this.state = State.PLAYING;
             this.programs.get(index).run();
             //Utils.toastOnScreen("starting program...", this.parent);
@@ -278,7 +279,7 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
             }
             else
             {
-                Utils.toastOnScreen("TIme issue...", this.parent);
+                //Utils.toastOnScreen("TIme issue...", this.parent);
             }
         }
     }
@@ -307,15 +308,15 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
         if (isInCall) {
             //it is important to set and check state ASAP. These events may be fired more than once in quick succession
             if(this.state != State.PAUSED) {
-                this.pauseProgram();
                 this.state = State.PAUSED;
+                this.pauseProgram();
             }
         } else { // notification that the call has ended
-            if (this.state == State.PAUSED) {
+            if (this.state != State.PLAYING) {
                 // The program had begun, it was paused by the call
                 this.state = State.PLAYING;
                 this.resumeProgram();
-            }
+           }
         }
     }
 

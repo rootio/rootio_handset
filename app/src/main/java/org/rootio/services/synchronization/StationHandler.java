@@ -54,7 +54,7 @@ public class StationHandler implements SynchronizationHandler {
     private boolean isConfigChanged(String newConfiguration)
     {
         String currentConfiguration = (String) Utils.getPreference("station_information", String.class, this.parent);
-        return (!currentConfiguration.equals(newConfiguration));
+        return (currentConfiguration != null && !currentConfiguration.equals(newConfiguration));
     }
 
     private void announceSIPChange()

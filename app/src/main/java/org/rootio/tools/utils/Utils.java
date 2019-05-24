@@ -219,6 +219,7 @@ public class Utils {
 
     public static Object getPreference(String key, Class cls, Context context)
     {
+        try{
         SharedPreferences prefs = context.getSharedPreferences("org.rootio.handset", Context.MODE_PRIVATE);
         if(prefs != null) {
             if (cls == String.class) {
@@ -232,6 +233,14 @@ public class Utils {
             } else if (cls == float.class) {
                 return prefs.getFloat(key, 0f);
             }
+        }}
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        catch (StackOverflowError er)
+        {
+            er.printStackTrace();
         }
         return null;
     }

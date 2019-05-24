@@ -54,6 +54,7 @@ public class PlayList implements Player.EventListener {
     private boolean isShuttingDown;
     private Thread runnerThread;
     private int maxVolume;
+    private boolean foundMedia;
 
 
     private PlayList() {
@@ -81,7 +82,9 @@ public class PlayList implements Player.EventListener {
      * Load media for this playlist from the database
      */
     public void load() {
-        mediaList = loadMedia(this.playlists);
+        if (this.mediaList == null || mediaList.size() == 0) {
+            mediaList = loadMedia(this.playlists);
+        }
         mediaIterator = mediaList.iterator();
         streamIterator = streams.iterator();
     }
@@ -97,73 +100,82 @@ public class PlayList implements Player.EventListener {
 
     private void startPlayer() {
         final Cloud cloud = new Cloud(this.parent);
-        try {
-            AudioManager audioManager = (AudioManager) this.parent.getSystemService(Context.AUDIO_SERVICE);
-            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, this.maxVolume, AudioManager.FLAG_SHOW_UI);
-
-            if (streamIterator.hasNext()) {
-                String stream = this.streamIterator.next();
-                currentMedia = new Media("", stream, 0, null);
-                try {
-                    playMedia(Uri.parse(currentMedia.getFileLocation()));
-
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Utils.doPostHTTP(String.format("%s://%s:%s/%s/%s/programs?api_key=%s&%s&version=%s_%s", cloud.getServerScheme(), cloud.getServerAddress(), cloud.getHTTPPort(), "api/media_play", cloud.getStationId(), cloud.getServerKey(), currentMedia.getFileLocation(), BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE), "");
-                        }
-                    }).start();
-                } catch (NullPointerException ex) {
-                    Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(PlayList.startPlayer)" : ex.getMessage());
-                    this.startPlayer();
-                }
-
-            } else if (mediaIterator.hasNext()) {
-
-                currentMedia = mediaIterator.next();
-
-                try {
-                    playMedia(Uri.fromFile(new File(currentMedia.getFileLocation())));
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Utils.doPostHTTP(String.format("%s://%s:%s/%s/%s/programs?api_key=%s&%s&version=%s_%s", cloud.getServerScheme(), cloud.getServerAddress(), cloud.getHTTPPort(), "api/media_play", cloud.getStationId(), cloud.getServerKey(), currentMedia.getFileLocation(), BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE), "");
-                        }
-                    }).start();
-
-                } catch (NullPointerException ex) {
-                    Log.i(this.parent.getString(R.string.app_name), "startPlayer: " + currentMedia.getFileLocation());
-                    Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(PlayList.startPlayer)" : ex.getMessage());
-                    this.startPlayer();
-                }
-            } else {
-                if (mediaList.size() > 0 || streams.size() > 0) // reload playlist if only there were songs in it
-                // were some songs in it
-                {
-                    this.load();
-                    this.startPlayer();
-                }
-            }
-
-
-        } catch (final Exception ex) {
+        while (!foundMedia) {
             try {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Utils.doPostHTTP(String.format("%s://%s:%s/%s/%s/programs?api_key=%s&%s&version=%s_%s", cloud.getServerScheme(), cloud.getServerAddress(), cloud.getHTTPPort(), "api/media_play", cloud.getStationId(), cloud.getServerKey(), ex.getMessage() == null ? "Null pointer exception(PlayList.play)" : ex.getMessage(), BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE), "");
-                    }
-                }).start();
+                AudioManager audioManager = (AudioManager) this.parent.getSystemService(Context.AUDIO_SERVICE);
+                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, this.maxVolume, AudioManager.FLAG_SHOW_UI);
 
-                Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(PlayList.play)" : ex.getMessage());
+                if (streamIterator.hasNext()) {
+                    String stream = this.streamIterator.next();
+                    currentMedia = new Media("", stream, 0, null);
+                    try {
+                        playMedia(Uri.parse(currentMedia.getFileLocation()));
+
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Utils.doPostHTTP(String.format("%s://%s:%s/%s/%s/programs?api_key=%s&%s&version=%s_%s", cloud.getServerScheme(), cloud.getServerAddress(), cloud.getHTTPPort(), "api/media_play", cloud.getStationId(), cloud.getServerKey(), currentMedia.getFileLocation(), BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE), "");
+                            }
+                        }).start();
+                    } catch (NullPointerException ex) {
+                        Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(PlayList.startPlayer)" : ex.getMessage());
+                        this.startPlayer();
+                    }
+
+                } else if (mediaIterator.hasNext()) {
+
+                    currentMedia = mediaIterator.next();
+
+                    try {
+                        playMedia(Uri.fromFile(new File(currentMedia.getFileLocation())));
+                        this.foundMedia = true;
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Utils.doPostHTTP(String.format("%s://%s:%s/%s/%s/programs?api_key=%s&%s&version=%s_%s", cloud.getServerScheme(), cloud.getServerAddress(), cloud.getHTTPPort(), "api/media_play", cloud.getStationId(), cloud.getServerKey(), currentMedia.getFileLocation(), BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE), "");
+                            }
+                        }).start();
+
+                    } catch (NullPointerException ex) {
+                        Log.e(this.parent.getString(R.string.app_name) + " PlayList.startPlayer", ex.getMessage() == null ? "Null pointer exception(PlayList.startPlayer)" : ex.getMessage());
+                        this.startPlayer();
+                    }
+                } else {
+                    try {
+                        Thread.sleep(10000);
+                    } catch (InterruptedException ex) {
+
+                    }
+                    this.load();
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            startPlayer();
+                        }
+                    }).start();
+
+                }
+
+
+            } catch (final Exception ex) {
+                try {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Utils.doPostHTTP(String.format("%s://%s:%s/%s/%s/programs?api_key=%s&%s&version=%s_%s", cloud.getServerScheme(), cloud.getServerAddress(), cloud.getHTTPPort(), "api/media_play", cloud.getStationId(), cloud.getServerKey(), ex.getMessage() == null ? "Null pointer exception(PlayList.play)" : ex.getMessage(), BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE), "");
+                        }
+                    }).start();
+
+                    Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(PlayList.play)" : ex.getMessage());
             /*try {
                 Thread.sleep(10000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }*/
-                this.startPlayer();
-            } catch (Exception ex1) {
+                    this.startPlayer();
+                } catch (Exception ex1) {
 
+                }
             }
         }
     }
@@ -229,6 +241,10 @@ public class PlayList implements Player.EventListener {
         }
     }
 
+    private void cleanup() {
+        mediaList = null;
+    }
+
     private void fadeOut() {
         //fade out in 5 secs
         float step = mediaPlayer.getVolume() / 50;
@@ -278,7 +294,7 @@ public class PlayList implements Player.EventListener {
                 this.callSignProvider.stop();
             }
         } catch (Exception ex) {
-            Log.e(this.parent.getString(R.string.app_name)   + " (PlayList.pause)", ex.getMessage() == null ? "Null pointer exception" : ex.getMessage());
+            Log.e(this.parent.getString(R.string.app_name) + " (PlayList.pause)", ex.getMessage() == null ? "Null pointer exception" : ex.getMessage());
         }
     }
 
@@ -314,7 +330,7 @@ public class PlayList implements Player.EventListener {
         for (String playlist : playlists) {
             String query = "select title, item, itemtypeid from playlist where lower(title) = ?";
             String[] args = new String[]{playlist.toLowerCase()};
-           // DBAgent dbagent = new DBAgent(this.parent);
+            // DBAgent dbagent = new DBAgent(this.parent);
             String[][] data = DBAgent.getData(query, args);
             for (String[] record : data) {
 
@@ -465,6 +481,9 @@ public class PlayList implements Player.EventListener {
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
         switch (playbackState) {
+            case Player.STATE_BUFFERING:
+                int k = 1;
+                break;
             case Player.STATE_READY:
                 try {
                     if (this.callSignPlayer != null && this.callSignPlayer.getPlaybackState() == Player.STATE_READY) {
@@ -482,6 +501,7 @@ public class PlayList implements Player.EventListener {
                 }
                 break;
             case Player.STATE_ENDED: //a song has ended
+                this.foundMedia = false;
                 Utils.toastOnScreen("logging media...", this.parent);
                 Utils.logEvent(this.parent, Utils.EventCategory.MEDIA, Utils.EventAction.STOP, String.format("Title: %s, Artist: %s, Location: %s", currentMedia.getTitle(), currentMedia.getArtists(), currentMedia.getFileLocation()));
                 if (this.isShuttingDown) {
@@ -552,14 +572,14 @@ public class PlayList implements Player.EventListener {
             this.isRunning = true;
 
             this.mediaIterator = callSigns.iterator();
-            while (this.isRunning) {
-                try {
-                    this.playCallSign();
-                    Thread.sleep(PlayList.this.getJingleInterval());// 2 mins debug, 12 mins release
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
+//            while (this.isRunning) {
+//                try {
+//                    this.playCallSign();
+//                    Thread.sleep(PlayList.this.getJingleInterval());// 2 mins debug, 12 mins release
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//            }
 
         }
 
