@@ -31,6 +31,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Random;
 
 /**
  * Class for the definition of Playlists
@@ -81,9 +82,17 @@ public class PlayList implements Player.EventListener {
     /**
      * Load media for this playlist from the database
      */
-    public void load() {
-        if (this.mediaList == null || mediaList.size() == 0) {
+    public void load(boolean hard) {
+        if (hard || (this.mediaList == null || mediaList.size() == 0)) {
             mediaList = loadMedia(this.playlists);
+        }
+        mediaIterator = mediaList.iterator();
+        streamIterator = streams.iterator();
+    }
+
+    public void preload(){
+        if (this.mediaList == null || mediaList.size() == 0) {
+            mediaList = preloadMedia(this.playlists);
         }
         mediaIterator = mediaList.iterator();
         streamIterator = streams.iterator();
@@ -146,7 +155,7 @@ public class PlayList implements Player.EventListener {
                     } catch (InterruptedException ex) {
 
                     }
-                    this.load();
+                    this.load(false);
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
@@ -241,10 +250,6 @@ public class PlayList implements Player.EventListener {
         }
     }
 
-    private void cleanup() {
-        mediaList = null;
-    }
-
     private void fadeOut() {
         //fade out in 5 secs
         float step = mediaPlayer.getVolume() / 50;
@@ -324,6 +329,32 @@ public class PlayList implements Player.EventListener {
         }
     }
 
+    private HashSet<Media> preloadMedia(ArrayList<String> playlists) {
+        Random rand = new Random();
+        HashSet<Media> media = new HashSet<>();
+        for (String playlist : playlists) {
+            String query = "select title, item, itemtypeid from playlist where lower(title) = ?";
+            String[] args = new String[]{playlist.toLowerCase()};
+            // DBAgent dbagent = new DBAgent(this.parent);
+            String[][] data = DBAgent.getData(query, args);
+            for (int k = 0; k < 3 && k < data.length; k++) {
+                int i = rand.nextInt(data.length);
+                switch (data[i][2]) {
+                    case "1"://songs
+                        media.add(this.mediaLib.getMedia(data[i][1]));
+                        break;
+                    case "2":// albums
+                        media.addAll(this.mediaLib.getMediaForAlbum(data[i][1]));
+                        break;
+                    case "3":// artists
+                        media.addAll(this.mediaLib.getMediaForArtist(data[i][1]));
+                        break;
+                }
+            }
+        }
+
+        return media;
+    }
 
     private HashSet<Media> loadMedia(ArrayList<String> playlists) {
         HashSet<Media> media = new HashSet<>();
@@ -478,9 +509,11 @@ public class PlayList implements Player.EventListener {
 
     }
 
+
+
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-        switch (playbackState) {
+         switch (playbackState) {
             case Player.STATE_BUFFERING:
                 int k = 1;
                 break;
@@ -572,15 +605,14 @@ public class PlayList implements Player.EventListener {
             this.isRunning = true;
 
             this.mediaIterator = callSigns.iterator();
-//            while (this.isRunning) {
-//                try {
-//                    this.playCallSign();
-//                    Thread.sleep(PlayList.this.getJingleInterval());// 2 mins debug, 12 mins release
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-
+            while (this.isRunning) {
+                try {
+                    this.playCallSign();
+                    Thread.sleep(PlayList.this.getJingleInterval());// 2 mins debug, 12 mins release
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
         void stop() {

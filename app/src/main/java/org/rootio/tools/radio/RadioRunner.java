@@ -350,7 +350,7 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
     private void reloadSchedule()
     {
         this.deleteFutureSchedule();
-        this.programs = this.getPrograms();
+        this.programs = this.fetchPrograms();
         this.scheduleFuturePrograms(programs);
     }
 }

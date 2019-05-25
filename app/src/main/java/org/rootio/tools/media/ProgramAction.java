@@ -27,8 +27,9 @@ public class ProgramAction {
             case Audio:
                 this.playlist = PlayList.getInstance();
                 this.playlist.init(this.parent, this.playlists, this.streams, this.programActionType);
-                this.playlist.load();
+                this.playlist.preload();
                 this.playlist.play();
+                this.playlist.load(true);
                 break;
             case Jingle:
                 break;
