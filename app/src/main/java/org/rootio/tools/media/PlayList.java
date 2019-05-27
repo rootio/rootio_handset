@@ -103,13 +103,20 @@ public class PlayList implements Player.EventListener {
      */
     public void play() {
         this.maxVolume = this.getMaxVolume();
-        startPlayer();
-        this.callSignProvider.start();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                startPlayer();
+            }
+        }).start();
+      //  startPlayer();
+   this.callSignProvider.start();
+
     }
 
     private void startPlayer() {
-        final Cloud cloud = new Cloud(this.parent);
-        while (!foundMedia) {
+         final Cloud cloud = new Cloud(this.parent);
+        while (!foundMedia && !this.isShuttingDown) {
             try {
                 AudioManager audioManager = (AudioManager) this.parent.getSystemService(Context.AUDIO_SERVICE);
                 audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, this.maxVolume, AudioManager.FLAG_SHOW_UI);
@@ -119,6 +126,7 @@ public class PlayList implements Player.EventListener {
                     currentMedia = new Media("", stream, 0, null);
                     try {
                         playMedia(Uri.parse(currentMedia.getFileLocation()));
+                        this.foundMedia = true;
 
                         new Thread(new Runnable() {
                             @Override
@@ -146,7 +154,7 @@ public class PlayList implements Player.EventListener {
                         }).start();
 
                     } catch (NullPointerException ex) {
-                        Log.e(this.parent.getString(R.string.app_name) + " PlayList.startPlayer", ex.getMessage() == null ? "Null pointer exception(PlayList.startPlayer)" : ex.getMessage());
+                        //Log.e(this.parent.getString(R.string.app_name) + " PlayList.startPlayer", ex.getMessage() == null ? "Null pointer exception(PlayList.startPlayer)" : ex.getMessage());
                         this.startPlayer();
                     }
                 } else {
@@ -156,13 +164,6 @@ public class PlayList implements Player.EventListener {
 
                     }
                     this.load(false);
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            startPlayer();
-                        }
-                    }).start();
-
                 }
 
 
@@ -184,6 +185,7 @@ public class PlayList implements Player.EventListener {
                     this.startPlayer();
                 } catch (Exception ex1) {
 
+                    Log.e("RootIO", "startPlayer: " + ex1.getMessage() == null ? "Null pointer exception(PlayList.play)" : ex.getMessage());
                 }
             }
         }
@@ -514,10 +516,7 @@ public class PlayList implements Player.EventListener {
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
          switch (playbackState) {
-            case Player.STATE_BUFFERING:
-                int k = 1;
-                break;
-            case Player.STATE_READY:
+             case Player.STATE_READY:
                 try {
                     if (this.callSignPlayer != null && this.callSignPlayer.getPlaybackState() == Player.STATE_READY) {
                         this.mediaPlayer.setVolume(0.07f);

@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Random;
 
 enum State {
     PLAYING, PAUSED, STOPPED
@@ -39,8 +40,10 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
     private TelephonyEventBroadcastReceiver telephonyEventBroadcastReceiver;
     private ScheduleChangeBroadcastHandler scheduleChangeNotificationReceiver;
     private boolean isPendingScheduleReload;
+    private int radioRunnerId;
 
     public RadioRunner(Context parent) {
+        this.radioRunnerId = new Random().nextInt(1000);
         this.parent = parent;
         //this.setUpAlarming();
         this.listenForTelephonyEvents();
@@ -78,7 +81,17 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
         this.setUpAlarming();
         this.programs = fetchPrograms();
         this.schedulePrograms(programs);
-        //Utils.toastOnScreen("initing programme..", this.parent);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Log.d("RootIO", "run: radioRunnerId" + radioRunnerId );
+                try {
+                    Thread.sleep(10000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
     /**
@@ -221,7 +234,7 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
             intent.putExtra("index", index);
             intent.putExtra("startTime", startTime.getTime());
             PendingIntent pi = PendingIntent.getBroadcast(parent, 0, intent, 0);
-            this.am.set(AlarmManager.RTC_WAKEUP, startTime.getTime(), pi);
+            this.am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, startTime.getTime(), pi);
             //this.pis.add(pi);
             this.pendingIntents.add(new Object[]{pi, startTime.getTime()});
         } catch (Exception ex) {
@@ -350,15 +363,6 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
     private void reloadSchedule()
     {
         this.deleteFutureSchedule();
-        try
-        {
-            this.parent.unregisterReceiver(br);
-        }
-        catch (Exception ex)
-        {
-
-        }
-        this.setUpAlarming();
         this.programs = this.fetchPrograms();
         this.scheduleFuturePrograms(programs);
     }
