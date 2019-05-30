@@ -302,6 +302,8 @@ public class LinSipService extends Service implements ServiceInformationPublishe
                 e.printStackTrace();
             }
             this.answer(call);
+
+
         } else {
             this.hangup(call);
         }
@@ -329,6 +331,10 @@ public class LinSipService extends Service implements ServiceInformationPublishe
             // adjust the volume of the telephony stream
             AudioManager audioManager = (AudioManager) LinSipService.this.getSystemService(Context.AUDIO_SERVICE);
             audioManager.setStreamVolume(AudioManager.STREAM_VOICE_CALL, this.callVolume, AudioManager.FLAG_SHOW_UI);
+
+            //mute any music that might be playing
+            //AudioManager audioManager = (AudioManager) LinSipService.this.getSystemService(Context.AUDIO_SERVICE);
+            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 0, AudioManager.FLAG_SHOW_UI);
             Utils.logEvent(this, Utils.EventCategory.SIP_CALL, Utils.EventAction.START, call.getRemoteContact());
         } catch (Exception e) {
             e.printStackTrace();
@@ -384,6 +390,9 @@ public class LinSipService extends Service implements ServiceInformationPublishe
                     {
                         Utils.toastOnScreen("Call with " + call != null ? call.getRemoteContact() : "" + " ended", this);
                     }
+                    //up any music that might be playing
+                    AudioManager audioManager = (AudioManager) LinSipService.this.getSystemService(Context.AUDIO_SERVICE);
+                    audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, getMaxVolume(), AudioManager.FLAG_SHOW_UI);
                 }
                 break;
             case Error:
@@ -427,6 +436,21 @@ public class LinSipService extends Service implements ServiceInformationPublishe
             default: //handles 11 other states!
                 break;
         }
+    }
+
+    private int getMaxVolume() {
+        String stationInfo = (String) Utils.getPreference("station_information", String.class, this);
+        try {
+            JSONObject stationInfoJson = new JSONObject(stationInfo);
+            if (stationInfoJson.has("station") && stationInfoJson.getJSONObject("station").has("media_volume")) {
+                int volume = stationInfoJson.getJSONObject("station").getInt("media_volume");
+                return volume >= 0 && volume <= 15 ? volume : 8;
+            } else
+                return 8;
+        } catch (Exception ex) {
+            Log.e(this.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(LinSipService.getMaxVolume)" : ex.getMessage());
+        }
+        return 8;
     }
 
     private void stopListeningForConfigChange() {

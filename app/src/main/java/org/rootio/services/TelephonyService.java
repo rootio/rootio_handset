@@ -15,9 +15,11 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.KeyEvent;
 
+import org.json.JSONObject;
 import org.rootio.RootioApp;
 import org.rootio.handset.BuildConfig;
 import org.rootio.handset.R;
+import org.rootio.tools.media.PlayList;
 import org.rootio.tools.telephony.CallAuthenticator;
 import org.rootio.tools.telephony.CallRecorder;
 import org.rootio.tools.utils.Utils;
@@ -207,6 +209,10 @@ public class TelephonyService extends Service implements ServiceInformationPubli
                         e.printStackTrace();
                     }
                     pickCall(fromNumber);
+
+                    //mute any music that might be playing
+                    AudioManager audioManager = (AudioManager) TelephonyService.this.getSystemService(Context.AUDIO_SERVICE);
+                    audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 0, AudioManager.FLAG_SHOW_UI);
                     // this.setupCallRecording(); //not possible on pockets
                 }
             }).start();
@@ -243,6 +249,10 @@ public class TelephonyService extends Service implements ServiceInformationPubli
                             TelephonyService.this.callRecorder = null;
                         }
                     }
+
+                    AudioManager audioManager = (AudioManager) TelephonyService.this.getSystemService(Context.AUDIO_SERVICE);
+                    audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, getMaxVolume(), AudioManager.FLAG_SHOW_UI);
+
                     Utils.logEvent(TelephonyService.this, Utils.EventCategory.CALL, Utils.EventAction.STOP, incomingNumber);
                     break;
             }
@@ -278,6 +288,21 @@ public class TelephonyService extends Service implements ServiceInformationPubli
         intent.putExtra("Incall", isInCall);
         intent.setAction("org.rootio.services.telephony.TELEPHONY_EVENT");
         this.sendBroadcast(intent);
+    }
+
+    private int getMaxVolume() {
+        String stationInfo = (String) Utils.getPreference("station_information", String.class, this);
+        try {
+            JSONObject stationInfoJson = new JSONObject(stationInfo);
+            if (stationInfoJson.has("station") && stationInfoJson.getJSONObject("station").has("media_volume")) {
+                int volume = stationInfoJson.getJSONObject("station").getInt("media_volume");
+                return volume >= 0 && volume <= 15 ? volume : 8;
+            } else
+                return 8;
+        } catch (Exception ex) {
+            Log.e(this.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(TelephonyService.getMaxVolume)" : ex.getMessage());
+        }
+        return 8;
     }
 
     @Override
