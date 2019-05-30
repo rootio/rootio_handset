@@ -47,8 +47,8 @@ public class LinSipService extends Service implements ServiceInformationPublishe
     @Override
     public void onCreate() {
         super.onCreate();
-//        this.coreListener = new SipListener(this);
-//        this.initializeStack();
+        this.coreListener = new SipListener(this);
+        this.initializeStack();
     }
 
     @Override
@@ -56,9 +56,9 @@ public class LinSipService extends Service implements ServiceInformationPublishe
         Utils.logEvent(this, Utils.EventCategory.SERVICES, Utils.EventAction.START, "LinSIP Service");
         if (!isRunning) {
             isRunning = true;
-//            this.register();
-//            this.listenForConfigChange();
-//            Utils.doNotification(this, "RootIO", "LinSip Service Started");
+            this.register();
+            this.listenForConfigChange();
+            Utils.doNotification(this, "RootIO", "LinSip Service Started");
             this.sendEventBroadcast();
         }
         this.startForeground(this.serviceId, Utils.getNotification(this, "RootIO", "LinSIP service is running", R.drawable.icon, false, null, null));
