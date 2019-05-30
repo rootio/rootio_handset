@@ -17,20 +17,25 @@ import com.esotericsoftware.kryo.util.Util;
 public class BootMonitor extends BroadcastReceiver {
 
     @Override
-    public void onReceive(Context context, Intent arg1) {
+    public synchronized void onReceive(Context context, Intent arg1) {
         if(arg1.getBooleanExtra("isRestart", false))
         {
             this.stopAllServices(context);
         }
-        startAllServices(context);
+        try {
+            Thread.sleep(15000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        startAllServices(context, arg1.getBooleanExtra("isRestart", false));
 
     }
 
-    private void startAllServices(Context context) {
+    private void startAllServices(Context context, boolean isRestart) {
         if(Utils.isConnectedToStation(context)) {
             for (int serviceId : new int[]{1, 2, 3, 4, 5, 6}) {
                 ServiceState serviceState = new ServiceState(context, serviceId);
-                if (serviceState.getServiceState() > 0)// service was started
+                if (isRestart || serviceState.getServiceState() > 0)// service was started
                 {
                     Intent intent = this.getIntentToLaunch(context, serviceId);
                     context.startForegroundService(intent);
@@ -77,6 +82,8 @@ public class BootMonitor extends BroadcastReceiver {
         if(Utils.isConnectedToStation(context)) {
             for (int serviceId : new int[]{1, 2, 3, 4, 5, 6}) {
                 ServiceState serviceState = new ServiceState(context, serviceId);
+                serviceState.setServiceState(0);
+                serviceState.save();
                 // if (serviceState.getServiceState() > 0)// service was started
                 // {
                 Intent intent = this.getIntentToLaunch(context, serviceId);
