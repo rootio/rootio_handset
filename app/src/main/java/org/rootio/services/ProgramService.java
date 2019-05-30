@@ -51,6 +51,7 @@ public class ProgramService extends Service implements ServiceInformationPublish
             this.silenceRinger();
         }
         this.startForeground(this.serviceId, Utils.getNotification(this, "RootIO", "Program service is running", R.drawable.icon, false, null, null));
+        new ServiceState(this, 4,"Program", 1).save();
         return Service.START_STICKY;
     }
 
@@ -84,7 +85,14 @@ public class ProgramService extends Service implements ServiceInformationPublish
     public void onDestroy() {
         Utils.logEvent(this, Utils.EventCategory.SERVICES, Utils.EventAction.STOP, "Program Service");
             this.stopForeground(true);
-            this.shutDownService();
+            try {
+                this.shutDownService();
+            }
+            catch(Exception ex)
+            {
+                Log.e(this.getString(R.string.app_name), String.format("[ProgramService.onDestroy] %s", ex.getMessage() == null ? "Null pointer exception" : ex.getMessage()));
+            }
+        new ServiceState(this, 4,"Program", 0).save();
             super.onDestroy();
     }
 
@@ -95,7 +103,7 @@ public class ProgramService extends Service implements ServiceInformationPublish
             try {
                 this.unregisterReceiver(newDayScheduleHandler);
             } catch (Exception ex) {
-                Log.e(this.getString(R.string.app_name), String.format("[ProgramService.onDestroy] %s", ex.getMessage() == null ? "Null pointer exception" : ex.getMessage()));
+                Log.e(this.getString(R.string.app_name), String.format("[ProgramService.shutDownService] %s", ex.getMessage() == null ? "Null pointer exception" : ex.getMessage()));
             }
             this.sendEventBroadcast();
             this.stopSelf();
@@ -144,7 +152,7 @@ public class ProgramService extends Service implements ServiceInformationPublish
         Intent restartIntent = new Intent("org.rootio.services.RESTART_ALL");
         restartIntent.putExtra("isRestart", true);
         PendingIntent restartPendingIntent = PendingIntent.getBroadcast(this, 0, intent,0);
-        this.am.set(AlarmManager.RTC_WAKEUP, dt.getTime() + 5000, restartPendingIntent);
+        this.am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, dt.getTime() + 10000, restartPendingIntent);
 
 
         //this.pi = PendingIntent.getBroadcast(this, 0, intent, 0);

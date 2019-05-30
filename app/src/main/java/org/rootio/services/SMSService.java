@@ -41,6 +41,7 @@ public class SMSService extends Service implements IncomingSMSNotifiable, Servic
         this.isRunning = true;
         this.sendEventBroadcast();
         this.startForeground(this.serviceId, Utils.getNotification(this, "RootIO", "SMS service is running", R.drawable.icon, false, null, null));
+        new ServiceState(this, 2,"SMS", 1).save();
         return Service.START_STICKY;
     }
 
@@ -48,7 +49,14 @@ public class SMSService extends Service implements IncomingSMSNotifiable, Servic
     public void onDestroy() {
         Utils.logEvent(this, Utils.EventCategory.SERVICES, Utils.EventAction.STOP, "SMS Service");
         this.stopForeground(true);
-        this.shutDownService();
+        try {
+            this.shutDownService();
+        }
+        catch(Exception ex)
+        {
+            Log.e(this.getString(R.string.app_name), String.format("[SMSService.onDestroy] %s", ex.getMessage() == null ? "Null pointer exception" : ex.getMessage()));
+        }
+        new ServiceState(this, 2,"SMS", 0).save();
         super.onDestroy();
     }
 

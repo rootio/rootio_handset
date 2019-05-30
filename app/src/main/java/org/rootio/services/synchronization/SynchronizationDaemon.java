@@ -58,26 +58,26 @@ public class SynchronizationDaemon implements Runnable {
                     Thread thread = new Thread(new Runnable() {
                         public void run() {
                             isSyncing = true;
-                            if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(1)))
-                                SynchronizationDaemon.this.synchronize(new DiagnosticsHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud),new Integer(1));
+//                            if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(1)))
+//                                SynchronizationDaemon.this.synchronize(new DiagnosticsHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud),new Integer(1));
                             if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(2))) {
                                 SynchronizationDaemon.this.syncLocks.add(new Integer(2));
                                 SynchronizationDaemon.this.synchronize(new ProgramsHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud),new Integer(2));
                             }
-                            if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(3)))
-                                SynchronizationDaemon.this.synchronize(new CallLogHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud),new Integer(3));
-                            if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(4)))
-                                SynchronizationDaemon.this.synchronize(new SMSLogHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud),new Integer(4));
-                            if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(5)))
+//                            if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(3)))
+//                                SynchronizationDaemon.this.synchronize(new CallLogHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud),new Integer(3));
+//                            if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(4)))
+//                                SynchronizationDaemon.this.synchronize(new SMSLogHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud),new Integer(4));
+//                            if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(5)))
                                 SynchronizationDaemon.this.synchronize(new WhitelistHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud),new Integer(5));
                             if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(6)))
                                 SynchronizationDaemon.this.synchronize(new FrequencyHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud),new Integer(6));
-                            if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(7)))
-                                SynchronizationDaemon.this.synchronize(SynchronizationDaemon.this.musicListHandler,new Integer(7));
+//                            if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(7)))
+//                                SynchronizationDaemon.this.synchronize(SynchronizationDaemon.this.musicListHandler,new Integer(7));
                             if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(8)))
                                 SynchronizationDaemon.this.synchronize(new PlaylistHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud),new Integer(8));
-                            if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(9)))
-                                SynchronizationDaemon.this.synchronize(new LogHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud),new Integer(9));
+//                            if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(9)))
+//                                SynchronizationDaemon.this.synchronize(new LogHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud),new Integer(9));
                             if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(10)))
                                 SynchronizationDaemon.this.synchronize(new StationHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud),new Integer(10));
                             isSyncing = false;
@@ -96,33 +96,33 @@ public class SynchronizationDaemon implements Runnable {
         this.syncLocks.add(new Integer(category)); //prevent automated sync while this is running
         final SynchronizationHandler syncHandler;
         switch (category) {
-            case 1:
-                syncHandler = new DiagnosticsHandler(this.parent, this.cloud);
-                break;
+//            case 1:
+//                syncHandler = new DiagnosticsHandler(this.parent, this.cloud);
+//                break;
             case 2:
                 syncHandler = new ProgramsHandler(this.parent, this.cloud);
                 break;
-            case 3:
-                syncHandler = new CallLogHandler(this.parent, this.cloud);
-                break;
-            case 4:
-                syncHandler = new SMSLogHandler(this.parent, this.cloud);
-                break;
-            case 5:
-                syncHandler = new WhitelistHandler(this.parent, this.cloud);
-                break;
-            case 6:
-                syncHandler = new FrequencyHandler(this.parent, this.cloud);
-                break;
-            case 7:
-                syncHandler = new StationHandler(this.parent, this.cloud);
-                break;
-            case 8:
-                syncHandler = new MusicListHandler(this.parent, this.cloud);
-                break;
-            case 9:
-                syncHandler = new PlaylistHandler(this.parent, this.cloud);
-                break;
+//            case 3:
+//                syncHandler = new CallLogHandler(this.parent, this.cloud);
+//                break;
+//            case 4:
+//                syncHandler = new SMSLogHandler(this.parent, this.cloud);
+//                break;
+//            case 5:
+//                syncHandler = new WhitelistHandler(this.parent, this.cloud);
+//                break;
+//            case 6:
+//                syncHandler = new FrequencyHandler(this.parent, this.cloud);
+//                break;
+//            case 7:
+//                syncHandler = new StationHandler(this.parent, this.cloud);
+//                break;
+//            case 8:
+//                syncHandler = new MusicListHandler(this.parent, this.cloud);
+//                break;
+//            case 9:
+//                syncHandler = new PlaylistHandler(this.parent, this.cloud);
+//                break;
             default:
                 syncHandler = null;
                 break;

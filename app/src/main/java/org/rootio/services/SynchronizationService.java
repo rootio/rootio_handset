@@ -7,6 +7,7 @@ import org.rootio.tools.utils.Utils;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
+import android.util.Log;
 
 public class SynchronizationService extends Service implements ServiceInformationPublisher {
 
@@ -30,6 +31,7 @@ public class SynchronizationService extends Service implements ServiceInformatio
             Utils.doNotification(this, "RootIO", "Synchronization Service Started");
         }
         this.startForeground(this.serviceId, Utils.getNotification(this, "RootIO", "Synchronization service is running", R.drawable.icon, false, null, null));
+        new ServiceState(this, 5,"Synchronization", 1).save();
         return Service.START_STICKY;
     }
 
@@ -37,7 +39,14 @@ public class SynchronizationService extends Service implements ServiceInformatio
     public void onDestroy() {
         Utils.logEvent(this, Utils.EventCategory.SERVICES, Utils.EventAction.STOP, "Synchronization Service");
         this.stopForeground(true);
-        this.shutDownService();
+        try {
+            this.shutDownService();
+        }
+        catch(Exception ex)
+        {
+            Log.e(this.getString(R.string.app_name), String.format("[SynchronizationService.onDestroy] %s", ex.getMessage() == null ? "Null pointer exception" : ex.getMessage()));
+        }
+        new ServiceState(this, 5,"Synchronization", 0).save();
         super.onDestroy();
     }
 

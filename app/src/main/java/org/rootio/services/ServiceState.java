@@ -14,11 +14,19 @@ public class ServiceState {
     private int serviceState;
     private final Context context;
     private Date lastUpdatedDate;
+    private String serviceName;
 
     public ServiceState(Context context, int serviceId) {
         this.context = context;
         this.serviceId = serviceId;
         this.fetchServiceState();
+    }
+
+    public ServiceState(Context context, int serviceId, String serviceName, int serviceState) {
+        this.context = context;
+        this.serviceId = serviceId;
+        this.serviceName= serviceName;
+        this.serviceState = serviceState;
     }
 
     /**
@@ -42,7 +50,7 @@ public class ServiceState {
      */
     public void setServiceState(int serviceState) {
         this.serviceState = serviceState;
-        this.saveServiceState();
+        this.save();
     }
 
     /**
@@ -58,7 +66,16 @@ public class ServiceState {
      * Persists the state of the service for consideration across reboots or
      * power failures
      */
-    private void saveServiceState() {
+    public void save() {
+        if(serviceStateExists()) {
+            updateServiceState();
+        }
+        else{
+            insertServiceState();
+        }
+    }
+
+    private void updateServiceState() {
         String tableName = "servicestate";
         ContentValues data = new ContentValues();
         data.put("servicestate", serviceState);
@@ -80,5 +97,30 @@ public class ServiceState {
         //DBAgent agent = new DBAgent(this.context);
         String[][] result = DBAgent.getData(true, tableName, columns, whereClause, whereArgs, null, null, null, null);
         this.serviceState = result.length > 0 ? Utils.parseIntFromString(result[0][1]) : 0;
+    }
+
+    private void insertServiceState()
+    {
+        String tableName = "servicestate";
+        ContentValues data = new ContentValues();
+        data.put("id", serviceId);
+        data.put("service", serviceName);
+        data.put("servicestate", serviceState);
+        data.put("lastupdateddate", Utils.getCurrentDateAsString("yyyy-MM-dd HH:mm:ss"));
+        //String whereClause = "id = ?";
+       // String[] whereArgs = new String[]{String.valueOf(serviceId)};
+        //DBAgent agent = new DBAgent(this.context);
+        DBAgent.saveData(tableName, null, data);
+    }
+
+    private boolean serviceStateExists()
+    {
+        String tableName = "servicestate";
+        String[] columns = new String[]{"service", "servicestate", "lastupdateddate"};
+        String whereClause = "id = ?";
+        String[] whereArgs = new String[]{String.valueOf(serviceId)};
+        //DBAgent agent = new DBAgent(this.context);
+        String[][] result = DBAgent.getData(true, tableName, columns, whereClause, whereArgs, null, null, null, null);
+        return result != null && result.length > 0; // && ? Utils.parseIntFromString(result[0][1]) : 0;
     }
 }

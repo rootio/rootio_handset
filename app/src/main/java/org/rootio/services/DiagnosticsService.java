@@ -30,16 +30,16 @@ public class DiagnosticsService extends Service implements ServiceInformationPub
     public int onStartCommand(Intent intent, int flags, int startId) {
         Utils.logEvent(this, Utils.EventCategory.SERVICES, Utils.EventAction.START, "Diagnostics Service");
         if (!this.isRunning) {
-            Utils.doNotification(this, "RootIO", "Diagnostics service started");
-            long delay = this.getDelay();
-            delay = delay > 0 ? this.getMillisToSleep("seconds", delay) : 10000; // 10000 default
-            DiagnosticsRunner diagnosticsRunner = new DiagnosticsRunner(this, delay);
-            runnerThread = new Thread(diagnosticsRunner);
-            runnerThread.start();
+//            Utils.doNotification(this, "RootIO", "Diagnostics service started");
+//            long delay = this.getDelay();
+//            delay = delay > 0 ? this.getMillisToSleep("seconds", delay) : 10000; // 10000 default
+//            DiagnosticsRunner diagnosticsRunner = new DiagnosticsRunner(this, delay);
+//            runnerThread = new Thread(diagnosticsRunner);
+//            runnerThread.start();
             this.isRunning = true;
         }
         this.startForeground(this.serviceId, Utils.getNotification(this, "RootIO", "Diagnostics service is running", R.drawable.icon, false, null, null));
-
+        new ServiceState(this, 3,"Diagnostic", 1).save();
         return Service.START_STICKY;
     }
 
@@ -47,7 +47,14 @@ public class DiagnosticsService extends Service implements ServiceInformationPub
     public void onDestroy() {
         Utils.logEvent(this, Utils.EventCategory.SERVICES, Utils.EventAction.STOP, "Diagnostics Service");
         this.stopForeground(true);
-        this.shutDownService();
+        try
+        {
+            this.shutDownService();
+        }catch(Exception ex)
+        {
+            Log.e(this.getString(R.string.app_name), String.format("[DiagnosticsService.onDestroy] %s", ex.getMessage() == null ? "Null pointer exception" : ex.getMessage()));
+        }
+        new ServiceState(this, 3,"Diagnostic", 0).save();
         super.onDestroy();
     }
 

@@ -47,8 +47,8 @@ public class LinSipService extends Service implements ServiceInformationPublishe
     @Override
     public void onCreate() {
         super.onCreate();
-        this.coreListener = new SipListener(this);
-        this.initializeStack();
+//        this.coreListener = new SipListener(this);
+//        this.initializeStack();
     }
 
     @Override
@@ -56,12 +56,13 @@ public class LinSipService extends Service implements ServiceInformationPublishe
         Utils.logEvent(this, Utils.EventCategory.SERVICES, Utils.EventAction.START, "LinSIP Service");
         if (!isRunning) {
             isRunning = true;
-            this.register();
-            this.listenForConfigChange();
-            Utils.doNotification(this, "RootIO", "LinSip Service Started");
+//            this.register();
+//            this.listenForConfigChange();
+//            Utils.doNotification(this, "RootIO", "LinSip Service Started");
             this.sendEventBroadcast();
         }
         this.startForeground(this.serviceId, Utils.getNotification(this, "RootIO", "LinSIP service is running", R.drawable.icon, false, null, null));
+        new ServiceState(this, 6,"LinSIP", 1).save();
         return Service.START_STICKY;
     }
 
@@ -108,7 +109,15 @@ public class LinSipService extends Service implements ServiceInformationPublishe
     public void onDestroy() {
         Utils.logEvent(this, Utils.EventCategory.SERVICES, Utils.EventAction.STOP, "LinSIP Service");
         this.stopForeground(true);
-        this.shutDownService();
+        try
+        {
+            this.shutDownService();
+        }catch(Exception ex)
+        {
+            Log.e(this.getString(R.string.app_name), String.format("[LinSipService.onDestroy] %s", ex.getMessage() == null ? "Null pointer exception" : ex.getMessage()));
+        }
+
+        new ServiceState(this, 6,"LinSIP", 0).save();
         super.onDestroy();
     }
 
@@ -132,7 +141,7 @@ public class LinSipService extends Service implements ServiceInformationPublishe
                 this.callVolume = 5;
             }
         } catch (JSONException ex) {
-            Log.e(this.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(LinSipService.loadConfig)" : ex.getMessage());
+            Log.e(this.getString(R.string.app_name), String.format("[LinSipService.loadConfig] %s", ex.getMessage() == null ? "Null pointer exception" : ex.getMessage()));
         }
     }
 
@@ -202,7 +211,7 @@ public class LinSipService extends Service implements ServiceInformationPublishe
                 public void run() {
                     //This is a strange flow, but for STUN/TURN to kick in, you need to register first, then unregister and register again!
                     //The registration triggers a stun update but it can only be used on next registration. That's what it looks like for now
-                    //so, register for 1 sec, then re-register
+                    //so, register for 5 sec, then re-register
 
                     sipRegister();
                     try {

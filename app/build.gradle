@@ -7,7 +7,7 @@ android {
         minSdkVersion 26
         targetSdkVersion 26
         versionCode 28
-        versionName "Oltenian Rush:28.3"
+        versionName "Oltenian Rush:28.4"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

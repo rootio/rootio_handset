@@ -1,14 +1,5 @@
 package org.rootio.services;
 
-import java.lang.reflect.Method;
-
-import org.rootio.RootioApp;
-import org.rootio.handset.BuildConfig;
-import org.rootio.handset.R;
-import org.rootio.tools.telephony.CallAuthenticator;
-import org.rootio.tools.telephony.CallRecorder;
-import org.rootio.tools.utils.Utils;
-
 import android.Manifest;
 import android.app.Service;
 import android.content.Context;
@@ -21,9 +12,15 @@ import android.support.v4.app.ActivityCompat;
 import android.telecom.TelecomManager;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.view.KeyEvent;
 
-import com.android.internal.telephony.ITelephony;
+import org.rootio.RootioApp;
+import org.rootio.handset.BuildConfig;
+import org.rootio.handset.R;
+import org.rootio.tools.telephony.CallAuthenticator;
+import org.rootio.tools.telephony.CallRecorder;
+import org.rootio.tools.utils.Utils;
 
 public class TelephonyService extends Service implements ServiceInformationPublisher {
 
@@ -57,6 +54,7 @@ public class TelephonyService extends Service implements ServiceInformationPubli
             this.sendEventBroadcast();
         }
         this.startForeground(this.serviceId, Utils.getNotification(this, "RootIO", "Telephony service is running", R.drawable.icon, false, null, null));
+        new ServiceState(this, 1,"Telephony", 1).save();
         return Service.START_STICKY;
 
     }
@@ -65,7 +63,14 @@ public class TelephonyService extends Service implements ServiceInformationPubli
     public void onDestroy() {
         Utils.logEvent(this, Utils.EventCategory.SERVICES, Utils.EventAction.STOP, "Telephony Service");
         this.stopForeground(true);
-        this.shutDownService();
+        try {
+            this.shutDownService();
+        }
+        catch(Exception ex)
+        {
+            Log.e(this.getString(R.string.app_name), String.format("[TelephonyService.onDestroy] %s", ex.getMessage() == null ? "Null pointer exception" : ex.getMessage()));
+        }
+        new ServiceState(this, 1,"Telephony", 0).save();
         super.onDestroy();
     }
 

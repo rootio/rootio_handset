@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.rootio.handset" android:versionCode="28" android:revisionCode="3"
-    android:versionName="Oltenian Rush:28.3">
+    package="org.rootio.handset" android:versionCode="28" android:revisionCode="4"
+    android:versionName="Oltenian Rush:28.4">
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ANSWER_PHONE_CALLS" />
