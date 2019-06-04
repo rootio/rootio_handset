@@ -177,14 +177,14 @@ public class ProgramService extends Service implements ServiceInformationPublish
             ProgramService.this.radioRunner.stop();
             try {
                 //ProgramService.this.finalize();
-                intent.putExtra("isRestart", true);
-                new BootMonitor().onReceive(context, intent);
+                //intent.putExtra("isRestart", true);
+                //new BootMonitor().onReceive(context, intent);
 
             } catch (Throwable e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-            //ProgramService.this.runTodaySchedule();
+            ProgramService.this.runTodaySchedule();
 
         }
     }
