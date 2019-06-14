@@ -363,6 +363,6 @@ public class Utils {
 
     public enum EventAction
     {
-        ON, OFF, PAUSE, STOP, START, SEND, RECEIVE, REGISTRATION, RINGING
-     }
+        ON, OFF, PAUSE, STOP, START, SEND, RECEIVE, REGISTRATION, RINGING, UMOUNT, LOAD, PREPARE, ERROR;
+    }
 }

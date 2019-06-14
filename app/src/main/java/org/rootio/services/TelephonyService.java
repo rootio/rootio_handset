@@ -251,6 +251,7 @@ public class TelephonyService extends Service implements ServiceInformationPubli
                     }
 
                     AudioManager audioManager = (AudioManager) TelephonyService.this.getSystemService(Context.AUDIO_SERVICE);
+                    audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, getMaxVolume() > 9? 9: getMaxVolume() , AudioManager.FLAG_SHOW_UI); //in the event that a high volume prompt forbids volume raise, first raise to highest allowed
                     audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, getMaxVolume(), AudioManager.FLAG_SHOW_UI);
 
                     Utils.logEvent(TelephonyService.this, Utils.EventCategory.CALL, Utils.EventAction.STOP, incomingNumber);

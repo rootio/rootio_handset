@@ -84,18 +84,22 @@ public class PlayList implements Player.EventListener {
      */
     public void load(boolean hard) {
         if (hard || (this.mediaList == null || mediaList.size() == 0)) {
-            mediaList = loadMedia(this.playlists);
+           mediaList = loadMedia(this.playlists);
         }
         mediaIterator = mediaList.iterator();
         streamIterator = streams.iterator();
+        Utils.logEvent(this.parent,Utils.EventCategory.MEDIA, Utils.EventAction.LOAD, "Library ("+ mediaList.size()+" found) - "+hard);
     }
 
     public void preload(){
-        if (this.mediaList == null || mediaList.size() == 0) {
+        boolean hard = false;
+        if ((this.mediaList == null || mediaList.size() == 0)) {
+            hard = true;
             mediaList = preloadMedia(this.playlists);
         }
         mediaIterator = mediaList.iterator();
         streamIterator = streams.iterator();
+        Utils.logEvent(this.parent,Utils.EventCategory.MEDIA, Utils.EventAction.LOAD, "Pre-library ("+ mediaList.size()+" found) - "+hard);
     }
 
     /**
@@ -119,7 +123,8 @@ public class PlayList implements Player.EventListener {
         while (!foundMedia && !this.isShuttingDown) {
             try {
                 AudioManager audioManager = (AudioManager) this.parent.getSystemService(Context.AUDIO_SERVICE);
-                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, this.maxVolume, AudioManager.FLAG_SHOW_UI);
+                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, this.getMaxVolume() > 9? 9: this.getMaxVolume() , AudioManager.FLAG_SHOW_UI); //in the event that a high volume prompt forbids volume raise, first raise to highest allowed
+                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, this.getMaxVolume(), AudioManager.FLAG_SHOW_UI);
 
                 if (streamIterator.hasNext()) {
                     String stream = this.streamIterator.next();
@@ -154,6 +159,7 @@ public class PlayList implements Player.EventListener {
                         }).start();
 
                     } catch (NullPointerException ex) {
+                        Utils.toastOnScreen("URI Fail!!", this.parent);
                         //Log.e(this.parent.getString(R.string.app_name) + " PlayList.startPlayer", ex.getMessage() == null ? "Null pointer exception(PlayList.startPlayer)" : ex.getMessage());
                         this.startPlayer();
                     }
@@ -196,10 +202,13 @@ public class PlayList implements Player.EventListener {
     }
 
     private void playMedia(Uri uri, long seekPosition) {
+        Utils.logEvent(this.parent, Utils.EventCategory.MEDIA, Utils.EventAction.PREPARE, uri.toString());
+        Utils.toastOnScreen("Prep", this.parent);
         this.currentMediaUri = uri;
         //begin by raising the volume
         AudioManager audioManager = (AudioManager) this.parent.getSystemService(Context.AUDIO_SERVICE);
-        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, this.maxVolume, AudioManager.FLAG_SHOW_UI);
+        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, this.getMaxVolume() > 9? 9: this.getMaxVolume() , AudioManager.FLAG_SHOW_UI); //in the event that a high volume prompt forbids volume raise, first raise to highest allowed
+        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, this.getMaxVolume(), AudioManager.FLAG_SHOW_UI);
 
 
         mediaPlayer = ExoPlayerFactory.newSimpleInstance(this.parent, new DefaultTrackSelector());
@@ -566,6 +575,8 @@ public class PlayList implements Player.EventListener {
     public void onPlayerError(ExoPlaybackException error) {
         //This will be thrown when a stream is lost due to network, or an error in a local song.
         //in both cases, assume song is ended. This will cause loop of player (stream) or skipping to the next song (song list)
+        Utils.logEvent(this.parent, Utils.EventCategory.MEDIA, Utils.EventAction.ERROR, this.currentMediaUri.toString());
+        Utils.toastOnScreen("error", this.parent);
         this.onPlayerStateChanged(true, Player.STATE_ENDED);
     }
 

@@ -9,7 +9,7 @@ import android.media.AudioManager;
 import android.os.IBinder;
 import android.util.Log;
 
-import org.json.JSONException;
+import org.json.JSONException; 
 import org.json.JSONObject;
 import org.linphone.core.Address;
 import org.linphone.core.AuthInfo;
@@ -392,7 +392,8 @@ public class LinSipService extends Service implements ServiceInformationPublishe
                     }
                     //up any music that might be playing
                     AudioManager audioManager = (AudioManager) LinSipService.this.getSystemService(Context.AUDIO_SERVICE);
-                    audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, getMaxVolume(), AudioManager.FLAG_SHOW_UI);
+                    audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, this.getMaxVolume() > 9? 9: this.getMaxVolume() , AudioManager.FLAG_SHOW_UI); //in the event that a high volume prompt forbids volume raise, first raise to highest allowed
+                    audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, this.getMaxVolume(), AudioManager.FLAG_SHOW_UI);
                 }
                 break;
             case Error:

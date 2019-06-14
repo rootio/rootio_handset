@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.rootio.handset" android:versionCode="28" android:revisionCode="6"
-    android:versionName="Oltenian Rush:28.6">
+    package="org.rootio.handset" android:versionCode="28" android:revisionCode="7"
+    android:versionName="Oltenian Rush:28.7_beta">
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ANSWER_PHONE_CALLS" />
@@ -74,6 +74,16 @@
                 <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED"/>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="org.rootio.services.RESTART_ALL"/>
+            </intent-filter>
+        </receiver>
+        <receiver android:enabled="true" android:exported="false"
+            android:name="org.rootio.services.MountListener">
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_UNMOUNTED" />
+                <action android:name="android.intent.action.MEDIA_REMOVED" />
+                <action android:name="android.intent.action.MEDIA_EJECT" />
+                <action android:name="android.intent.action.MEDIA_BAD_REMOVAL" />
+                <data android:scheme="file" />
             </intent-filter>
         </receiver>
         <receiver android:name="org.rootio.tools.sms.SMSReceiver" android:enabled="true"   android:exported="true" android:directBootAware="true">
