@@ -75,8 +75,9 @@ public class RadioService extends Service implements ServiceInformationPublisher
     private Config profile;
     private BroadcastReceiver br;
     private int callVolume;
+    private boolean inSIPCall;
 
-   
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Utils.logEvent(this, Utils.EventCategory.SERVICES, Utils.EventAction.START, "Radio Service");
@@ -318,7 +319,7 @@ public class RadioService extends Service implements ServiceInformationPublisher
      * incomingNumber
      */
     public void handleCall(final String fromNumber) {
-        if (!this.inCall && new CallAuthenticator(this).isWhiteListed(fromNumber)) {
+        if (!this.inCall && !this.inSIPCall && new CallAuthenticator(this).isWhiteListed(fromNumber)) {
             this.inCall = true;
             RootioApp.setInCall(true);
             this.radioRunner.getRunningProgram().pause();
@@ -563,10 +564,11 @@ public class RadioService extends Service implements ServiceInformationPublisher
     private void handleCall(Call call) {
         //check the whitelist
         Log.e("RootIO", "handleCall: " + call.getRemoteAddress().getDomain() + " " + this.domain);
-        if (!this.inCall && call.getRemoteAddress().getDomain().equals(this.domain)) //Guard against spoofing..
+        if (!this.inCall && !this.inSIPCall && call.getRemoteAddress().getDomain().equals(this.domain)) //Guard against spoofing..
         {
+                Log.e("RootIO", "handleCall: " +inCall + " " + inSIPCall);
             RootioApp.setInSIPCall(true);
-            this.inCall = true;
+            this.inSIPCall = true;
             this.radioRunner.getRunningProgram().pause();
             //this.sendTelephonyEventBroadcast(true);
             try {
@@ -627,8 +629,8 @@ public class RadioService extends Service implements ServiceInformationPublisher
     public void updateCallState(Call.State callState, Call call) {
         switch (callState) {
             case End:
-                if (call.getRemoteAddress().getDomain().equals(this.domain) && this.inCall) {
-                    this.inCall = false;
+                if (call.getRemoteAddress().getDomain().equals(this.domain) && this.inSIPCall) {
+                    this.inSIPCall = false;
                     if (isPendingRestart) {
                         this.deregister();
                         this.initializeStack();
@@ -665,7 +667,7 @@ public class RadioService extends Service implements ServiceInformationPublisher
                 break;
             case Connected:
             case StreamsRunning: //in case you reconnect to the main activity during call.
-                this.inCall = true;
+                this.inSIPCall = true;
                 this.radioRunner.getRunningProgram().pause();
                 //this.sendTelephonyEventBroadcast(true);
                 if (call != null) //ideally check for direction and report if outgoing or incoming
@@ -780,7 +782,7 @@ public class RadioService extends Service implements ServiceInformationPublisher
 
             switch (state) {
                 case TelephonyManager.CALL_STATE_RINGING:
-                    if (!inCall) {
+                    if (!inCall && !inSIPCall) {
                         currentCallingNumber = incomingNumber;
                         Utils.logEvent(RadioService.this, Utils.EventCategory.CALL, Utils.EventAction.RINGING, incomingNumber);
                         handleCall(incomingNumber);
@@ -798,8 +800,10 @@ public class RadioService extends Service implements ServiceInformationPublisher
                         }
                     }
 
-                    AudioManager audioManager = (AudioManager) RadioService.this.getSystemService(Context.AUDIO_SERVICE);
-                    audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, getMaxVolume(), AudioManager.FLAG_SHOW_UI);
+                    if(!inSIPCall) {
+                        AudioManager audioManager = (AudioManager) RadioService.this.getSystemService(Context.AUDIO_SERVICE);
+                        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, getMaxVolume(), AudioManager.FLAG_SHOW_UI);
+                    }
 
                     Utils.logEvent(RadioService.this, Utils.EventCategory.CALL, Utils.EventAction.STOP, incomingNumber);
                     break;
