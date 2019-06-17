@@ -17,7 +17,7 @@ import org.rootio.activities.stationDetails.StationActivityAdapter;
 import org.rootio.activities.telephoneLog.TelephoneLogActivity;
 import org.rootio.handset.R;
 import org.rootio.services.Notifiable;
-import org.rootio.services.ProgramService;
+import org.rootio.services.RadioService;
 import org.rootio.services.ServiceConnectionAgent;
 import org.rootio.services.ServiceStopNotifiable;
 
@@ -94,7 +94,7 @@ public class RadioActivity extends Activity implements Notifiable, ServiceExitIn
      */
     private void bindToService() {
         programServiceConnection = new ServiceConnectionAgent(this, 4);
-        Intent intent = new Intent(this, ProgramService.class);
+        Intent intent = new Intent(this, RadioService.class);
         if (this.getApplicationContext().bindService(intent, programServiceConnection, BIND_AUTO_CREATE)) {
             // just wait for the async call
         }
@@ -130,7 +130,7 @@ public class RadioActivity extends Activity implements Notifiable, ServiceExitIn
 
     @Override
     public void notifyServiceConnection(int serviceId) {
-        ProgramService programService = (ProgramService) programServiceConnection.getService();
+        RadioService programService = (RadioService) programServiceConnection.getService();
         StationActivityAdapter stationActivityAdapter = new StationActivityAdapter(programService.getPrograms());
         ListView stationActivityList = this.findViewById(R.id.station_activity_lv);
         stationActivityList.setAdapter(stationActivityAdapter);

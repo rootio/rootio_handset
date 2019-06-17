@@ -58,46 +58,53 @@ public class RadioService extends Service implements ServiceInformationPublisher
     private NewDayScheduleHandler newDayScheduleHandler;
     private PendingIntent pi;
     private AlarmManager am;
+    private TelephonyManager telephonyManager;
+    private TelecomManager telecomManager;
+    private RadioService.PhoneCallListener listener;
+    private CallRecorder callRecorder;
+    private boolean inCall;
+    private String currentCallingNumber;
+    private int port, reRegisterPeriod;
+    private Core linphoneCore;
+    private AuthInfo authInfo;
+    private ProxyConfig proxyConfig;
+    private String username, password, domain, stun, protocol;
+    private boolean isPendingRestart;
+    private boolean wasStoppedOnPurpose, isSipRunning;
+    private SipListener coreListener;
+    private Config profile;
+    private BroadcastReceiver br;
+    private int callVolume;
 
-
+   
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Utils.logEvent(this, Utils.EventCategory.SERVICES, Utils.EventAction.START, "Program Service");
+        Utils.logEvent(this, Utils.EventCategory.SERVICES, Utils.EventAction.START, "Radio Service");
         if (!this.isRunning) {
             Utils.doNotification(this, "RootIO", "Radio Service Started");
             this.am = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
             runTodaySchedule();
             this.setupNewDayScheduleListener();
-            this.isRunning = true;
-            this.sendEventBroadcast();
             this.silenceRinger();
-        }
 
-        Utils.logEvent(this, Utils.EventCategory.SERVICES, Utils.EventAction.START, "Telephony Service");
-        if (!isRunning) {
-            Utils.doNotification(this, "RootIO", "Telephony Service started");
+            //Telephony service
             this.waitForCalls();
-            this.isRunning = true;
-            this.sendEventBroadcast();
-        }
-
-        Utils.logEvent(this, Utils.EventCategory.SERVICES, Utils.EventAction.START, "LinSIP Service");
-        if (!isRunning) {
-            isRunning = true;
+           
+            //SIP service
             this.register();
             this.listenForConfigChange();
-            Utils.doNotification(this, "RootIO", "LinSip Service Started");
+            this.isRunning = true;
             this.sendEventBroadcast();
         }
 
-        this.startForeground(this.serviceId, Utils.getNotification(this, "RootIO", "Program service is running", R.drawable.icon, false, null, null));
-        new ServiceState(this, 4,"Program", 1).save();
+        this.startForeground(this.serviceId, Utils.getNotification(this, "RootIO", "Radio Service is running", R.drawable.icon, false, null, null));
+        new ServiceState(this, 4, "Radio", 1).save();
         return Service.START_STICKY;
     }
 
     private void setupNewDayScheduleListener() {
         this.newDayScheduleHandler = new NewDayScheduleHandler();
-        IntentFilter intentFilter = new IntentFilter("org.rootio.services.program.NEW_DAY_SCHEDULE");
+        IntentFilter intentFilter = new IntentFilter("org.rootio.services.radio.NEW_DAY_SCHEDULE");
         this.registerReceiver(newDayScheduleHandler, intentFilter);
     }
 
@@ -108,56 +115,26 @@ public class RadioService extends Service implements ServiceInformationPublisher
         this.scheduleNextDayAlarm();
     }
 
-    private void silenceRinger()
-    {
+    private void silenceRinger() {
         try {
             AudioManager audioManager = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
             audioManager.setStreamVolume(AudioManager.STREAM_RING, 0, AudioManager.FLAG_SHOW_UI);
             audioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, 0, AudioManager.FLAG_SHOW_UI);
+        } catch (Exception ex) {
+            Log.e(this.getString(R.string.app_name), String.format("[RadioService.silenceRinger] %s", ex.getMessage() == null ? "Null pointer exception" : ex.getMessage()));
         }
-        catch(Exception ex)
-            {
-                Log.e(this.getString(R.string.app_name), String.format("[RadioService.silenceRinger] %s", ex.getMessage() == null ? "Null pointer exception" : ex.getMessage()));
-            }
     }
 
     @Override
     public void onDestroy() {
-        Utils.logEvent(this, Utils.EventCategory.SERVICES, Utils.EventAction.STOP, "Program Service");
-            this.stopForeground(true);
-            try {
-                this.shutDownService();
-            }
-            catch(Exception ex)
-            {
-                Log.e(this.getString(R.string.app_name), String.format("[RadioService.onDestroy] %s", ex.getMessage() == null ? "Null pointer exception" : ex.getMessage()));
-            }
-        new ServiceState(this, 4,"Program", 0).save();
-            super.onDestroy();
-
-        Utils.logEvent(this, Utils.EventCategory.SERVICES, Utils.EventAction.STOP, "Telephony Service");
+        Utils.logEvent(this, Utils.EventCategory.SERVICES, Utils.EventAction.STOP, "Radio Service");
         this.stopForeground(true);
         try {
             this.shutDownService();
-        }
-        catch(Exception ex)
-        {
+        } catch (Exception ex) {
             Log.e(this.getString(R.string.app_name), String.format("[RadioService.onDestroy] %s", ex.getMessage() == null ? "Null pointer exception" : ex.getMessage()));
         }
-        new ServiceState(this, 1,"Telephony", 0).save();
-        super.onDestroy();
-
-        Utils.logEvent(this, Utils.EventCategory.SERVICES, Utils.EventAction.STOP, "LinSIP Service");
-        this.stopForeground(true);
-        try
-        {
-            this.shutDownService();
-        }catch(Exception ex)
-        {
-            Log.e(this.getString(R.string.app_name), String.format("[RadioService.onDestroy] %s", ex.getMessage() == null ? "Null pointer exception" : ex.getMessage()));
-        }
-
-        new ServiceState(this, 6,"LinSIP", 0).save();
+        new ServiceState(this, 4, "Radio", 0).save();
         super.onDestroy();
     }
 
@@ -170,23 +147,16 @@ public class RadioService extends Service implements ServiceInformationPublisher
             } catch (Exception ex) {
                 Log.e(this.getString(R.string.app_name), String.format("[RadioService.shutDownService] %s", ex.getMessage() == null ? "Null pointer exception" : ex.getMessage()));
             }
-            this.sendEventBroadcast();
             this.stopSelf();
-            Utils.doNotification(this, "RootIO", "Radio Service Stopped");
-        }
 
-        if (this.isRunning) {
-            Utils.doNotification(this, "RootIO", "Telephony Service stopped");
-            this.isRunning = false;
+            //Telephony
             this.telephonyManager.listen(listener, PhoneStateListener.LISTEN_NONE);
-            this.sendEventBroadcast();
-        }
 
-        if (this.isRunning) {
-            this.isRunning = this.isSipRunning = false;
+            //SIP
             this.deregister();
             this.stopListeningForConfigChange();
-            Utils.doNotification(this, "RootIO", "SIP Service Stopped");
+
+            Utils.doNotification(this, "RootIO", "Radio Service Stopped");
             this.sendEventBroadcast();
         }
     }
@@ -200,7 +170,7 @@ public class RadioService extends Service implements ServiceInformationPublisher
         Intent intent = new Intent();
         intent.putExtra("serviceId", this.serviceId);
         intent.putExtra("isRunning", this.isRunning);
-        intent.setAction("org.rootio.services.program.EVENT");
+        intent.setAction("org.rootio.services.radio.EVENT");
         this.sendBroadcast(intent);
     }
 
@@ -216,20 +186,18 @@ public class RadioService extends Service implements ServiceInformationPublisher
 
     private void scheduleNextDayAlarm() {
         Date dt = this.getTomorrowBaseDate();
-        Intent intent = new Intent("org.rootio.services.program.NEW_DAY_SCHEDULE");
+        Intent intent = new Intent("org.rootio.services.radio.NEW_DAY_SCHEDULE");
 
         //send an intent to restart services
         Intent restartIntent = new Intent("org.rootio.services.RESTART_ALL");
         restartIntent.putExtra("isRestart", true);
-        PendingIntent restartPendingIntent = PendingIntent.getBroadcast(this, 0, intent,0);
+        PendingIntent restartPendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
         this.am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, dt.getTime() + 10000, restartPendingIntent);
 
 
         //this.pi = PendingIntent.getBroadcast(this, 0, intent, 0);
         //this.am.set(AlarmManager.RTC_WAKEUP, dt.getTime(), this.pi);
     }
-
-
 
     private Date getTomorrowBaseDate() {
         Calendar cal = Calendar.getInstance();
@@ -239,74 +207,6 @@ public class RadioService extends Service implements ServiceInformationPublisher
         cal.set(Calendar.SECOND, 0);
         return cal.getTime();
     }
-
-    class NewDayScheduleHandler extends BroadcastReceiver {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            RadioService.this.radioRunner.stop();
-            try {
-                //RadioService.this.finalize();
-                //intent.putExtra("isRestart", true);
-                //new BootMonitor().onReceive(context, intent);
-
-            } catch (Throwable e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            RadioService.this.runTodaySchedule();
-
-        }
-    }
-
-    // Telephony service
-    //private boolean isRunning;
-    //private final int serviceId = 1;
-    private TelephonyManager telephonyManager;
-    private TelecomManager telecomManager;
-    private RadioService.PhoneCallListener listener;
-    private CallRecorder callRecorder;
-    private boolean inCall;
-    private String currentCallingNumber;
-
-   /* @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        Utils.logEvent(this, Utils.EventCategory.SERVICES, Utils.EventAction.START, "Telephony Service");
-        if (!isRunning) {
-            Utils.doNotification(this, "RootIO", "Telephony Service started");
-            this.waitForCalls();
-            this.isRunning = true;
-            this.sendEventBroadcast();
-        }
-        this.startForeground(this.serviceId, Utils.getNotification(this, "RootIO", "Telephony service is running", R.drawable.icon, false, null, null));
-        new ServiceState(this, 1,"Telephony", 1).save();
-        return Service.START_STICKY;
-
-    }*/
-
-    /*@Override
-    public void onDestroy() {
-        Utils.logEvent(this, Utils.EventCategory.SERVICES, Utils.EventAction.STOP, "Telephony Service");
-        this.stopForeground(true);
-        try {
-            this.shutDownService();
-        }
-        catch(Exception ex)
-        {
-            Log.e(this.getString(R.string.app_name), String.format("[RadioService.onDestroy] %s", ex.getMessage() == null ? "Null pointer exception" : ex.getMessage()));
-        }
-        new ServiceState(this, 1,"Telephony", 0).save();
-        super.onDestroy();
-    }*/
-
-    /*private void shutDownService() {
-        if (this.isRunning) {
-            Utils.doNotification(this, "RootIO", "Telephony Service stopped");
-            this.isRunning = false;
-            this.telephonyManager.listen(listener, PhoneStateListener.LISTEN_NONE);
-            this.sendEventBroadcast();
-        }
-    }*/
 
     /**
      * Listens for Telephony activity coming into the phone
@@ -394,7 +294,7 @@ public class RadioService extends Service implements ServiceInformationPublisher
     /**
      * Declines an incoming call or ends an ongoing call.
      */
-    private void declineCall(String fromNumber) {
+    private void declineCall(String fromNumber) { //just let the phone ring silenced
 //        this.telecomManager.silenceRinger();
 //        ITelephony RadioService;
 //        TelephonyManager telephony = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
@@ -418,10 +318,11 @@ public class RadioService extends Service implements ServiceInformationPublisher
      * incomingNumber
      */
     public void handleCall(final String fromNumber) {
-        if (new CallAuthenticator(this).isWhiteListed(fromNumber)) {
+        if (!this.inCall && new CallAuthenticator(this).isWhiteListed(fromNumber)) {
             this.inCall = true;
             RootioApp.setInCall(true);
-            RadioService.this.sendTelephonyEventBroadcast(true);
+            this.radioRunner.getRunningProgram().pause();
+            //RadioService.this.sendTelephonyEventBroadcast(true);
 
             new Thread(new Runnable() {
                 @Override
@@ -444,82 +345,12 @@ public class RadioService extends Service implements ServiceInformationPublisher
         }
     }
 
-
-    /**
-     * Class to handle telephony events received by the phone
-     *
-     * @author Jude Mukundane
-     */
-    class PhoneCallListener extends PhoneStateListener {
-        @Override
-        public void onCallStateChanged(int state, String incomingNumber) {
-
-            switch (state) {
-                case TelephonyManager.CALL_STATE_RINGING:
-                    if (!inCall) {
-                        currentCallingNumber = incomingNumber;
-                        Utils.logEvent(RadioService.this, Utils.EventCategory.CALL, Utils.EventAction.RINGING, incomingNumber);
-                        handleCall(incomingNumber);
-                    }
-                    break;
-                case TelephonyManager.CALL_STATE_IDLE:
-                    if (incomingNumber.equals(currentCallingNumber)) {
-                        inCall = false;
-                        RootioApp.setInCall(false);
-                        RadioService.this.sendTelephonyEventBroadcast(false);
-                        if (RadioService.this.callRecorder != null) {
-                            RadioService.this.callRecorder.stopRecording();
-                            RadioService.this.callRecorder = null;
-                        }
-                    }
-
-                    AudioManager audioManager = (AudioManager) RadioService.this.getSystemService(Context.AUDIO_SERVICE);
-                    audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, getMaxVolume(), AudioManager.FLAG_SHOW_UI);
-
-                    Utils.logEvent(RadioService.this, Utils.EventCategory.CALL, Utils.EventAction.STOP, incomingNumber);
-                    break;
-            }
-        }
-    }
-
-
-
-    //SIP Service
-    //private final int serviceId = 6;
-    private int port, reRegisterPeriod;
-    private Core linphoneCore;
-    private AuthInfo authInfo;
-    private ProxyConfig proxyConfig;
-    private String username, password, domain, stun, protocol;
-    //private boolean isRunning, inCall
-    private boolean isPendingRestart;
-    private boolean wasStoppedOnPurpose, isSipRunning;
-    private SipListener coreListener;
-    private Config profile;
-    private BroadcastReceiver br;
-    private int callVolume;
-
     @Override
     public void onCreate() {
         super.onCreate();
         this.coreListener = new SipListener(this);
         this.initializeStack();
     }
-
-   /* @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        Utils.logEvent(this, Utils.EventCategory.SERVICES, Utils.EventAction.START, "LinSIP Service");
-        if (!isRunning) {
-            isRunning = true;
-            this.register();
-            this.listenForConfigChange();
-            Utils.doNotification(this, "RootIO", "LinSip Service Started");
-            this.sendEventBroadcast();
-        }
-        this.startForeground(this.serviceId, Utils.getNotification(this, "RootIO", "LinSIP service is running", R.drawable.icon, false, null, null));
-        new ServiceState(this, 6,"LinSIP", 1).save();
-        return Service.START_STICKY;
-    }*/
 
     private void listenForConfigChange() {
         br = new BroadcastReceiver() {
@@ -555,28 +386,14 @@ public class RadioService extends Service implements ServiceInformationPublisher
         }
     }
 
+
+
     @Override
     public IBinder onBind(Intent arg0) {
         return new BindingAgent(this);
     }
 
-    /*@Override
-    *//*public void onDestroy() {
-        Utils.logEvent(this, Utils.EventCategory.SERVICES, Utils.EventAction.STOP, "LinSIP Service");
-        this.stopForeground(true);
-        try
-        {
-            this.shutDownService();
-        }catch(Exception ex)
-        {
-            Log.e(this.getString(R.string.app_name), String.format("[RadioService.onDestroy] %s", ex.getMessage() == null ? "Null pointer exception" : ex.getMessage()));
-        }
 
-        new ServiceState(this, 6,"LinSIP", 0).save();
-        super.onDestroy();
-    }
-*//*
-*/
     private void loadConfig() {
         String stationInformation = (String) Utils.getPreference("station_information", String.class, this);
         JSONObject stationJson;
@@ -611,7 +428,6 @@ public class RadioService extends Service implements ServiceInformationPublisher
         natPolicy.resolveStunServer();
         return natPolicy;
     }
-
 
     private void prepareProxy() {
         this.proxyConfig = linphoneCore.createProxyConfig();
@@ -747,10 +563,12 @@ public class RadioService extends Service implements ServiceInformationPublisher
     private void handleCall(Call call) {
         //check the whitelist
         Log.e("RootIO", "handleCall: " + call.getRemoteAddress().getDomain() + " " + this.domain);
-        if (call.getRemoteAddress().getDomain().equals(this.domain)) //Guard against spoofing..
+        if (!this.inCall && call.getRemoteAddress().getDomain().equals(this.domain)) //Guard against spoofing..
         {
             RootioApp.setInSIPCall(true);
-            this.sendTelephonyEventBroadcast(true);
+            this.inCall = true;
+            this.radioRunner.getRunningProgram().pause();
+            //this.sendTelephonyEventBroadcast(true);
             try {
                 Thread.sleep(5000);
             } catch (InterruptedException e) {
@@ -763,7 +581,6 @@ public class RadioService extends Service implements ServiceInformationPublisher
             this.hangup(call);
         }
     }
-
 
     /**
      * Terminate a SIP call that has been taken over by this service
@@ -796,16 +613,6 @@ public class RadioService extends Service implements ServiceInformationPublisher
         }
     }
 
-    /*private void shutDownService() {
-        if (this.isRunning) {
-            this.isRunning = this.isSipRunning = false;
-            this.deregister();
-            this.stopListeningForConfigChange();
-            Utils.doNotification(this, "RootIO", "SIP Service Stopped");
-            this.sendEventBroadcast();
-        }
-    }*/
-
     @Override
     public int getServiceId() {
         return this.serviceId;
@@ -815,7 +622,6 @@ public class RadioService extends Service implements ServiceInformationPublisher
     public boolean isRunning() {
         return this.isRunning;
     }
-
 
     @Override
     public void updateCallState(Call.State callState, Call call) {
@@ -830,7 +636,8 @@ public class RadioService extends Service implements ServiceInformationPublisher
                         isPendingRestart = false;
                     }
                     RootioApp.setInSIPCall(false);
-                    this.sendTelephonyEventBroadcast(false);
+                    this.radioRunner.getRunningProgram().resume();
+                    //this.sendTelephonyEventBroadcast(false);
                     Utils.logEvent(this, Utils.EventCategory.SIP_CALL, Utils.EventAction.STOP, call != null ? call.getRemoteContact() : "");
                     if (call != null) //not being sent au moment
                     {
@@ -842,7 +649,7 @@ public class RadioService extends Service implements ServiceInformationPublisher
                 }
                 break;
             case Error:
-                this.inCall = false;
+                //this.inCall = false;
                 if (isPendingRestart) {
                     this.deregister();
                     this.initializeStack();
@@ -850,7 +657,7 @@ public class RadioService extends Service implements ServiceInformationPublisher
                     isPendingRestart = false;
                 }
                 Utils.logEvent(this, Utils.EventCategory.SIP_CALL, Utils.EventAction.STOP, call != null ? call.getRemoteContact() : "");
-                this.sendTelephonyEventBroadcast(false);
+                //this.sendTelephonyEventBroadcast(false);
                 if (call != null) //not being sent au moment
                 {
                     Utils.toastOnScreen("Call with " + call != null ? call.getRemoteContact() : "" + " erred", this);
@@ -859,7 +666,8 @@ public class RadioService extends Service implements ServiceInformationPublisher
             case Connected:
             case StreamsRunning: //in case you reconnect to the main activity during call.
                 this.inCall = true;
-                this.sendTelephonyEventBroadcast(true);
+                this.radioRunner.getRunningProgram().pause();
+                //this.sendTelephonyEventBroadcast(true);
                 if (call != null) //ideally check for direction and report if outgoing or incoming
                 {
                     Utils.toastOnScreen("In call with " + call != null ? call.getRemoteContact() : "", this);
@@ -940,6 +748,63 @@ public class RadioService extends Service implements ServiceInformationPublisher
         intent.putExtra("Incall", isInCall);
         intent.setAction("org.rootio.services.telephony.TELEPHONY_EVENT");
         this.sendBroadcast(intent);
+    }
+
+    class NewDayScheduleHandler extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            RadioService.this.radioRunner.stop();
+            try {
+                //RadioService.this.finalize();
+                //intent.putExtra("isRestart", true);
+                //new BootMonitor().onReceive(context, intent);
+
+            } catch (Throwable e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            RadioService.this.runTodaySchedule();
+
+        }
+    }
+
+    /**
+     * Class to handle telephony events received by the phone
+     *
+     * @author Jude Mukundane
+     */
+    class PhoneCallListener extends PhoneStateListener {
+        @Override
+        public void onCallStateChanged(int state, String incomingNumber) {
+
+            switch (state) {
+                case TelephonyManager.CALL_STATE_RINGING:
+                    if (!inCall) {
+                        currentCallingNumber = incomingNumber;
+                        Utils.logEvent(RadioService.this, Utils.EventCategory.CALL, Utils.EventAction.RINGING, incomingNumber);
+                        handleCall(incomingNumber);
+                    }
+                    break;
+                case TelephonyManager.CALL_STATE_IDLE:
+                    if (incomingNumber.equals(currentCallingNumber)) {
+                        inCall = false;
+                        RootioApp.setInCall(false);
+                        RadioService.this.radioRunner.getRunningProgram().resume();
+                        //RadioService.this.sendTelephonyEventBroadcast(false);
+                        if (RadioService.this.callRecorder != null) {
+                            RadioService.this.callRecorder.stopRecording();
+                            RadioService.this.callRecorder = null;
+                        }
+                    }
+
+                    AudioManager audioManager = (AudioManager) RadioService.this.getSystemService(Context.AUDIO_SERVICE);
+                    audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, getMaxVolume(), AudioManager.FLAG_SHOW_UI);
+
+                    Utils.logEvent(RadioService.this, Utils.EventCategory.CALL, Utils.EventAction.STOP, incomingNumber);
+                    break;
+            }
+        }
     }
 
 }

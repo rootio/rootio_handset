@@ -5,6 +5,7 @@ import org.rootio.tools.utils.Utils;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.provider.MediaStore;
 
 import com.esotericsoftware.kryo.util.Util;
 
@@ -33,7 +34,7 @@ public class BootMonitor extends BroadcastReceiver {
 
     private void startAllServices(Context context, boolean isRestart) {
         if(Utils.isConnectedToStation(context)) {
-            for (int serviceId : new int[]{1, 2, 3, 4, 5, 6}) {
+            for (int serviceId : new int[]{/*1,*/ 2, 3, 4, 5 /*, 6*/}) {
                 ServiceState serviceState = new ServiceState(context, serviceId);
                 if (isRestart || serviceState.getServiceState() > 0)// service was started
                 {
@@ -65,7 +66,7 @@ public class BootMonitor extends BroadcastReceiver {
                 intent = new Intent(context, DiagnosticsService.class);
                 break;
             case 4: // Program Service
-                intent = new Intent(context, ProgramService.class);
+                intent = new Intent(context, RadioService.class);
                 break;
             case 5: // Sync Service
                 intent = new Intent(context, SynchronizationService.class);
@@ -80,7 +81,7 @@ public class BootMonitor extends BroadcastReceiver {
     private void stopAllServices(Context context)
     {
         if(Utils.isConnectedToStation(context)) {
-            for (int serviceId : new int[]{1, 2, 3, 4, 5, 6}) {
+            for (int serviceId : new int[]{/*1,*/ 2, 3, 4, 5 /*, 6*/}) {
                 ServiceState serviceState = new ServiceState(context, serviceId);
                 serviceState.setServiceState(0);
                 serviceState.save();

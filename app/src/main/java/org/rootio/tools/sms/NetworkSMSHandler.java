@@ -143,7 +143,7 @@ public class NetworkSMSHandler implements MessageProcessor {
             DiagnosticAgent diagnosticAgent = new DiagnosticAgent(this.parent);
             diagnosticAgent.runDiagnostics();
             String response = String.format("connected to %s with signal strength %s", diagnosticAgent.getTelecomOperatorName(), diagnosticAgent.getMobileSignalStrength());
-            this.respondAsyncStatusRequest(response, from);
+            this.respondAsyncStatusRequest(from, response);
             return true;
         } catch (Exception ex) {
             Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(NetworkSMSHandler.toggleData)" : ex.getMessage());
@@ -166,7 +166,7 @@ public class NetworkSMSHandler implements MessageProcessor {
             return false;
         } else {
             String response = String.format("Connected to %s with IP address %s", wifiInfo.getSSID(), wifiInfo.getIpAddress());
-            this.respondAsyncStatusRequest(response, from);
+            this.respondAsyncStatusRequest(from, response);
             return true;
         }
     }

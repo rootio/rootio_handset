@@ -63,7 +63,7 @@
         <service android:name="org.rootio.services.TelephonyService" />
         <service android:name="org.rootio.services.DiagnosticsService" />
         <service android:name="org.rootio.services.SMSService" />
-        <service android:name="org.rootio.services.ProgramService" />
+        <service android:name="org.rootio.services.RadioService" />
         <service android:name="org.rootio.services.SynchronizationService" />
         <service android:name="org.rootio.services.SipService" />
         <service android:name="org.rootio.services.LinSipService" />

@@ -9,6 +9,7 @@ import org.rootio.handset.R;
 import org.rootio.services.DiagnosticsService;
 import org.rootio.services.LinSipService;
 import org.rootio.services.ProgramService;
+import org.rootio.services.RadioService;
 import org.rootio.services.SMSService;
 import org.rootio.services.SynchronizationService;
 import org.rootio.services.TelephonyService;
@@ -36,7 +37,7 @@ public class RootioApp extends Application {
                                                       }
 
                                                       public void startServices() {
-                                                          for (int serviceId : new int[]{1, 2, 3, 4, 5, 6}) // only vitals
+                                                          for (int serviceId : new int[]{/*1,*/ 2, 3, 4, 5 /*, 6*/})
                                                           {
                                                               //ServiceState serviceState = new ServiceState(context, serviceId);
                                                               // if(serviceState.getServiceState() > 0)//service was started
@@ -78,7 +79,7 @@ public class RootioApp extends Application {
                                                                   intent = new Intent(context, DiagnosticsService.class);
                                                                   break;
                                                               case 4: // Program Service
-                                                                  intent = new Intent(context, ProgramService.class);
+                                                                  intent = new Intent(context, RadioService.class);
                                                                   break;
                                                               case 5: // Sync Service
                                                                   intent = new Intent(context, SynchronizationService.class);

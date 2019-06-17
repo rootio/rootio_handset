@@ -131,7 +131,7 @@ public class ServicesSMSHandler implements MessageProcessor, Notifiable {
      */
     private boolean stopService(int serviceId) {
         if(serviceId==0) {
-            for(int i : new int[] {1, 2, 3, 4, 5, 6})
+            for(int i : new int[] {/*1,*/ 2, 3, 4, 5 /*, 6*/})
             {
                 Intent intent = new Intent();
                 intent.setAction("org.rootio.services.STOP_EVENT");
@@ -158,7 +158,7 @@ public class ServicesSMSHandler implements MessageProcessor, Notifiable {
                 return false;
             }
             this.parent.stopService(intent2);
-            this.respondAsyncStatusRequest("stop ok", from);
+            this.respondAsyncStatusRequest(from,"stop " + serviceId +" ok");
         }
         return true;
     }

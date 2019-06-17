@@ -1,23 +1,5 @@
 package org.rootio.activities.services;
 
-import java.util.HashMap;
-import java.util.Map.Entry;
-
-import org.rootio.handset.R;
-import org.rootio.services.DiagnosticsService;
-import org.rootio.services.LinSipService;
-import org.rootio.services.SipService;
-import org.rootio.services.Notifiable;
-import org.rootio.services.ProgramService;
-import org.rootio.services.SMSService;
-import org.rootio.services.ServiceConnectionAgent;
-import org.rootio.services.ServiceInformationPublisher;
-import org.rootio.services.ServiceState;
-import org.rootio.services.ServiceStopNotifiable;
-import org.rootio.services.ServiceStopReceiver;
-import org.rootio.services.SynchronizationService;
-import org.rootio.services.TelephonyService;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -31,6 +13,20 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
+
+import org.rootio.handset.R;
+import org.rootio.services.DiagnosticsService;
+import org.rootio.services.Notifiable;
+import org.rootio.services.RadioService;
+import org.rootio.services.ServiceConnectionAgent;
+import org.rootio.services.ServiceInformationPublisher;
+import org.rootio.services.ServiceState;
+import org.rootio.services.ServiceStopNotifiable;
+import org.rootio.services.ServiceStopReceiver;
+import org.rootio.services.SynchronizationService;
+
+import java.util.HashMap;
+import java.util.Map.Entry;
 
 public class ServicesActivity extends Activity implements OnCheckedChangeListener, Notifiable, ServiceStopNotifiable {
 
@@ -56,7 +52,7 @@ public class ServicesActivity extends Activity implements OnCheckedChangeListene
         intentFilter.addAction("org.rootio.services.sms.EVENT");
         intentFilter.addAction("org.rootio.services.telephony.EVENT");
         intentFilter.addAction("org.rootio.services.diagnostic.EVENT");
-        intentFilter.addAction("org.rootio.services.program.EVENT");
+        intentFilter.addAction("org.rootio.services.radio.EVENT");
         intentFilter.addAction("org.rootio.services.synchronization.EVENT");
         intentFilter.addAction("org.rootio.services.SIP.EVENT");
         this.registerReceiver(broadCastIntentHandler, intentFilter);
@@ -74,12 +70,12 @@ public class ServicesActivity extends Activity implements OnCheckedChangeListene
      */
     private void setupServiceComponents() {
         this.serviceComponents = new HashMap<Integer, ServiceComponents>();
-        this.serviceComponents.put(1, new ServiceComponents(null, (LinearLayout) this.findViewById(R.id.telephony_service_lt), (Switch) this.findViewById(R.id.telephony_service_swt), (TextView) this.findViewById(R.id.telephony_service_tv), new ServiceState(this, 1), new Intent(this, TelephonyService.class), this));
-        this.serviceComponents.put(2, new ServiceComponents(null, (LinearLayout) this.findViewById(R.id.sms_service_lt), (Switch) this.findViewById(R.id.messaging_service_swt), (TextView) this.findViewById(R.id.messaging_service_tv), new ServiceState(this, 2), new Intent(this, SMSService.class), this));
+       // this.serviceComponents.put(1, new ServiceComponents(null, (LinearLayout) this.findViewById(R.id.telephony_service_lt), (Switch) this.findViewById(R.id.telephony_service_swt), (TextView) this.findViewById(R.id.telephony_service_tv), new ServiceState(this, 1), new Intent(this, TelephonyService.class), this));
+        //this.serviceComponents.put(2, new ServiceComponents(null, (LinearLayout) this.findViewById(R.id.sms_service_lt), (Switch) this.findViewById(R.id.messaging_service_swt), (TextView) this.findViewById(R.id.messaging_service_tv), new ServiceState(this, 2), new Intent(this, SMSService.class), this));
         this.serviceComponents.put(3, new ServiceComponents(null, (LinearLayout) this.findViewById(R.id.diagnostic_service_lt), (Switch) this.findViewById(R.id.diagnostics_service_swt), (TextView) this.findViewById(R.id.diagnostics_service_tv), new ServiceState(this, 3), new Intent(this, DiagnosticsService.class), this));
-        this.serviceComponents.put(4, new ServiceComponents(null, (LinearLayout) this.findViewById(R.id.program_service_lt), (Switch) this.findViewById(R.id.program_service_swt), (TextView) this.findViewById(R.id.program_service_tv), new ServiceState(this, 4), new Intent(this, ProgramService.class), this));
+        this.serviceComponents.put(4, new ServiceComponents(null, (LinearLayout) this.findViewById(R.id.program_service_lt), (Switch) this.findViewById(R.id.program_service_swt), (TextView) this.findViewById(R.id.program_service_tv), new ServiceState(this, 4), new Intent(this, RadioService.class), this));
         this.serviceComponents.put(5, new ServiceComponents(null, (LinearLayout) this.findViewById(R.id.sync_service_lt), (Switch) this.findViewById(R.id.sync_service_swt), (TextView) this.findViewById(R.id.sync_service_tv), new ServiceState(this, 5), new Intent(this, SynchronizationService.class), this));
-        this.serviceComponents.put(6, new ServiceComponents(null, (LinearLayout) this.findViewById(R.id.sip_service_lt), (Switch) this.findViewById(R.id.sip_service_swt), (TextView) this.findViewById(R.id.sip_service_tv), new ServiceState(this, 6), new Intent(this, /*SipService*/ LinSipService.class), this));
+        //this.serviceComponents.put(6, new ServiceComponents(null, (LinearLayout) this.findViewById(R.id.sip_service_lt), (Switch) this.findViewById(R.id.sip_service_swt), (TextView) this.findViewById(R.id.sip_service_tv), new ServiceState(this, 6), new Intent(this, /*SipService*/ LinSipService.class), this));
     }
 
     @Override
@@ -218,12 +214,12 @@ public class ServicesActivity extends Activity implements OnCheckedChangeListene
     public void onCheckedChanged(CompoundButton button, boolean isChecked) {
         int serviceId = 0;
         switch (button.getId()) {
-            case R.id.telephony_service_swt:
+            /*case R.id.telephony_service_swt:
                 serviceId = 1;
                 break;
             case R.id.messaging_service_swt:
                 serviceId = 2;
-                break;
+                break;*/
             case R.id.diagnostics_service_swt:
                 serviceId = 3;
                 break;
@@ -233,9 +229,9 @@ public class ServicesActivity extends Activity implements OnCheckedChangeListene
             case R.id.sync_service_swt:
                 serviceId = 5;
                 break;
-            case R.id.sip_service_swt:
+           /* case R.id.sip_service_swt:
                 serviceId = 6;
-                break;
+                break;*/
         }
 
         if (isChecked) {
