@@ -119,7 +119,8 @@ public class PlayList implements Player.EventListener {
         while (!foundMedia && !this.isShuttingDown) {
             try {
                 AudioManager audioManager = (AudioManager) this.parent.getSystemService(Context.AUDIO_SERVICE);
-                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, this.maxVolume, AudioManager.FLAG_SHOW_UI);
+                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, getMaxVolume() > 9? 9: getMaxVolume(), AudioManager.FLAG_SHOW_UI);
+                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, getMaxVolume(), AudioManager.FLAG_SHOW_UI);
 
                 if (streamIterator.hasNext()) {
                     String stream = this.streamIterator.next();
@@ -199,7 +200,8 @@ public class PlayList implements Player.EventListener {
         this.currentMediaUri = uri;
         //begin by raising the volume
         AudioManager audioManager = (AudioManager) this.parent.getSystemService(Context.AUDIO_SERVICE);
-        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, this.maxVolume, AudioManager.FLAG_SHOW_UI);
+        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, getMaxVolume() > 9? 9: getMaxVolume(), AudioManager.FLAG_SHOW_UI);
+        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, getMaxVolume(), AudioManager.FLAG_SHOW_UI);
 
 
         mediaPlayer = ExoPlayerFactory.newSimpleInstance(this.parent, new DefaultTrackSelector());

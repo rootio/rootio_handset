@@ -146,28 +146,32 @@ public class DiagnosticAgent {
             return;
         }
 
-        //this takes the highest registered network type. According to documentation, phone can register to more than one cell.
-        //THe assumption is that for a network type, the phone registers to strongest signal tower only, and that we are interested in the fastest network type
-        for (Object cellinfo : telephonyManager.getAllCellInfo()) {
-            if (cellinfo.getClass() == CellInfoLte.class) {
-                if (((CellInfoLte) cellinfo).isRegistered()) {
-                    this.mobileSignalStrength = ((CellInfoLte) cellinfo).getCellSignalStrength().getDbm();
+        try {
+            //this takes the highest registered network type. According to documentation, phone can register to more than one cell.
+            //THe assumption is that for a network type, the phone registers to strongest signal tower only, and that we are interested in the fastest network type
+            for (Object cellinfo : telephonyManager.getAllCellInfo()) {
+                if (cellinfo.getClass() == CellInfoLte.class) {
+                    if (((CellInfoLte) cellinfo).isRegistered()) {
+                        this.mobileSignalStrength = ((CellInfoLte) cellinfo).getCellSignalStrength().getDbm();
+                    }
+                } else if (cellinfo.getClass() == CellInfoCdma.class) {
+                    if (((CellInfoCdma) cellinfo).isRegistered()) {
+                        this.mobileSignalStrength = ((CellInfoCdma) cellinfo).getCellSignalStrength().getDbm();
+                    }
+                } else if (cellinfo.getClass() == CellInfoWcdma.class) {
+                    if (((CellInfoWcdma) cellinfo).isRegistered()) {
+                        this.mobileSignalStrength = ((CellInfoWcdma) cellinfo).getCellSignalStrength().getDbm();
+                    }
+                } else if (cellinfo.getClass() == CellInfoGsm.class) {
+                    if (((CellInfoGsm) cellinfo).isRegistered()) {
+                        this.mobileSignalStrength = ((CellInfoGsm) cellinfo).getCellSignalStrength().getDbm();
+                    }
                 }
             }
-            else if (cellinfo.getClass() == CellInfoCdma.class) {
-                if (((CellInfoCdma) cellinfo).isRegistered()) {
-                    this.mobileSignalStrength = ((CellInfoCdma) cellinfo).getCellSignalStrength().getDbm();
-                }
-            } else if (cellinfo.getClass() == CellInfoWcdma.class) {
-                if (((CellInfoWcdma) cellinfo).isRegistered()) {
-                    this.mobileSignalStrength = ((CellInfoWcdma) cellinfo).getCellSignalStrength().getDbm();
-                }
-            }
-            else if (cellinfo.getClass() == CellInfoGsm.class) {
-                if (((CellInfoGsm) cellinfo).isRegistered()) {
-                    this.mobileSignalStrength = ((CellInfoGsm) cellinfo).getCellSignalStrength().getDbm();
-                }
-            }
+        }
+        catch(Exception ex)
+        {
+            Log.e(parentActivity.getString(R.string.app_name), ex.getMessage() == null ? "NullPointer(DiagnosticAgent.loadSignalStrength)" : ex.getMessage());
         }
     }
 

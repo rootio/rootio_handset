@@ -647,6 +647,7 @@ public class RadioService extends Service implements ServiceInformationPublisher
                     }
                     //up any music that might be playing
                     AudioManager audioManager = (AudioManager) RadioService.this.getSystemService(Context.AUDIO_SERVICE);
+                    audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, getMaxVolume() > 9? 9: getMaxVolume(), AudioManager.FLAG_SHOW_UI);
                     audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, getMaxVolume(), AudioManager.FLAG_SHOW_UI);
                 }
                 break;
@@ -802,6 +803,7 @@ public class RadioService extends Service implements ServiceInformationPublisher
 
                     if(!inSIPCall) {
                         AudioManager audioManager = (AudioManager) RadioService.this.getSystemService(Context.AUDIO_SERVICE);
+                        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, getMaxVolume() > 9? 9: getMaxVolume(), AudioManager.FLAG_SHOW_UI);
                         audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, getMaxVolume(), AudioManager.FLAG_SHOW_UI);
                     }
 
