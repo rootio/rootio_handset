@@ -641,6 +641,7 @@ public class RadioService extends Service implements ServiceInformationPublisher
                     this.radioRunner.getRunningProgram().resume();
                     //this.sendTelephonyEventBroadcast(false);
                     Utils.logEvent(this, Utils.EventCategory.SIP_CALL, Utils.EventAction.STOP, call != null ? call.getRemoteContact() : "");
+                    Log.e("RootIO", "updateCallState: End");
                     if (call != null) //not being sent au moment
                     {
                         Utils.toastOnScreen("Call with " + call != null ? call.getRemoteContact() : "" + " ended", this);
@@ -661,12 +662,14 @@ public class RadioService extends Service implements ServiceInformationPublisher
                 }
                 Utils.logEvent(this, Utils.EventCategory.SIP_CALL, Utils.EventAction.STOP, call != null ? call.getRemoteContact() : "");
                 //this.sendTelephonyEventBroadcast(false);
+                Log.e("RootIO", "updateCallState: Error");
                 if (call != null) //not being sent au moment
                 {
                     Utils.toastOnScreen("Call with " + call != null ? call.getRemoteContact() : "" + " erred", this);
                 }
                 break;
             case Connected:
+                Log.e("RootIO", "updateCallState: Connected");
             case StreamsRunning: //in case you reconnect to the main activity during call.
                 this.inSIPCall = true;
                 this.radioRunner.getRunningProgram().pause();
@@ -676,6 +679,7 @@ public class RadioService extends Service implements ServiceInformationPublisher
                     Utils.toastOnScreen("In call with " + call != null ? call.getRemoteContact() : "", this);
                 }
                 Utils.logEvent(this, Utils.EventCategory.SIP_CALL, Utils.EventAction.START, call != null ? call.getRemoteContact() : "");
+                Log.e("RootIO", "updateCallState: StreamsRunning");
                 break;
             case IncomingReceived:
                 this.linphoneCore.stopRinging();
