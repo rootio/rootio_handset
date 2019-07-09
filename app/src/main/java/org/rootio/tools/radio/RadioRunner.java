@@ -190,7 +190,13 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
      * @return The currently running program
      */
     public Program getRunningProgram() {
-        return this.programs.get(this.runningProgramIndex);
+        try {
+            return this.programs.get(this.runningProgramIndex);
+        }
+        catch(NullPointerException ex)
+        {
+            return null;
+        }
     }
 
     /**

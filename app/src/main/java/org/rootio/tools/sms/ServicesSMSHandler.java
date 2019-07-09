@@ -5,6 +5,7 @@ import org.rootio.services.DiagnosticsService;
 import org.rootio.services.LinSipService;
 import org.rootio.services.Notifiable;
 import org.rootio.services.ProgramService;
+import org.rootio.services.RadioService;
 import org.rootio.services.SMSService;
 import org.rootio.services.ServiceConnectionAgent;
 import org.rootio.services.ServiceInformationPublisher;
@@ -131,7 +132,7 @@ public class ServicesSMSHandler implements MessageProcessor, Notifiable {
      */
     private boolean stopService(int serviceId) {
         if(serviceId==0) {
-            for(int i : new int[] {/*1,*/ 2, 3, 4, 5 /*, 6*/})
+            for(int i : new int[] {/*1, 2, */3, 4, 5 /*, 6*/})
             {
                 Intent intent = new Intent();
                 intent.setAction("org.rootio.services.STOP_EVENT");
@@ -184,24 +185,24 @@ public class ServicesSMSHandler implements MessageProcessor, Notifiable {
     private Intent getServiceIntent(int serviceId) {
         Intent intent = null;
         switch (serviceId) {
-            case 1:
+           /* case 1:
                 intent = new Intent(this.parent, TelephonyService.class);
                 break;
             case 2:
                 intent = new Intent(this.parent, SMSService.class);
-                break;
+                break;*/
             case 3:
                 intent = new Intent(this.parent, DiagnosticsService.class);
                 break;
             case 4:
-                intent = new Intent(this.parent, ProgramService.class);
+                intent = new Intent(this.parent, RadioService.class);
                 break;
             case 5:
                 intent = new Intent(this.parent, SynchronizationService.class);
                 break;
-            case 6:
+            /*case 6:
                 intent = new Intent(this.parent, LinSipService.class);
-                break;
+                break;*/
         }
         return intent;
     }

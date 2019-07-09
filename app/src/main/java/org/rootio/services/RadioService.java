@@ -322,8 +322,15 @@ public class RadioService extends Service implements ServiceInformationPublisher
         if (!this.inCall && !this.inSIPCall && new CallAuthenticator(this).isWhiteListed(fromNumber)) {
             this.inCall = true;
             RootioApp.setInCall(true);
-            this.radioRunner.getRunningProgram().pause();
-            //RadioService.this.sendTelephonyEventBroadcast(true);
+            try{
+            if(this.radioRunner != null && this.radioRunner.getRunningProgram() != null) {
+                this.radioRunner.getRunningProgram().pause();
+                //RadioService.this.sendTelephonyEventBroadcast(true);
+            }}
+            catch(Exception ex)
+            {
+                Log.e(this.getString(R.string.app_name), String.format("[RadioService.handleCall] %s", ex.getMessage() == null ? "Null pointer exception" : ex.getMessage()));
+            }
 
             new Thread(new Runnable() {
                 @Override
@@ -569,12 +576,29 @@ public class RadioService extends Service implements ServiceInformationPublisher
                 Log.e("RootIO", "handleCall: " +inCall + " " + inSIPCall);
             RootioApp.setInSIPCall(true);
             this.inSIPCall = true;
-            this.radioRunner.getRunningProgram().pause();
+            try{
+                if(this.radioRunner != null && this.radioRunner.getRunningProgram() != null) {
+                    this.radioRunner.getRunningProgram().pause();
+                    //RadioService.this.sendTelephonyEventBroadcast(true);
+                }}
+            catch(Exception ex)
+            {
+                Log.e(this.getString(R.string.app_name), String.format("[RadioService.handleCall] %s", ex.getMessage() == null ? "Null pointer exception" : ex.getMessage()));
+            }
             //this.sendTelephonyEventBroadcast(true);
             try {
                 Thread.sleep(5000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
+            }
+            try{
+                if(this.radioRunner != null && this.radioRunner.getRunningProgram() != null) {
+                    this.radioRunner.getRunningProgram().pause();
+                    //RadioService.this.sendTelephonyEventBroadcast(true);
+                }}
+            catch(Exception ex)
+            {
+                Log.e(this.getString(R.string.app_name), String.format("[RadioService.handleCall] %s", ex.getMessage() == null ? "Null pointer exception" : ex.getMessage()));
             }
             this.answer(call);
 
@@ -638,7 +662,15 @@ public class RadioService extends Service implements ServiceInformationPublisher
                         isPendingRestart = false;
                     }
                     RootioApp.setInSIPCall(false);
-                    this.radioRunner.getRunningProgram().resume();
+                    try{
+                        if(this.radioRunner != null && this.radioRunner.getRunningProgram() != null) {
+                            this.radioRunner.getRunningProgram().resume();
+                            //RadioService.this.sendTelephonyEventBroadcast(true);
+                        }}
+                    catch(Exception ex)
+                    {
+                        Log.e(this.getString(R.string.app_name), String.format("[RadioService.handleCall] %s", ex.getMessage() == null ? "Null pointer exception" : ex.getMessage()));
+                    }
                     //this.sendTelephonyEventBroadcast(false);
                     Utils.logEvent(this, Utils.EventCategory.SIP_CALL, Utils.EventAction.STOP, call != null ? call.getRemoteContact() : "");
                     Log.e("RootIO", "updateCallState: End");
@@ -672,7 +704,15 @@ public class RadioService extends Service implements ServiceInformationPublisher
                 Log.e("RootIO", "updateCallState: Connected");
             case StreamsRunning: //in case you reconnect to the main activity during call.
                 this.inSIPCall = true;
-                this.radioRunner.getRunningProgram().pause();
+                try{
+                    if(this.radioRunner != null && this.radioRunner.getRunningProgram() != null) {
+                        this.radioRunner.getRunningProgram().pause();
+                        //RadioService.this.sendTelephonyEventBroadcast(true);
+                    }}
+                catch(Exception ex)
+                {
+                    Log.e(this.getString(R.string.app_name), String.format("[RadioService.handleCall] %s", ex.getMessage() == null ? "Null pointer exception" : ex.getMessage()));
+                }
                 //this.sendTelephonyEventBroadcast(true);
                 if (call != null) //ideally check for direction and report if outgoing or incoming
                 {
@@ -797,7 +837,15 @@ public class RadioService extends Service implements ServiceInformationPublisher
                     if (incomingNumber.equals(currentCallingNumber)) {
                         inCall = false;
                         RootioApp.setInCall(false);
-                        RadioService.this.radioRunner.getRunningProgram().resume();
+                        try{
+                            if(RadioService.this.radioRunner != null && RadioService.this.radioRunner.getRunningProgram() != null) {
+                                RadioService.this.radioRunner.getRunningProgram().resume();
+                                //RadioService.this.sendTelephonyEventBroadcast(true);
+                            }}
+                        catch(Exception ex)
+                        {
+                            Log.e(RadioService.this.getString(R.string.app_name), String.format("[RadioService.handleCall] %s", ex.getMessage() == null ? "Null pointer exception" : ex.getMessage()));
+                        }
                         //RadioService.this.sendTelephonyEventBroadcast(false);
                         if (RadioService.this.callRecorder != null) {
                             RadioService.this.callRecorder.stopRecording();
