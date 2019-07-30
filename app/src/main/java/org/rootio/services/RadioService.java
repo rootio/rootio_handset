@@ -663,7 +663,7 @@ public class RadioService extends Service implements ServiceInformationPublisher
                     }
                     RootioApp.setInSIPCall(false);
                     try{
-                        if(this.radioRunner != null && this.radioRunner.getRunningProgram() != null) {
+                        if(this.radioRunner != null && this.radioRunner. getRunningProgram() != null) {
                             this.radioRunner.getRunningProgram().resume();
                             //RadioService.this.sendTelephonyEventBroadcast(true);
                         }}

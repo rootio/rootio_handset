@@ -32,7 +32,6 @@ public class MusicListHandler implements SynchronizationHandler {
     MusicListHandler(Context parent, Cloud cloud) {
         this.parent = parent;
         this.cloud = cloud;
-        this.maxDateadded = this.getMaxDateAdded();
     }
 
     @Override
@@ -76,6 +75,8 @@ public class MusicListHandler implements SynchronizationHandler {
         String artist, album;
         Cursor cur = null;
         try {
+            this.maxDateadded = this.getMaxDateAdded();
+            Utils.toastOnScreen("max date is "+maxDateadded, this.parent);
             ContentResolver cr = this.parent.getContentResolver();
             Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
             String selection = MediaStore.Audio.Media.IS_MUSIC + "!= 0 and date_added > ?";
@@ -87,6 +88,7 @@ public class MusicListHandler implements SynchronizationHandler {
 
             if (cur != null) {
                 count = cur.getCount();
+                //Utils.toastOnScreen("records is "+count, this.parent);
 
 
                 if (count > 0) {
