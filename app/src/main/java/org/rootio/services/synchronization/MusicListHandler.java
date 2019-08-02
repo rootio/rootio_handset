@@ -76,7 +76,6 @@ public class MusicListHandler implements SynchronizationHandler {
         Cursor cur = null;
         try {
             this.maxDateadded = this.getMaxDateAdded();
-            Utils.toastOnScreen("max date is "+maxDateadded, this.parent);
             ContentResolver cr = this.parent.getContentResolver();
             Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
             String selection = MediaStore.Audio.Media.IS_MUSIC + "!= 0 and date_added > ?";

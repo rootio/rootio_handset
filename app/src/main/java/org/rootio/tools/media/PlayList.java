@@ -426,7 +426,7 @@ public class PlayList implements Player.EventListener {
                         case Player.STATE_ENDED:
                             try {
                                 PlayList.this.mediaPlayer.setVolume(BuildConfig.DEBUG ? 0.5F : 0.9F);
-                                Utils.toastOnScreen("logging media...", PlayList.this.parent);
+                                //Utils.toastOnScreen("logging media...", PlayList.this.parent);
                                 try {
                                     Utils.logEvent(PlayList.this.parent, Utils.EventCategory.MEDIA, Utils.EventAction.STOP, String.format("Title: %s, Artist: %s, Location: %s", currentCallSign.getTitle(), currentCallSign.getArtists(), currentCallSign.getFileLocation()));
                                 } catch (Exception ex) {
@@ -525,7 +525,7 @@ public class PlayList implements Player.EventListener {
                     } else {
                         this.mediaPlayer.setVolume(BuildConfig.DEBUG ? 0.5F : 0.9F);
                     }
-                    Utils.toastOnScreen("logging media...", this.parent);
+                    //Utils.toastOnScreen("logging media...", this.parent);
                     Utils.logEvent(this.parent, Utils.EventCategory.MEDIA, Utils.EventAction.START, String.format("Title: %s, Artist: %s, Location: %s", currentMedia.getTitle(), currentMedia.getArtists(), currentMedia.getFileLocation()));
 
 
@@ -536,7 +536,7 @@ public class PlayList implements Player.EventListener {
                 break;
             case Player.STATE_ENDED: //a song has ended
                 this.foundMedia = false;
-                Utils.toastOnScreen("logging media...", this.parent);
+                //Utils.toastOnScreen("logging media...", this.parent);
                 Utils.logEvent(this.parent, Utils.EventCategory.MEDIA, Utils.EventAction.STOP, String.format("Title: %s, Artist: %s, Location: %s", currentMedia.getTitle(), currentMedia.getArtists(), currentMedia.getFileLocation()));
                 if (this.isShuttingDown) {
                     return;

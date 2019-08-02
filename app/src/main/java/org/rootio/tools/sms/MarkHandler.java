@@ -58,7 +58,6 @@ class MarkHandler implements MessageProcessor {
     private boolean setId(String param, String value) {
         try {
             ContentValues values = new ContentValues();
-            Utils.toastOnScreen(value, this.parent);
             values.put(param, Long.parseLong(value));
             Utils.savePreferences(values, this.parent);
             this.respondAsyncStatusRequest(this.from, "mark " + messageParts[1] + " " + messageParts[2] + " ok");
