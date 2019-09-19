@@ -33,6 +33,7 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -62,7 +63,7 @@ public class RadioService extends Service implements ServiceInformationPublisher
     private TelecomManager telecomManager;
     private RadioService.PhoneCallListener listener;
     private CallRecorder callRecorder;
-    private boolean inCall;
+    //private boolean inCall;
     private String currentCallingNumber;
     private int port, reRegisterPeriod;
     private Core linphoneCore;
@@ -75,7 +76,7 @@ public class RadioService extends Service implements ServiceInformationPublisher
     private Config profile;
     private BroadcastReceiver br;
     private int callVolume;
-    private boolean inSIPCall;
+    //private boolean inSIPCall;
 
 
     @Override
@@ -214,9 +215,40 @@ public class RadioService extends Service implements ServiceInformationPublisher
      */
     private void waitForCalls() {
         this.telecomManager = (TelecomManager) this.getSystemService(Context.TELECOM_SERVICE);
+        setInCall(false);
         this.telephonyManager = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
         listener = new RadioService.PhoneCallListener();
         telephonyManager.listen(listener, PhoneStateListener.LISTEN_CALL_STATE);
+    }
+
+    private void setInCall(boolean inCall)
+    {
+        //this.inCall = inCall; //local
+        RootioApp.setInCall(inCall); //stored in the RootioApp instance
+        //persist in app preferences. This will become the preferred approach
+        ContentValues values = new ContentValues();
+        values.put("inCall", inCall);
+        Utils.savePreferences(values, this);
+    }
+
+    private void setInSIPCall(boolean inSIPCall)
+    {
+        //this.inSIPCall = inSIPCall; //local
+        RootioApp.setInCall(inSIPCall); //stored in the RootioApp instance
+        //persist in app preferences. This will become the preferred approach
+        ContentValues values = new ContentValues();
+        values.put("inSIPCall", inSIPCall);
+        Utils.savePreferences(values, this);
+    }
+
+    private boolean getInCall()
+    {
+        return (boolean)Utils.getPreference("inCall", boolean.class, this);
+    }
+
+    private boolean getInSIPCall()
+    {
+        return (boolean)Utils.getPreference("inSIPCall", boolean.class, this);
     }
 
     /**
@@ -319,9 +351,8 @@ public class RadioService extends Service implements ServiceInformationPublisher
      * incomingNumber
      */
     public void handleCall(final String fromNumber) {
-        if (!this.inCall && !this.inSIPCall && new CallAuthenticator(this).isWhiteListed(fromNumber)) {
-            this.inCall = true;
-            RootioApp.setInCall(true);
+        if (!this.getInCall() && !this.getInSIPCall() && new CallAuthenticator(this).isWhiteListed(fromNumber)) {
+            this.setInCall(true);
             try{
             if(this.radioRunner != null && this.radioRunner.getRunningProgram() != null) {
                 this.radioRunner.getRunningProgram().pause();
@@ -365,7 +396,7 @@ public class RadioService extends Service implements ServiceInformationPublisher
             @Override
             public void onReceive(Context context, Intent intent) {
                 if (RadioService.this.isRunning) {
-                    if (RadioService.this.inCall) //re-registration will cause call to be dropped
+                    if (RadioService.this.getInCall()) //re-registration will cause call to be dropped
                     {
                         RadioService.this.isPendingRestart = true;
                     } else {
@@ -571,11 +602,12 @@ public class RadioService extends Service implements ServiceInformationPublisher
     private void handleCall(Call call) {
         //check the whitelist
         Log.e("RootIO", "handleCall: " + call.getRemoteAddress().getDomain() + " " + this.domain);
-        if (!this.inCall && !this.inSIPCall && call.getRemoteAddress().getDomain().equals(this.domain)) //Guard against spoofing..
+        if (!this.getInCall() && !this.getInSIPCall() && call.getRemoteAddress().getDomain().equals(this.domain)) //Guard against spoofing..
         {
-                Log.e("RootIO", "handleCall: " +inCall + " " + inSIPCall);
-            RootioApp.setInSIPCall(true);
-            this.inSIPCall = true;
+                Log.e("RootIO", "handleCall: " +getInCall() + " " + getInSIPCall());
+            //RootioApp.setInSIPCall(true);
+            setInSIPCall(true);
+            //this.inSIPCall = true;
             try{
                 if(this.radioRunner != null && this.radioRunner.getRunningProgram() != null) {
                     this.radioRunner.getRunningProgram().pause();
@@ -653,15 +685,16 @@ public class RadioService extends Service implements ServiceInformationPublisher
     public void updateCallState(Call.State callState, Call call) {
         switch (callState) {
             case End:
-                if (call.getRemoteAddress().getDomain().equals(this.domain) && this.inSIPCall) {
-                    this.inSIPCall = false;
+                if (call.getRemoteAddress().getDomain().equals(this.domain) && this.getInSIPCall()) {
+                    //this.inSIPCall = false;
                     if (isPendingRestart) {
                         this.deregister();
                         this.initializeStack();
                         this.register();
                         isPendingRestart = false;
                     }
-                    RootioApp.setInSIPCall(false);
+                    //RootioApp.setInSIPCall(false);
+                    setInSIPCall(false);
                     try{
                         if(this.radioRunner != null && this.radioRunner. getRunningProgram() != null) {
                             this.radioRunner.getRunningProgram().resume();
@@ -703,7 +736,8 @@ public class RadioService extends Service implements ServiceInformationPublisher
             case Connected:
                 Log.e("RootIO", "updateCallState: Connected");
             case StreamsRunning: //in case you reconnect to the main activity during call.
-                this.inSIPCall = true;
+                //this.inSIPCall = true;
+                setInSIPCall(true);
                 try{
                     if(this.radioRunner != null && this.radioRunner.getRunningProgram() != null) {
                         this.radioRunner.getRunningProgram().pause();
@@ -827,7 +861,7 @@ public class RadioService extends Service implements ServiceInformationPublisher
 
             switch (state) {
                 case TelephonyManager.CALL_STATE_RINGING:
-                    if (!inCall && !inSIPCall) {
+                    if (!getInCall() && !getInSIPCall()) {
                         currentCallingNumber = incomingNumber;
                         Utils.logEvent(RadioService.this, Utils.EventCategory.CALL, Utils.EventAction.RINGING, incomingNumber);
                         handleCall(incomingNumber);
@@ -835,8 +869,9 @@ public class RadioService extends Service implements ServiceInformationPublisher
                     break;
                 case TelephonyManager.CALL_STATE_IDLE:
                     if (incomingNumber.equals(currentCallingNumber)) {
-                        inCall = false;
-                        RootioApp.setInCall(false);
+                        //inCall = false;
+                       // RootioApp.setInCall(false);
+                        setInCall(false);
                         try{
                             if(RadioService.this.radioRunner != null && RadioService.this.radioRunner.getRunningProgram() != null) {
                                 RadioService.this.radioRunner.getRunningProgram().resume();
@@ -853,7 +888,7 @@ public class RadioService extends Service implements ServiceInformationPublisher
                         }
                     }
 
-                    if(!inSIPCall) {
+                    if(!getInSIPCall()) {
                         AudioManager audioManager = (AudioManager) RadioService.this.getSystemService(Context.AUDIO_SERVICE);
                         audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, getMaxVolume() > 9? 9: getMaxVolume(), AudioManager.FLAG_SHOW_UI);
                         audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, getMaxVolume(), AudioManager.FLAG_SHOW_UI);
