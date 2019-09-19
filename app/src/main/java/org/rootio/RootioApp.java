@@ -7,12 +7,8 @@ import android.util.Log;
 
 import org.rootio.handset.R;
 import org.rootio.services.DiagnosticsService;
-import org.rootio.services.LinSipService;
-import org.rootio.services.ProgramService;
 import org.rootio.services.RadioService;
-import org.rootio.services.SMSService;
 import org.rootio.services.SynchronizationService;
-import org.rootio.services.TelephonyService;
 
 public class RootioApp extends Application {
     public static RootioApp instance;
@@ -37,7 +33,7 @@ public class RootioApp extends Application {
                                                       }
 
                                                       public void startServices() {
-                                                          for (int serviceId : new int[]{/*1,*/ 2, 3, 4, 5 /*, 6*/})
+                                                          for (int serviceId : new int[]{/*1, 2,*/ 3, 4, 5 /*, 6*/})
                                                           {
                                                               //ServiceState serviceState = new ServiceState(context, serviceId);
                                                               // if(serviceState.getServiceState() > 0)//service was started
@@ -69,12 +65,12 @@ public class RootioApp extends Application {
                                                       private Intent getIntentToLaunch(Context context, int serviceId) {
                                                           Intent intent = null;
                                                           switch (serviceId) {
-                                                              case 1: // telephony service
+                                                              /*case 1: // telephony service
                                                                   intent = new Intent(context, TelephonyService.class);
                                                                   break;
                                                               case 2: // SMS service
                                                                   intent = new Intent(context, SMSService.class);
-                                                                  break;
+                                                                  break;*/
                                                               case 3: // Diagnostic Service
                                                                   intent = new Intent(context, DiagnosticsService.class);
                                                                   break;
@@ -84,9 +80,9 @@ public class RootioApp extends Application {
                                                               case 5: // Sync Service
                                                                   intent = new Intent(context, SynchronizationService.class);
                                                                   break;
-                                                              case 6: // SIP Service
+                                                              /*case 6: // SIP Service
                                                                   intent = new Intent(context, LinSipService.class);
-                                                                  break;
+                                                                  break;*/
                                                           }
                                                           return intent;
                                                       }

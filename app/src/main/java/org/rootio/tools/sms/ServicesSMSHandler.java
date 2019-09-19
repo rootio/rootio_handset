@@ -1,22 +1,17 @@
 package org.rootio.tools.sms;
 
-import org.rootio.handset.BuildConfig;
-import org.rootio.services.DiagnosticsService;
-import org.rootio.services.LinSipService;
-import org.rootio.services.Notifiable;
-import org.rootio.services.ProgramService;
-import org.rootio.services.RadioService;
-import org.rootio.services.SMSService;
-import org.rootio.services.ServiceConnectionAgent;
-import org.rootio.services.ServiceInformationPublisher;
-import org.rootio.services.SipService;
-import org.rootio.services.SynchronizationService;
-import org.rootio.services.TelephonyService;
-import org.rootio.tools.utils.Utils;
-
 import android.content.Context;
 import android.content.Intent;
 import android.telephony.SmsManager;
+
+import org.rootio.handset.BuildConfig;
+import org.rootio.services.DiagnosticsService;
+import org.rootio.services.Notifiable;
+import org.rootio.services.RadioService;
+import org.rootio.services.ServiceConnectionAgent;
+import org.rootio.services.ServiceInformationPublisher;
+import org.rootio.services.SynchronizationService;
+import org.rootio.tools.utils.Utils;
 
 public class ServicesSMSHandler implements MessageProcessor, Notifiable {
 

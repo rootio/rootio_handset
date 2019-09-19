@@ -1,11 +1,10 @@
 package org.rootio.services;
 
-import org.rootio.tools.utils.Utils;
-
-import android.app.Application;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+
+import org.rootio.tools.utils.Utils;
 
 public class UpgradeMonitor extends BroadcastReceiver {
 
