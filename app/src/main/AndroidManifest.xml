@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.rootio.handset" android:versionCode="29" android:revisionCode="4"
-    android:versionName="Dos Santos:29.4">
+    package="org.rootio.handset" android:versionCode="30" android:revisionCode="0"
+    android:versionName="Hustles in Brussels:30">
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ANSWER_PHONE_CALLS" />
@@ -32,7 +32,6 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
-    <uses-permission android:name="android.permission.REBOOT"/>
 
     <application
         android:allowBackup="false"
