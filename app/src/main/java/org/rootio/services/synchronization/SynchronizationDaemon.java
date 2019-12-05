@@ -13,8 +13,10 @@ import org.rootio.services.SynchronizationService;
 import org.rootio.tools.cloud.Cloud;
 import org.rootio.tools.utils.Utils;
 
+import java.time.temporal.ChronoField;
+import java.time.temporal.TemporalField;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.time.LocalDateTime;
 
 public class SynchronizationDaemon implements Runnable {
     private final Context parent;
@@ -22,7 +24,7 @@ public class SynchronizationDaemon implements Runnable {
     private Handler handler;
     private MusicListHandler musicListHandler;
     private boolean isSyncing = false;
-    private HashSet<Integer> syncLocks = new HashSet();
+    private HashMap<Integer, Long> syncLocks = new HashMap<>();
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -35,7 +37,7 @@ public class SynchronizationDaemon implements Runnable {
     };
 
     private void cancelSyncLock(int category) {
-        if (this.syncLocks.contains(new Integer(category))) {
+        if (this.syncLocks.containsKey((new Integer(category)))) {
             this.syncLocks.remove(new Integer(category));
         }
     }
@@ -50,6 +52,11 @@ public class SynchronizationDaemon implements Runnable {
         this.synchronize();
     }
 
+    private Long getCurrentTime()
+    {
+        return LocalDateTime.now().getLong(ChronoField.MILLI_OF_SECOND);
+    }
+
     private void synchronize() {
         if (!isSyncing) {
             this.handler.post(new Runnable() {
@@ -58,27 +65,29 @@ public class SynchronizationDaemon implements Runnable {
                     Thread thread = new Thread(new Runnable() {
                         public void run() {
                             isSyncing = true;
-                            if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(1)))
+                            if (!SynchronizationDaemon.this.syncLocks.containsKey(new Integer(1)))
                                 SynchronizationDaemon.this.synchronize(new DiagnosticsHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud),new Integer(1));
-                            if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(2))) {
-                                SynchronizationDaemon.this.syncLocks.add(new Integer(2));
+
+                            //if the syncLock is greater than 5 mins old, do not consider it.
+                            if (!(SynchronizationDaemon.this.syncLocks.containsKey(new Integer(2)) && SynchronizationDaemon.this.syncLocks.get(new Integer(2)) < (getCurrentTime () + 300000) )) {
+                                SynchronizationDaemon.this.syncLocks.put(new Integer(2), getCurrentTime());
                                 SynchronizationDaemon.this.synchronize(new ProgramsHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud),new Integer(2));
                             }
-                            if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(3)))
+                            if (!SynchronizationDaemon.this.syncLocks.containsKey(new Integer(3)))
                                 SynchronizationDaemon.this.synchronize(new CallLogHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud),new Integer(3));
-                            if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(4)))
+                            if (!SynchronizationDaemon.this.syncLocks.containsKey(new Integer(4)))
                                 SynchronizationDaemon.this.synchronize(new SMSLogHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud),new Integer(4));
-                            if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(5)))
+                            if (!SynchronizationDaemon.this.syncLocks.containsKey(new Integer(5)))
                                 SynchronizationDaemon.this.synchronize(new WhitelistHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud),new Integer(5));
-                            if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(6)))
+                            if (!SynchronizationDaemon.this.syncLocks.containsKey(new Integer(6)))
                                 SynchronizationDaemon.this.synchronize(new FrequencyHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud),new Integer(6));
-                            if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(7)))
+                            if (!SynchronizationDaemon.this.syncLocks.containsKey(new Integer(7)))
                                 SynchronizationDaemon.this.synchronize(SynchronizationDaemon.this.musicListHandler,new Integer(7));
-                            if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(8)))
+                            if (!SynchronizationDaemon.this.syncLocks.containsKey(new Integer(8)))
                                 SynchronizationDaemon.this.synchronize(new PlaylistHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud),new Integer(8));
-                            if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(9)))
+                            if (!SynchronizationDaemon.this.syncLocks.containsKey(new Integer(9)))
                                 SynchronizationDaemon.this.synchronize(new LogHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud),new Integer(9));
-                            if (!SynchronizationDaemon.this.syncLocks.contains(new Integer(10)))
+                            if (!SynchronizationDaemon.this.syncLocks.containsKey(new Integer(10)))
                                 SynchronizationDaemon.this.synchronize(new StationHandler(SynchronizationDaemon.this.parent, SynchronizationDaemon.this.cloud),new Integer(10));
                             isSyncing = false;
                         }
@@ -93,7 +102,7 @@ public class SynchronizationDaemon implements Runnable {
     }
 
     public void requestSync(final int category) {
-        this.syncLocks.add(new Integer(category)); //prevent automated sync while this is running
+        this.syncLocks.put(new Integer(category), getCurrentTime()); //prevent automated sync while this is running
         final SynchronizationHandler syncHandler;
         switch (category) {
             case 1:
