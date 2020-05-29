@@ -109,7 +109,7 @@ public class RadioService extends Service implements ServiceInformationPublisher
     }
 
     private void runTodaySchedule() {
-        radioRunner = new RadioRunner(this);
+        radioRunner = RadioRunner.getInstance(this);
         runnerThread = new Thread(radioRunner);
         runnerThread.start();
         this.scheduleNextDayAlarm();

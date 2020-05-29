@@ -349,7 +349,6 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
     @Override
     public boolean isExpired(int index) {
         Calendar referenceCalendar = Calendar.getInstance();
-        //boolean isExpired = this.programs.get(index).getEndDate().compareTo(referenceCalendar.getTime()) <= 0;
         return this.programs.get(index).getEndDate().compareTo(referenceCalendar.getTime()) <= 0;
     }
 
