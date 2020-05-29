@@ -87,7 +87,7 @@ public class PlayList implements Player.EventListener {
             mediaList = loadMedia(this.playlists);
         }
         mediaIterator = mediaList.iterator();
-        streamIterator = streams.iterator();
+        streamIterator = streams.listIterator();
     }
 
     public void preload(){
@@ -139,9 +139,11 @@ public class PlayList implements Player.EventListener {
                         Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(PlayList.startPlayer)" : ex.getMessage());
                         this.startPlayer();
                     }
-
                 } else if (mediaIterator.hasNext()) {
-
+                    if(!streamIterator.hasNext())
+                    {
+                        streamIterator = streams.iterator();
+                    }
                     currentMedia = mediaIterator.next();
 
                     try {
@@ -395,6 +397,7 @@ public class PlayList implements Player.EventListener {
     public HashSet<Media> getMedia() {
         return this.mediaList;
     }
+
 
 
     private void onReceiveCallSign(String Url) {
