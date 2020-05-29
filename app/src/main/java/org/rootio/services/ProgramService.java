@@ -60,7 +60,7 @@ public class ProgramService extends Service implements ServiceInformationPublish
     }
 
     private void runTodaySchedule() {
-        radioRunner = new RadioRunner(this);
+        radioRunner = RadioRunner.getInstance(this);
         runnerThread = new Thread(radioRunner);
         runnerThread.start();
         this.scheduleNextDayAlarm();

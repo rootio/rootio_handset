@@ -29,10 +29,10 @@ enum State {
 
 @SuppressLint("SimpleDateFormat")
 public class RadioRunner implements Runnable, TelephonyEventNotifiable, ScheduleNotifiable, ScheduleChangeNotifiable {
+    private static RadioRunner radioRunner;
     private AlarmManager am;
     private ScheduleBroadcastHandler br;
     private ArrayList<Object[]> pendingIntents;
-    //private ArrayList<PendingIntent> pis;
     private final Context parent;
     private ArrayList<Program> programs;
     private Integer runningProgramIndex = null;
@@ -42,12 +42,20 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
     private boolean isPendingScheduleReload;
     private int radioRunnerId;
 
-    public RadioRunner(Context parent) {
+    private RadioRunner(Context parent) {
         this.radioRunnerId = new Random().nextInt(1000);
         this.parent = parent;
-        //this.setUpAlarming();
         this.listenForTelephonyEvents();
         this.listenForScheduleChangeNotifications();
+    }
+
+    public static RadioRunner getInstance(Context parent)
+    {
+        if(radioRunner == null)
+        {
+            radioRunner = new RadioRunner(parent);
+        }
+        return radioRunner;
     }
 
     private void listenForScheduleChangeNotifications() {

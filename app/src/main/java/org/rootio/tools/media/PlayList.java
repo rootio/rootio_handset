@@ -54,7 +54,6 @@ public class PlayList implements Player.EventListener {
     private MediaLibrary mediaLib;
     private boolean isShuttingDown;
     private Thread runnerThread;
-    private int maxVolume;
     private boolean foundMedia;
 
 
@@ -63,10 +62,13 @@ public class PlayList implements Player.EventListener {
     }
 
     public static PlayList getInstance() {
-        if (PlayList.playListInstance != null) {
+        if(playListInstance == null)
+        {
+            playListInstance = new PlayList(); //initialize only once
+        }
+        else{
             PlayList.playListInstance.stop();
         }
-        PlayList.playListInstance = new PlayList();
         return playListInstance;
     }
 
@@ -77,6 +79,15 @@ public class PlayList implements Player.EventListener {
         this.parent = parent;
         this.mediaLib = new MediaLibrary(this.parent);
         this.callSignProvider = new CallSignProvider();
+        this.setVolumeLevel();
+    }
+
+    private void setVolumeLevel()
+    {
+        AudioManager audioManager = (AudioManager) this.parent.getSystemService(Context.AUDIO_SERVICE);
+        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, getMaxVolume() > 9? 9: getMaxVolume(), AudioManager.FLAG_SHOW_UI);
+        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, getMaxVolume(), AudioManager.FLAG_SHOW_UI);
+
     }
 
     /**
@@ -102,14 +113,12 @@ public class PlayList implements Player.EventListener {
      * Play the media loaded in this playlist
      */
     public void play() {
-        this.maxVolume = this.getMaxVolume();
         new Thread(new Runnable() {
             @Override
             public void run() {
                 startPlayer();
             }
         }).start();
-      //  startPlayer();
    this.callSignProvider.start();
 
     }
@@ -118,9 +127,7 @@ public class PlayList implements Player.EventListener {
          final Cloud cloud = new Cloud(this.parent);
         while (!foundMedia && !this.isShuttingDown) {
             try {
-                AudioManager audioManager = (AudioManager) this.parent.getSystemService(Context.AUDIO_SERVICE);
-                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, getMaxVolume() > 9? 9: getMaxVolume(), AudioManager.FLAG_SHOW_UI);
-                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, getMaxVolume(), AudioManager.FLAG_SHOW_UI);
+
 
                 if (streamIterator.hasNext()) {
                     String stream = this.streamIterator.next();
@@ -178,13 +185,7 @@ public class PlayList implements Player.EventListener {
                             Utils.doPostHTTP(String.format("%s://%s:%s/%s/%s/programs?api_key=%s&%s&version=%s_%s", cloud.getServerScheme(), cloud.getServerAddress(), cloud.getHTTPPort(), "api/media_play", cloud.getStationId(), cloud.getServerKey(), ex.getMessage() == null ? "Null pointer exception(PlayList.play)" : ex.getMessage(), BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE), "");
                         }
                     }).start();
-
                     Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(PlayList.play)" : ex.getMessage());
-            /*try {
-                Thread.sleep(10000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }*/
                     this.startPlayer();
                 } catch (Exception ex1) {
 
@@ -200,20 +201,11 @@ public class PlayList implements Player.EventListener {
 
     private void playMedia(Uri uri, long seekPosition) {
         this.currentMediaUri = uri;
-        //begin by raising the volume
-        AudioManager audioManager = (AudioManager) this.parent.getSystemService(Context.AUDIO_SERVICE);
-        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, getMaxVolume() > 9? 9: getMaxVolume(), AudioManager.FLAG_SHOW_UI);
-        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, getMaxVolume(), AudioManager.FLAG_SHOW_UI);
-
-
         mediaPlayer = ExoPlayerFactory.newSimpleInstance(this.parent, new DefaultTrackSelector());
         mediaPlayer.addListener(this);
         mediaPlayer.prepare(this.getMediaSource(uri));
-
-        mediaPlayer.setVolume(BuildConfig.DEBUG ? 0.5F : 0.9F); //this is the volume of the individual player, not the music service of the phone
+        mediaPlayer.setVolume(BuildConfig.DEBUG ? 0.5F : 1.0F); //this is the volume of the individual player, not the music service of the phone
         mediaPlayer.setPlayWhenReady(true);
-        //mediaPlayer.seekTo(seekPosition); this trips streams...
-
     }
 
 
@@ -367,7 +359,6 @@ public class PlayList implements Player.EventListener {
         for (String playlist : playlists) {
             String query = "select title, item, itemtypeid from playlist where lower(title) = ?";
             String[] args = new String[]{playlist.toLowerCase()};
-            // DBAgent dbagent = new DBAgent(this.parent);
             String[][] data = DBAgent.getData(query, args);
             for (String[] record : data) {
 
@@ -476,7 +467,7 @@ public class PlayList implements Player.EventListener {
                 }
             });
             this.mediaPlayer.setVolume(0.07f);
-            callSignPlayer.setVolume(BuildConfig.DEBUG ? 0.5F : 0.9F);
+            callSignPlayer.setVolume(BuildConfig.DEBUG ? 0.5F : 1.0F);
             //currentCallSign = Uri.fromFile(new File(Url));
             callSignPlayer.prepare(this.getMediaSource(Uri.fromFile(new File(Url))));
             Utils.toastOnScreen("logging media...", this.parent);
@@ -526,7 +517,7 @@ public class PlayList implements Player.EventListener {
                     if (this.callSignPlayer != null && this.callSignPlayer.getPlaybackState() == Player.STATE_READY) {
                         this.mediaPlayer.setVolume(0.07f);
                     } else {
-                        this.mediaPlayer.setVolume(BuildConfig.DEBUG ? 0.5F : 0.9F);
+                        this.mediaPlayer.setVolume(BuildConfig.DEBUG ? 0.5F : 1.0F);
                     }
                     //Utils.toastOnScreen("logging media...", this.parent);
                     Utils.logEvent(this.parent, Utils.EventCategory.MEDIA, Utils.EventAction.START, String.format("Title: %s, Artist: %s, Location: %s", currentMedia.getTitle(), currentMedia.getArtists(), currentMedia.getFileLocation()));
@@ -534,7 +525,7 @@ public class PlayList implements Player.EventListener {
 
                 } catch (Exception ex) {
 
-                    this.mediaPlayer.setVolume(BuildConfig.DEBUG ? 0.5F : 0.9F);
+                    this.mediaPlayer.setVolume(BuildConfig.DEBUG ? 0.5F : 1.0F);
                 }
                 break;
             case Player.STATE_ENDED: //a song has ended

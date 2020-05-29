@@ -83,7 +83,7 @@ public class RadioService extends Service implements ServiceInformationPublisher
         if (!this.isRunning) {
             Utils.doNotification(this, "RootIO", "Radio Service Started");
             this.am = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
-            runTodaySchedule();
+            this.runTodaySchedule();
             this.setupNewDayScheduleListener();
             this.silenceRinger();
 
