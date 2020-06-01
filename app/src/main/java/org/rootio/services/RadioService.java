@@ -61,7 +61,6 @@ public class RadioService extends Service implements ServiceInformationPublisher
     private TelecomManager telecomManager;
     private RadioService.PhoneCallListener listener;
     private CallRecorder callRecorder;
-    //private boolean inCall;
     private String currentCallingNumber;
     private int port, reRegisterPeriod;
     private Core linphoneCore;
@@ -74,7 +73,6 @@ public class RadioService extends Service implements ServiceInformationPublisher
     private Config profile;
     private BroadcastReceiver br;
     private int callVolume;
-    //private boolean inSIPCall;
 
 
     @Override
@@ -89,7 +87,7 @@ public class RadioService extends Service implements ServiceInformationPublisher
 
             //Telephony service
             this.waitForCalls();
-           
+
             //SIP service
             this.register();
             this.listenForConfigChange();
@@ -193,10 +191,6 @@ public class RadioService extends Service implements ServiceInformationPublisher
         restartIntent.putExtra("isRestart", true);
         PendingIntent restartPendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
         this.am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, dt.getTime() + 10000, restartPendingIntent);
-
-
-        //this.pi = PendingIntent.getBroadcast(this, 0, intent, 0);
-        //this.am.set(AlarmManager.RTC_WAKEUP, dt.getTime(), this.pi);
     }
 
     private Date getTomorrowBaseDate() {
@@ -219,34 +213,28 @@ public class RadioService extends Service implements ServiceInformationPublisher
         telephonyManager.listen(listener, PhoneStateListener.LISTEN_CALL_STATE);
     }
 
-    private void setInCall(boolean inCall)
-    {
+    private void setInCall(boolean inCall) {
         //this.inCall = inCall; //local
         RootioApp.setInCall(inCall); //stored in the RootioApp instance
-        //persist in app preferences. This will become the preferred approach
         ContentValues values = new ContentValues();
         values.put("inCall", inCall);
         Utils.savePreferences(values, this);
     }
 
-    private void setInSIPCall(boolean inSIPCall)
-    {
+    private void setInSIPCall(boolean inSIPCall) {
         //this.inSIPCall = inSIPCall; //local
         RootioApp.setInCall(inSIPCall); //stored in the RootioApp instance
-        //persist in app preferences. This will become the preferred approach
         ContentValues values = new ContentValues();
         values.put("inSIPCall", inSIPCall);
         Utils.savePreferences(values, this);
     }
 
-    private boolean getInCall()
-    {
-        return (boolean)Utils.getPreference("inCall", boolean.class, this);
+    private boolean getInCall() {
+        return (boolean) Utils.getPreference("inCall", boolean.class, this);
     }
 
-    private boolean getInSIPCall()
-    {
-        return (boolean)Utils.getPreference("inSIPCall", boolean.class, this);
+    private boolean getInSIPCall() {
+        return (boolean) Utils.getPreference("inSIPCall", boolean.class, this);
     }
 
     /**
@@ -325,7 +313,7 @@ public class RadioService extends Service implements ServiceInformationPublisher
     /**
      * Declines an incoming call or ends an ongoing call.
      */
-    private void declineCall(String fromNumber) { //just let the phone ring silenced
+    private void declineCall(String fromNumber) { //just let the phone ring silenced. Fails past Nougat
 //        this.telecomManager.silenceRinger();
 //        ITelephony RadioService;
 //        TelephonyManager telephony = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
@@ -351,13 +339,11 @@ public class RadioService extends Service implements ServiceInformationPublisher
     public void handleCall(final String fromNumber) {
         if (!this.getInCall() && !this.getInSIPCall() && new CallAuthenticator(this).isWhiteListed(fromNumber)) {
             this.setInCall(true);
-            try{
-            if(this.radioRunner != null && this.radioRunner.getRunningProgram() != null) {
-                this.radioRunner.getRunningProgram().pause();
-                //RadioService.this.sendTelephonyEventBroadcast(true);
-            }}
-            catch(Exception ex)
-            {
+            try {
+                if (this.radioRunner != null && this.radioRunner.getRunningProgram() != null) {
+                    this.radioRunner.getRunningProgram().pause();
+                }
+            } catch (Exception ex) {
                 Log.e(this.getString(R.string.app_name), String.format("[RadioService.handleCall] %s", ex.getMessage() == null ? "Null pointer exception" : ex.getMessage()));
             }
 
@@ -422,7 +408,6 @@ public class RadioService extends Service implements ServiceInformationPublisher
             }
         }
     }
-
 
 
     @Override
@@ -602,32 +587,25 @@ public class RadioService extends Service implements ServiceInformationPublisher
         Log.e("RootIO", "handleCall: " + call.getRemoteAddress().getDomain() + " " + this.domain);
         if (!this.getInCall() && !this.getInSIPCall() && call.getRemoteAddress().getDomain().equals(this.domain)) //Guard against spoofing..
         {
-                Log.e("RootIO", "handleCall: " +getInCall() + " " + getInSIPCall());
-            //RootioApp.setInSIPCall(true);
+            Log.e("RootIO", "handleCall: " + getInCall() + " " + getInSIPCall());
             setInSIPCall(true);
-            //this.inSIPCall = true;
-            try{
-                if(this.radioRunner != null && this.radioRunner.getRunningProgram() != null) {
+            try {
+                if (this.radioRunner != null && this.radioRunner.getRunningProgram() != null) {
                     this.radioRunner.getRunningProgram().pause();
-                    //RadioService.this.sendTelephonyEventBroadcast(true);
-                }}
-            catch(Exception ex)
-            {
+                }
+            } catch (Exception ex) {
                 Log.e(this.getString(R.string.app_name), String.format("[RadioService.handleCall] %s", ex.getMessage() == null ? "Null pointer exception" : ex.getMessage()));
             }
-            //this.sendTelephonyEventBroadcast(true);
             try {
                 Thread.sleep(5000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            try{
-                if(this.radioRunner != null && this.radioRunner.getRunningProgram() != null) {
+            try {
+                if (this.radioRunner != null && this.radioRunner.getRunningProgram() != null) {
                     this.radioRunner.getRunningProgram().pause();
-                    //RadioService.this.sendTelephonyEventBroadcast(true);
-                }}
-            catch(Exception ex)
-            {
+                }
+            } catch (Exception ex) {
                 Log.e(this.getString(R.string.app_name), String.format("[RadioService.handleCall] %s", ex.getMessage() == null ? "Null pointer exception" : ex.getMessage()));
             }
             this.answer(call);
@@ -661,7 +639,6 @@ public class RadioService extends Service implements ServiceInformationPublisher
             audioManager.setStreamVolume(AudioManager.STREAM_VOICE_CALL, this.callVolume, AudioManager.FLAG_SHOW_UI);
 
             //mute any music that might be playing
-            //AudioManager audioManager = (AudioManager) RadioService.this.getSystemService(Context.AUDIO_SERVICE);
             audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 0, AudioManager.FLAG_SHOW_UI);
             Utils.logEvent(this, Utils.EventCategory.SIP_CALL, Utils.EventAction.START, call.getRemoteContact());
         } catch (Exception e) {
@@ -684,25 +661,20 @@ public class RadioService extends Service implements ServiceInformationPublisher
         switch (callState) {
             case End:
                 if (call.getRemoteAddress().getDomain().equals(this.domain) && this.getInSIPCall()) {
-                    //this.inSIPCall = false;
                     if (isPendingRestart) {
                         this.deregister();
                         this.initializeStack();
                         this.register();
                         isPendingRestart = false;
                     }
-                    //RootioApp.setInSIPCall(false);
                     setInSIPCall(false);
-                    try{
-                        if(this.radioRunner != null && this.radioRunner. getRunningProgram() != null) {
+                    try {
+                        if (this.radioRunner != null && this.radioRunner.getRunningProgram() != null) {
                             this.radioRunner.getRunningProgram().resume();
-                            //RadioService.this.sendTelephonyEventBroadcast(true);
-                        }}
-                    catch(Exception ex)
-                    {
+                        }
+                    } catch (Exception ex) {
                         Log.e(this.getString(R.string.app_name), String.format("[RadioService.handleCall] %s", ex.getMessage() == null ? "Null pointer exception" : ex.getMessage()));
                     }
-                    //this.sendTelephonyEventBroadcast(false);
                     Utils.logEvent(this, Utils.EventCategory.SIP_CALL, Utils.EventAction.STOP, call != null ? call.getRemoteContact() : "");
                     Log.e("RootIO", "updateCallState: End");
                     if (call != null) //not being sent au moment
@@ -711,12 +683,11 @@ public class RadioService extends Service implements ServiceInformationPublisher
                     }
                     //up any music that might be playing
                     AudioManager audioManager = (AudioManager) RadioService.this.getSystemService(Context.AUDIO_SERVICE);
-                    audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, getMaxVolume() > 9? 9: getMaxVolume(), AudioManager.FLAG_SHOW_UI);
+                    audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, getMaxVolume() > 9 ? 9 : getMaxVolume(), AudioManager.FLAG_SHOW_UI);
                     audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, getMaxVolume(), AudioManager.FLAG_SHOW_UI);
                 }
                 break;
             case Error:
-                //this.inCall = false;
                 if (isPendingRestart) {
                     this.deregister();
                     this.initializeStack();
@@ -724,7 +695,6 @@ public class RadioService extends Service implements ServiceInformationPublisher
                     isPendingRestart = false;
                 }
                 Utils.logEvent(this, Utils.EventCategory.SIP_CALL, Utils.EventAction.STOP, call != null ? call.getRemoteContact() : "");
-                //this.sendTelephonyEventBroadcast(false);
                 Log.e("RootIO", "updateCallState: Error");
                 if (call != null) //not being sent au moment
                 {
@@ -734,19 +704,15 @@ public class RadioService extends Service implements ServiceInformationPublisher
             case Connected:
                 Log.e("RootIO", "updateCallState: Connected");
             case StreamsRunning: //in case you reconnect to the main activity during call.
-                //this.inSIPCall = true;
                 setInSIPCall(true);
-                try{
-                    if(this.radioRunner != null && this.radioRunner.getRunningProgram() != null) {
+                try {
+                    if (this.radioRunner != null && this.radioRunner.getRunningProgram() != null) {
                         this.radioRunner.getRunningProgram().pause();
-                        //RadioService.this.sendTelephonyEventBroadcast(true);
-                    }}
-                catch(Exception ex)
-                {
+                   }
+                } catch (Exception ex) {
                     Log.e(this.getString(R.string.app_name), String.format("[RadioService.handleCall] %s", ex.getMessage() == null ? "Null pointer exception" : ex.getMessage()));
                 }
-                //this.sendTelephonyEventBroadcast(true);
-                if (call != null) //ideally check for direction and report if outgoing or incoming
+                 if (call != null) //ideally check for direction and report if outgoing or incoming
                 {
                     Utils.toastOnScreen("In call with " + call != null ? call.getRemoteContact() : "", this);
                 }
@@ -867,28 +833,23 @@ public class RadioService extends Service implements ServiceInformationPublisher
                     break;
                 case TelephonyManager.CALL_STATE_IDLE:
                     if (incomingNumber.equals(currentCallingNumber)) {
-                        //inCall = false;
-                       // RootioApp.setInCall(false);
                         setInCall(false);
-                        try{
-                            if(RadioService.this.radioRunner != null && RadioService.this.radioRunner.getRunningProgram() != null) {
+                        try {
+                            if (RadioService.this.radioRunner != null && RadioService.this.radioRunner.getRunningProgram() != null) {
                                 RadioService.this.radioRunner.getRunningProgram().resume();
-                                //RadioService.this.sendTelephonyEventBroadcast(true);
-                            }}
-                        catch(Exception ex)
-                        {
+                            }
+                        } catch (Exception ex) {
                             Log.e(RadioService.this.getString(R.string.app_name), String.format("[RadioService.handleCall] %s", ex.getMessage() == null ? "Null pointer exception" : ex.getMessage()));
                         }
-                        //RadioService.this.sendTelephonyEventBroadcast(false);
                         if (RadioService.this.callRecorder != null) {
                             RadioService.this.callRecorder.stopRecording();
                             RadioService.this.callRecorder = null;
                         }
                     }
 
-                    if(!getInSIPCall()) {
+                    if (!getInSIPCall()) {
                         AudioManager audioManager = (AudioManager) RadioService.this.getSystemService(Context.AUDIO_SERVICE);
-                        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, getMaxVolume() > 9? 9: getMaxVolume(), AudioManager.FLAG_SHOW_UI);
+                        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, getMaxVolume() > 9 ? 9 : getMaxVolume(), AudioManager.FLAG_SHOW_UI);
                         audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, getMaxVolume(), AudioManager.FLAG_SHOW_UI);
                     }
 

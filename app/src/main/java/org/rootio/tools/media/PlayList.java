@@ -62,11 +62,9 @@ public class PlayList implements Player.EventListener {
     }
 
     public static PlayList getInstance() {
-        if(playListInstance == null)
-        {
+        if (playListInstance == null) {
             playListInstance = new PlayList(); //initialize only once
-        }
-        else{
+        } else {
             PlayList.playListInstance.stop();
         }
         return playListInstance;
@@ -82,10 +80,9 @@ public class PlayList implements Player.EventListener {
         this.setVolumeLevel();
     }
 
-    private void setVolumeLevel()
-    {
+    private void setVolumeLevel() {
         AudioManager audioManager = (AudioManager) this.parent.getSystemService(Context.AUDIO_SERVICE);
-        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, getMaxVolume() > 9? 9: getMaxVolume(), AudioManager.FLAG_SHOW_UI);
+        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, getMaxVolume() > 9 ? 9 : getMaxVolume(), AudioManager.FLAG_SHOW_UI);
         audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, getMaxVolume(), AudioManager.FLAG_SHOW_UI);
 
     }
@@ -101,7 +98,7 @@ public class PlayList implements Player.EventListener {
         streamIterator = streams.listIterator();
     }
 
-    public void preload(){
+    public void preload() {
         if (this.mediaList == null || mediaList.size() == 0) {
             mediaList = preloadMedia(this.playlists);
         }
@@ -119,12 +116,12 @@ public class PlayList implements Player.EventListener {
                 startPlayer();
             }
         }).start();
-   this.callSignProvider.start();
+        this.callSignProvider.start();
 
     }
 
     private void startPlayer() {
-         final Cloud cloud = new Cloud(this.parent);
+        final Cloud cloud = new Cloud(this.parent);
         while (!foundMedia && !this.isShuttingDown) {
             try {
 
@@ -143,12 +140,11 @@ public class PlayList implements Player.EventListener {
                             }
                         }).start();
                     } catch (NullPointerException ex) {
-                        Log.e(this.parent.getString(R.string.app_name), ex.getMessage() == null ? "Null pointer exception(PlayList.startPlayer)" : ex.getMessage());
+                        Log.e(this.parent.getString(R.string.app_name) + ":Playlist.startPlayer", ex.getMessage() == null ? "Null pointer exception(PlayList.startPlayer)" : ex.getMessage());
                         this.startPlayer();
                     }
                 } else if (mediaIterator.hasNext()) {
-                    if(!streamIterator.hasNext())
-                    {
+                    if (!streamIterator.hasNext()) {
                         streamIterator = streams.iterator();
                     }
                     currentMedia = mediaIterator.next();
@@ -237,6 +233,7 @@ public class PlayList implements Player.EventListener {
             }
             if (mediaPlayer != null) {
                 try {
+                    this.foundMedia = false;
                     this.fadeOut();
                     mediaPlayer.stop();
                     mediaPlayer.removeListener(this);
@@ -390,7 +387,6 @@ public class PlayList implements Player.EventListener {
     }
 
 
-
     private void onReceiveCallSign(String Url) {
         try {
 
@@ -420,7 +416,6 @@ public class PlayList implements Player.EventListener {
                         case Player.STATE_ENDED:
                             try {
                                 PlayList.this.mediaPlayer.setVolume(BuildConfig.DEBUG ? 0.5F : 0.9F);
-                                //Utils.toastOnScreen("logging media...", PlayList.this.parent);
                                 try {
                                     Utils.logEvent(PlayList.this.parent, Utils.EventCategory.MEDIA, Utils.EventAction.STOP, String.format("Title: %s, Artist: %s, Location: %s", currentCallSign.getTitle(), currentCallSign.getArtists(), currentCallSign.getFileLocation()));
                                 } catch (Exception ex) {
@@ -470,7 +465,6 @@ public class PlayList implements Player.EventListener {
             callSignPlayer.setVolume(BuildConfig.DEBUG ? 0.5F : 1.0F);
             //currentCallSign = Uri.fromFile(new File(Url));
             callSignPlayer.prepare(this.getMediaSource(Uri.fromFile(new File(Url))));
-            Utils.toastOnScreen("logging media...", this.parent);
             try {
                 Utils.logEvent(PlayList.this.parent, Utils.EventCategory.MEDIA, Utils.EventAction.START, String.format("Title: %s, Artist: %s, Location: %s", currentCallSign.getTitle(), currentCallSign.getArtists(), currentCallSign.getFileLocation()));
             } catch (Exception ex) {
@@ -508,18 +502,16 @@ public class PlayList implements Player.EventListener {
     }
 
 
-
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-         switch (playbackState) {
-             case Player.STATE_READY:
+        switch (playbackState) {
+            case Player.STATE_READY:
                 try {
                     if (this.callSignPlayer != null && this.callSignPlayer.getPlaybackState() == Player.STATE_READY) {
                         this.mediaPlayer.setVolume(0.07f);
                     } else {
                         this.mediaPlayer.setVolume(BuildConfig.DEBUG ? 0.5F : 1.0F);
                     }
-                    //Utils.toastOnScreen("logging media...", this.parent);
                     Utils.logEvent(this.parent, Utils.EventCategory.MEDIA, Utils.EventAction.START, String.format("Title: %s, Artist: %s, Location: %s", currentMedia.getTitle(), currentMedia.getArtists(), currentMedia.getFileLocation()));
 
 
@@ -530,7 +522,6 @@ public class PlayList implements Player.EventListener {
                 break;
             case Player.STATE_ENDED: //a song has ended
                 this.foundMedia = false;
-                //Utils.toastOnScreen("logging media...", this.parent);
                 Utils.logEvent(this.parent, Utils.EventCategory.MEDIA, Utils.EventAction.STOP, String.format("Title: %s, Artist: %s, Location: %s", currentMedia.getTitle(), currentMedia.getArtists(), currentMedia.getFileLocation()));
                 if (this.isShuttingDown) {
                     return;

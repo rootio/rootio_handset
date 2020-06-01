@@ -45,8 +45,6 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
     private RadioRunner(Context parent) {
         this.radioRunnerId = new Random().nextInt(1000);
         this.parent = parent;
-        this.listenForTelephonyEvents();
-        this.listenForScheduleChangeNotifications();
     }
 
     public static RadioRunner getInstance(Context parent)
@@ -82,11 +80,14 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
 
     @Override
     public void run() {
+        this.listenForTelephonyEvents();
+        this.listenForScheduleChangeNotifications();
         initialiseSchedule();
     }
 
     private void  initialiseSchedule() {
         this.setUpAlarming();
+
         this.programs = fetchPrograms();
         this.schedulePrograms(programs);
         new Thread(new Runnable() {
@@ -122,7 +123,7 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
         if (!RootioApp.isInCall() && !RootioApp.isInSIPCall()){ //this.state != State.PAUSED) {
             this.state = State.PLAYING;
             this.programs.get(index).run();
-            //Utils.toastOnScreen("starting program...", this.parent);
+            Utils.toastOnScreen("starting program...", this.parent);
         }
     }
 
@@ -163,6 +164,7 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
 
     public void stop() {
         this.stopProgram(this.runningProgramIndex);
+        this.runningProgramIndex = null;
         this.finalize();
 
     }
@@ -214,7 +216,6 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
      */
     private void schedulePrograms(ArrayList<Program> programs) {
         IntentFilter intentFilter = new IntentFilter();
-        //this.pis = new ArrayList<>();
         this.pendingIntents = new ArrayList<>();
         for (int i = 0; i < programs.size(); i++) {
             intentFilter.addAction("org.rootio.RadioRunner" + String.valueOf(i));
@@ -242,8 +243,8 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
      */
     private void addAlarmEvent(int index, Date startTime) {
         try {
-            Utils.toastOnScreen("scheduling for "+startTime, this.parent);
-            //Thread.sleep(1000);
+            //Utils.toastOnScreen("scheduling for "+startTime, this.parent);
+            Log.d(this.parent.getString(R.string.app_name), "addAlarmEvent: scheduling for "+startTime);
             Intent intent = new Intent("org.rootio.RadioRunner" + String.valueOf(index));
             intent.putExtra("index", index);
             intent.putExtra("startTime", startTime.getTime());
