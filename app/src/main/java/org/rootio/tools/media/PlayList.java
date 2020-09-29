@@ -82,8 +82,8 @@ public class PlayList implements Player.EventListener {
 
     private void setVolumeLevel() {
         AudioManager audioManager = (AudioManager) this.parent.getSystemService(Context.AUDIO_SERVICE);
-        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, getMaxVolume() > 9 ? 9 : getMaxVolume(), AudioManager.FLAG_SHOW_UI);
-        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, getMaxVolume(), AudioManager.FLAG_SHOW_UI);
+        //audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, getMaxVolume() > 9 ? 9 : getMaxVolume(), AudioManager.FLAG_SHOW_UI);
+        //audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, getMaxVolume(), AudioManager.FLAG_SHOW_UI);
 
     }
 
@@ -415,7 +415,7 @@ public class PlayList implements Player.EventListener {
                     switch (playbackState) {
                         case Player.STATE_ENDED:
                             try {
-                                PlayList.this.mediaPlayer.setVolume(BuildConfig.DEBUG ? 0.5F : 0.9F);
+                                PlayList.this.mediaPlayer.setVolume(BuildConfig.DEBUG ? 0.5F : 1.0F);
                                 try {
                                     Utils.logEvent(PlayList.this.parent, Utils.EventCategory.MEDIA, Utils.EventAction.STOP, String.format("Title: %s, Artist: %s, Location: %s", currentCallSign.getTitle(), currentCallSign.getArtists(), currentCallSign.getFileLocation()));
                                 } catch (Exception ex) {

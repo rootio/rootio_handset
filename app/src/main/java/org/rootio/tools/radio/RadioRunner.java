@@ -249,7 +249,7 @@ public class RadioRunner implements Runnable, TelephonyEventNotifiable, Schedule
             intent.putExtra("index", index);
             intent.putExtra("startTime", startTime.getTime());
             PendingIntent pi = PendingIntent.getBroadcast(parent, 0, intent, 0);
-            this.am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, startTime.getTime(), pi);
+            this.am.setExact(AlarmManager.RTC_WAKEUP, startTime.getTime(), pi);
             //this.pis.add(pi);
             this.pendingIntents.add(new Object[]{pi, startTime.getTime()});
         } catch (Exception ex) {

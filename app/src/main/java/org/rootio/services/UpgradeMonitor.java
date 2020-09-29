@@ -13,7 +13,7 @@ public class UpgradeMonitor extends BroadcastReceiver {
         Utils.setContext(context);
         if(Utils.isConnectedToStation(context))
         {
-        for (int serviceId : new int[]{/*1, 2,*/ 3, 4, 5/*, 6*/}) {
+        for (int serviceId : new int[]{ 3, 4, 5}) {
             ServiceState serviceState = new ServiceState(context, serviceId);
            // if (serviceState.getServiceState() > 0)// service was started
            // {
@@ -35,13 +35,7 @@ public class UpgradeMonitor extends BroadcastReceiver {
     private Intent getIntentToLaunch(Context context, int serviceId) {
         Intent intent = null;
         switch (serviceId) {
-           /* case 1: // telephony service
-                intent = new Intent(context, TelephonyService.class);
-                break;
-            case 2: // SMS service
-                intent = new Intent(context, SMSService.class);
-                break;*/
-            case 3: // Diagnostic Service
+           case 3: // Diagnostic Service
                 intent = new Intent(context, DiagnosticsService.class);
                 break;
             case 4: // Program Service
@@ -50,10 +44,7 @@ public class UpgradeMonitor extends BroadcastReceiver {
             case 5: // Sync Service
                 intent = new Intent(context, SynchronizationService.class);
                 break;
-            /*case 6: // Discovery Service
-                intent = new Intent(context, LinSipService.class);
-                break;*/
-        }
+         }
         return intent;
     }
 

@@ -30,7 +30,7 @@ public class DefaultErrorHandler extends Application {
                                                       }
 
                                                       public void startServices() {
-                                                          for (int serviceId : new int[]{/*1, 2,*/ 3, 4, 5 /*, 6*/}) // only vitals
+                                                          for (int serviceId : new int[]{3, 4, 5}) // only vitals
                                                           {
                                                               //ServiceState serviceState = new ServiceState(context, serviceId);
                                                               // if(serviceState.getServiceState() > 0)//service was started
@@ -54,12 +54,6 @@ public class DefaultErrorHandler extends Application {
                                                       private Intent getIntentToLaunch(Context context, int serviceId) {
                                                           Intent intent = null;
                                                           switch (serviceId) {
-                                                              /*case 1: // telephony service
-                                                                  intent = new Intent(context, TelephonyService.class);
-                                                                  break;
-                                                              case 2: // SMS service
-                                                                  intent = new Intent(context, SMSService.class);
-                                                                  break;*/
                                                               case 3: // Diagnostic Service
                                                                   intent = new Intent(context, DiagnosticsService.class);
                                                                   break;
@@ -69,10 +63,7 @@ public class DefaultErrorHandler extends Application {
                                                               case 5: // Sync Service
                                                                   intent = new Intent(context, SynchronizationService.class);
                                                                   break;
-                                                              /*case 6: // SIP Service
-                                                                  intent = new Intent(context, LinSipService.class);
-                                                                  break;*/
-                                                          }
+                                                         }
                                                           return intent;
                                                       }
 

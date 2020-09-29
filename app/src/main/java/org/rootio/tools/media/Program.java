@@ -6,16 +6,20 @@ import java.util.Date;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
+import org.rootio.handset.R;
 import org.rootio.tools.radio.ScheduleBroadcastHandler;
 import org.rootio.tools.utils.Utils;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.util.Log;
 
-public class Program implements Comparable<Program>, ScheduleNotifiable {
+public class Program extends BroadcastReceiver implements Comparable<Program>, ScheduleNotifiable {
 
     private String title;
     private Date startDate, endDate;
@@ -96,7 +100,22 @@ public class Program implements Comparable<Program>, ScheduleNotifiable {
 
     public void run() {
         this.runProgram(0);
-        //this.setupAlertReceiver(programActions);
+        if(isStrictProgramming()) {
+            this.setupProgramStop(getEndDate());
+        }
+    }
+
+    private boolean isStrictProgramming()
+    {
+        String stationInformation = (String) Utils.getPreference("station_information", String.class, this.parent);
+        JSONObject stationJson;
+        try {
+            stationJson = new JSONObject(stationInformation).optJSONObject("station");
+            return stationJson.optBoolean("strict_scheduling", false);
+        } catch (JSONException ex) {
+            Log.d(parent.getString(R.string.app_name), String.format("[Program.isStrictProgramming] %s", ex.getMessage() == null ? "Null pointer exception" : ex.getMessage()));
+            return false;
+        }
     }
 
     public ArrayList<ProgramAction> getProgramActions() {
@@ -121,21 +140,15 @@ public class Program implements Comparable<Program>, ScheduleNotifiable {
         return this.startDate.compareTo(another.getStartDate());
     }
 
-    private void setupAlertReceiver(ArrayList<ProgramAction> programActions) {
-        IntentFilter intentFilter = new IntentFilter();
+    private void setupProgramStop(Date endDate) {
         AlarmManager am = (AlarmManager) this.parent.getSystemService(Context.ALARM_SERVICE);
-        for (int i = 0; i < programActions.size(); i++) {
-            intentFilter.addAction("org.rootio.RadioRunner." + this.title + String.valueOf(i));
-        }
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("org.rootio.RadioRunner." + this.title + endDate.getTime()); //unique
+        this.parent.registerReceiver(this, intentFilter);
 
-        alertHandler = new ScheduleBroadcastHandler(this);
-        this.parent.registerReceiver(alertHandler, intentFilter);
-        for (int i = 0; i < programActions.size(); i++) {
-            Intent intent = new Intent("org.rootio.RadioRunner." + this.title + String.valueOf(i));
-            intent.putExtra("index", i);
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(this.parent, 0, intent, 0);
-            am.set(AlarmManager.RTC_WAKEUP, this.startDate.getTime(), pendingIntent);
-        }
+        Intent intent = new Intent("org.rootio.RadioRunner." + this.title + endDate.getTime());
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this.parent, 0, intent, 0);
+        am.setExact(AlarmManager.RTC_WAKEUP, endDate.getTime(), pendingIntent);
     }
 
 
@@ -164,4 +177,8 @@ public class Program implements Comparable<Program>, ScheduleNotifiable {
 
     }
 
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        this.stop();
+    }
 }

@@ -65,12 +65,6 @@ public class RootioApp extends Application {
                                                       private Intent getIntentToLaunch(Context context, int serviceId) {
                                                           Intent intent = null;
                                                           switch (serviceId) {
-                                                              /*case 1: // telephony service
-                                                                  intent = new Intent(context, TelephonyService.class);
-                                                                  break;
-                                                              case 2: // SMS service
-                                                                  intent = new Intent(context, SMSService.class);
-                                                                  break;*/
                                                               case 3: // Diagnostic Service
                                                                   intent = new Intent(context, DiagnosticsService.class);
                                                                   break;
@@ -80,10 +74,7 @@ public class RootioApp extends Application {
                                                               case 5: // Sync Service
                                                                   intent = new Intent(context, SynchronizationService.class);
                                                                   break;
-                                                              /*case 6: // SIP Service
-                                                                  intent = new Intent(context, LinSipService.class);
-                                                                  break;*/
-                                                          }
+                                                         }
                                                           return intent;
                                                       }
 

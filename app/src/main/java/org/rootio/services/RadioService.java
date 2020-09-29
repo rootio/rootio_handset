@@ -12,7 +12,9 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.support.v4.app.ActivityCompat;
 import android.telecom.TelecomManager;
 import android.telephony.PhoneStateListener;
@@ -73,6 +75,8 @@ public class RadioService extends Service implements ServiceInformationPublisher
     private Config profile;
     private BroadcastReceiver br;
     private int callVolume;
+    private PowerManager.WakeLock wl;
+
 
 
     @Override
@@ -97,6 +101,7 @@ public class RadioService extends Service implements ServiceInformationPublisher
 
         this.startForeground(this.serviceId, Utils.getNotification(this, "RootIO", "Radio Service is running", R.drawable.icon, false, null, null));
         new ServiceState(this, 4, "Radio", 1).save();
+       wl.acquire();
         return Service.START_STICKY;
     }
 
@@ -133,6 +138,7 @@ public class RadioService extends Service implements ServiceInformationPublisher
             Log.e(this.getString(R.string.app_name), String.format("[RadioService.onDestroy] %s", ex.getMessage() == null ? "Null pointer exception" : ex.getMessage()));
         }
         new ServiceState(this, 4, "Radio", 0).save();
+        wl.release();
         super.onDestroy();
     }
 
@@ -140,6 +146,7 @@ public class RadioService extends Service implements ServiceInformationPublisher
         if (radioRunner != null && this.isRunning) {
             radioRunner.stop();
             this.isRunning = false;
+
             try {
                 this.unregisterReceiver(newDayScheduleHandler);
             } catch (Exception ex) {
@@ -373,6 +380,8 @@ public class RadioService extends Service implements ServiceInformationPublisher
         super.onCreate();
         this.coreListener = new SipListener(this);
         this.initializeStack();
+        PowerManager pm = (PowerManager)this.getSystemService(Context.POWER_SERVICE);
+        wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, getPackageName());
     }
 
     private void listenForConfigChange() {

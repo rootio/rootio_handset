@@ -180,12 +180,6 @@ public class ServicesSMSHandler implements MessageProcessor, Notifiable {
     private Intent getServiceIntent(int serviceId) {
         Intent intent = null;
         switch (serviceId) {
-           /* case 1:
-                intent = new Intent(this.parent, TelephonyService.class);
-                break;
-            case 2:
-                intent = new Intent(this.parent, SMSService.class);
-                break;*/
             case 3:
                 intent = new Intent(this.parent, DiagnosticsService.class);
                 break;
@@ -195,9 +189,6 @@ public class ServicesSMSHandler implements MessageProcessor, Notifiable {
             case 5:
                 intent = new Intent(this.parent, SynchronizationService.class);
                 break;
-            /*case 6:
-                intent = new Intent(this.parent, LinSipService.class);
-                break;*/
         }
         return intent;
     }
