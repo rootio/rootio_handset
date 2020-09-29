@@ -193,6 +193,10 @@ public class SynchronizationDaemon implements Runnable {
     public void synchronize(final SynchronizationHandler handler, Integer id) {
         try {
             String synchronizationUrl = handler.getSynchronizationURL();
+            if(synchronizationUrl == null)
+            {
+                return;
+            }
             HashMap<String, Object> response = Utils.doDetailedPostHTTP(synchronizationUrl, handler.getSynchronizationData().toString());
             JSONObject responseJSON;
             responseJSON = new JSONObject((String) response.get("response"));
