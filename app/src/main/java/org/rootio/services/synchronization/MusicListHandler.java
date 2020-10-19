@@ -17,16 +17,10 @@ import org.json.JSONObject;
 import org.rootio.handset.BuildConfig;
 import org.rootio.handset.R;
 import org.rootio.tools.cloud.Cloud;
-import org.rootio.tools.persistence.DBAgent;
 import org.rootio.tools.utils.Utils;
 
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * @author Jude Mukundane, M-ITI/IST-UL
@@ -36,7 +30,6 @@ public class MusicListHandler implements SynchronizationHandler {
     private Context parent;
     private Cloud cloud;
     private int offset, limit = 100;
-    private String maxDateadded;
 
     MusicListHandler(Context parent, Cloud cloud) {
         this.parent = parent;
@@ -89,7 +82,7 @@ public class MusicListHandler implements SynchronizationHandler {
         boolean syncDue = !(status.getJSONObject("songs").getLong("count") == (long) result.get(0) && status.getJSONObject("songs").getString("max_date").equals(getMaxDateAdded())
                 && status.getJSONObject("albums").getLong("count") == (long) result.get(1) && status.getJSONObject("albums").getString("max_date").equals(getMaxDateAdded())
                 && status.getJSONObject("artists").getLong("count") == (long) result.get(2) && status.getJSONObject("artists").getString("max_date").equals(getMaxDateAdded()));
-        Logger.getLogger("RootIO").log(Level.INFO, "Media Sync Due: " + syncDue + " ( " + status + " ) and " + result.get(0) + ", " + getMaxDateAdded());
+        Log.i("RootIO", "Media Sync Due: " + syncDue + " ( " + status + " ) and " + result.get(0) + ", " + getMaxDateAdded());
         return syncDue;
     }
 
@@ -110,25 +103,37 @@ public class MusicListHandler implements SynchronizationHandler {
 
     private List<Integer> getMediaStatus() {
         List<Integer> result = new ArrayList<>();
+        for (String column : new String[]{MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.ALBUM, MediaStore.Audio.Media.ARTIST}) {
+            result.add(getCount(column));
+        }
+        return result;
+    }
+
+    /**
+     * For content providers not using SQLite, getting distinct row counts is not that straightforward :-(
+     * @param column The column for which you are trying to get a distinct count
+     * @return number of distinct values in this column
+     */
+    private int getCount(String column) {
+        int result = 0;
+        String previous = null;
         Cursor cur;
         try {
             ContentResolver cr = this.parent.getContentResolver();
             Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-            String[] selection = new String[]{"count (distinct " + MediaStore.Audio.Media.TITLE + ")", "count (distinct " + MediaStore.Audio.Media.ALBUM + ")", "count (distinct " + MediaStore.Audio.Media.ARTIST + ")"};
-            //uncomment last bit to turn on paging in case of very many records, but in this case sort by date_added asc
-            String sortOrder = MediaStore.Audio.Media.TITLE + " ASC"; // limit   " + String.valueOf(limit) + " offset "+String.valueOf(offset);
-            cur = cr.query(uri, selection, null, new String[]{}, sortOrder);
-            cur.moveToFirst();
-            result.add(cur.getInt(0));
-            result.add(cur.getInt(1));
-            result.add(cur.getInt(2));
-            return result;
+            String selection = MediaStore.Audio.Media.IS_MUSIC + "!= 0";
+            String[] projection = new String[]{column};
+            cur = cr.query(uri, projection, selection, new String[]{}, column + " ASC");
+            while (cur.moveToNext()) {
+                if (!cur.getString(0).equals(previous)) {
+                    result++;
+                }
+                previous = cur.getString(0);
+            }
+        } catch (Exception ex) {
+            Log.e("RootIO", "getCount: " + ex.getMessage());
         }
-        catch (Exception ex)
-        {
-            return null;
-        }
-
+        return result;
     }
 
     private JSONObject getSongList() {
@@ -138,7 +143,7 @@ public class MusicListHandler implements SynchronizationHandler {
         try {
             ContentResolver cr = this.parent.getContentResolver();
             Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-            String selection = MediaStore.Audio.Media.IS_MUSIC + "!= 0 and date_added ";
+            String selection = MediaStore.Audio.Media.IS_MUSIC + "!= 0 ";
             //uncomment last bit to turn on paging in case of very many records, but in this case sort by date_added asc
             String sortOrder = MediaStore.Audio.Media.TITLE + " ASC"; // limit   " + String.valueOf(limit) + " offset "+String.valueOf(offset);
             cur = cr.query(uri, null, selection, new String[]{}, sortOrder);

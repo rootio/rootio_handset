@@ -7,7 +7,7 @@ android {
         minSdkVersion 26
         targetSdkVersion 26
         versionCode 30
-        versionName "Isola:30.2"
+        versionName "Coronoid_Automn:30.5"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
